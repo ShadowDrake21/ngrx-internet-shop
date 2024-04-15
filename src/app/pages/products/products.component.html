@@ -1,8 +1,12 @@
-<div>
+<div class="container">
   <ul *ngIf="products$ | async as products">
-    @for (product of products; track $index) {
-    <li>{{ product | json }}</li>
-    }
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+      @for (product of products; track $index) {
+      <div class="col">
+        <app-single-product [item]="product"></app-single-product>
+      </div>
+      }
+    </div>
   </ul>
 
   @if (error$ | async) {

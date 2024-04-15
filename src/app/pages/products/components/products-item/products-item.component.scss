@@ -1,0 +1,18 @@
+a.card {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: inherit;
+  }
+}
+
+.card-display {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-btns {
+  justify-content: space-between;
+}
