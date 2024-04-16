@@ -5,18 +5,18 @@ import { map, Observable, switchMap } from 'rxjs';
 
 import { ProductState } from '../../store/product/products.reducer';
 import { IProduct } from '../../shared/models/product.model';
-import * as ProductActions from '../../store/product/product.actions';
-import * as ProductSelectors from '../../store/product/product.selectors';
 import { ProductsItemComponent } from './components/products-item/products-item.component';
 import {
   PageChangedEvent,
   PaginationComponent,
   PaginationModule,
 } from 'ngx-bootstrap/pagination';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
-
 import { FormsModule } from '@angular/forms';
-import { ProductService } from '../../core/services/product.service';
+
+import * as ProductActions from '../../store/product/product.actions';
+import * as CartActions from '../../store/cart/cart.actions';
+
+import * as ProductSelectors from '../../store/product/product.selectors';
 
 @Component({
   selector: 'app-products',
@@ -27,7 +27,6 @@ import { ProductService } from '../../core/services/product.service';
 })
 export class ProductsComponent implements OnInit {
   private store = inject(Store<ProductState>);
-  private productService = inject(ProductService);
 
   products$!: Observable<IProduct[]>;
   visibleProducts$!: Observable<IProduct[]>;
@@ -49,5 +48,9 @@ export class ProductsComponent implements OnInit {
     this.visibleProducts$ = this.products$.pipe(
       map((products) => products.slice(startItem, endItem))
     );
+  }
+
+  handleAddToCart(product: IProduct) {
+    this.store.dispatch(CartActions.addToCart({ product }));
   }
 }
