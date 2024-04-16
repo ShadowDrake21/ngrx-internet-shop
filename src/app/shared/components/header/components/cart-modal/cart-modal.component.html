@@ -10,9 +10,14 @@
   </button>
 </div>
 <div class="modal-body">
-  <ul *ngIf="list.length">
-    <li *ngFor="let item of list">{{ item }}</li>
-  </ul>
+  <div class="d-flex">
+    <div><img [src]="products[0].images[0]" width="200" /></div>
+    <div>
+      <h1>{{ products[0].title }}</h1>
+      <p>{{ products[0].description }}</p>
+      <span>{{ products[0].price }}</span>
+    </div>
+  </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">

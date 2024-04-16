@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { IProduct } from '../../../../shared/models/product.model';
 import { RouterLink } from '@angular/router';
@@ -22,4 +22,13 @@ import { TruncateTextPipe } from '../../../../shared/pipes/truncate-text.pipe';
 })
 export class ProductsItemComponent {
   @Input({ required: true, alias: 'item' }) product!: IProduct;
+  @Output('onAddToCart') onAdd: EventEmitter<IProduct> =
+    new EventEmitter<IProduct>();
+
+  protected isAlreadyInCart: boolean = false;
+
+  onAddToCart() {
+    this.onAdd.emit(this.product);
+    this.isAlreadyInCart = true;
+  }
 }

@@ -11,8 +11,8 @@
       <a
         class="text-muted"
         [routerLink]="['/products']"
-        [queryParams]="{ category: product.category.name }"
-        >{{ product.category.name }}</a
+        [queryParams]="{ category: product.category?.name }"
+        >{{ product.category?.name }}</a
       >
     </h6>
     <p class="card-text">{{ product.description | truncateText : 100 }}</p>
@@ -22,7 +22,7 @@
       }}</span>
     </p>
     <div class="d-flex card-btns">
-      <button class="btn btn-primary">
+      <button class="btn btn-primary" (click)="onAddToCart()">
         {{ "Add to cart" | uppercase }}
       </button>
       <a class="btn btn-danger" [routerLink]="['/product', product.id]">{{
