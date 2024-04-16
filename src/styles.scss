@@ -16,10 +16,13 @@ body {
   margin-bottom: 0;
 }
 
-.content-outer-container {
-  min-height: 100%;
+main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.content-inner-container {
-  padding-bottom: 36px;
+.content {
+  flex: 1 1;
 }
