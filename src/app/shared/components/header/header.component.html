@@ -1,0 +1,75 @@
+<header
+  class="header position-fixed w-100 top-0 border-bottom border-secondary"
+>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" [routerLink]="['/']">NgRxShop by Drake21</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              aria-current="page"
+              [routerLink]="['/home']"
+              [routerLinkActive]="['active-link']"
+              [routerLinkActiveOptions]="{ exact: true }"
+              >Home</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              aria-current="page"
+              [routerLink]="['/products']"
+              [routerLinkActive]="['active-link']"
+              [routerLinkActiveOptions]="{ exact: true }"
+              >Products</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              aria-current="page"
+              [routerLink]="['/categories']"
+              [routerLinkActive]="['active-link']"
+              [routerLinkActiveOptions]="{ exact: true }"
+              >Categories</a
+            >
+          </li>
+        </ul>
+        <form class="d-flex">
+          <input
+            class="form-control me-2"
+            type="search"
+            placeholder="Search"
+            aria-label="Search"
+          />
+          <button class="btn btn-outline-secondary" type="submit">
+            Search
+          </button>
+        </form>
+        <div class="d-flex ms-4 header-btns">
+          <button class="btn btn-link text-dark position-relative">
+            <div class="cart-count">5</div>
+            <fa-icon [icon]="cart"></fa-icon></button
+          ><button class="btn btn-link text-dark">
+            <fa-icon [icon]="profile"></fa-icon></button
+          ><button class="btn btn-link text-dark">
+            <fa-icon [icon]="signOut"></fa-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>

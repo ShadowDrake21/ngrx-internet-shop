@@ -1,0 +1,30 @@
+.header {
+  z-index: 100;
+
+  &-btns {
+    gap: 10px;
+
+    button {
+      &:focus {
+        box-shadow: 0 0 0 0.25rem rgba(107, 117, 131, 0.25);
+      }
+    }
+  }
+}
+
+.nav-link.active-link {
+  color: #ffffff !important;
+  background-color: #c4c4c4;
+}
+
+.cart-count {
+  background-color: rgb(255, 0, 0);
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  right: 0;
+  top: 0;
+  border-radius: 100%;
+  font-size: 10px;
+  color: #fff;
+}
