@@ -60,7 +60,10 @@
           </button>
         </form>
         <div class="d-flex ms-4 header-btns">
-          <button class="btn btn-link text-dark position-relative">
+          <button
+            class="btn btn-link text-dark position-relative"
+            (click)="openModalWithComponent()"
+          >
             <div class="cart-count">5</div>
             <fa-icon [icon]="cart"></fa-icon></button
           ><button class="btn btn-link text-dark">
