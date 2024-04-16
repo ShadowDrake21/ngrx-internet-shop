@@ -1,7 +1,9 @@
-<header class="header position-fixed w-100 top-0">
+<header
+  class="header position-fixed w-100 top-0 border-bottom border-secondary"
+>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
-      <a class="navbar-brand" href="#">NgRx-Drake21-Shop</a>
+      <a class="navbar-brand" [routerLink]="['/']">NgRxShop by Drake21</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -16,36 +18,33 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item dropdown">
             <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdown"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+              class="nav-link"
+              aria-current="page"
+              [routerLink]="['/home']"
+              [routerLinkActive]="['active-link']"
+              [routerLinkActiveOptions]="{ exact: true }"
+              >Home</a
             >
-              Dropdown
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><hr class="dropdown-divider" /></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
           </li>
           <li class="nav-item">
             <a
-              class="nav-link disabled"
-              href="#"
-              tabindex="-1"
-              aria-disabled="true"
-              >Disabled</a
+              class="nav-link"
+              aria-current="page"
+              [routerLink]="['/products']"
+              [routerLinkActive]="['active-link']"
+              [routerLinkActiveOptions]="{ exact: true }"
+              >Products</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              aria-current="page"
+              [routerLink]="['/categories']"
+              [routerLinkActive]="['active-link']"
+              [routerLinkActiveOptions]="{ exact: true }"
+              >Categories</a
             >
           </li>
         </ul>
@@ -56,14 +55,20 @@
             placeholder="Search"
             aria-label="Search"
           />
-          <button class="btn btn-outline-success" type="submit">Search</button>
+          <button class="btn btn-outline-secondary" type="submit">
+            Search
+          </button>
         </form>
-        &nbsp;
-        <div>cart</div>
-        &nbsp;
-        <div>sign-in/sign-out</div>
-        &nbsp;
-        <div>account</div>
+        <div class="d-flex ms-4 header-btns">
+          <button class="btn btn-link text-dark position-relative">
+            <div class="cart-count">5</div>
+            <fa-icon [icon]="cart"></fa-icon></button
+          ><button class="btn btn-link text-dark">
+            <fa-icon [icon]="profile"></fa-icon></button
+          ><button class="btn btn-link text-dark">
+            <fa-icon [icon]="signOut"></fa-icon>
+          </button>
+        </div>
       </div>
     </div>
   </nav>

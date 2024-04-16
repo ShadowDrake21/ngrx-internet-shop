@@ -1,0 +1,11 @@
+.footer {
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+
+  &-link {
+    &:hover {
+      text-decoration: underline !important;
+    }
+  }
+}
