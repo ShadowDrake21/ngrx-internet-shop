@@ -9,4 +9,5 @@ export interface IProduct {
   creationAt: string;
   updatedAt: string;
   category: ICategory;
+  quantity: number;
 }

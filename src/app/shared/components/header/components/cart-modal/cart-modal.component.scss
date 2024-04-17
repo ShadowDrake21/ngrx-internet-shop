@@ -1,0 +1,22 @@
+.modal {
+  &-product {
+    gap: 40px;
+  }
+
+  &-product-img {
+    width: 200px;
+  }
+
+  &-quantity__btns {
+    gap: 25px;
+  }
+
+  &-product__prices {
+    gap: 25px;
+  }
+
+  &-product__remove {
+    top: 0;
+    right: 0;
+  }
+}

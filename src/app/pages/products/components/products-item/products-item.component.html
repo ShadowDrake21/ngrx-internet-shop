@@ -22,7 +22,11 @@
       }}</span>
     </p>
     <div class="d-flex card-btns">
-      <button class="btn btn-primary">
+      <button
+        class="btn btn-primary"
+        (click)="onAddToCart()"
+        [disabled]="isAlreadyInCart"
+      >
         {{ "Add to cart" | uppercase }}
       </button>
       <a class="btn btn-danger" [routerLink]="['/product', product.id]">{{
