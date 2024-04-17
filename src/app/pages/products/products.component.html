@@ -3,7 +3,13 @@
     <li class="row row-cols-1 row-cols-md-4 g-4">
       @for (product of products; track $index) {
       <div class="col">
-        <app-single-product [item]="product"></app-single-product>
+        <app-single-product
+          [item]="product"
+          [isInCart]="
+            (cartProductsIdxs$ | async)?.includes(product.id) ?? false
+          "
+          (onAddToCart)="handleAddToCart($event)"
+        ></app-single-product>
       </div>
       }
     </li>

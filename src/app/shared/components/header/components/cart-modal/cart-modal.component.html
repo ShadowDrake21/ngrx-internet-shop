@@ -1,0 +1,95 @@
+<div class="w-100">
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">{{ title }}</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="bsModalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body" *ngIf="products$ | async as products">
+    <ng-container *ngIf="products.length; else emptyCart">
+      <div
+        class="d-flex modal-product mb-2 position-relative"
+        *ngFor="let product of products"
+      >
+        <div>
+          <img
+            [src]="product.images[0] | clearURL | safeHTML"
+            class="modal-product-img"
+          />
+        </div>
+        <div>
+          <h4>{{ product.title | truncateText : 40 }}</h4>
+          <div class="fs-5 mb-1">
+            Category:
+            <span class="fw-bolder">{{ product.category.name }}</span>
+          </div>
+          <div class="d-flex align-items-center modal-quantity__btns mt-2 mb-3">
+            <button
+              type="button"
+              class="btn btn-danger"
+              (click)="onDecreaseQuantity(product.id)"
+            >
+              -
+            </button>
+            <div class="fs-5">
+              Quantity:
+              <span class="fw-bolder">{{ product.quantity }}</span>
+            </div>
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="onIncreaseQuantity(product.id)"
+            >
+              +
+            </button>
+          </div>
+          <div class="d-flex modal-product__prices fs-5">
+            <div>
+              Price for 1 item:
+              <span class="fw-bolder">{{
+                product.price | currency : "PLN"
+              }}</span>
+            </div>
+            <div>
+              Total price:
+              <span class="fw-bolder">{{
+                product.price * product.quantity | currency : "PLN"
+              }}</span>
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="modal-product__remove btn-close close position-absolute"
+          aria-label="Close"
+          (click)="onRemoveProduct(product.id)"
+        >
+          <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+      </div>
+    </ng-container>
+  </div>
+  <ng-template #emptyCart>
+    <div class="modal-body">
+      <h5>Your cart is a bit empty right here...</h5>
+    </div>
+  </ng-template>
+  <div class="modal-footer d-flex flex-column align-items-end">
+    <div class="d-flex justify-content-end" *ngIf="(products$ | async)?.length">
+      <h4 class="me-4">
+        Total price: {{ totalPrice$ | async | currency : "PLN" }}
+      </h4>
+      <button type="button" class="btn btn-success" (click)="onGoToCheckout()">
+        Go to checkout
+      </button>
+    </div>
+    <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">
+      {{ closeBtnName }}
+    </button>
+  </div>
+</div>
