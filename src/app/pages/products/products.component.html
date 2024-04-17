@@ -1,24 +1,30 @@
 <div class="container">
-  <ul *ngIf="visibleProducts$ | async as products">
-    <li class="row row-cols-1 row-cols-md-4 g-4">
-      @for (product of products; track $index) {
-      <div class="col">
-        <app-single-product
-          [item]="product"
-          [isInCart]="
-            (cartProductsIdxs$ | async)?.includes(product.id) ?? false
-          "
-          (onAddToCart)="handleAddToCart($event)"
-        ></app-single-product>
-      </div>
-      }
-    </li>
-  </ul>
+  <div class="d-flex">
+    <app-filter-sidebar
+      class="flex-shrink-1"
+      (filterData)="handleFilterData($event)"
+    ></app-filter-sidebar>
+    <ul *ngIf="visibleProducts$ | async as products">
+      <li class="row row-cols-1 row-cols-md-3 g-4">
+        @for (product of products; track $index) {
+        <div class="col">
+          <app-single-product
+            [item]="product"
+            [isInCart]="
+              (cartProductsIdxs$ | async)?.includes(product.id) ?? false
+            "
+            (onAddToCart)="handleAddToCart($event)"
+          ></app-single-product>
+        </div>
+        }
+      </li>
+    </ul>
+  </div>
   <div class="d-flex justify-content-center pt-2">
     <pagination
       [totalItems]="(products$ | async)!.length"
       (pageChanged)="pageChanged($event)"
-      [itemsPerPage]="8"
+      [itemsPerPage]="6"
     ></pagination>
   </div>
   @if (error$ | async) {

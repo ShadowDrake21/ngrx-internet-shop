@@ -1,1 +1,82 @@
-<p>filter-sidebar works!</p>
+<div class="search-section flex-shrink-1">
+  <div class="container-fluid container-xl">
+    <div class="row main-content ml-md-0">
+      <div class="sidebar col-md-3 px-0">
+        <div class="sidebar__inner">
+          <form
+            class="filter-body"
+            [formGroup]="filterForm"
+            (ngSubmit)="onFilter()"
+          >
+            <div>
+              <h2 class="border-bottom filter-title">Categories</h2>
+              <div class="mb-30 filter-options">
+                <div
+                  class="custom-control custom-checkbox mb-3"
+                  *ngFor="let category of filterCategories"
+                >
+                  <!-- <input
+                    type="radio"
+                    class="custom-control-input"
+                    [id]="category.id"
+                    name="category"
+                    formControlName="category"
+                  /> -->
+                  <input
+                    type="radio"
+                    class="custom-control-input"
+                    formControlName="category"
+                    [id]="'radio' + category.id"
+                    name="category"
+                    [value]="category.id"
+                  />
+                  <label
+                    class="custom-control-label"
+                    [for]="'radio' + category.id"
+                    >{{ category.name }}</label
+                  >
+                </div>
+              </div>
+              {{
+                getCategoryById(filterForm.controls.category.value ?? 0) | json
+              }}
+
+              <h2 class="font-xbold body-font border-bottom filter-title">
+                Price Range
+              </h2>
+              <div
+                class="mb-3 theme-clr xs2-font d-flex justify-content-between"
+              >
+                <span id="slider-range-value1">0 PLN</span>
+                <span id="slider-range-value2">1,000 PLN</span>
+              </div>
+              <div class="mb-30 filter-options">
+                <div>
+                  <div id="slider-range">
+                    <form>
+                      <div class="form-group">
+                        <input
+                          type="range"
+                          class="form-control-range"
+                          max="1000"
+                          min="0"
+                          id=""
+                          formControlName="maxPriceLimit"
+                        />
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="d-grid">
+                <button class="btn btn-outline-primary" type="submit">
+                  Filter
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
