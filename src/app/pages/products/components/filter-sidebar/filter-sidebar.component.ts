@@ -20,6 +20,8 @@ export class FilterSidebarComponent {
   @Output() filterData: EventEmitter<IFilterFormObj> =
     new EventEmitter<IFilterFormObj>();
 
+  rangeValue: number = 0;
+
   filterForm = new FormGroup({
     category: new FormControl(),
     maxPriceLimit: new FormControl(0),

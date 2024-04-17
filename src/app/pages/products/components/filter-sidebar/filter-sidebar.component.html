@@ -15,13 +15,6 @@
                   class="custom-control custom-checkbox mb-3"
                   *ngFor="let category of filterCategories"
                 >
-                  <!-- <input
-                    type="radio"
-                    class="custom-control-input"
-                    [id]="category.id"
-                    name="category"
-                    formControlName="category"
-                  /> -->
                   <input
                     type="radio"
                     class="custom-control-input"
@@ -37,9 +30,6 @@
                   >
                 </div>
               </div>
-              {{
-                getCategoryById(filterForm.controls.category.value ?? 0) | json
-              }}
 
               <h2 class="font-xbold body-font border-bottom filter-title">
                 Price Range
@@ -48,6 +38,9 @@
                 class="mb-3 theme-clr xs2-font d-flex justify-content-between"
               >
                 <span id="slider-range-value1">0 PLN</span>
+                <span id="slider-range-current"
+                  >{{ filterForm.value.maxPriceLimit }} PLN</span
+                >
                 <span id="slider-range-value2">1,000 PLN</span>
               </div>
               <div class="mb-30 filter-options">
@@ -60,7 +53,6 @@
                           class="form-control-range"
                           max="1000"
                           min="0"
-                          id=""
                           formControlName="maxPriceLimit"
                         />
                       </div>
@@ -69,7 +61,14 @@
                 </div>
               </div>
               <div class="d-grid">
-                <button class="btn btn-outline-primary" type="submit">
+                <button
+                  class="btn btn-outline-primary"
+                  type="submit"
+                  [disabled]="
+                    !filterForm.value.category &&
+                    !filterForm.value.maxPriceLimit
+                  "
+                >
                   Filter
                 </button>
               </div>

@@ -1,9 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable, of, switchMap, tap } from 'rxjs';
 import { IProduct } from '../../shared/models/product.model';
 import { BASE_URL_API } from '../constants/api.constant';
 import { ICategory } from '../../shared/models/category.model';
+import { TFilterCategory } from '../../pages/products/components/filter-sidebar/content/filter-categories.content';
+import { IFilterFormObj } from '../../shared/models/forms.model';
 
 @Injectable({
   providedIn: 'root',
@@ -11,17 +13,50 @@ import { ICategory } from '../../shared/models/category.model';
 export class ProductService {
   private http = inject(HttpClient);
 
-  getProducts(): Observable<IProduct[]> {
+  getAllProducts(): Observable<IProduct[]> {
     return this.http
       .get<IProduct[]>(`${BASE_URL_API}/products`)
-      .pipe(
-        map((products) =>
-          products.map((product) => ({ ...product, quantity: 1 }))
-        )
-      );
+      .pipe(map(this.mapQuantity));
+  }
+
+  getFilteredProducts(filteredData: IFilterFormObj): Observable<IProduct[]> {
+    let requestParams = new HttpParams();
+
+    if (filteredData.categoryId && filteredData.maxPriceLimit) {
+      requestParams
+        .set('categoryId', filteredData.categoryId)
+        .set('price_min', 0)
+        .set('price_max', filteredData.maxPriceLimit);
+    }
+    if (filteredData.categoryId && !filteredData.maxPriceLimit) {
+      requestParams.set('categoryId', filteredData.categoryId);
+    }
+    if (!filteredData.categoryId && filteredData.maxPriceLimit) {
+      requestParams
+        .set('price_min', 0)
+        .set('price_max', filteredData.maxPriceLimit as number);
+    }
+
+    return this.http
+      .get<IProduct[]>(`${BASE_URL_API}/products/`, {
+        params: requestParams,
+      })
+      .pipe(map(this.mapQuantity));
+  }
+
+  getProductsByTitle(title: string): Observable<IProduct[]> {
+    return this.http
+      .get<IProduct[]>(`${BASE_URL_API}/products/`, {
+        params: new HttpParams().set('title', title),
+      })
+      .pipe(map(this.mapQuantity));
   }
 
   getCategories(): Observable<ICategory[]> {
     return this.http.get<ICategory[]>(`${BASE_URL_API}/categories`);
+  }
+
+  private mapQuantity(products: IProduct[]): IProduct[] {
+    return products.map((product) => ({ ...product, quantity: 1 }));
   }
 }
