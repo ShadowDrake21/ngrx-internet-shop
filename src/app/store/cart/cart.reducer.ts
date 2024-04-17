@@ -15,7 +15,10 @@ export const initialCartState: CartState = {
 export const cartReducer = createReducer(
   initialCartState,
   on(CartActions.addToCart, (state, { product }) => {
-    const updatedProducts = [...state.products, product];
+    const updatedProducts =
+      state.products.length < 50
+        ? [...state.products, product]
+        : [...state.products];
     return {
       ...state,
       products: updatedProducts,
@@ -23,13 +26,16 @@ export const cartReducer = createReducer(
     };
   }),
   on(CartActions.increaseCountProduct, (state, { productId }) => {
-    const updatedProducts = [
-      ...state.products.map((product) =>
-        product.id === productId
-          ? { ...product, quantity: product.quantity++ }
-          : product
-      ),
-    ];
+    const updatedProducts = state.products.map((product) =>
+      product.id === productId
+        ? {
+            ...product,
+            quantity:
+              product.quantity < 99 ? product.quantity + 1 : product.quantity,
+          }
+        : product
+    );
+
     return {
       ...state,
       products: updatedProducts,
@@ -37,13 +43,15 @@ export const cartReducer = createReducer(
     };
   }),
   on(CartActions.decreaseCountProduct, (state, { productId }) => {
-    const updatedProducts = [
-      ...state.products.map((product) =>
-        product.id === productId
-          ? { ...product, quantity: product.quantity-- }
-          : product
-      ),
-    ];
+    const updatedProducts = state.products.map((product) =>
+      product.id === productId
+        ? {
+            ...product,
+            quantity:
+              product.quantity > 1 ? product.quantity - 1 : product.quantity,
+          }
+        : product
+    );
     return {
       ...state,
       products: updatedProducts,
@@ -64,7 +72,7 @@ export const cartReducer = createReducer(
 
 export function calcTotalCartPrice(products: IProduct[]): number {
   const totalCartPrice = products.reduce(
-    (accumulator, product) => accumulator + product.price,
+    (accumulator, product) => accumulator + product.price * product.quantity,
     0
   );
 

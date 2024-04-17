@@ -8,6 +8,6 @@ export interface IProduct {
   images: string[];
   creationAt: string;
   updatedAt: string;
-  category?: ICategory;
+  category: ICategory;
   quantity: number;
 }

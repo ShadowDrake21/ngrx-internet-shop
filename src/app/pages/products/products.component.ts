@@ -17,6 +17,8 @@ import * as ProductActions from '../../store/product/product.actions';
 import * as CartActions from '../../store/cart/cart.actions';
 
 import * as ProductSelectors from '../../store/product/product.selectors';
+import * as CartSelectors from '../../store/cart/cart.selectors';
+import { AppState } from '../../store/app.state';
 
 @Component({
   selector: 'app-products',
@@ -26,16 +28,22 @@ import * as ProductSelectors from '../../store/product/product.selectors';
   styleUrl: './products.component.scss',
 })
 export class ProductsComponent implements OnInit {
-  private store = inject(Store<ProductState>);
+  private store = inject(Store<AppState>);
 
   products$!: Observable<IProduct[]>;
   visibleProducts$!: Observable<IProduct[]>;
   error$!: Observable<string | null>;
 
+  cartProducts$!: Observable<IProduct[]>;
+  cartProductsIdxs$!: Observable<number[]>;
+
   ngOnInit(): void {
     this.store.dispatch(ProductActions.loadProduct());
     this.products$ = this.store.select(ProductSelectors.selectProducts);
     this.error$ = this.store.select(ProductSelectors.selectErrorMessage);
+
+    this.cartProducts$ = this.store.select(CartSelectors.selectCartProducts);
+    this.cartProductsIdxs$ = this.getCartIndicesArray();
 
     this.visibleProducts$ = this.products$.pipe(
       map((products) => products.slice(0, 8))
@@ -52,5 +60,11 @@ export class ProductsComponent implements OnInit {
 
   handleAddToCart(product: IProduct) {
     this.store.dispatch(CartActions.addToCart({ product }));
+  }
+
+  getCartIndicesArray(): Observable<number[]> {
+    return this.cartProducts$.pipe(
+      map((products) => products.map((product) => product.id))
+    );
   }
 }
