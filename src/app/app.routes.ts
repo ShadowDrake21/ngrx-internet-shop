@@ -28,4 +28,11 @@ export const routes: Routes = [
         (c) => c.CategoriesComponent
       ),
   },
+  {
+    path: 'checkout',
+    loadComponent: () =>
+      import('./pages/checkout/checkout.component').then(
+        (c) => c.CheckoutComponent
+      ),
+  },
 ];

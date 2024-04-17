@@ -5,6 +5,9 @@
       <div class="col">
         <app-single-product
           [item]="product"
+          [isInCart]="
+            (cartProductsIdxs$ | async)?.includes(product.id) ?? false
+          "
           (onAddToCart)="handleAddToCart($event)"
         ></app-single-product>
       </div>

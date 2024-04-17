@@ -51,10 +51,12 @@ export class HeaderComponent implements OnInit {
           'Do something else',
           '...',
         ],
-        title: 'Modal with component',
+        title: 'My Cart',
+        class: 'modal-dialog-centered',
       },
     };
     this.bsModalRef = this.modalService.show(CartModalComponent, initialState);
+    this.bsModalRef.setClass('modal-dialog-centered');
     this.bsModalRef.content.closeBtnName = 'Close';
   }
 }
