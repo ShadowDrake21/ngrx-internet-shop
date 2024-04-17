@@ -19,11 +19,19 @@ import * as CartActions from '../../store/cart/cart.actions';
 import * as ProductSelectors from '../../store/product/product.selectors';
 import * as CartSelectors from '../../store/cart/cart.selectors';
 import { AppState } from '../../store/app.state';
+import { FilterSidebarComponent } from './components/filter-sidebar/filter-sidebar.component';
+import { IFilterFormObj } from '../../shared/models/forms.model';
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [CommonModule, ProductsItemComponent, FormsModule, PaginationModule],
+  imports: [
+    CommonModule,
+    ProductsItemComponent,
+    FormsModule,
+    PaginationModule,
+    FilterSidebarComponent,
+  ],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss',
 })
@@ -46,7 +54,7 @@ export class ProductsComponent implements OnInit {
     this.cartProductsIdxs$ = this.getCartIndicesArray();
 
     this.visibleProducts$ = this.products$.pipe(
-      map((products) => products.slice(0, 8))
+      map((products) => products.slice(0, 6))
     );
   }
 
@@ -66,5 +74,9 @@ export class ProductsComponent implements OnInit {
     return this.cartProducts$.pipe(
       map((products) => products.map((product) => product.id))
     );
+  }
+
+  handleFilterData(filterData: IFilterFormObj) {
+    console.log(filterData);
   }
 }
