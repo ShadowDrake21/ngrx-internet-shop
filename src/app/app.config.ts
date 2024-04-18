@@ -10,9 +10,11 @@ import { provideHttpClient } from '@angular/common/http';
 import { productReducer } from './store/product/products.reducer';
 import { ProductEffects } from './store/product/product.effects';
 import { cartReducer } from './store/cart/cart.reducer';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideAnimations(),
     provideRouter(routes),
     provideHttpClient(),
     provideStore({ product: productReducer, cart: cartReducer }),
