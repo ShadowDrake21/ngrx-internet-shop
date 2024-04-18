@@ -44,4 +44,22 @@ export class ProductEffects {
       )
     )
   );
+
+  searchProducts$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProductActions.searchProducts),
+      exhaustMap((searchTerm) =>
+        this.productService.getProductsByTitle(searchTerm.searchTerm).pipe(
+          map((products) => ProductActions.searchProductsSuccess({ products })),
+          catchError((error) =>
+            of(
+              ProductActions.searchProductsFailure({
+                errorMessage: 'Error during products search!',
+              })
+            )
+          )
+        )
+      )
+    )
+  );
 }

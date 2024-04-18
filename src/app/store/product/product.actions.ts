@@ -23,3 +23,15 @@ export const filterProductsFailure = createAction(
   '[Products Component] FilterProductsFailure',
   props<{ errorMessage: string }>()
 );
+export const searchProducts = createAction(
+  '[Products Component] SearchProducts',
+  props<{ searchTerm: string }>()
+);
+export const searchProductsSuccess = createAction(
+  '[Products Component] SearchProductsSuccess',
+  props<{ products: IProduct[] }>()
+);
+export const searchProductsFailure = createAction(
+  '[Products Component] SearchProductsFailure',
+  props<{ errorMessage: string }>()
+);
