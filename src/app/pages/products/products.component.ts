@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, importProvidersFrom, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  importProvidersFrom,
+  inject,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { map, Observable, switchMap } from 'rxjs';
 
@@ -19,11 +25,19 @@ import * as CartActions from '../../store/cart/cart.actions';
 import * as ProductSelectors from '../../store/product/product.selectors';
 import * as CartSelectors from '../../store/cart/cart.selectors';
 import { AppState } from '../../store/app.state';
+import { FilterSidebarComponent } from './components/filter-sidebar/filter-sidebar.component';
+import { IFilterFormObj } from '../../shared/models/forms.model';
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [CommonModule, ProductsItemComponent, FormsModule, PaginationModule],
+  imports: [
+    CommonModule,
+    ProductsItemComponent,
+    FormsModule,
+    PaginationModule,
+    FilterSidebarComponent,
+  ],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss',
 })
@@ -37,6 +51,9 @@ export class ProductsComponent implements OnInit {
   cartProducts$!: Observable<IProduct[]>;
   cartProductsIdxs$!: Observable<number[]>;
 
+  filteredProducts$!: Observable<IProduct[]>;
+  filteredProductsError$!: Observable<string>;
+
   ngOnInit(): void {
     this.store.dispatch(ProductActions.loadProduct());
     this.products$ = this.store.select(ProductSelectors.selectProducts);
@@ -46,7 +63,7 @@ export class ProductsComponent implements OnInit {
     this.cartProductsIdxs$ = this.getCartIndicesArray();
 
     this.visibleProducts$ = this.products$.pipe(
-      map((products) => products.slice(0, 8))
+      map((products) => products.slice(0, 6))
     );
   }
 
@@ -66,5 +83,13 @@ export class ProductsComponent implements OnInit {
     return this.cartProducts$.pipe(
       map((products) => products.map((product) => product.id))
     );
+  }
+
+  handleFilterData(filterData: IFilterFormObj) {
+    this.store.dispatch(ProductActions.filterProducts({ filterData }));
+  }
+
+  onRestoreProducts() {
+    this.store.dispatch(ProductActions.loadProduct());
   }
 }
