@@ -27,6 +27,9 @@ import * as CartSelectors from '../../store/cart/cart.selectors';
 import { AppState } from '../../store/app.state';
 import { FilterSidebarComponent } from './components/filter-sidebar/filter-sidebar.component';
 import { IFilterFormObj } from '../../shared/models/forms.model';
+import { calcPageNum } from '../../shared/utils/pagination.utils';
+import { IBreadcrumbs } from '../../shared/models/breadcrumbs.model';
+import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-products',
@@ -37,6 +40,7 @@ import { IFilterFormObj } from '../../shared/models/forms.model';
     FormsModule,
     PaginationModule,
     FilterSidebarComponent,
+    BreadcrumbsComponent,
   ],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss',
@@ -54,6 +58,14 @@ export class ProductsComponent implements OnInit {
   filteredProducts$!: Observable<IProduct[]>;
   filteredProductsError$!: Observable<string>;
 
+  itemsPerPage: number = 6;
+  calcPageNum = calcPageNum;
+
+  breadcrumbs: IBreadcrumbs = {
+    links: ['home'],
+    current: 'Products',
+  };
+
   ngOnInit(): void {
     this.store.dispatch(ProductActions.loadProduct());
     this.products$ = this.store.select(ProductSelectors.selectProducts);
@@ -63,7 +75,7 @@ export class ProductsComponent implements OnInit {
     this.cartProductsIdxs$ = this.getCartIndicesArray();
 
     this.visibleProducts$ = this.products$.pipe(
-      map((products) => products.slice(0, 6))
+      map((products) => products.slice(0, this.itemsPerPage))
     );
   }
 
