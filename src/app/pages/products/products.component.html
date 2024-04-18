@@ -3,24 +3,35 @@
     <app-filter-sidebar
       class="flex-shrink-1"
       (filterData)="handleFilterData($event)"
+      (restoreSignal)="onRestoreProducts()"
     ></app-filter-sidebar>
-    <ul *ngIf="visibleProducts$ | async as products">
-      <li class="row row-cols-1 row-cols-md-3 g-4">
-        @for (product of products; track $index) {
-        <div class="col">
-          <app-single-product
-            [item]="product"
-            [isInCart]="
-              (cartProductsIdxs$ | async)?.includes(product.id) ?? false
-            "
-            (onAddToCart)="handleAddToCart($event)"
-          ></app-single-product>
-        </div>
-        }
+    <ul
+      class="row row-cols-1 row-cols-md-3 g-4 product-list flex-grow-1 w-100"
+      *ngIf="visibleProducts$ | async as products"
+    >
+      @if(products.length > 0) { @for (product of products; track $index) {
+      <li class="col text-decoration-none">
+        <app-single-product
+          [item]="product"
+          [isInCart]="
+            (cartProductsIdxs$ | async)?.includes(product.id) ?? false
+          "
+          (onAddToCart)="handleAddToCart($event)"
+        ></app-single-product>
       </li>
+      }} @else{
+      <div class="w-100 d-flex align-items-center justify-content-center">
+        <p class="fw-bold fs-3">
+          There is no product that meets these criteria...
+        </p>
+      </div>
+      }
     </ul>
   </div>
-  <div class="d-flex justify-content-center pt-2">
+  <div
+    class="d-flex justify-content-center pt-2"
+    *ngIf="(visibleProducts$ | async)?.length"
+  >
     <pagination
       [totalItems]="(products$ | async)!.length"
       (pageChanged)="pageChanged($event)"

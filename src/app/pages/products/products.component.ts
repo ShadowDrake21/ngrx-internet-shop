@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, importProvidersFrom, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  importProvidersFrom,
+  inject,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { map, Observable, switchMap } from 'rxjs';
 
@@ -45,6 +51,9 @@ export class ProductsComponent implements OnInit {
   cartProducts$!: Observable<IProduct[]>;
   cartProductsIdxs$!: Observable<number[]>;
 
+  filteredProducts$!: Observable<IProduct[]>;
+  filteredProductsError$!: Observable<string>;
+
   ngOnInit(): void {
     this.store.dispatch(ProductActions.loadProduct());
     this.products$ = this.store.select(ProductSelectors.selectProducts);
@@ -77,6 +86,10 @@ export class ProductsComponent implements OnInit {
   }
 
   handleFilterData(filterData: IFilterFormObj) {
-    console.log(filterData);
+    this.store.dispatch(ProductActions.filterProducts({ filterData }));
+  }
+
+  onRestoreProducts() {
+    this.store.dispatch(ProductActions.loadProduct());
   }
 }

@@ -9,7 +9,18 @@
             (ngSubmit)="onFilter()"
           >
             <div>
-              <h2 class="border-bottom filter-title">Categories</h2>
+              <div
+                class="border-bottom d-flex align-items-center filter-header justify-content-between"
+              >
+                <h2 class="filter-title">Categories</h2>
+                <button
+                  type="button"
+                  class="btn btn-info text-light"
+                  (click)="onResetForm()"
+                >
+                  Reset
+                </button>
+              </div>
               <div class="mb-30 filter-options">
                 <div
                   class="custom-control custom-checkbox mb-3"
@@ -31,7 +42,7 @@
                 </div>
               </div>
 
-              <h2 class="font-xbold body-font border-bottom filter-title">
+              <h2 class="text-start border-bottom filter-title filter-header">
                 Price Range
               </h2>
               <div
@@ -78,4 +89,15 @@
       </div>
     </div>
   </div>
+  <button
+    type="button"
+    class="btn btn-dark w-100 mt-3"
+    [ngClass]="{
+      'd-none': restoreBtn !== true,
+      'd-block': restoreBtn !== false
+    }"
+    (click)="onRestoreProducts()"
+  >
+    Restore all products
+  </button>
 </div>
