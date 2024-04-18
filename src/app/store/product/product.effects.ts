@@ -13,12 +13,30 @@ export class ProductEffects {
     this.actions$.pipe(
       ofType(ProductActions.loadProduct),
       exhaustMap(() =>
-        this.productService.getProducts().pipe(
+        this.productService.getAllProducts().pipe(
           map((products) => ProductActions.loadProductSuccess({ products })),
           catchError((error) =>
             of(
               ProductActions.loadProductFailure({
                 errorMessage: 'Error during the products loading!',
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
+  filterProducts$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProductActions.filterProducts),
+      exhaustMap((filterData) =>
+        this.productService.getFilteredProducts(filterData.filterData).pipe(
+          map((products) => ProductActions.filterProductsSuccess({ products })),
+          catchError((error) =>
+            of(
+              ProductActions.filterProductsFailure({
+                errorMessage: 'Error during the products filtration!',
               })
             )
           )

@@ -23,5 +23,15 @@ export const productReducer = createReducer(
     ...state,
     products: [],
     errorMessage,
+  })),
+  on(ProductActions.filterProductsSuccess, (state, { products }) => ({
+    ...state,
+    products,
+    errorMessage: null,
+  })),
+  on(ProductActions.filterProductsFailure, (state, { errorMessage }) => ({
+    ...state,
+    products: [],
+    errorMessage,
   }))
 );
