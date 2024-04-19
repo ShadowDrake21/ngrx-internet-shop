@@ -3,11 +3,19 @@ import { IProduct } from '../../../../shared/models/product.model';
 import { CommonModule } from '@angular/common';
 import { CarouselConfig, CarouselModule } from 'ngx-bootstrap/carousel';
 import { RouterLink } from '@angular/router';
+import { SafeHTMLPipe } from '../../../../shared/pipes/safe-html.pipe';
+import { ClearURLPipe } from '../../../../shared/pipes/clear-url.pipe';
 
 @Component({
   selector: 'app-single-search-result',
   standalone: true,
-  imports: [CommonModule, CarouselModule, RouterLink],
+  imports: [
+    CommonModule,
+    CarouselModule,
+    RouterLink,
+    SafeHTMLPipe,
+    ClearURLPipe,
+  ],
   templateUrl: './single-search-result.component.html',
   styleUrl: './single-search-result.component.scss',
   providers: [

@@ -58,6 +58,10 @@ export class ProductService {
       .pipe(map(this.mapQuantity));
   }
 
+  getSingleProductById(id: number): Observable<IProduct> {
+    return this.http.get<IProduct>(`${BASE_URL_API}/products/${id}`);
+  }
+
   getCategories(): Observable<ICategory[]> {
     return this.http.get<ICategory[]>(`${BASE_URL_API}/categories`);
   }
