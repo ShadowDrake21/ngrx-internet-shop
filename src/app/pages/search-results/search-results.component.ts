@@ -1,18 +1,25 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { ProductState } from '../../store/product/products.reducer';
 import { Store } from '@ngrx/store';
 import { ActivatedRoute, ParamMap, RouterLink } from '@angular/router';
 import { map, Observable } from 'rxjs';
+import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
+
+// components
+import { SingleSearchResultComponent } from './components/single-search-result/single-search-result.component';
+import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
+
+// created ngrx stuff
+import { ProductState } from '../../store/product/products.reducer';
 import * as ProductActions from '../../store/product/product.actions';
 import * as ProductSelectors from '../../store/product/product.selectors';
 
+// interfaces
 import { IProduct } from '../../shared/models/product.model';
-import { CommonModule } from '@angular/common';
-import { SingleSearchResultComponent } from './components/single-search-result/single-search-result.component';
-import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
-import { calcPageNum } from '../../shared/utils/pagination.utils';
-import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
 import { IBreadcrumbs } from '../../shared/models/breadcrumbs.model';
+
+// utils
+import { calcPageNum } from '../../shared/utils/pagination.utils';
 
 @Component({
   selector: 'app-search-results',

@@ -4,21 +4,28 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faCartShopping,
   faSignInAlt,
-  faSignOut,
   faSignOutAlt,
   faUserAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
-import { CartModalComponent } from './components/cart-modal/cart-modal.component';
 import { Store } from '@ngrx/store';
-import { CartState } from '../../../store/cart/cart.reducer';
 import { map, noop, Observable, Observer, of, switchMap, tap } from 'rxjs';
-import { IProduct } from '../../models/product.model';
-import * as CartSelectors from '../../../store/cart/cart.selectors';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
+
+// components
+import { CartModalComponent } from './components/cart-modal/cart-modal.component';
+
+// services
 import { ProductService } from '../../../core/services/product.service';
-import { FormsModule } from '@angular/forms';
+
+// intefaces
+import { IProduct } from '../../models/product.model';
+
+// created ngrx stuff
+import { CartState } from '../../../store/cart/cart.reducer';
+import * as CartSelectors from '../../../store/cart/cart.selectors';
 
 @Component({
   selector: 'app-header',

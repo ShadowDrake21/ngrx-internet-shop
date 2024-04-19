@@ -1,18 +1,19 @@
+// angular stuff
 import {
   Component,
   EventEmitter,
-  Input,
   OnChanges,
   Output,
   SimpleChanges,
 } from '@angular/core';
-import {
-  filterCategories,
-  TFilterCategory,
-} from './content/filter-categories.content';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+
+// interfaces
 import { IFilterFormObj } from '../../../../shared/models/forms.model';
+
+// static content
+import { filterCategories } from './content/filter-categories.content';
 
 @Component({
   selector: 'app-filter-sidebar',

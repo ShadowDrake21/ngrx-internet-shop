@@ -11,13 +11,18 @@ import { productReducer } from './store/product/products.reducer';
 import { ProductEffects } from './store/product/product.effects';
 import { cartReducer } from './store/cart/cart.reducer';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { favoritesReducer } from './store/favorites/favorites.reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimations(),
     provideRouter(routes),
     provideHttpClient(),
-    provideStore({ product: productReducer, cart: cartReducer }),
+    provideStore({
+      product: productReducer,
+      cart: cartReducer,
+      favorites: favoritesReducer,
+    }),
     provideEffects([ProductEffects]),
     provideRouterStore(),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),

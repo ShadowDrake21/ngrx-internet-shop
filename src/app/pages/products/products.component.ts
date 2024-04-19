@@ -1,35 +1,30 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  importProvidersFrom,
-  inject,
-  Input,
-  OnInit,
-} from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { map, Observable, switchMap } from 'rxjs';
-
-import { ProductState } from '../../store/product/products.reducer';
-import { IProduct } from '../../shared/models/product.model';
-import { ProductsItemComponent } from './components/products-item/products-item.component';
-import {
-  PageChangedEvent,
-  PaginationComponent,
-  PaginationModule,
-} from 'ngx-bootstrap/pagination';
+import { map, Observable } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
 
+// components
+import { ProductsItemComponent } from './components/products-item/products-item.component';
+import { FilterSidebarComponent } from './components/filter-sidebar/filter-sidebar.component';
+import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
+
+// interfaces
+import { IFilterFormObj } from '../../shared/models/forms.model';
+import { IBreadcrumbs } from '../../shared/models/breadcrumbs.model';
+import { IProduct } from '../../shared/models/product.model';
+
+// created ngrx stuff
+import { AppState } from '../../store/app.state';
 import * as ProductActions from '../../store/product/product.actions';
 import * as CartActions from '../../store/cart/cart.actions';
-
 import * as ProductSelectors from '../../store/product/product.selectors';
 import * as CartSelectors from '../../store/cart/cart.selectors';
-import { AppState } from '../../store/app.state';
-import { FilterSidebarComponent } from './components/filter-sidebar/filter-sidebar.component';
-import { IFilterFormObj } from '../../shared/models/forms.model';
+
+// utils
 import { calcPageNum } from '../../shared/utils/pagination.utils';
-import { IBreadcrumbs } from '../../shared/models/breadcrumbs.model';
-import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-products',
