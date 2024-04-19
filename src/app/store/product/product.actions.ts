@@ -35,3 +35,15 @@ export const searchProductsFailure = createAction(
   '[Products Component] SearchProductsFailure',
   props<{ errorMessage: string }>()
 );
+export const getSingleProductById = createAction(
+  '[Products Component] GetSingleProductById',
+  props<{ productId: number }>()
+);
+export const getSingleProductByIdSuccess = createAction(
+  '[Products Component] GetSingleProductByIdSuccess',
+  props<{ product: IProduct }>()
+);
+export const getSingleProductByIdFailure = createAction(
+  '[Products Component] GetSingleProductByIdFailure',
+  props<{ errorMessage: string }>()
+);
