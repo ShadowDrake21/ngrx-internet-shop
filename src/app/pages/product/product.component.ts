@@ -1,12 +1,151 @@
-import { Component } from '@angular/core';
+// angular stuff
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { map, Observable, Subscription } from 'rxjs';
+import {
+  faCartPlus,
+  faHeartCirclePlus,
+} from '@fortawesome/free-solid-svg-icons';
+import { ActivatedRoute, ParamMap, RouterLink } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { CarouselModule } from 'ngx-bootstrap/carousel';
+
+// components
+import { SimilarProductComponent } from './components/similar-product/similar-product.component';
+
+// interfaces
+import { IProduct } from '../../shared/models/product.model';
+
+// services
+import { ProductService } from '../../core/services/product.service';
+
+// pipes
+import { SafeHTMLPipe } from '../../shared/pipes/safe-html.pipe';
+import { ClearURLPipe } from '../../shared/pipes/clear-url.pipe';
+import { TruncateTextPipe } from '../../shared/pipes/truncate-text.pipe';
+
+// created ngrx stuff
+import { AppState } from '../../store/app.state';
+import * as ProductActions from '../../store/product/product.actions';
+import * as CartActions from '../../store/cart/cart.actions';
+import * as ProductSelectors from '../../store/product/product.selectors';
+import * as CartSelectors from '../../store/cart/cart.selectors';
+import * as FavoritesActions from '../../store/favorites/favorites.action';
+import * as FavoritesSelectors from '../../store/favorites/favorites.selectors';
 
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [],
+  imports: [
+    CommonModule,
+    CarouselModule,
+    SafeHTMLPipe,
+    ClearURLPipe,
+    TruncateTextPipe,
+    FontAwesomeModule,
+    RouterLink,
+    SimilarProductComponent,
+  ],
   templateUrl: './product.component.html',
-  styleUrl: './product.component.scss'
+  styleUrl: './product.component.scss',
 })
-export class ProductComponent {
+export class ProductComponent implements OnInit, OnDestroy {
+  cartAdd = faCartPlus;
+  favoriteAdd = faHeartCirclePlus;
 
+  private store = inject(Store<AppState>);
+  private route = inject(ActivatedRoute);
+  private productService = inject(ProductService);
+
+  productId$!: Observable<number>;
+  product$!: Observable<IProduct>;
+  subscriptions: Subscription[] = [];
+
+  isInCart!: boolean;
+  isInFavorites!: boolean;
+
+  similarProducts$!: Observable<IProduct[]>;
+
+  ngOnInit(): void {
+    this.productId$ = this.route.paramMap.pipe(
+      map((params: ParamMap) => +params.get('id')!)
+    ) as Observable<number>;
+
+    const productSubscription: Subscription = this.productId$.subscribe(
+      (productId) => {
+        this.store.dispatch(ProductActions.getSingleProductById({ productId }));
+
+        this.product$ = this.store
+          .select(ProductSelectors.selectProducts)
+          .pipe(map((products) => products[0]));
+
+        this.checkInCart(productId);
+        this.checkInFavorites(productId);
+
+        this.similarProducts$ = this.productService.getAllProducts().pipe(
+          map((products) => {
+            const remainingProducts = products.filter(
+              (product) => product.id !== productId
+            );
+
+            const similarProducts = remainingProducts.slice(0, 7);
+            return similarProducts;
+          })
+        );
+      }
+    );
+
+    this.subscriptions.push(productSubscription);
+  }
+
+  onAddToCart(product: IProduct) {
+    this.store.dispatch(
+      CartActions.addToCart({
+        product,
+      })
+    );
+    this.isInCart = true;
+  }
+
+  onAddToFavourites(productId: number) {
+    this.store.dispatch(
+      FavoritesActions.addToFavorites({ favorite: productId })
+    );
+    this.isInFavorites = true;
+  }
+
+  checkInCart(productId: number) {
+    let cartProductsIds: number[] = [];
+
+    const cartSubscription = this.store
+      .select(CartSelectors.selectCartProducts)
+      .pipe(map((products) => products.map((product) => product.id)))
+      .subscribe((ids) => {
+        cartProductsIds = ids;
+      });
+
+    this.isInCart = cartProductsIds.includes(productId);
+
+    this.subscriptions.push(cartSubscription);
+  }
+
+  checkInFavorites(productId: number) {
+    let favoritesProductsIds: number[] = [];
+
+    const favoritesSubscription = this.store
+      .select(FavoritesSelectors.selectFavorites)
+      .pipe(map((favorites) => favorites.map((favorite) => favorite)))
+      .subscribe((ids) => {
+        favoritesProductsIds = ids;
+      });
+
+    this.isInFavorites = favoritesProductsIds.includes(productId);
+
+    this.subscriptions.push(favoritesSubscription);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
 }

@@ -23,3 +23,27 @@ export const filterProductsFailure = createAction(
   '[Products Component] FilterProductsFailure',
   props<{ errorMessage: string }>()
 );
+export const searchProducts = createAction(
+  '[Products Component] SearchProducts',
+  props<{ searchTerm: string }>()
+);
+export const searchProductsSuccess = createAction(
+  '[Products Component] SearchProductsSuccess',
+  props<{ products: IProduct[] }>()
+);
+export const searchProductsFailure = createAction(
+  '[Products Component] SearchProductsFailure',
+  props<{ errorMessage: string }>()
+);
+export const getSingleProductById = createAction(
+  '[Products Component] GetSingleProductById',
+  props<{ productId: number }>()
+);
+export const getSingleProductByIdSuccess = createAction(
+  '[Products Component] GetSingleProductByIdSuccess',
+  props<{ product: IProduct }>()
+);
+export const getSingleProductByIdFailure = createAction(
+  '[Products Component] GetSingleProductByIdFailure',
+  props<{ errorMessage: string }>()
+);

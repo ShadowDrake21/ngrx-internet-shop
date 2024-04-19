@@ -1,1 +1,94 @@
-<p>product works!</p>
+<div class="container" *ngIf="product$ | async as product">
+  <div class="d-flex product pb-5">
+    <div class="product-image__slider-wrapper">
+      <carousel [noPause]="false">
+        <slide *ngFor="let image of product.images">
+          <img
+            [src]="image | clearURL | safeHTML"
+            alt="product-image"
+            class="card-img-top"
+          />
+        </slide>
+      </carousel>
+    </div>
+    <div>
+      <h1 class="card-title">{{ product.title }}</h1>
+      <h4>
+        Category:
+        <a href="#" class="text-dark">{{ product.category.name }}</a>
+      </h4>
+      <p class="mb-1">{{ product.description | truncateText : 400 }}</p>
+      <div class="fs-4 mb-3">
+        Price:
+        <span class="fw-bold">{{ product.price | currency : "PLN" }}</span>
+      </div>
+      <div class="d-flex product-btns">
+        <button
+          class="btn btn-primary"
+          (click)="onAddToCart(product)"
+          [disabled]="isInCart"
+        >
+          {{ isInCart ? "Added to cart" : "Add to cart" }}
+          <fa-icon [icon]="cartAdd"></fa-icon></button
+        ><button
+          class="btn btn-danger text-light"
+          (click)="onAddToFavourites(product.id)"
+          [disabled]="isInFavorites"
+        >
+          {{ isInFavorites ? "Added to favorites" : "Add to favorites"
+          }}<fa-icon [icon]="favoriteAdd"></fa-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="product.category as category"
+    class="category-group d-flex align-items-center"
+  >
+    <div style="max-width: 590px">
+      <h4 class="text-center">Category</h4>
+      <a
+        class="card mb-3 text-decoration-none text-dark"
+        [routerLink]="['/category']"
+        [queryParams]="{ id: category.id }"
+      >
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img
+              [src]="category.image"
+              alt="category-img"
+              class="img-fluid rounded-start"
+            />
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{ category.name }}</h5>
+              <div>
+                <div>
+                  Created at <span>{{ category.creationAt | date }}</span>
+                </div>
+                <div>
+                  Updated at <span>{{ category.updatedAt | date }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div>
+      <h4 class="text-center">Similar products</h4>
+      <carousel
+        [itemsPerSlide]="2"
+        [singleSlideOffset]="true"
+        [startFromIndex]="0"
+        [interval]="0"
+        *ngIf="similarProducts$ | async as similarProducts"
+      >
+        <slide *ngFor="let item of similarProducts">
+          <app-similar-product [item]="item"></app-similar-product>
+        </slide>
+      </carousel>
+    </div>
+  </div>
+</div>

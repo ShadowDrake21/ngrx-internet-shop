@@ -1,26 +1,43 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faCartShopping,
   faSignInAlt,
-  faSignOut,
   faSignOutAlt,
   faUserAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
-import { CartModalComponent } from './components/cart-modal/cart-modal.component';
 import { Store } from '@ngrx/store';
-import { CartState } from '../../../store/cart/cart.reducer';
-import { Observable } from 'rxjs';
-import { IProduct } from '../../models/product.model';
-import * as CartSelectors from '../../../store/cart/cart.selectors';
+import { map, noop, Observable, Observer, of, switchMap, tap } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
+
+// components
+import { CartModalComponent } from './components/cart-modal/cart-modal.component';
+
+// services
+import { ProductService } from '../../../core/services/product.service';
+
+// intefaces
+import { IProduct } from '../../models/product.model';
+
+// created ngrx stuff
+import { CartState } from '../../../store/cart/cart.reducer';
+import * as CartSelectors from '../../../store/cart/cart.selectors';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, FontAwesomeModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    RouterLinkActive,
+    FontAwesomeModule,
+    FormsModule,
+    TypeaheadModule,
+  ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   providers: [BsModalService],
@@ -28,6 +45,8 @@ import { CommonModule } from '@angular/common';
 export class HeaderComponent implements OnInit {
   private store = inject(Store<CartState>);
   private modalService = inject(BsModalService);
+  private productService = inject(ProductService);
+  private router = inject(Router);
 
   cart = faCartShopping;
   signIn = faSignInAlt;
@@ -38,8 +57,55 @@ export class HeaderComponent implements OnInit {
 
   cartProducts$!: Observable<IProduct[]>;
 
+  searchName?: string;
+  suggestions$?: Observable<string[]>;
+  errorMessage?: string;
+
+  noResult = false;
+
   ngOnInit(): void {
     this.cartProducts$ = this.store.select(CartSelectors.selectCartProducts);
+
+    this.searchTypeahead();
+  }
+
+  searchTypeahead() {
+    this.suggestions$ = new Observable(
+      (observer: Observer<string | undefined>) => {
+        observer.next(this.searchName);
+      }
+    ).pipe(
+      switchMap((query: string) => {
+        if (query) {
+          return this.productService.getProductsByTitle(query).pipe(
+            map(
+              (products: IProduct[]) =>
+                products.map((product) => product.title) || []
+            ),
+            tap(
+              () => noop,
+              (err) => {
+                this.errorMessage =
+                  (err && err.message) || 'Something goes wrong';
+              }
+            )
+          );
+        }
+
+        return of([]);
+      })
+    );
+  }
+
+  typeaheadNoResults(event: boolean): void {
+    this.noResult = event;
+  }
+
+  onSearch() {
+    this.router.navigate(['search-results'], {
+      queryParams: { query: this.searchName },
+    });
+    this.searchName = '';
   }
 
   openModalWithComponent() {

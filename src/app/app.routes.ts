@@ -29,6 +29,20 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'category',
+    loadComponent: () =>
+      import('./pages/category/category.component').then(
+        (c) => c.CategoryComponent
+      ),
+  },
+  {
+    path: 'search-results',
+    loadComponent: () =>
+      import('./pages/search-results/search-results.component').then(
+        (c) => c.SearchResultsComponent
+      ),
+  },
+  {
     path: 'checkout',
     loadComponent: () =>
       import('./pages/checkout/checkout.component').then(

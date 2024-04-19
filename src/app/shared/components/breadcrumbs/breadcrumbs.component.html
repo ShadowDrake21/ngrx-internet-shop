@@ -1,0 +1,12 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item" *ngFor="let link of breadcrumbs.links">
+      <a [routerLink]="['/' + link]" class="text-secondary">{{
+        link | titlecase
+      }}</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+      {{ breadcrumbs.current | titlecase }}
+    </li>
+  </ol>
+</nav>
