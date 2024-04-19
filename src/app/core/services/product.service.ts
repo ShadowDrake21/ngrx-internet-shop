@@ -1,10 +1,10 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map, Observable, of, switchMap, tap } from 'rxjs';
+import { map, Observable } from 'rxjs';
+
 import { IProduct } from '../../shared/models/product.model';
 import { BASE_URL_API } from '../constants/api.constant';
 import { ICategory } from '../../shared/models/category.model';
-import { TFilterCategory } from '../../pages/products/components/filter-sidebar/content/filter-categories.content';
 import { IFilterFormObj } from '../../shared/models/forms.model';
 
 @Injectable({
@@ -59,7 +59,9 @@ export class ProductService {
   }
 
   getSingleProductById(id: number): Observable<IProduct> {
-    return this.http.get<IProduct>(`${BASE_URL_API}/products/${id}`);
+    return this.http
+      .get<IProduct>(`${BASE_URL_API}/products/${id}`)
+      .pipe(map((product) => ({ ...product, quantity: 1 })));
   }
 
   getCategories(): Observable<ICategory[]> {

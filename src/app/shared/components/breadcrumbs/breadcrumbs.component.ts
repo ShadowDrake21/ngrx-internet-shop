@@ -1,6 +1,9 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+
+// interfaces
 import { IBreadcrumbs } from '../../models/breadcrumbs.model';
 
 @Component({
