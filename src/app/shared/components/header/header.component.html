@@ -48,17 +48,29 @@
             >
           </li>
         </ul>
-        <form class="d-flex">
+        <div class="d-flex">
           <input
             class="form-control me-2"
             type="search"
-            placeholder="Search"
             aria-label="Search"
+            typeaheadOptionField="name"
+            [(ngModel)]="searchName"
+            [typeahead]="suggestions$"
+            [typeaheadAsync]="true"
+            [typeaheadSelectFirstItem]="true"
+            (typeaheadNoResults)="typeaheadNoResults($event)"
+            [isAnimated]="true"
+            placeholder="Enter product name"
           />
-          <button class="btn btn-outline-secondary" type="submit">
+          <button
+            class="btn btn-outline-secondary"
+            type="submit"
+            (click)="onSearch()"
+            [disabled]="noResult || !searchName?.length"
+          >
             Search
           </button>
-        </form>
+        </div>
         <div class="d-flex ms-4 header-btns">
           <button
             class="btn btn-link text-dark position-relative"

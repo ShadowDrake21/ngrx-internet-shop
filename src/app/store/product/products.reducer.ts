@@ -33,5 +33,25 @@ export const productReducer = createReducer(
     ...state,
     products: [],
     errorMessage,
+  })),
+  on(ProductActions.searchProductsSuccess, (state, { products }) => ({
+    ...state,
+    products,
+    errorMessage: null,
+  })),
+  on(ProductActions.searchProductsFailure, (state, { errorMessage }) => ({
+    ...state,
+    products: [],
+    errorMessage,
+  })),
+  on(ProductActions.getSingleProductByIdSuccess, (state, { product }) => ({
+    ...state,
+    products: [product],
+    errorMessage: null,
+  })),
+  on(ProductActions.getSingleProductByIdFailure, (state, { errorMessage }) => ({
+    ...state,
+    products: [],
+    errorMessage,
   }))
 );

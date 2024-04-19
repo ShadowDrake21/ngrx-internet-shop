@@ -1,8 +1,12 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
-import { IProduct } from '../../../../shared/models/product.model';
 import { RouterLink } from '@angular/router';
+
+// interfaces
+import { IProduct } from '../../../../shared/models/product.model';
+
+// pipes
 import { SafeHTMLPipe } from '../../../../shared/pipes/safe-html.pipe';
 import { ClearURLPipe } from '../../../../shared/pipes/clear-url.pipe';
 import { TruncateTextPipe } from '../../../../shared/pipes/truncate-text.pipe';

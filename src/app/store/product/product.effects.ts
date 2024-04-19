@@ -44,4 +44,42 @@ export class ProductEffects {
       )
     )
   );
+
+  searchProducts$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProductActions.searchProducts),
+      exhaustMap((searchTerm) =>
+        this.productService.getProductsByTitle(searchTerm.searchTerm).pipe(
+          map((products) => ProductActions.searchProductsSuccess({ products })),
+          catchError((error) =>
+            of(
+              ProductActions.searchProductsFailure({
+                errorMessage: 'Error during products search!',
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
+  getSingleProductById$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProductActions.getSingleProductById),
+      exhaustMap((productId) =>
+        this.productService.getSingleProductById(productId.productId).pipe(
+          map((product) =>
+            ProductActions.getSingleProductByIdSuccess({ product })
+          ),
+          catchError((error) =>
+            of(
+              ProductActions.getSingleProductByIdFailure({
+                errorMessage: 'Error during product fetching!',
+              })
+            )
+          )
+        )
+      )
+    )
+  );
 }
