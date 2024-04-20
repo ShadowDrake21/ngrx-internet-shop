@@ -74,7 +74,9 @@ export class ProductComponent implements OnInit, OnDestroy {
 
     const productSubscription: Subscription = this.productId$.subscribe(
       (productId) => {
-        this.store.dispatch(ProductActions.getSingleProductById({ productId }));
+        this.store.dispatch(
+          ProductActions.loadSingleProductById({ productId })
+        );
 
         this.product$ = this.store
           .select(ProductSelectors.selectProducts)

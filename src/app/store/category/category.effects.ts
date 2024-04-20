@@ -31,15 +31,15 @@ export class CategoryEffects {
 
   getCategoryById$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(CategoryActions.getCategoryById),
+      ofType(CategoryActions.loadCategoryById),
       exhaustMap(({ categoryId }) =>
         this.categoryService.getCategoryById(categoryId).pipe(
           map((category) =>
-            CategoryActions.getCategoryByIdSuccess({ category })
+            CategoryActions.loadCategoryByIdSuccess({ category })
           ),
           catchError((error) =>
             of(
-              CategoryActions.getCategoryByIdFailure({
+              CategoryActions.loadCategoryByIdFailure({
                 errorMessage: 'Error during the category fetching!',
               })
             )

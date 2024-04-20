@@ -12,15 +12,15 @@ export const loadCategoriesFailure = createAction(
   '[Categories Component] LoadCategoriesFailure',
   props<{ errorMessage: string }>()
 );
-export const getCategoryById = createAction(
-  '[Categories Component] GetCategoryById',
+export const loadCategoryById = createAction(
+  '[Categories Component] LoadCategoryById',
   props<{ categoryId: number }>()
 );
-export const getCategoryByIdSuccess = createAction(
-  '[Categories Component] GetCategoryByIdSuccess',
+export const loadCategoryByIdSuccess = createAction(
+  '[Categories Component] LoadCategoryByIdSuccess',
   props<{ category: ICategory }>()
 );
-export const getCategoryByIdFailure = createAction(
-  '[Categories Component] GetCategoryByIdFailure',
+export const loadCategoryByIdFailure = createAction(
+  '[Categories Component] LoadCategoryByIdFailure',
   props<{ errorMessage: string }>()
 );

@@ -63,18 +63,38 @@ export class ProductEffects {
     )
   );
 
-  getSingleProductById$ = createEffect(() =>
+  loadSingleProductById$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(ProductActions.getSingleProductById),
+      ofType(ProductActions.loadSingleProductById),
       exhaustMap((productId) =>
         this.productService.getSingleProductById(productId.productId).pipe(
           map((product) =>
-            ProductActions.getSingleProductByIdSuccess({ product })
+            ProductActions.loadSingleProductByIdSuccess({ product })
           ),
           catchError((error) =>
             of(
-              ProductActions.getSingleProductByIdFailure({
+              ProductActions.loadSingleProductByIdFailure({
                 errorMessage: 'Error during product fetching!',
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
+  loadProductsByCategory$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProductActions.loadProductsByCategory),
+      exhaustMap(({ categoryId }) =>
+        this.productService.getAllProductsByCategory(categoryId).pipe(
+          map((products) =>
+            ProductActions.loadProductsByCategorySuccess({ products })
+          ),
+          catchError((error) =>
+            of(
+              ProductActions.loadProductsByCategoryFailure({
+                errorMessage: 'Error during the products loading!',
               })
             )
           )

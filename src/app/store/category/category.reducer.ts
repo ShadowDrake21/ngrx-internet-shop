@@ -24,12 +24,12 @@ export const categoryReducer = createReducer(
     categories: [],
     errorMessage,
   })),
-  on(CategoryActions.getCategoryByIdSuccess, (state, { category }) => ({
+  on(CategoryActions.loadCategoryByIdSuccess, (state, { category }) => ({
     ...state,
     categories: [category],
     errorMessage: null,
   })),
-  on(CategoryActions.getCategoryByIdFailure, (state, { errorMessage }) => ({
+  on(CategoryActions.loadCategoryByIdFailure, (state, { errorMessage }) => ({
     ...state,
     categories: [],
     errorMessage,
