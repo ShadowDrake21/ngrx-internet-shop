@@ -62,7 +62,7 @@ export class ProductsComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.store.dispatch(ProductActions.loadProduct());
+    this.store.dispatch(ProductActions.loadProducts());
     this.products$ = this.store.select(ProductSelectors.selectProducts);
     this.error$ = this.store.select(ProductSelectors.selectErrorMessage);
 
@@ -97,6 +97,6 @@ export class ProductsComponent implements OnInit {
   }
 
   onRestoreProducts() {
-    this.store.dispatch(ProductActions.loadProduct());
+    this.store.dispatch(ProductActions.loadProducts());
   }
 }
