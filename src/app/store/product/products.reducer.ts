@@ -44,14 +44,30 @@ export const productReducer = createReducer(
     products: [],
     errorMessage,
   })),
-  on(ProductActions.getSingleProductByIdSuccess, (state, { product }) => ({
+  on(ProductActions.loadSingleProductByIdSuccess, (state, { product }) => ({
     ...state,
     products: [product],
     errorMessage: null,
   })),
-  on(ProductActions.getSingleProductByIdFailure, (state, { errorMessage }) => ({
+  on(
+    ProductActions.loadSingleProductByIdFailure,
+    (state, { errorMessage }) => ({
+      ...state,
+      products: [],
+      errorMessage,
+    })
+  ),
+  on(ProductActions.loadProductsByCategorySuccess, (state, { products }) => ({
     ...state,
-    products: [],
-    errorMessage,
-  }))
+    products,
+    errorMessage: null,
+  })),
+  on(
+    ProductActions.loadProductsByCategoryFailure,
+    (state, { errorMessage }) => ({
+      ...state,
+      products: [],
+      errorMessage,
+    })
+  )
 );
