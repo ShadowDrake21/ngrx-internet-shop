@@ -14,12 +14,12 @@ export const initialProductState: ProductState = {
 
 export const productReducer = createReducer(
   initialProductState,
-  on(ProductActions.loadProductSuccess, (state, { products }) => ({
+  on(ProductActions.loadProductsSuccess, (state, { products }) => ({
     ...state,
     products,
     errorMessage: null,
   })),
-  on(ProductActions.loadProductFailure, (state, { errorMessage }) => ({
+  on(ProductActions.loadProductsFailure, (state, { errorMessage }) => ({
     ...state,
     products: [],
     errorMessage,

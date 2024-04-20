@@ -6,6 +6,7 @@ import { IProduct } from '../../shared/models/product.model';
 import { BASE_URL_API } from '../constants/api.constant';
 import { ICategory } from '../../shared/models/category.model';
 import { IFilterFormObj } from '../../shared/models/forms.model';
+import { mapQuantity } from '../utils/services.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,7 @@ export class ProductService {
   getAllProducts(): Observable<IProduct[]> {
     return this.http
       .get<IProduct[]>(`${BASE_URL_API}/products`)
-      .pipe(map(this.mapQuantity));
+      .pipe(map(mapQuantity));
   }
 
   getFilteredProducts(filteredData: IFilterFormObj): Observable<IProduct[]> {
@@ -47,7 +48,7 @@ export class ProductService {
       .get<IProduct[]>(`${BASE_URL_API}/products/`, {
         params: requestParams,
       })
-      .pipe(map(this.mapQuantity));
+      .pipe(map(mapQuantity));
   }
 
   getProductsByTitle(title: string): Observable<IProduct[]> {
@@ -55,7 +56,7 @@ export class ProductService {
       .get<IProduct[]>(`${BASE_URL_API}/products/`, {
         params: new HttpParams().set('title', title),
       })
-      .pipe(map(this.mapQuantity));
+      .pipe(map(mapQuantity));
   }
 
   getSingleProductById(id: number): Observable<IProduct> {
@@ -64,11 +65,9 @@ export class ProductService {
       .pipe(map((product) => ({ ...product, quantity: 1 })));
   }
 
-  getCategories(): Observable<ICategory[]> {
-    return this.http.get<ICategory[]>(`${BASE_URL_API}/categories`);
-  }
-
-  private mapQuantity(products: IProduct[]): IProduct[] {
-    return products.map((product) => ({ ...product, quantity: 1 }));
+  getAllProductsByCategory(categoryId: number): Observable<IProduct[]> {
+    return this.http
+      .get<IProduct[]>(`${BASE_URL_API}/categories/${categoryId}/products`)
+      .pipe(map(mapQuantity));
   }
 }

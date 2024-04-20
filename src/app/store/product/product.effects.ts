@@ -11,13 +11,13 @@ export class ProductEffects {
   private productService = inject(ProductService);
   loadProducts$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(ProductActions.loadProduct),
+      ofType(ProductActions.loadProducts),
       exhaustMap(() =>
         this.productService.getAllProducts().pipe(
-          map((products) => ProductActions.loadProductSuccess({ products })),
+          map((products) => ProductActions.loadProductsSuccess({ products })),
           catchError((error) =>
             of(
-              ProductActions.loadProductFailure({
+              ProductActions.loadProductsFailure({
                 errorMessage: 'Error during the products loading!',
               })
             )
