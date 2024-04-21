@@ -2,23 +2,33 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #242d60;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-  'Helvetica Neue', 'Ubuntu', sans-serif;
+  background: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Helvetica Neue", "Ubuntu", sans-serif;
   height: 100vh;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 section {
-  background: #ffffff;
   display: flex;
   flex-direction: column;
-  width: 400px;
-  height: 112px;
   border-radius: 6px;
   justify-content: space-between;
+  padding: 20px 30px;
+  align-items: center;
 }
+
+.success {
+  width: 700px;
+  height: 600px;
+}
+
+.cancel {
+  width: 700px;
+  height: 100px;
+}
+
 .product {
   display: flex;
 }
@@ -30,9 +40,9 @@ section {
 p {
   font-style: normal;
   font-weight: 500;
-  font-size: 14px;
-  line-height: 20px;
-  letter-spacing: -0.154px;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: -0.05px;
   color: #242d60;
   height: 100%;
   width: 100%;
@@ -77,4 +87,19 @@ button {
 }
 button:hover {
   opacity: 0.8;
+}
+
+.image {
+  width: 60%;
+  height: 60%;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.go-back-link {
+  font-size: 20px;
+  line-height: 26px;
 }

@@ -4,7 +4,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { IProduct } from '../../../../models/product.model';
 import { Store } from '@ngrx/store';
 import { CartState } from '../../../../../store/cart/cart.reducer';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 
 import * as CartActions from '../../../../../store/cart/cart.actions';
 import * as CartSelectors from '../../../../../store/cart/cart.selectors';
@@ -14,6 +14,7 @@ import { TruncateTextPipe } from '../../../../pipes/truncate-text.pipe';
 import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { loadStripe } from '@stripe/stripe-js';
+import { CheckoutService } from '../../../../../core/services/checkout.service';
 
 @Component({
   selector: 'app-cart-modal',
@@ -31,7 +32,7 @@ import { loadStripe } from '@stripe/stripe-js';
 export class CartModalComponent implements OnInit {
   private store = inject(Store<CartState>);
   private http = inject(HttpClient);
-  private router = inject(Router);
+  private checkoutService = inject(CheckoutService);
   public bsModalRef = inject(BsModalRef);
 
   title?: string;
@@ -69,18 +70,21 @@ export class CartModalComponent implements OnInit {
       this.cartProductsArr = products;
     });
 
-    this.http
-      .post('http://localhost:4242/checkout', {
-        items: this.cartProductsArr,
-      })
-      .subscribe(async (res: any) => {
-        let stripe = await loadStripe(
-          'pk_test_51OSDbAAGBN9qzN7Z82crr3YkNTsqfwb2wsrBREzDKe0qDVRYSyS9hzEPxv4ZE9aeqtfZyKvT8CVzqVGV0SkpwYAO004zou70Ro'
-        );
+    this.checkoutService
+      .checkoutInit(this.cartProductsArr)
+      .pipe(
+        switchMap((res: any) => {
+          const stripe = loadStripe(
+            'pk_test_51OSDbAAGBN9qzN7Z82crr3YkNTsqfwb2wsrBREzDKe0qDVRYSyS9hzEPxv4ZE9aeqtfZyKvT8CVzqVGV0SkpwYAO004zou70Ro'
+          );
 
-        stripe?.redirectToCheckout({
-          sessionId: res.id,
-        });
-      });
+          return stripe.then((stripeInit) => {
+            return stripeInit?.redirectToCheckout({
+              sessionId: res.id,
+            });
+          });
+        })
+      )
+      .subscribe();
   }
 }
