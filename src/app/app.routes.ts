@@ -42,11 +42,4 @@ export const routes: Routes = [
         (c) => c.SearchResultsComponent
       ),
   },
-  {
-    path: 'checkout',
-    loadComponent: () =>
-      import('./pages/checkout/checkout.component').then(
-        (c) => c.CheckoutComponent
-      ),
-  },
 ];
