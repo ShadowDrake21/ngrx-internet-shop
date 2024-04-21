@@ -27,7 +27,7 @@
         (click)="onAddToCart()"
         [disabled]="isAlreadyInCart"
       >
-        {{ "Add to cart" | uppercase }}
+        {{ (isAlreadyInCart ? "In cart" : "Add to cart") | uppercase }}
       </button>
       <a class="btn btn-danger" [routerLink]="['/product', product.id]">{{
         "Go to page" | uppercase

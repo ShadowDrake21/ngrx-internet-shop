@@ -1,0 +1,13 @@
+.category {
+  &-list {
+    padding: 0;
+    display: flex;
+  }
+  &-card {
+    max-width: 350px;
+    padding: 0;
+  }
+}
+.card-img-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+}
