@@ -1,1 +1,15 @@
-<p>category works!</p>
+<div *ngIf="!(categoryError$ | async); else categoryError">
+  <app-products-list
+    [items]="categoryProducts$"
+    [title]="'Category: ' + (category$ | async)?.name!"
+    [itemsPerPage]="8"
+  ></app-products-list>
+</div>
+<ng-template #categoryError>
+  <div class="text-center">
+    <p class="fs-3 fw-bold">{{ categoryError$ | async }}</p>
+    <a [routerLink]="['/categories']" class="btn btn-primary"
+      ><fa-icon [icon]="arrowLeft" /> Go to the category page</a
+    >
+  </div>
+</ng-template>

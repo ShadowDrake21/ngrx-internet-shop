@@ -4,12 +4,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 // interfaces
-import { IProduct } from '../../../../shared/models/product.model';
+import { IProduct } from '../../models/product.model';
 
 // pipes
-import { SafeHTMLPipe } from '../../../../shared/pipes/safe-html.pipe';
-import { ClearURLPipe } from '../../../../shared/pipes/clear-url.pipe';
-import { TruncateTextPipe } from '../../../../shared/pipes/truncate-text.pipe';
+import { SafeHTMLPipe } from '../../pipes/safe-html.pipe';
+import { ClearURLPipe } from '../../pipes/clear-url.pipe';
+import { TruncateTextPipe } from '../../pipes/truncate-text.pipe';
 
 @Component({
   selector: 'app-single-product',
