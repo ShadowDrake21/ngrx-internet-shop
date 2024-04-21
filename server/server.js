@@ -4,6 +4,7 @@ const bodyparser = require("body-parser");
 
 const app = express();
 app.use(express.static("public"));
+app.use("/images", express.static("images"));
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(cors({ origin: true, credentials: true }));
@@ -13,7 +14,6 @@ const stripe = require("stripe")(
 );
 
 app.post("/checkout", async (req, res, next) => {
-  console.log(req.body.items);
   try {
     const session = await stripe.checkout.sessions.create({
       shipping_address_collection: {
