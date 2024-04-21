@@ -12,6 +12,8 @@ import { ProductEffects } from './store/product/product.effects';
 import { cartReducer } from './store/cart/cart.reducer';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { favoritesReducer } from './store/favorites/favorites.reducer';
+import { categoryReducer } from './store/category/category.reducer';
+import { CategoryEffects } from './store/category/category.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,9 +23,10 @@ export const appConfig: ApplicationConfig = {
     provideStore({
       product: productReducer,
       cart: cartReducer,
+      category: categoryReducer,
       favorites: favoritesReducer,
     }),
-    provideEffects([ProductEffects]),
+    provideEffects([ProductEffects, CategoryEffects]),
     provideRouterStore(),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
   ],
