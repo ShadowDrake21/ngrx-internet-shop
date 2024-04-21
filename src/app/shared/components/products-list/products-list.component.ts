@@ -16,11 +16,18 @@ import { IProduct } from '../../models/product.model';
 import { calcPageNum } from '../../utils/pagination.utils';
 import * as CartActions from '../../../store/cart/cart.actions';
 import * as CartSelectors from '../../../store/cart/cart.selectors';
+import { IBreadcrumbs } from '../../models/breadcrumbs.model';
+import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-products-list',
   standalone: true,
-  imports: [CommonModule, PaginationModule, ProductsItemComponent],
+  imports: [
+    CommonModule,
+    PaginationModule,
+    ProductsItemComponent,
+    BreadcrumbsComponent,
+  ],
   templateUrl: './products-list.component.html',
   styleUrl: './products-list.component.scss',
 })
@@ -31,6 +38,7 @@ export class ProductsListComponent implements OnInit, OnChanges {
   >;
   @Input() itemsPerPage: number = 6;
   @Input({ alias: 'colsStyle' }) tableSizeStyle: string = 'row-cols-md-4';
+  @Input() title!: string;
 
   visibleProducts$!: Observable<IProduct[]>;
   productError$!: Observable<string | null>;
@@ -39,6 +47,11 @@ export class ProductsListComponent implements OnInit, OnChanges {
   cartProductsIdxs$!: Observable<number[]>;
 
   calcPageNum = calcPageNum;
+
+  breadcrumbs: IBreadcrumbs = {
+    links: ['home'],
+    current: 'Products',
+  };
 
   ngOnInit(): void {
     this.cartProducts$ = this.store.select(CartSelectors.selectCartProducts);

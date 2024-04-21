@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnChanges, OnInit } from '@angular/core';
 import { CategoryService } from '../../core/services/category.service';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, RouterLink } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../store/app.state';
@@ -14,6 +14,8 @@ import { ICategory } from '../../shared/models/category.model';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { ProductsItemComponent } from '../../shared/components/products-item/products-item.component';
 import { ProductsListComponent } from '../../shared/components/products-list/products-list.component';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'app-category',
@@ -23,6 +25,8 @@ import { ProductsListComponent } from '../../shared/components/products-list/pro
     PaginationModule,
     ProductsItemComponent,
     ProductsListComponent,
+    RouterLink,
+    FontAwesomeModule,
   ],
   templateUrl: './category.component.html',
   styleUrl: './category.component.scss',
@@ -30,6 +34,8 @@ import { ProductsListComponent } from '../../shared/components/products-list/pro
 export class CategoryComponent implements OnInit {
   private store = inject(Store<AppState>);
   private route = inject(ActivatedRoute);
+
+  arrowLeft = faArrowLeft;
 
   categoryId$!: Observable<number>;
   category$!: Observable<ICategory>;
