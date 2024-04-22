@@ -142,7 +142,6 @@ a {
       overflow: hidden;
       margin-bottom: 0;
       border: 1px solid #efefef;
-      padding: 15px 15px;
       border-bottom: none;
       position: relative;
       label {
@@ -158,6 +157,7 @@ a {
         display: block;
         margin-bottom: 0;
         color: $color_1;
+        padding-left: 15px;
       }
       input {
         &:focus {
@@ -185,9 +185,10 @@ a {
     }
     .form-control {
       border: none;
-      padding: 0;
+      padding: 15;
       font-size: 20px;
       border-radius: 0;
+
       &:active {
         outline: none;
         -webkit-box-shadow: none;
@@ -372,6 +373,20 @@ a {
     }
   }
 }
+
+.form-group {
+  &.formError {
+    border: 1px solid red !important;
+  }
+}
+
+.form-control {
+  &::placeholder {
+    font-size: 16px;
+    color: $color_1;
+  }
+}
+
 @media (max-width: 991.98px) {
   .half {
     .bg {

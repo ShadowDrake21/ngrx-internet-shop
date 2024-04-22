@@ -19,18 +19,39 @@
           <div class="mb-4">
             <h3 class="text-center">Sign In</h3>
             <p class="mb-4">
-              Lorem ipsum dolor sit amet elit. Sapiente sit aut eos consectetur
-              adipisicing.
+              Welcome back, my dear friend! Fill out the form below to sign-in.
             </p>
           </div>
-          <form action="#" method="post">
-            <div class="form-group first">
-              <label for="username">Username</label>
-              <input type="text" class="form-control" id="username" />
+          <form [formGroup]="signInForm" (ngSubmit)="onFormSubmit()">
+            <div
+              class="form-group first"
+              [class.formError]="
+                signInForm.controls.email.touched &&
+                signInForm.controls.email.invalid
+              "
+            >
+              <input
+                type="text"
+                class="form-control"
+                id="email"
+                placeholder="Email"
+                formControlName="email"
+              />
             </div>
-            <div class="form-group last mb-3">
-              <label for="password">Password</label>
-              <input type="password" class="form-control" id="password" />
+            <div
+              class="form-group last mb-3"
+              [class.formError]="
+                signInForm.controls.password.touched &&
+                signInForm.controls.password.invalid
+              "
+            >
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="Password"
+                formControlName="password"
+              />
             </div>
 
             <div class="d-flex mb-5 align-items-center justify-content-between">
@@ -44,7 +65,11 @@
               >
             </div>
 
-            <button type="submit" class="btn btn-block btn-primary w-100">
+            <button
+              type="submit"
+              class="btn btn-block btn-primary w-100"
+              [disabled]="signInForm.invalid"
+            >
               Sign In
             </button>
 
