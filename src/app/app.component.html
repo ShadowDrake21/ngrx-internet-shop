@@ -1,7 +1,10 @@
-<main class="main" style="padding-top: 5rem">
-  <app-header></app-header>
+<main
+  class="main"
+  [ngClass]="headerFooterAvailable ? 'withHeader' : 'withoutHeader'"
+>
+  <app-header *ngIf="headerFooterAvailable"></app-header>
   <div class="content">
     <router-outlet></router-outlet>
   </div>
-  <app-footer></app-footer>
+  <app-footer *ngIf="headerFooterAvailable"></app-footer>
 </main>
