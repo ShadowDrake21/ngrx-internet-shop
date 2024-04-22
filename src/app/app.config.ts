@@ -23,6 +23,8 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { environment } from '../environments/environment.development';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { provideDatabase, getDatabase } from '@angular/fire/database';
+import { userReducer } from './store/user/user.reducer';
+import { UserEffects } from './store/user/user.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -34,9 +36,10 @@ export const appConfig: ApplicationConfig = {
       cart: cartReducer,
       category: categoryReducer,
       favorites: favoritesReducer,
+      user: userReducer,
       router: routerReducer,
     }),
-    provideEffects([ProductEffects, CategoryEffects]),
+    provideEffects([ProductEffects, CategoryEffects, UserEffects]),
     provideRouterStore(),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     importProvidersFrom([
