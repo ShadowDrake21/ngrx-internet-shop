@@ -61,6 +61,7 @@ export class HeaderComponent implements OnInit {
   suggestions$?: Observable<string[]>;
   errorMessage?: string;
 
+  isAuthorized: boolean = false;
   noResult = false;
 
   ngOnInit(): void {
@@ -125,4 +126,10 @@ export class HeaderComponent implements OnInit {
     this.bsModalRef.setClass('modal-dialog-centered');
     this.bsModalRef.content.closeBtnName = 'Close';
   }
+
+  onSignIn() {
+    this.router.navigate(['/sign-in']);
+  }
+
+  onSignOut() {}
 }

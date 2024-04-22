@@ -8,7 +8,7 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
-import { provideRouterStore } from '@ngrx/router-store';
+import { provideRouterStore, routerReducer } from '@ngrx/router-store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideHttpClient } from '@angular/common/http';
 import { productReducer } from './store/product/products.reducer';
@@ -34,6 +34,7 @@ export const appConfig: ApplicationConfig = {
       cart: cartReducer,
       category: categoryReducer,
       favorites: favoritesReducer,
+      router: routerReducer,
     }),
     provideEffects([ProductEffects, CategoryEffects]),
     provideRouterStore(),
