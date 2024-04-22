@@ -1,4 +1,8 @@
-import { ApplicationConfig, isDevMode } from '@angular/core';
+import {
+  ApplicationConfig,
+  importProvidersFrom,
+  isDevMode,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -14,6 +18,11 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { favoritesReducer } from './store/favorites/favorites.reducer';
 import { categoryReducer } from './store/category/category.reducer';
 import { CategoryEffects } from './store/category/category.effects';
+import { provideFirebaseApp, getApp, initializeApp } from '@angular/fire/app';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { environment } from '../environments/environment.development';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { provideDatabase, getDatabase } from '@angular/fire/database';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -29,5 +38,10 @@ export const appConfig: ApplicationConfig = {
     provideEffects([ProductEffects, CategoryEffects]),
     provideRouterStore(),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
+    importProvidersFrom([
+      provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+      provideAuth(() => getAuth()),
+      provideDatabase(() => getDatabase()),
+    ]),
   ],
 };

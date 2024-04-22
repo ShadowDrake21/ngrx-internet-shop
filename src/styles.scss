@@ -23,6 +23,14 @@ main {
   justify-content: space-between;
 }
 
+.withHeader {
+  padding-top: 5rem;
+}
+
+.withoutHeader {
+  padding-top: 0;
+}
+
 .content {
   flex: 1 1;
 }
