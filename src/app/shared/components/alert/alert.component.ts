@@ -10,14 +10,9 @@ import { AlertType } from '../../models/alerts.model';
   templateUrl: './alert.component.html',
   styleUrl: './alert.component.scss',
 })
-export class AlertComponent implements OnChanges {
+export class AlertComponent {
   @Input({ required: true }) alerts: AlertType[] = [];
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['alerts']) {
-      console.log('alerts', this.alerts);
-    }
-  }
   onClosed(dismissedAlert: AlertType): void {
     this.alerts = this.alerts.filter((alert) => alert !== dismissedAlert);
   }

@@ -9,8 +9,9 @@
   ></div>
   <div class="contents order-2 order-md-1">
     <div class="container">
+      <app-alert [alerts]="alerts"></app-alert>
       <div class="row align-items-center justify-content-center">
-        <div class="col-md-7">
+        <div class="col-md-7" *ngIf="!formSubmitted; else loading">
           <div class="d-flex justify-content-end mb3">
             <button class="btn btn-danger d-block" (click)="onClose()">
               <fa-icon [icon]="close"></fa-icon>
@@ -132,6 +133,9 @@
             </div>
           </form>
         </div>
+        <ng-template #loading
+          ><app-loader class="d-flex justify-content-center"></app-loader
+        ></ng-template>
       </div>
     </div>
   </div>

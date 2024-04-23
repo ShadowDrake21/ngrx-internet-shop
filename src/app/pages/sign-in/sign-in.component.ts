@@ -9,7 +9,15 @@ import {
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../store/app.state';
-import { filter, pairwise } from 'rxjs';
+import {
+  debounceTime,
+  delay,
+  filter,
+  Observable,
+  pairwise,
+  take,
+  tap,
+} from 'rxjs';
 import { RoutingService } from '../../core/services/routing.service';
 import { CommonModule } from '@angular/common';
 import {
@@ -22,11 +30,21 @@ import { UserState } from '../../store/user/user.reducer';
 
 import * as UserActions from '../../store/user/user.actions';
 import * as UserSelectors from '../../store/user/user.selectors';
+import { AlertComponent } from '../../shared/components/alert/alert.component';
+import { AlertType } from '../../shared/models/alerts.model';
+import { LoaderComponent } from '../../shared/components/loader/loader.component';
+import { IUser } from '../../shared/models/user.model';
 
 @Component({
   selector: 'app-sign-in',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    FontAwesomeModule,
+    ReactiveFormsModule,
+    AlertComponent,
+    LoaderComponent,
+  ],
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.scss',
 })
@@ -42,6 +60,10 @@ export class SignInComponent implements OnInit {
 
   previousRoute!: string;
 
+  user$!: Observable<IUser | null>;
+
+  alerts: AlertType[] = [];
+
   signInForm = new FormGroup({
     email: new FormControl('', [
       Validators.email,
@@ -55,54 +77,48 @@ export class SignInComponent implements OnInit {
     ]),
   });
 
+  formSubmitted: boolean = false;
+
   ngOnInit(): void {
     this.previousRoute = this.routingService.getPreviousUrl() ?? '/';
   }
 
   onFormSubmit() {
+    this.formSubmitted = true;
+    this.alerts = [];
+
     this.store.dispatch(
       UserActions.signInManually({
         email: this.signInForm.value.email as string,
         password: this.signInForm.value.password as string,
       })
     );
-    this.router.navigate([this.previousRoute]);
+
+    this.store
+      .select(UserSelectors.selectUser)
+      .pipe(debounceTime(5000), take(1))
+      .subscribe((user) => {
+        console.log('error message', user);
+
+        if (user?.userCredential && this.formSubmitted) {
+          console.log(new Date().toUTCString());
+          localStorage.setItem(
+            'ngrx-user-credential',
+            JSON.stringify(user.userCredential)
+          );
+
+          this.router.navigate([this.previousRoute]);
+        } else {
+          this.alerts.push({
+            type: 'danger',
+            msg: `Incorrect user credential!`,
+            timeout: 10000,
+          });
+        }
+
+        this.formSubmitted = false;
+      });
   }
-
-  // addErrorAlert(controlName: string) {
-  //   console.log('alert error');
-  //   const errorMessage = this.formAlertErrorMessage(controlName);
-  //   if (errorMessage) {
-  //     this.alerts.push({ type: 'danger', msg: errorMessage, timeout: 6000 });
-  //   }
-  // }
-
-  // formAlertErrorMessage(controlName: string): string | null {
-  //   let error: HTMLElement | null
-  //   switch (controlName) {
-  //     case 'email':
-
-  //       if (this.signInForm.controls.email.hasError('minlength')) {
-  //         errorString = 'Minimal length of an email should be 6';
-  //       } else if (this.signInForm.controls.email.hasError('required')) {
-  //         errorString = 'The email field is mandatory';
-  //       } else if (this.signInForm.controls.email.hasError('email')) {
-  //         errorString = 'The inputted string is not an email';
-  //       }
-  //       break;
-  //     case 'password':
-  //       if (this.signInForm.controls.password.hasError('required')) {
-  //         errorString = 'The password field is mandatory';
-  //       } else if (this.signInForm.controls.password.hasError('minlength')) {
-  //         errorString = 'Minimal length of an password should be 6';
-  //       } else if (this.signInForm.controls.password.hasError('maxlength')) {
-  //         errorString = 'Maximum length of an password should be 20';
-  //       }
-  //       break;
-  //   }
-
-  //   return errorString;
-  // }
 
   onClose() {
     this.router.navigate([this.previousRoute]);
