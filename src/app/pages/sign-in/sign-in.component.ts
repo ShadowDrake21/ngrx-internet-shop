@@ -69,6 +69,41 @@ export class SignInComponent implements OnInit {
     this.router.navigate([this.previousRoute]);
   }
 
+  // addErrorAlert(controlName: string) {
+  //   console.log('alert error');
+  //   const errorMessage = this.formAlertErrorMessage(controlName);
+  //   if (errorMessage) {
+  //     this.alerts.push({ type: 'danger', msg: errorMessage, timeout: 6000 });
+  //   }
+  // }
+
+  // formAlertErrorMessage(controlName: string): string | null {
+  //   let error: HTMLElement | null
+  //   switch (controlName) {
+  //     case 'email':
+
+  //       if (this.signInForm.controls.email.hasError('minlength')) {
+  //         errorString = 'Minimal length of an email should be 6';
+  //       } else if (this.signInForm.controls.email.hasError('required')) {
+  //         errorString = 'The email field is mandatory';
+  //       } else if (this.signInForm.controls.email.hasError('email')) {
+  //         errorString = 'The inputted string is not an email';
+  //       }
+  //       break;
+  //     case 'password':
+  //       if (this.signInForm.controls.password.hasError('required')) {
+  //         errorString = 'The password field is mandatory';
+  //       } else if (this.signInForm.controls.password.hasError('minlength')) {
+  //         errorString = 'Minimal length of an password should be 6';
+  //       } else if (this.signInForm.controls.password.hasError('maxlength')) {
+  //         errorString = 'Maximum length of an password should be 20';
+  //       }
+  //       break;
+  //   }
+
+  //   return errorString;
+  // }
+
   onClose() {
     this.router.navigate([this.previousRoute]);
   }

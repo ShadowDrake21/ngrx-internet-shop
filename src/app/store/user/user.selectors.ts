@@ -3,14 +3,9 @@ import { UserState } from './user.reducer';
 
 export const selectUserState = createFeatureSelector<UserState>('user');
 
-export const selectUserCredential = createSelector(
+export const selectUser = createSelector(
   selectUserState,
-  (state: UserState) => state.userCredential
-);
-
-export const selectUserOnline = createSelector(
-  selectUserState,
-  (state: UserState) => state.online
+  (state: UserState) => state.user
 );
 
 export const selectErrorMessage = createSelector(

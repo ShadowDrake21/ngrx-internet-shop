@@ -377,6 +377,12 @@ a {
 .form-group {
   &.formError {
     border: 1px solid red !important;
+    input {
+      color: red;
+      &::placeholder {
+        color: red;
+      }
+    }
   }
 }
 
