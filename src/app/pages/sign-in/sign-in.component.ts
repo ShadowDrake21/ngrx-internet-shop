@@ -66,10 +66,7 @@ export class SignInComponent implements OnInit {
         password: this.signInForm.value.password as string,
       })
     );
-    this.store
-      .select(UserSelectors.selectUserCredential)
-      .subscribe(console.log);
-    this.store.select(UserSelectors.selectUserOnline).subscribe(console.log);
+    this.router.navigate([this.previousRoute]);
   }
 
   onClose() {

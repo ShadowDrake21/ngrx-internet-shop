@@ -80,12 +80,23 @@
               {{ (cartProducts$ | async)?.length ?? 0 }}
             </div>
             <fa-icon [icon]="cart"></fa-icon></button
-          ><button class="btn btn-link text-dark">
+          ><button
+            class="btn btn-link text-dark"
+            [class]="{ 'd-none': !(userOnline$ | async) }"
+          >
             <fa-icon [icon]="profile"></fa-icon></button
-          ><button class="btn btn-link text-dark" (click)="onSignIn()">
+          ><button
+            class="btn btn-link text-dark"
+            (click)="onSignIn()"
+            [class]="{ 'd-none': (userOnline$ | async) }"
+          >
             <fa-icon [icon]="signIn"></fa-icon>
           </button>
-          <button class="btn btn-link text-dark d-none" (click)="onSignOut()">
+          <button
+            class="btn btn-link text-dark"
+            (click)="onSignOut()"
+            [class]="{ 'd-none': !(userOnline$ | async) }"
+          >
             <fa-icon [icon]="signOut"></fa-icon>
           </button>
         </div>

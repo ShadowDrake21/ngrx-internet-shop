@@ -8,6 +8,7 @@ import { Observable, switchMap } from 'rxjs';
 
 import * as CartActions from '../../../../../store/cart/cart.actions';
 import * as CartSelectors from '../../../../../store/cart/cart.selectors';
+import * as UserSelectors from '../../../../../store/user/user.selectors';
 import { ClearURLPipe } from '../../../../pipes/clear-url.pipe';
 import { SafeHTMLPipe } from '../../../../pipes/safe-html.pipe';
 import { TruncateTextPipe } from '../../../../pipes/truncate-text.pipe';
@@ -15,6 +16,7 @@ import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { loadStripe } from '@stripe/stripe-js';
 import { CheckoutService } from '../../../../../core/services/checkout.service';
+import { AppState } from '../../../../../store/app.state';
 
 @Component({
   selector: 'app-cart-modal',
@@ -30,8 +32,7 @@ import { CheckoutService } from '../../../../../core/services/checkout.service';
   styleUrl: './cart-modal.component.scss',
 })
 export class CartModalComponent implements OnInit {
-  private store = inject(Store<CartState>);
-  private http = inject(HttpClient);
+  private store = inject(Store<AppState>);
   private checkoutService = inject(CheckoutService);
   public bsModalRef = inject(BsModalRef);
 
@@ -45,9 +46,12 @@ export class CartModalComponent implements OnInit {
   cartProducts$!: Observable<IProduct[]>;
   cartProductsArr: IProduct[] = [];
 
+  userOnline$!: Observable<boolean>;
+
   ngOnInit(): void {
     this.products$ = this.store.select(CartSelectors.selectCartProducts);
     this.totalPrice$ = this.store.select(CartSelectors.selectCartTotalPrice);
+    this.userOnline$ = this.store.select(UserSelectors.selectUserOnline);
   }
 
   onIncreaseQuantity(productId: number) {

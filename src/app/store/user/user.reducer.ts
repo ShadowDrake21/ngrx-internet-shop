@@ -1,9 +1,10 @@
 import { UserCredential } from 'firebase/auth';
 import * as UserActions from './user.actions';
 import { createReducer, on } from '@ngrx/store';
+import { IStoreUserCredential } from '../../shared/models/user.model';
 
 export interface UserState {
-  userCredential: UserCredential | null;
+  userCredential: IStoreUserCredential | null;
   online: boolean;
   errorMessage: string | null;
 }
@@ -27,5 +28,11 @@ export const userReducer = createReducer(
     userCredential: null,
     online: false,
     errorMessage,
+  })),
+  on(UserActions.signOutSuccess, (state) => ({
+    ...state,
+    userCredential: null,
+    online: false,
+    errorMessage: null,
   }))
 );
