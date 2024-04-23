@@ -1,14 +1,12 @@
 import { IdTokenResult } from 'firebase/auth';
 
+export interface IUser {
+  userCredential: IStoreUserCredential | null;
+  online: boolean;
+}
 export interface IStoreUserCredential {
   tokenResult: IdTokenResult;
   providerData: ProviderData[];
-}
-
-export interface StsTokenManager {
-  refreshToken: string;
-  accessToken: string;
-  expirationTime: number;
 }
 
 export interface ProviderData {

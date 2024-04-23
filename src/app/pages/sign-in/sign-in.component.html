@@ -26,7 +26,7 @@
             <div
               class="form-group first"
               [class.formError]="
-                signInForm.controls.email.touched &&
+                signInForm.controls.email.dirty &&
                 signInForm.controls.email.invalid
               "
             >
@@ -38,10 +38,11 @@
                 formControlName="email"
               />
             </div>
+
             <div
               class="form-group last mb-3"
               [class.formError]="
-                signInForm.controls.password.touched &&
+                signInForm.controls.password.dirty &&
                 signInForm.controls.password.invalid
               "
             >
@@ -53,7 +54,36 @@
                 formControlName="password"
               />
             </div>
-
+            <div
+              *ngIf="signInForm.invalid && signInForm.dirty"
+              style="color: red"
+            >
+              <div
+                *ngIf="signInForm.controls.email.errors?.['required'] && signInForm.controls.email.touched"
+              >
+                The email field is mandatory
+              </div>
+              <div *ngIf="signInForm.controls.email.errors?.['email']">
+                {{ signInForm.value.email + " is not an email" }}
+              </div>
+              <div *ngIf="signInForm.controls.email.errors?.['minlength']">
+                Email should be at least 6 characters long. Now it is
+                {{ signInForm.value.email?.length }}
+              </div>
+              <div
+                *ngIf="signInForm.controls.password.errors?.['required'] && signInForm.controls.password.touched"
+              >
+                The password field is mandatory
+              </div>
+              <div *ngIf="signInForm.controls.password.errors?.['minlength']">
+                Password should be at least 6 characters long. Now it is
+                {{ signInForm.value.password?.length }}
+              </div>
+              <div *ngIf="signInForm.controls.password.errors?.['maxlength']">
+                Maximum length of a password is 20 characters. Your has
+                {{ signInForm.value.password?.length }} characters.
+              </div>
+            </div>
             <div class="d-flex mb-5 align-items-center justify-content-between">
               <label class="control control--checkbox mb-0"
                 ><span class="caption">Remember me</span>

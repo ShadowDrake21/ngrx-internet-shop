@@ -17,6 +17,7 @@ import { HttpClient } from '@angular/common/http';
 import { loadStripe } from '@stripe/stripe-js';
 import { CheckoutService } from '../../../../../core/services/checkout.service';
 import { AppState } from '../../../../../store/app.state';
+import { IUser } from '../../../../models/user.model';
 
 @Component({
   selector: 'app-cart-modal',
@@ -46,12 +47,12 @@ export class CartModalComponent implements OnInit {
   cartProducts$!: Observable<IProduct[]>;
   cartProductsArr: IProduct[] = [];
 
-  userOnline$!: Observable<boolean>;
+  user$!: Observable<IUser | null>;
 
   ngOnInit(): void {
     this.products$ = this.store.select(CartSelectors.selectCartProducts);
     this.totalPrice$ = this.store.select(CartSelectors.selectCartTotalPrice);
-    this.userOnline$ = this.store.select(UserSelectors.selectUserOnline);
+    this.user$ = this.store.select(UserSelectors.selectUser);
   }
 
   onIncreaseQuantity(productId: number) {

@@ -29,6 +29,7 @@ import * as CartSelectors from '../../../store/cart/cart.selectors';
 import * as UserSelectors from '../../../store/user/user.selectors';
 import * as UserActions from '../../../store/user/user.actions';
 import { AppState } from '../../../store/app.state';
+import { IUser } from '../../models/user.model';
 
 @Component({
   selector: 'app-header',
@@ -64,12 +65,12 @@ export class HeaderComponent implements OnInit {
   suggestions$?: Observable<string[]>;
   errorMessage?: string;
 
-  userOnline$!: Observable<boolean>;
+  user$!: Observable<IUser | null>;
   noResult = false;
 
   ngOnInit(): void {
     this.cartProducts$ = this.store.select(CartSelectors.selectCartProducts);
-    this.userOnline$ = this.store.select(UserSelectors.selectUserOnline);
+    this.user$ = this.store.select(UserSelectors.selectUser);
     this.searchTypeahead();
   }
 

@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { UserCredential } from '@angular/fire/auth';
-import { IStoreUserCredential } from '../../shared/models/user.model';
+import { IStoreUserCredential, IUser } from '../../shared/models/user.model';
 import { Observable } from 'rxjs';
 
 export const signInManually = createAction(
@@ -18,3 +18,8 @@ export const signInManuallyFailure = createAction(
 
 export const signOut = createAction('[User Component] SignOut');
 export const signOutSuccess = createAction('[User Component] SignOutSuccess');
+
+export const browserReload = createAction(
+  '[User Component] BrowserReload',
+  props<{ userCredential: IStoreUserCredential }>()
+);

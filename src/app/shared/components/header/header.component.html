@@ -82,20 +82,20 @@
             <fa-icon [icon]="cart"></fa-icon></button
           ><button
             class="btn btn-link text-dark"
-            [class]="{ 'd-none': !(userOnline$ | async) }"
+            [class]="{ 'd-none': !(user$ | async)?.online }"
           >
             <fa-icon [icon]="profile"></fa-icon></button
           ><button
             class="btn btn-link text-dark"
             (click)="onSignIn()"
-            [class]="{ 'd-none': (userOnline$ | async) }"
+            [class]="{ 'd-none': (user$ | async)?.online }"
           >
             <fa-icon [icon]="signIn"></fa-icon>
           </button>
           <button
             class="btn btn-link text-dark"
             (click)="onSignOut()"
-            [class]="{ 'd-none': !(userOnline$ | async) }"
+            [class]="{ 'd-none': !(user$ | async)?.online }"
           >
             <fa-icon [icon]="signOut"></fa-icon>
           </button>

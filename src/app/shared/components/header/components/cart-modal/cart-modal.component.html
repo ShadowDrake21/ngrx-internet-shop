@@ -10,7 +10,7 @@
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
-  @if (userOnline$|async) {
+  @if ((user$|async)?.online) {
   <div class="modal-body" *ngIf="products$ | async as products">
     <ng-container *ngIf="products.length; else emptyCart">
       <div
