@@ -1,10 +1,16 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 // components
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
+import { IStoreUserCredential, IUser } from './shared/models/user.model';
+import { Store } from '@ngrx/store';
+import { AppState } from './store/app.state';
+
+import * as UserActions from './store/user/user.actions';
 
 @Component({
   selector: 'app-root',
@@ -12,13 +18,20 @@ import { FooterComponent } from './shared/components/footer/footer.component';
   imports: [CommonModule, RouterOutlet, HeaderComponent, FooterComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
+  providers: [BsModalService],
 })
 export class AppComponent implements OnInit {
+  private store = inject(Store<AppState>);
   private router = inject(Router);
+  private modalService = inject(BsModalService);
 
   public headerFooterAvailable: boolean = true;
 
+  modalRef?: BsModalRef;
+
   ngOnInit(): void {
+    this.getUserFromLS();
+
     this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
         if (this.router.url === '/sign-in' || this.router.url === '/sign-up') {
@@ -28,5 +41,35 @@ export class AppComponent implements OnInit {
         }
       }
     });
+
+    this.checkExpirationTime();
+  }
+
+  getUserFromLS() {
+    const userCredential: IStoreUserCredential | null = JSON.parse(
+      localStorage.getItem('ngrx-user-credential')!
+    );
+
+    if (userCredential) {
+      this.store.dispatch(UserActions.browserReload({ userCredential }));
+    }
+  }
+
+  checkExpirationTime() {
+    const userString = localStorage.getItem('ngrx-user-credential');
+    let user: IStoreUserCredential | null = null;
+    if (userString) {
+      user = JSON.parse(userString);
+
+      if (new Date(user?.tokenResult.expirationTime!) <= new Date()) {
+        localStorage.removeItem('ngrx-user-credential');
+
+        (document.querySelector('#openModalBtn') as HTMLButtonElement).click();
+      }
+    }
+  }
+
+  openModal(template: TemplateRef<void>) {
+    this.modalRef = this.modalService.show(template);
   }
 }

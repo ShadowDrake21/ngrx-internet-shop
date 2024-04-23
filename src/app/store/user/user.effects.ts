@@ -20,6 +20,7 @@ export class UserEffects {
       exhaustMap(({ email, password }) =>
         this.authService.signInManually(email, password).pipe(
           mergeMap(async (userCredential) => {
+            console.log(userCredential);
             let tokenResult = await userCredential.user.getIdTokenResult();
 
             const minimalizeUserCredential: IStoreUserCredential = {
