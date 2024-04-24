@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import {
   Auth,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   UserCredential,
@@ -13,6 +14,10 @@ export class AuthService {
 
   signInManually(email: string, password: string): Observable<UserCredential> {
     return from(signInWithEmailAndPassword(this.auth, email, password));
+  }
+
+  sendPasswordReset(email: string): Observable<void> {
+    return from(sendPasswordResetEmail(this.auth, email));
   }
 
   signOut(): Observable<void> {

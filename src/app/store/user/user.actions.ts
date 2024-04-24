@@ -16,6 +16,11 @@ export const signInManuallyFailure = createAction(
   props<{ errorMessage: string }>()
 );
 
+export const sendPasswordReset = createAction(
+  '[User Component] SendPasswordReset',
+  props<{ email: string }>()
+);
+
 export const signOut = createAction('[User Component] SignOut');
 export const signOutSuccess = createAction('[User Component] SignOutSuccess');
 
