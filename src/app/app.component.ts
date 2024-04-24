@@ -1,6 +1,11 @@
 import { Component, inject, OnInit, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import {
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterOutlet,
+} from '@angular/router';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 // components
@@ -11,6 +16,7 @@ import { Store } from '@ngrx/store';
 import { AppState } from './store/app.state';
 
 import * as UserActions from './store/user/user.actions';
+import { ExpirationModalComponent } from './shared/components/expiration-modal/expiration-modal.component';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +33,7 @@ export class AppComponent implements OnInit {
 
   public headerFooterAvailable: boolean = true;
 
-  modalRef?: BsModalRef;
+  bsModalRef?: BsModalRef;
 
   ngOnInit(): void {
     this.getUserFromLS();
@@ -69,7 +75,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  openModal(template: TemplateRef<void>) {
-    this.modalRef = this.modalService.show(template);
+  openModal() {
+    this.bsModalRef = this.modalService.show(ExpirationModalComponent);
   }
 }

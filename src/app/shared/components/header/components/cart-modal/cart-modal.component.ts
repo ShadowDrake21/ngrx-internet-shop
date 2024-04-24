@@ -39,7 +39,6 @@ export class CartModalComponent implements OnInit {
 
   title?: string;
   closeBtnName?: string;
-  class?: string;
 
   products$!: Observable<IProduct[]>;
   totalPrice$!: Observable<number>;

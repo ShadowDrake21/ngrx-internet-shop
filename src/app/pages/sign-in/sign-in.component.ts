@@ -75,6 +75,7 @@ export class SignInComponent implements OnInit {
       Validators.minLength(6),
       Validators.maxLength(20),
     ]),
+    rememberMe: new FormControl(true),
   });
 
   formSubmitted: boolean = false;
@@ -101,10 +102,20 @@ export class SignInComponent implements OnInit {
         console.log('error message', user);
 
         if (user?.userCredential && this.formSubmitted) {
-          console.log(new Date().toUTCString());
+          const now = new Date();
+          const updatedUserCredential = {
+            ...user.userCredential,
+            tokenResult: {
+              ...user.userCredential.tokenResult,
+              expirationTime: this.signInForm.value.rememberMe
+                ? new Date(now.setMonth(now.getMonth() + 3)).toUTCString()
+                : user?.userCredential.tokenResult.expirationTime,
+            },
+          };
+          // const updatedUserCredential = user.userCredential.tokenResult.expirationTime
           localStorage.setItem(
             'ngrx-user-credential',
-            JSON.stringify(user.userCredential)
+            JSON.stringify(updatedUserCredential)
           );
 
           this.router.navigate([this.previousRoute]);
