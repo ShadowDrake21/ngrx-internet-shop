@@ -15,6 +15,24 @@ export const signInManuallyFailure = createAction(
   '[User Component] SignInManuallyFailure',
   props<{ errorMessage: string }>()
 );
+export const signInViaFacebook = createAction(
+  '[User Component] SignInViaFacebook'
+);
+export const signInViaFacebookSuccess = createAction(
+  '[User Component] SignInViaFacebookSuccess',
+  props<{
+    result: Observable<{
+      userCredential: UserCredential;
+      accessToken: string | undefined;
+    }>;
+  }>
+);
+export const signInViaFacebookFailure = createAction(
+  '[User Component] SignInViaFacebookFailure',
+  props<{
+    errorMessage: string;
+  }>
+);
 
 export const sendPasswordReset = createAction(
   '[User Component] SendPasswordReset',

@@ -217,7 +217,7 @@ a {
   }
 }
 .social-login {
-  a {
+  button {
     display: block;
     text-decoration: none;
     display: block;
@@ -225,23 +225,24 @@ a {
     text-align: center;
     color: $color_3;
     margin-bottom: 10px;
+    width: 100%;
     &:hover {
       color: $color_3;
     }
   }
-  a.facebook {
+  button.facebook {
     background: #3b5998;
     &:hover {
       background: #344e86;
     }
   }
-  a.twitter {
+  button.twitter {
     background: #1da1f2;
     &:hover {
       background: #0d95e8;
     }
   }
-  a.google {
+  button.google {
     background: #ea4335;
     &:hover {
       background: #e82e1e;

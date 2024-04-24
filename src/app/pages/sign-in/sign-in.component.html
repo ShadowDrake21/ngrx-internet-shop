@@ -119,27 +119,27 @@
             >
 
             <div class="social-login">
-              <a
-                href="#"
+              <button
                 class="facebook btn d-flex justify-content-center align-items-center"
+                (click)="signInViaFacebook()"
               >
                 <fa-icon [icon]="facebookIcon" class="me-3"></fa-icon> Login
                 with Facebook
-              </a>
-              <a
+              </button>
+              <button
                 href="#"
                 class="twitter btn d-flex justify-content-center align-items-center"
               >
                 <fa-icon [icon]="xIcon" class="me-3"></fa-icon> Login with X
                 (initially known as Twitter)
-              </a>
-              <a
+              </button>
+              <button
                 href="#"
                 class="google btn d-flex justify-content-center align-items-center"
               >
                 <fa-icon [icon]="googleIcon" class="me-3"></fa-icon> Login with
                 Google
-              </a>
+              </button>
             </div>
           </form>
         </div>

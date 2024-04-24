@@ -36,6 +36,7 @@ import { LoaderComponent } from '../../shared/components/loader/loader.component
 import { IUser } from '../../shared/models/user.model';
 import { ResetPasswordModalComponent } from './components/reset-password-modal/reset-password-modal.component';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { AuthService } from '../../core/authentication/auth.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -63,6 +64,7 @@ export class SignInComponent implements OnInit {
   private routingService = inject(RoutingService);
   private router = inject(Router);
   private modalService = inject(BsModalService);
+  private authService = inject(AuthService);
 
   previousRoute!: string;
 
@@ -145,6 +147,12 @@ export class SignInComponent implements OnInit {
     this.bsModalRef = this.modalService.show(ResetPasswordModalComponent);
     this.bsModalRef.setClass('reset-password__modal modal-dialog-centered');
     this.bsModalRef.content.closeBtnName = 'Close';
+  }
+
+  signInViaFacebook() {
+    this.authService.signInViaFacebook().subscribe((obs) => {
+      console.log(obs);
+    });
   }
 
   onClose() {
