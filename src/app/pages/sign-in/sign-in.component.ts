@@ -130,8 +130,11 @@ export class SignInComponent implements OnInit {
           this.alerts.push({
             type: 'danger',
             msg: `Incorrect user credential!`,
-            timeout: 10000,
+            timeout: 5000,
           });
+
+          this.signInForm.reset();
+          this.signInForm.controls.rememberMe.setValue(true);
         }
 
         this.formSubmitted = false;

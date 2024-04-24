@@ -42,6 +42,14 @@ export class UserEffects {
       )
     )
   );
+  sendPasswordReset$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(UserActions.sendPasswordReset),
+        exhaustMap(({ email }) => this.authService.sendPasswordReset(email))
+      ),
+    { dispatch: false }
+  );
   signOut$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.signOut),
