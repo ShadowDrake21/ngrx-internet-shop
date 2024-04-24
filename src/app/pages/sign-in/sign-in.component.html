@@ -96,8 +96,14 @@
                 <div class="control__indicator"></div>
               </label>
               <span class="ml-auto"
-                ><a href="#" class="forgot-pass">Forgot Password</a></span
-              >
+                ><button
+                  type="button"
+                  class="forgot-pass btn btn-link p-0 h-100 color"
+                  (click)="openResetPasswordModal()"
+                >
+                  Forgot Password
+                </button>
+              </span>
             </div>
 
             <button

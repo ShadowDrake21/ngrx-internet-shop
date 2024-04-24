@@ -117,7 +117,6 @@ export class HeaderComponent implements OnInit {
     const initialState: ModalOptions = {
       initialState: {
         title: 'My Cart',
-        class: 'modal-dialog-centered',
       },
     };
     this.bsModalRef = this.modalService.show(CartModalComponent, initialState);

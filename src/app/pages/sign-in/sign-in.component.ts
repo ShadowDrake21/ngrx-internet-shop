@@ -34,6 +34,8 @@ import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { AlertType } from '../../shared/models/alerts.model';
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
 import { IUser } from '../../shared/models/user.model';
+import { ResetPasswordModalComponent } from './components/reset-password-modal/reset-password-modal.component';
+import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-sign-in',
@@ -44,9 +46,12 @@ import { IUser } from '../../shared/models/user.model';
     ReactiveFormsModule,
     AlertComponent,
     LoaderComponent,
+    ResetPasswordModalComponent,
   ],
+
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.scss',
+  providers: [BsModalService],
 })
 export class SignInComponent implements OnInit {
   facebookIcon = faFacebookF;
@@ -57,12 +62,15 @@ export class SignInComponent implements OnInit {
   private store = inject(Store<UserState>);
   private routingService = inject(RoutingService);
   private router = inject(Router);
+  private modalService = inject(BsModalService);
 
   previousRoute!: string;
 
   user$!: Observable<IUser | null>;
 
   alerts: AlertType[] = [];
+
+  bsModalRef?: BsModalRef;
 
   signInForm = new FormGroup({
     email: new FormControl('', [
@@ -112,7 +120,6 @@ export class SignInComponent implements OnInit {
                 : user?.userCredential.tokenResult.expirationTime,
             },
           };
-          // const updatedUserCredential = user.userCredential.tokenResult.expirationTime
           localStorage.setItem(
             'ngrx-user-credential',
             JSON.stringify(updatedUserCredential)
@@ -129,6 +136,12 @@ export class SignInComponent implements OnInit {
 
         this.formSubmitted = false;
       });
+  }
+
+  openResetPasswordModal() {
+    this.bsModalRef = this.modalService.show(ResetPasswordModalComponent);
+    this.bsModalRef.setClass('reset-password__modal modal-dialog-centered');
+    this.bsModalRef.content.closeBtnName = 'Close';
   }
 
   onClose() {
