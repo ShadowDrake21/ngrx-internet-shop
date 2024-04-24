@@ -131,5 +131,6 @@ export class HeaderComponent implements OnInit {
 
   onSignOut() {
     this.store.dispatch(UserActions.signOut());
+    localStorage.removeItem('ngrx-user-credential');
   }
 }
