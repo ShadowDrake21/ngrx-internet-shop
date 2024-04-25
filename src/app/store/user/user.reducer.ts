@@ -52,6 +52,22 @@ export const userReducer = createReducer(
     },
     errorMessage,
   })),
+  on(UserActions.signInViaTwitterSuccess, (state, { userCredential }) => ({
+    ...state,
+    user: {
+      userCredential,
+      online: true,
+    },
+    errorMessage: null,
+  })),
+  on(UserActions.signInViaTwitterFailure, (state, { errorMessage }) => ({
+    ...state,
+    user: {
+      userCredential: null,
+      online: false,
+    },
+    errorMessage,
+  })),
   on(UserActions.signOutSuccess, (state) => ({
     ...state,
     user: {

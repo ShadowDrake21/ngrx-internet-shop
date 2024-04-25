@@ -69,6 +69,33 @@ export class UserEffects {
       )
     )
   );
+  // signInViaTwitter$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(UserActions.signInViaTwitter),
+  //     exhaustMap(() =>
+  //       this.authService.signInViaTwitter().pipe(
+  //         mergeMap(async ({ userCredential }) => {
+  //           let tokenResult = await userCredential.user.getIdTokenResult();
+
+  //           const minimalizeUserCredential: IStoreUserCredential = {
+  //             tokenResult: tokenResult!,
+  //             providerData: userCredential.user.providerData as ProviderData[],
+  //           };
+  //           return UserActions.signInViaFacebookSuccess({
+  //             userCredential: minimalizeUserCredential,
+  //           });
+  //         }),
+  //         catchError((error) =>
+  //           of(
+  //             UserActions.signInViaFacebookFailure({
+  //               errorMessage: 'Error during signing up with Twitter!',
+  //             })
+  //           )
+  //         )
+  //       )
+  //     )
+  //   )
+  // );
   sendPasswordReset$ = createEffect(
     () =>
       this.actions$.pipe(
