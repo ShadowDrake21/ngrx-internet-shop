@@ -2,10 +2,13 @@ import { inject, Injectable } from '@angular/core';
 import {
   Auth,
   FacebookAuthProvider,
+  fetchSignInMethodsForEmail,
+  GoogleAuthProvider,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  TwitterAuthProvider,
   UserCredential,
 } from '@angular/fire/auth';
 import { FirebaseError } from 'firebase/app';
@@ -35,6 +38,55 @@ export class AuthService {
         return { userCredential: result };
       })
     );
+  }
+
+  // signInViaTwitter(): Observable<{
+  //   userCredential: UserCredential;
+  // }> {
+  //   return from(signInWithPopup(this.auth, new TwitterAuthProvider())).pipe(
+  //     map((resut: UserCredential) => {
+  //       return { userCredential: resut };
+  //     })
+  //   );
+  // }
+
+  async signInViaFB() {
+    // signInWithPopup(this.auth, new FacebookAuthProvider()).catch(
+    //   (err: FirebaseError) => {
+    //     console.log(err.customData);
+    //   }
+    // );
+    let email = '';
+    await signInWithPopup(this.auth, new FacebookAuthProvider()).catch(
+      (err: FirebaseError) => {
+        email = (err.customData?.['email'] as string) ?? 'unknown';
+        console.log(email);
+      }
+    );
+
+    return email;
+  }
+
+  signInViaTwitter() {
+    signInWithPopup(this.auth, new TwitterAuthProvider()).catch(
+      (err: FirebaseError) => {
+        console.log(err.customData);
+      }
+    );
+  }
+
+  signInViaGoogle() {
+    signInWithPopup(this.auth, new GoogleAuthProvider()).catch(
+      (err: FirebaseError) => {
+        console.log(err.code);
+      }
+    );
+  }
+
+  signInWithAnotherMethods(email: string) {
+    fetchSignInMethodsForEmail(this.auth, email).catch((err: FirebaseError) => {
+      console.log(err);
+    });
   }
 
   signOut(): Observable<void> {

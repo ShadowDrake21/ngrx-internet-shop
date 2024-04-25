@@ -38,6 +38,7 @@ import { IStoreUserCredential, IUser } from '../../shared/models/user.model';
 import { ResetPasswordModalComponent } from './components/reset-password-modal/reset-password-modal.component';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { AuthService } from '../../core/authentication/auth.service';
+import { UserCredential } from 'firebase/auth';
 
 @Component({
   selector: 'app-sign-in',
@@ -165,6 +166,44 @@ export class SignInComponent implements OnInit {
           this.isLogging = false;
         }
       });
+  }
+
+  async signInViaFB() {
+    const email = await this.authService.signInViaFB();
+    console.log(email);
+    // .then((value) => {
+    //   console.log(value);
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    // });
+  }
+
+  signInViaTwitter() {
+    // this.store.dispatch(UserActions.signInViaTwitter());
+
+    // this.store.select(UserSelectors.selectUser).subscribe((user) => {
+    //   console.log(user);
+    // });
+
+    this.authService.signInViaTwitter();
+    // .then((result: UserCredential) => {
+    //   console.log(result);
+    // })
+    // .catch((error) => {
+    //   if (error.code === 'auth/account-exists-with-different-credential') {
+    //     const email = error.email;
+    //     let pendingCred = error;
+    //     console.log('pending cred', error);
+    // this.authService.signInWithAnotherMethods(email).then((methods) => {
+    //   console.log(methods);
+    // });
+    //   }
+    // });
+  }
+
+  signInViaGoogle() {
+    this.authService.signInViaGoogle();
   }
 
   createAuthInLS(userCredential: IStoreUserCredential) {

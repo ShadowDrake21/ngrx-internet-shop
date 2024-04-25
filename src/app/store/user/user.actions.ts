@@ -28,6 +28,19 @@ export const signInViaFacebookFailure = createAction(
     errorMessage: string;
   }>()
 );
+export const signInViaTwitter = createAction(
+  '[User Component] SignInViaTwitter'
+);
+export const signInViaTwitterSuccess = createAction(
+  '[User Component] SignInViaTwitterSuccess',
+  props<{ userCredential: IStoreUserCredential }>()
+);
+export const signInViaTwitterFailure = createAction(
+  '[User Component] SignInViaTwitterFailure',
+  props<{
+    errorMessage: string;
+  }>()
+);
 
 export const sendPasswordReset = createAction(
   '[User Component] SendPasswordReset',

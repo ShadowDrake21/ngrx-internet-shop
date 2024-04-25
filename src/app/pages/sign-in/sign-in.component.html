@@ -122,7 +122,7 @@
               <button
                 type="button"
                 class="facebook btn d-flex justify-content-center align-items-center"
-                (click)="signInViaFacebook()"
+                (click)="signInViaFB()"
               >
                 <fa-icon [icon]="facebookIcon" class="me-3"></fa-icon> Login
                 with Facebook
@@ -130,6 +130,7 @@
               <button
                 type="button"
                 class="twitter btn d-flex justify-content-center align-items-center"
+                (click)="signInViaTwitter()"
               >
                 <fa-icon [icon]="xIcon" class="me-3"></fa-icon> Login with X
                 (initially known as Twitter)
@@ -137,6 +138,7 @@
               <button
                 type="button"
                 class="google btn d-flex justify-content-center align-items-center"
+                (click)="signInViaGoogle()"
               >
                 <fa-icon [icon]="googleIcon" class="me-3"></fa-icon> Login with
                 Google
