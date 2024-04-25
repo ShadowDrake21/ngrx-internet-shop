@@ -1,0 +1,26 @@
+<div>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Available providers</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="bsModalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      This email has already been used and it connected to the next provider(s):
+    </p>
+    <ul *ngIf="availableProviders.length">
+      <li *ngFor="let item of availableProviders">{{ item }}</li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">
+      {{ closeBtnName }}
+    </button>
+  </div>
+</div>

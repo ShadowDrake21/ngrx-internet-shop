@@ -15,42 +15,50 @@ export const signInManuallyFailure = createAction(
   '[User Component] SignInManuallyFailure',
   props<{ errorMessage: string }>()
 );
-export const signInViaFacebook = createAction(
-  '[User Component] SignInViaFacebook'
+
+export const signInWithFacebook = createAction(
+  '[User Component] SignInWithFacebook'
 );
-export const signInViaFacebookSuccess = createAction(
-  '[User Component] SignInViaFacebookSuccess',
-  props<{ userCredential: IStoreUserCredential }>()
+export const signInWithFacebookSuccess = createAction(
+  '[User Component] SignInWithFacebookSuccess',
+  props<{ email: string; userCredential: IStoreUserCredential }>()
 );
-export const signInViaFacebookFailure = createAction(
-  '[User Component] SignInViaFacebookFailure',
+export const signInWithFacebookFailure = createAction(
+  '[User Component] SignInWithFacebookFailure',
   props<{
     errorMessage: string;
   }>()
 );
-export const signInViaTwitter = createAction(
-  '[User Component] SignInViaTwitter'
+export const signInWithTwitter = createAction(
+  '[User Component] SignInWithTwitter'
 );
-export const signInViaTwitterSuccess = createAction(
-  '[User Component] SignInViaTwitterSuccess',
-  props<{ userCredential: IStoreUserCredential }>()
+export const signInWithTwitterSuccess = createAction(
+  '[User Component] SignInWithTwitterSuccess',
+  props<{ email: string; userCredential: IStoreUserCredential }>()
 );
-export const signInViaTwitterFailure = createAction(
-  '[User Component] SignInViaTwitterFailure',
+export const signInWithTwitterFailure = createAction(
+  '[User Component] SignInWithTwitterFailure',
   props<{
     errorMessage: string;
   }>()
 );
-export const signInViaGoogle = createAction('[User Component] SignInViaGoogle');
-export const signInViaGoogleSuccess = createAction(
-  '[User Component] SignInViaGoogleSuccess',
-  props<{ userCredential: IStoreUserCredential }>()
+export const signInWithGoogle = createAction(
+  '[User Component] SignInWithGoogle'
 );
-export const signInViaGoogleFailure = createAction(
-  '[User Component] SignInViaGoogleFailure',
+export const signInWithGoogleSuccess = createAction(
+  '[User Component] SignInWithGoogleSuccess',
+  props<{ email: string; userCredential: IStoreUserCredential }>()
+);
+export const signInWithGoogleFailure = createAction(
+  '[User Component] SignInWithGoogleFailure',
   props<{
     errorMessage: string;
   }>()
+);
+
+export const signInWithSocialsWrongProvider = createAction(
+  '[User Component] SignInWithSocialsWrongProvider',
+  props<{ email: string }>()
 );
 
 export const sendPasswordReset = createAction(

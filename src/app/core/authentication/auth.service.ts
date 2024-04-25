@@ -26,7 +26,7 @@ export class AuthService {
     return from(sendPasswordResetEmail(this.auth, email));
   }
 
-  signInViaFacebook(): Observable<{
+  signInWithFacebook(): Observable<{
     userCredential: UserCredential;
   }> {
     return from(signInWithPopup(this.auth, new FacebookAuthProvider())).pipe(
@@ -40,7 +40,7 @@ export class AuthService {
     );
   }
 
-  // signInViaTwitter(): Observable<{
+  // signInWithTwitter(): Observable<{
   //   userCredential: UserCredential;
   // }> {
   //   return from(signInWithPopup(this.auth, new TwitterAuthProvider())).pipe(
@@ -50,7 +50,7 @@ export class AuthService {
   //   );
   // }
 
-  signInViaFB(): Observable<string | UserCredential> {
+  signInWithFB(): Observable<{ data: string | UserCredential }> {
     // signInWithPopup(this.auth, new FacebookAuthProvider()).catch(
     //   (err: FirebaseError) => {
     //     console.log(err.customData);
@@ -63,38 +63,42 @@ export class AuthService {
     // );
 
     return from(signInWithPopup(this.auth, new FacebookAuthProvider())).pipe(
-      map((userCredential) => userCredential),
+      map((userCredential) => ({ data: userCredential })),
       catchError((error: FirebaseError) => {
         const email = (error.customData?.['email'] as string) || 'unknown';
-        return of(email);
+        return of({ data: email });
       })
     );
 
     // return email;
   }
 
-  signInViaTwitter(): Observable<string | UserCredential> {
+  signInWithTwitter(): Observable<{ data: string | UserCredential }> {
     return from(signInWithPopup(this.auth, new TwitterAuthProvider())).pipe(
-      map((userCredential) => userCredential),
+      map((userCredential) => ({ data: userCredential })),
       catchError((error: FirebaseError) => {
         const email = (error.customData?.['email'] as string) || 'unknown';
-        return of(email);
+        return of({ data: email });
       })
     );
+
+    // return email;
   }
 
-  signInViaGoogle(): Observable<string | UserCredential> {
+  signInWithGoogle(): Observable<{ data: string | UserCredential }> {
     return from(signInWithPopup(this.auth, new GoogleAuthProvider())).pipe(
-      map((userCredential) => userCredential),
+      map((userCredential) => ({ data: userCredential })),
       catchError((error: FirebaseError) => {
         const email = (error.customData?.['email'] as string) || 'unknown';
-        return of(email);
+        return of({ data: email });
       })
     );
+
+    // return email;
   }
 
-  signInWithAnotherMethods(email: string): Promise<string[]> {
-    return fetchSignInMethodsForEmail(this.auth, email);
+  signInWithAnotherMethods(email: string): Observable<string[]> {
+    return from(fetchSignInMethodsForEmail(this.auth, email));
   }
 
   signOut(): Observable<void> {
