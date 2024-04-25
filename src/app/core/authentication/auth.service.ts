@@ -12,7 +12,7 @@ import {
   UserCredential,
 } from '@angular/fire/auth';
 import { FirebaseError } from 'firebase/app';
-import { catchError, from, map, Observable, throwError } from 'rxjs';
+import { catchError, from, map, Observable, of, throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -50,43 +50,51 @@ export class AuthService {
   //   );
   // }
 
-  async signInViaFB() {
+  signInViaFB(): Observable<string | UserCredential> {
     // signInWithPopup(this.auth, new FacebookAuthProvider()).catch(
     //   (err: FirebaseError) => {
     //     console.log(err.customData);
     //   }
     // );
-    let email = '';
-    await signInWithPopup(this.auth, new FacebookAuthProvider()).catch(
-      (err: FirebaseError) => {
-        email = (err.customData?.['email'] as string) ?? 'unknown';
-        console.log(email);
-      }
+    // await signInWithPopup(this.auth, new FacebookAuthProvider()).catch(
+    //   (err: FirebaseError) => {
+    //     email = (err.customData?.['email'] as string) ?? 'unknown';
+    //   }
+    // );
+
+    return from(signInWithPopup(this.auth, new FacebookAuthProvider())).pipe(
+      map((userCredential) => userCredential),
+      catchError((error: FirebaseError) => {
+        const email = (error.customData?.['email'] as string) || 'unknown';
+        return of(email);
+      })
     );
 
-    return email;
+    // return email;
   }
 
-  signInViaTwitter() {
-    signInWithPopup(this.auth, new TwitterAuthProvider()).catch(
-      (err: FirebaseError) => {
-        console.log(err.customData);
-      }
+  signInViaTwitter(): Observable<string | UserCredential> {
+    return from(signInWithPopup(this.auth, new TwitterAuthProvider())).pipe(
+      map((userCredential) => userCredential),
+      catchError((error: FirebaseError) => {
+        const email = (error.customData?.['email'] as string) || 'unknown';
+        return of(email);
+      })
     );
   }
 
-  signInViaGoogle() {
-    signInWithPopup(this.auth, new GoogleAuthProvider()).catch(
-      (err: FirebaseError) => {
-        console.log(err.code);
-      }
+  signInViaGoogle(): Observable<string | UserCredential> {
+    return from(signInWithPopup(this.auth, new GoogleAuthProvider())).pipe(
+      map((userCredential) => userCredential),
+      catchError((error: FirebaseError) => {
+        const email = (error.customData?.['email'] as string) || 'unknown';
+        return of(email);
+      })
     );
   }
 
-  signInWithAnotherMethods(email: string) {
-    fetchSignInMethodsForEmail(this.auth, email).catch((err: FirebaseError) => {
-      console.log(err);
-    });
+  signInWithAnotherMethods(email: string): Promise<string[]> {
+    return fetchSignInMethodsForEmail(this.auth, email);
   }
 
   signOut(): Observable<void> {

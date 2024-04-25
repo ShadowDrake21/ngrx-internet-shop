@@ -68,6 +68,22 @@ export const userReducer = createReducer(
     },
     errorMessage,
   })),
+  on(UserActions.signInViaGoogleSuccess, (state, { userCredential }) => ({
+    ...state,
+    user: {
+      userCredential,
+      online: true,
+    },
+    errorMessage: null,
+  })),
+  on(UserActions.signInViaGoogleFailure, (state, { errorMessage }) => ({
+    ...state,
+    user: {
+      userCredential: null,
+      online: false,
+    },
+    errorMessage,
+  })),
   on(UserActions.signOutSuccess, (state) => ({
     ...state,
     user: {
