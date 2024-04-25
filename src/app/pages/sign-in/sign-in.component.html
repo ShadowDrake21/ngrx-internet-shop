@@ -11,9 +11,9 @@
     <div class="container">
       <app-alert [alerts]="alerts"></app-alert>
       <div class="row align-items-center justify-content-center">
-        <div class="col-md-7" *ngIf="!formSubmitted; else loading">
+        <div class="col-md-7" *ngIf="!isLogging; else loading">
           <div class="d-flex justify-content-end mb3">
-            <button class="btn btn-danger d-block" (click)="onClose()">
+            <button class="btn btn-danger d-block" (click)="goToPrevious()">
               <fa-icon [icon]="close"></fa-icon>
             </button>
           </div>

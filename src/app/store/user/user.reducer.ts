@@ -36,7 +36,31 @@ export const userReducer = createReducer(
     },
     errorMessage,
   })),
+  on(UserActions.signInViaFacebookSuccess, (state, { userCredential }) => ({
+    ...state,
+    user: {
+      userCredential,
+      online: true,
+    },
+    errorMessage: null,
+  })),
+  on(UserActions.signInViaFacebookFailure, (state, { errorMessage }) => ({
+    ...state,
+    user: {
+      userCredential: null,
+      online: false,
+    },
+    errorMessage,
+  })),
   on(UserActions.signOutSuccess, (state) => ({
+    ...state,
+    user: {
+      userCredential: null,
+      online: false,
+    },
+    errorMessage: null,
+  })),
+  on(UserActions.clearUserState, (state) => ({
     ...state,
     user: {
       userCredential: null,

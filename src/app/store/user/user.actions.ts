@@ -20,18 +20,13 @@ export const signInViaFacebook = createAction(
 );
 export const signInViaFacebookSuccess = createAction(
   '[User Component] SignInViaFacebookSuccess',
-  props<{
-    result: Observable<{
-      userCredential: UserCredential;
-      accessToken: string | undefined;
-    }>;
-  }>
+  props<{ userCredential: IStoreUserCredential }>()
 );
 export const signInViaFacebookFailure = createAction(
   '[User Component] SignInViaFacebookFailure',
   props<{
     errorMessage: string;
-  }>
+  }>()
 );
 
 export const sendPasswordReset = createAction(
@@ -46,3 +41,4 @@ export const browserReload = createAction(
   '[User Component] BrowserReload',
   props<{ userCredential: IStoreUserCredential }>()
 );
+export const clearUserState = createAction('[User Component] ClearUserState');
