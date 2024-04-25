@@ -7,7 +7,7 @@ import {
   IStoreUserCredential,
   ProviderData,
 } from '../../shared/models/user.model';
-import { IdTokenResult } from 'firebase/auth';
+import { IdTokenResult, UserCredential } from 'firebase/auth';
 
 @Injectable()
 export class UserEffects {
@@ -42,25 +42,32 @@ export class UserEffects {
       )
     )
   );
-  signInViaFacebook$ = createEffect(() =>
+  signInWithFacebook$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(UserActions.signInViaFacebook),
+      ofType(UserActions.signInWithFacebook),
       exhaustMap(() =>
-        this.authService.signInViaFacebook().pipe(
-          mergeMap(async ({ userCredential }) => {
+        this.authService.signInWithFB().pipe(
+          mergeMap(async ({ data }) => {
+            if (typeof data === 'string') {
+              return UserActions.signInWithSocialsWrongProvider({
+                email: data,
+              });
+            }
+            const userCredential = data as UserCredential;
             let tokenResult = await userCredential.user.getIdTokenResult();
 
             const minimalizeUserCredential: IStoreUserCredential = {
               tokenResult: tokenResult!,
               providerData: userCredential.user.providerData as ProviderData[],
             };
-            return UserActions.signInViaFacebookSuccess({
+            return UserActions.signInWithFacebookSuccess({
+              email: userCredential.user.email!,
               userCredential: minimalizeUserCredential,
             });
           }),
           catchError((error) =>
             of(
-              UserActions.signInViaFacebookFailure({
+              UserActions.signInWithFacebookFailure({
                 errorMessage: 'Error during signing up with Facebook!',
               })
             )
@@ -69,11 +76,79 @@ export class UserEffects {
       )
     )
   );
-  // signInViaTwitter$ = createEffect(() =>
+  signInWithTwitter$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.signInWithTwitter),
+      exhaustMap(() =>
+        this.authService.signInWithTwitter().pipe(
+          mergeMap(async ({ data }) => {
+            if (typeof data === 'string') {
+              return UserActions.signInWithSocialsWrongProvider({
+                email: data,
+              });
+            }
+            const userCredential = data as UserCredential;
+            let tokenResult = await userCredential.user.getIdTokenResult();
+
+            const minimalizeUserCredential: IStoreUserCredential = {
+              tokenResult: tokenResult!,
+              providerData: userCredential.user.providerData as ProviderData[],
+            };
+            return UserActions.signInWithTwitterSuccess({
+              email: userCredential.user.email!,
+              userCredential: minimalizeUserCredential,
+            });
+          }),
+          catchError((error) =>
+            of(
+              UserActions.signInWithTwitterFailure({
+                errorMessage: 'Error during signing up with Twitter!',
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+  signInWithGoogle$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.signInWithGoogle),
+      exhaustMap(() =>
+        this.authService.signInWithGoogle().pipe(
+          mergeMap(async ({ data }) => {
+            if (typeof data === 'string') {
+              return UserActions.signInWithSocialsWrongProvider({
+                email: data,
+              });
+            }
+            const userCredential = data as UserCredential;
+            let tokenResult = await userCredential.user.getIdTokenResult();
+
+            const minimalizeUserCredential: IStoreUserCredential = {
+              tokenResult: tokenResult!,
+              providerData: userCredential.user.providerData as ProviderData[],
+            };
+            return UserActions.signInWithGoogleSuccess({
+              email: userCredential.user.email!,
+              userCredential: minimalizeUserCredential,
+            });
+          }),
+          catchError((error) =>
+            of(
+              UserActions.signInWithGoogleFailure({
+                errorMessage: 'Error during signing up with Twitter!',
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+  // signInWithTwitter$ = createEffect(() =>
   //   this.actions$.pipe(
-  //     ofType(UserActions.signInViaTwitter),
+  //     ofType(UserActions.signInWithTwitter),
   //     exhaustMap(() =>
-  //       this.authService.signInViaTwitter().pipe(
+  //       this.authService.signInWithTwitter().pipe(
   //         mergeMap(async ({ userCredential }) => {
   //           let tokenResult = await userCredential.user.getIdTokenResult();
 
@@ -81,13 +156,13 @@ export class UserEffects {
   //             tokenResult: tokenResult!,
   //             providerData: userCredential.user.providerData as ProviderData[],
   //           };
-  //           return UserActions.signInViaFacebookSuccess({
+  //           return UserActions.signInWithFacebookSuccess({
   //             userCredential: minimalizeUserCredential,
   //           });
   //         }),
   //         catchError((error) =>
   //           of(
-  //             UserActions.signInViaFacebookFailure({
+  //             UserActions.signInWithFacebookFailure({
   //               errorMessage: 'Error during signing up with Twitter!',
   //             })
   //           )

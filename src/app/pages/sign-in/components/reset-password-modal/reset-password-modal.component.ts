@@ -21,7 +21,6 @@ import { AuthService } from '../../../../core/authentication/auth.service';
 })
 export class ResetPasswordModalComponent implements OnInit {
   private store = inject(Store<UserState>);
-  private router = inject(Router);
   public bsModalRef = inject(BsModalRef);
 
   closeBtnName?: string;
