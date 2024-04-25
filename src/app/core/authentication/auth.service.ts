@@ -25,24 +25,14 @@ export class AuthService {
 
   signInViaFacebook(): Observable<{
     userCredential: UserCredential;
-    accessToken: string | undefined;
   }> {
     return from(signInWithPopup(this.auth, new FacebookAuthProvider())).pipe(
       map((result: UserCredential) => {
-        const user = result.user;
-        const credential = FacebookAuthProvider.credentialFromResult(result);
-        const accessToken = credential?.accessToken;
+        // const user = result.user;
+        // const accessToken = credential?.accessToken;
+        // const credential = FacebookAuthProvider.credentialFromResult(result);
 
-        return { userCredential: result, accessToken };
-      }),
-      catchError((error: FirebaseError) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        const credential = FacebookAuthProvider.credentialFromError(error);
-
-        console.log('Firebase Authentication Credential:', credential);
-
-        return throwError(error);
+        return { userCredential: result };
       })
     );
   }

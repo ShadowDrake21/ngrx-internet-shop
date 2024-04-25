@@ -12,6 +12,7 @@ import { AppState } from '../../store/app.state';
 import {
   debounceTime,
   delay,
+  delayWhen,
   filter,
   Observable,
   pairwise,
@@ -33,7 +34,7 @@ import * as UserSelectors from '../../store/user/user.selectors';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { AlertType } from '../../shared/models/alerts.model';
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
-import { IUser } from '../../shared/models/user.model';
+import { IStoreUserCredential, IUser } from '../../shared/models/user.model';
 import { ResetPasswordModalComponent } from './components/reset-password-modal/reset-password-modal.component';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { AuthService } from '../../core/authentication/auth.service';
@@ -88,14 +89,14 @@ export class SignInComponent implements OnInit {
     rememberMe: new FormControl(true),
   });
 
-  formSubmitted: boolean = false;
+  isLogging: boolean = false;
 
   ngOnInit(): void {
     this.previousRoute = this.routingService.getPreviousUrl() ?? '/';
   }
 
   onFormSubmit() {
-    this.formSubmitted = true;
+    this.isLogging = true;
     this.alerts = [];
 
     this.store.dispatch(
@@ -109,9 +110,7 @@ export class SignInComponent implements OnInit {
       .select(UserSelectors.selectUser)
       .pipe(debounceTime(5000), take(1))
       .subscribe((user) => {
-        console.log('error message', user);
-
-        if (user?.userCredential && this.formSubmitted) {
+        if (user?.userCredential && this.isLogging) {
           const now = new Date();
           const updatedUserCredential = {
             ...user.userCredential,
@@ -122,12 +121,9 @@ export class SignInComponent implements OnInit {
                 : user?.userCredential.tokenResult.expirationTime,
             },
           };
-          localStorage.setItem(
-            'ngrx-user-credential',
-            JSON.stringify(updatedUserCredential)
-          );
+          this.createAuthInLS(updatedUserCredential);
 
-          this.router.navigate([this.previousRoute]);
+          this.goToPrevious();
         } else {
           this.alerts.push({
             type: 'danger',
@@ -139,7 +135,7 @@ export class SignInComponent implements OnInit {
           this.signInForm.controls.rememberMe.setValue(true);
         }
 
-        this.formSubmitted = false;
+        this.isLogging = false;
       });
   }
 
@@ -150,12 +146,35 @@ export class SignInComponent implements OnInit {
   }
 
   signInViaFacebook() {
-    this.authService.signInViaFacebook().subscribe((obs) => {
-      console.log(obs);
+    this.isLogging = true;
+    this.store.dispatch(UserActions.clearUserState());
+    this.store.dispatch(UserActions.signInViaFacebook());
+
+    this.store.select(UserSelectors.selectUser).subscribe((user) => {
+      if (user?.userCredential) {
+        this.createAuthInLS(user?.userCredential!);
+        this.goToPrevious();
+        this.isLogging = false;
+      }
     });
+
+    this.store
+      .select(UserSelectors.selectErrorMessage)
+      .subscribe((errorMessage) => {
+        if (errorMessage) {
+          this.isLogging = false;
+        }
+      });
   }
 
-  onClose() {
+  createAuthInLS(userCredential: IStoreUserCredential) {
+    localStorage.setItem(
+      'ngrx-user-credential',
+      JSON.stringify(userCredential)
+    );
+  }
+
+  goToPrevious() {
     this.router.navigate([this.previousRoute]);
   }
 }
