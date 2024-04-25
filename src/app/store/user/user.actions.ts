@@ -41,6 +41,17 @@ export const signInViaTwitterFailure = createAction(
     errorMessage: string;
   }>()
 );
+export const signInViaGoogle = createAction('[User Component] SignInViaGoogle');
+export const signInViaGoogleSuccess = createAction(
+  '[User Component] SignInViaGoogleSuccess',
+  props<{ userCredential: IStoreUserCredential }>()
+);
+export const signInViaGoogleFailure = createAction(
+  '[User Component] SignInViaGoogleFailure',
+  props<{
+    errorMessage: string;
+  }>()
+);
 
 export const sendPasswordReset = createAction(
   '[User Component] SendPasswordReset',

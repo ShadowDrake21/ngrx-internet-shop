@@ -168,9 +168,27 @@ export class SignInComponent implements OnInit {
       });
   }
 
-  async signInViaFB() {
-    const email = await this.authService.signInViaFB();
-    console.log(email);
+  signInViaFB() {
+    // const email = await this.authService.signInViaFB();
+    // console.log(email);
+    // this.authService.signInWithAnotherMethods(email).then((values) => {
+    //   console.log(values);
+    //   if (values[0] === 'google.com') {
+    //     this.signInViaGoogle();
+    //   }
+    // });
+
+    this.authService
+      .signInViaFB()
+      .subscribe((data: UserCredential | string) => {
+        if (typeof data === 'string') {
+          console.log('string', data);
+        } else {
+          console.log('UserCredential', data);
+        }
+      });
+
+    // if()
     // .then((value) => {
     //   console.log(value);
     // })
@@ -186,7 +204,15 @@ export class SignInComponent implements OnInit {
     //   console.log(user);
     // });
 
-    this.authService.signInViaTwitter();
+    this.authService
+      .signInViaTwitter()
+      .subscribe((data: UserCredential | string) => {
+        if (typeof data === 'string') {
+          console.log('string', data);
+        } else {
+          console.log('UserCredential', data);
+        }
+      });
     // .then((result: UserCredential) => {
     //   console.log(result);
     // })
@@ -203,7 +229,15 @@ export class SignInComponent implements OnInit {
   }
 
   signInViaGoogle() {
-    this.authService.signInViaGoogle();
+    this.authService
+      .signInViaGoogle()
+      .subscribe((data: UserCredential | string) => {
+        if (typeof data === 'string') {
+          console.log('string', data);
+        } else {
+          console.log('UserCredential', data);
+        }
+      });
   }
 
   createAuthInLS(userCredential: IStoreUserCredential) {
