@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { loadStripe } from '@stripe/stripe-js';
-import { from, Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CartState } from '../../store/cart/cart.reducer';
 import { IProduct } from '../../shared/models/product.model';
 import * as CartSelectors from '../../store/cart/cart.selectors';

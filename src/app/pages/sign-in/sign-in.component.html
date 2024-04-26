@@ -14,7 +14,7 @@
         <div class="col-md-7" *ngIf="!isLogging; else loading">
           <div class="d-flex justify-content-end mb3">
             <button class="btn btn-danger d-block" (click)="goToPrevious()">
-              <fa-icon [icon]="close"></fa-icon>
+              <fa-icon [icon]="icons.faClose"></fa-icon>
             </button>
           </div>
           <div class="mb-4">
@@ -122,33 +122,33 @@
               <button
                 type="button"
                 class="facebook btn d-flex justify-content-center align-items-center"
-                (click)="signInWithFB()"
+                (click)="signInWithFacebook()"
               >
-                <fa-icon [icon]="facebookIcon" class="me-3"></fa-icon> Login
-                with Facebook
+                <fa-icon [icon]="icons.faFacebookF" class="me-3"></fa-icon>
+                Login with Facebook
               </button>
               <button
                 type="button"
                 class="twitter btn d-flex justify-content-center align-items-center"
                 (click)="signInWithTwitter()"
               >
-                <fa-icon [icon]="xIcon" class="me-3"></fa-icon> Login with X
-                (initially known as Twitter)
+                <fa-icon [icon]="icons.faXTwitter" class="me-3"></fa-icon> Login
+                with X (initially known as Twitter)
               </button>
               <button
                 type="button"
                 class="google btn d-flex justify-content-center align-items-center"
                 (click)="signInWithGoogle()"
               >
-                <fa-icon [icon]="googleIcon" class="me-3"></fa-icon> Login with
-                Google
+                <fa-icon [icon]="icons.faGoogle" class="me-3"></fa-icon> Login
+                with Google
               </button>
             </div>
           </form>
         </div>
         <ng-template #loading
-          ><app-loader class="d-flex justify-content-center"></app-loader
-        ></ng-template>
+          ><app-loader class="d-flex justify-content-center"></app-loader>
+        </ng-template>
       </div>
     </div>
   </div>

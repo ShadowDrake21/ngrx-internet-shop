@@ -26,42 +26,7 @@ export class AuthService {
     return from(sendPasswordResetEmail(this.auth, email));
   }
 
-  signInWithFacebook(): Observable<{
-    userCredential: UserCredential;
-  }> {
-    return from(signInWithPopup(this.auth, new FacebookAuthProvider())).pipe(
-      map((result: UserCredential) => {
-        // const user = result.user;
-        // const accessToken = credential?.accessToken;
-        // const credential = FacebookAuthProvider.credentialFromResult(result);
-
-        return { userCredential: result };
-      })
-    );
-  }
-
-  // signInWithTwitter(): Observable<{
-  //   userCredential: UserCredential;
-  // }> {
-  //   return from(signInWithPopup(this.auth, new TwitterAuthProvider())).pipe(
-  //     map((resut: UserCredential) => {
-  //       return { userCredential: resut };
-  //     })
-  //   );
-  // }
-
-  signInWithFB(): Observable<{ data: string | UserCredential }> {
-    // signInWithPopup(this.auth, new FacebookAuthProvider()).catch(
-    //   (err: FirebaseError) => {
-    //     console.log(err.customData);
-    //   }
-    // );
-    // await signInWithPopup(this.auth, new FacebookAuthProvider()).catch(
-    //   (err: FirebaseError) => {
-    //     email = (err.customData?.['email'] as string) ?? 'unknown';
-    //   }
-    // );
-
+  signInWithFacebook(): Observable<{ data: string | UserCredential }> {
     return from(signInWithPopup(this.auth, new FacebookAuthProvider())).pipe(
       map((userCredential) => ({ data: userCredential })),
       catchError((error: FirebaseError) => {
@@ -69,8 +34,6 @@ export class AuthService {
         return of({ data: email });
       })
     );
-
-    // return email;
   }
 
   signInWithTwitter(): Observable<{ data: string | UserCredential }> {
@@ -81,8 +44,6 @@ export class AuthService {
         return of({ data: email });
       })
     );
-
-    // return email;
   }
 
   signInWithGoogle(): Observable<{ data: string | UserCredential }> {
@@ -93,8 +54,6 @@ export class AuthService {
         return of({ data: email });
       })
     );
-
-    // return email;
   }
 
   signInWithAnotherMethods(email: string): Observable<string[]> {

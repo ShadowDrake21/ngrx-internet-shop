@@ -1,37 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import {
-  FaIconComponent,
-  FontAwesomeModule,
-} from '@fortawesome/angular-fontawesome';
-import {
-  faFacebookF,
-  faGoogle,
-  faXTwitter,
-} from '@fortawesome/free-brands-svg-icons';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { BsModalRef } from 'ngx-bootstrap/modal';
 import { debounceTime, Observable, Subscription, take } from 'rxjs';
-import {
-  IStoreUserCredential,
-  IUser,
-} from '../../../../shared/models/user.model';
-import { Router } from '@angular/router';
+import { IUser } from '../../../../shared/models/user.model';
 import { Store } from '@ngrx/store';
-import { AuthService } from '../../../../core/authentication/auth.service';
 import { RoutingService } from '../../../../core/services/routing.service';
 import { UserState } from '../../../../store/user/user.reducer';
 import { AlertType } from '../../../../shared/models/alerts.model';
-import * as UserActions from '../../../../store/user/user.actions';
 import * as UserSelectors from '../../../../store/user/user.selectors';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
+import { createAuthInLS } from '../../../../core/utils/auth.utils';
+import { signInModalIcons } from '../../../../shared/utils/icons.utils';
+import { SignInService } from '../../../../core/services/signIn.service';
+import { AlertComponent } from '../../../../shared/components/alert/alert.component';
 
 @Component({
   selector: 'app-available-providers-modal',
@@ -41,164 +24,111 @@ import { LoaderComponent } from '../../../../shared/components/loader/loader.com
     FontAwesomeModule,
     ReactiveFormsModule,
     LoaderComponent,
+    AlertComponent,
   ],
   templateUrl: './available-providers-modal.component.html',
   styleUrl: './available-providers-modal.component.scss',
+  providers: [SignInService],
 })
 export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
-  facebookIcon = faFacebookF;
-  googleIcon = faGoogle;
-  xIcon = faXTwitter;
-  close = faClose;
+  icons = signInModalIcons;
 
-  public bsModalRef = inject(BsModalRef);
   private store = inject(Store<UserState>);
   private routingService = inject(RoutingService);
-  private router = inject(Router);
+  private signInService = inject(SignInService);
+  public bsModalRef = inject(BsModalRef);
 
   availableProviders: string[] = [];
   previousRoute!: string;
-
-  alerts: AlertType[] = [];
-
   closeBtnName?: string;
 
+  errorMessage!: string;
   user$!: Observable<IUser | null>;
-  userSubscription: Subscription[] = [];
 
-  signInForm = new FormGroup({
-    email: new FormControl('', [
-      Validators.email,
-      Validators.required,
-      Validators.minLength(6),
-    ]),
-    password: new FormControl('', [
-      Validators.required,
-      Validators.minLength(6),
-      Validators.maxLength(20),
-    ]),
-    rememberMe: new FormControl(true),
-  });
+  private userSubscription: Subscription[] = [];
 
+  signInForm!: FormGroup<{
+    email: FormControl<string | null>;
+    password: FormControl<string | null>;
+    rememberMe: FormControl<boolean | null>;
+  }>;
   isLogging: boolean = false;
 
-  ngOnInit(): void {}
-
+  ngOnInit(): void {
+    this.signInForm = this.signInService.getSignInForm();
+  }
   onFormSubmit() {
     this.isLogging = true;
-    this.alerts = [];
 
-    this.store.dispatch(
-      UserActions.signInManually({
-        email: this.signInForm.value.email as string,
-        password: this.signInForm.value.password as string,
-      })
-    );
+    this.signInService.signInManuallyDispatch();
 
     const signInManuallySubscription: Subscription = this.store
       .select(UserSelectors.selectUser)
       .pipe(debounceTime(5000), take(1))
       .subscribe((user) => {
         if (user?.userCredential && this.isLogging) {
-          const now = new Date();
-          const updatedUserCredential = {
-            ...user.userCredential,
-            tokenResult: {
-              ...user.userCredential.tokenResult,
-              expirationTime: this.signInForm.value.rememberMe
-                ? new Date(now.setMonth(now.getMonth() + 3)).toUTCString()
-                : user?.userCredential.tokenResult.expirationTime,
-            },
-          };
-          this.createAuthInLS(updatedUserCredential);
+          this.signInService.signInManuallyFormReducedUserCredential(
+            user.userCredential
+          );
 
-          this.goToPrevious();
+          this.routingService.goToPreviousPage(this.previousRoute);
           this.bsModalRef.hide();
         } else {
-          this.alerts.push({
-            type: 'danger',
-            msg: `Incorrect user credential!`,
-            timeout: 5000,
-          });
-
+          this.errorMessage = 'Incorrect user credential!';
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 5000);
           this.signInForm.reset();
           this.signInForm.controls.rememberMe.setValue(true);
-          this.bsModalRef.hide();
+          // this.bsModalRef.hide();
         }
 
         this.isLogging = false;
       });
-    this.userSubscription.push(signInManuallySubscription);
+    this.addSubscription(signInManuallySubscription);
   }
 
-  signInWithFB() {
+  signInWithFacebook() {
     this.isLogging = true;
-    this.store.dispatch(UserActions.clearUserState());
-    this.store.dispatch(UserActions.signInWithFacebook());
+    this.signInService.signInWithFacebookDispatch();
 
-    const signInWithFacebookSubscription: Subscription = this.store
-      .select(UserSelectors.selectUser)
-      .subscribe((user) => {
-        console.log('UserSelectors.selectUser', user);
-        if (user !== null && user.userCredential) {
-          this.createAuthInLS(user?.userCredential!);
-
-          this.goToPrevious();
-          this.bsModalRef.hide();
-          this.isLogging = false;
-        }
-      });
-    this.userSubscription.push(signInWithFacebookSubscription);
+    const signInWithFacebookSubscription: Subscription =
+      this.handleDataManupulationsInSignInWithSocials();
+    this.addSubscription(signInWithFacebookSubscription);
   }
 
   signInWithTwitter() {
     this.isLogging = true;
-    this.store.dispatch(UserActions.clearUserState());
-    this.store.dispatch(UserActions.signInWithTwitter());
+    this.signInService.signInWithTwitterDispatch();
 
-    const signInWithTwitterSubscription: Subscription = this.store
-      .select(UserSelectors.selectUser)
-      .subscribe((user) => {
-        console.log('UserSelectors.selectUser', user);
-        if (user !== null && user.userCredential) {
-          this.createAuthInLS(user?.userCredential!);
-
-          this.goToPrevious();
-          this.bsModalRef.hide();
-          this.isLogging = false;
-        }
-      });
-    this.userSubscription.push(signInWithTwitterSubscription);
+    const signInWithTwitterSubscription: Subscription =
+      this.handleDataManupulationsInSignInWithSocials();
+    this.addSubscription(signInWithTwitterSubscription);
   }
 
   signInWithGoogle() {
     this.isLogging = true;
-    this.store.dispatch(UserActions.clearUserState());
-    this.store.dispatch(UserActions.signInWithGoogle());
-    const signInWithGoogleSubscription: Subscription = this.store
-      .select(UserSelectors.selectUser)
-      .subscribe((user) => {
-        console.log('UserSelectors.selectUser', user);
-        if (user !== null && user.userCredential) {
-          this.createAuthInLS(user?.userCredential!);
+    this.signInService.signInWithGoogleDispatch();
 
-          this.goToPrevious();
-          this.bsModalRef.hide();
-          this.isLogging = false;
-        }
-      });
-    this.userSubscription.push(signInWithGoogleSubscription);
+    const signInWithGoogleSubscription: Subscription =
+      this.handleDataManupulationsInSignInWithSocials();
+    this.addSubscription(signInWithGoogleSubscription);
   }
 
-  createAuthInLS(userCredential: IStoreUserCredential) {
-    localStorage.setItem(
-      'ngrx-user-credential',
-      JSON.stringify(userCredential)
-    );
-  }
+  private handleDataManupulationsInSignInWithSocials(): Subscription {
+    return this.store.select(UserSelectors.selectUser).subscribe((user) => {
+      console.log('UserSelectors.selectUser', user);
+      if (user !== null && user.userCredential) {
+        createAuthInLS(user?.userCredential!);
 
-  goToPrevious() {
-    this.router.navigate([this.previousRoute]);
+        this.routingService.goToPreviousPage(this.previousRoute);
+        this.bsModalRef.hide();
+        this.isLogging = false;
+      }
+    });
+  }
+  addSubscription(subscription: Subscription) {
+    this.userSubscription.push(subscription);
   }
 
   ngOnDestroy(): void {
