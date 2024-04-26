@@ -1,6 +1,21 @@
 import { createAction, props } from '@ngrx/store';
-import { IStoreUserCredential } from '../../shared/models/user.model';
+import {
+  IStoreUserCredential,
+  IUserSignUpData,
+} from '../../shared/models/user.model';
 
+export const signUp = createAction(
+  '[User Component] SignUp',
+  props<{ data: IUserSignUpData }>()
+);
+export const signUpSuccess = createAction(
+  '[User Component] SignUpSuccess',
+  props<{ email: string; userCredential: IStoreUserCredential }>()
+);
+export const signUpFailure = createAction(
+  '[User Component] SignUpFailure',
+  props<{ errorMessage: string }>()
+);
 export const signInManually = createAction(
   '[User Component] SignInManually',
   props<{ email: string; password: string }>()
@@ -69,6 +84,6 @@ export const signOutSuccess = createAction('[User Component] SignOutSuccess');
 
 export const browserReload = createAction(
   '[User Component] BrowserReload',
-  props<{ userCredential: IStoreUserCredential }>()
+  props<{ email: string; userCredential: IStoreUserCredential }>()
 );
 export const clearUserState = createAction('[User Component] ClearUserState');

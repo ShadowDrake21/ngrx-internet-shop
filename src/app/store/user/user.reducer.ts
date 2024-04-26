@@ -18,70 +18,11 @@ export const initialUserState: UserState = {
 export const userReducer = createReducer(
   initialUserState,
   on(
+    UserActions.signUpSuccess,
     UserActions.signInManuallySuccess,
     UserActions.browserReload,
-    (state, { userCredential }) => ({
-      ...state,
-
-      user: {
-        userCredential,
-        online: true,
-      },
-
-      errorMessage: null,
-    })
-  ),
-  on(UserActions.signInManuallyFailure, (state, { errorMessage }) => ({
-    ...state,
-    user: {
-      userCredential: null,
-      online: false,
-    },
-    errorMessage,
-  })),
-  on(
     UserActions.signInWithFacebookSuccess,
-    (state, { userCredential, email }) => ({
-      ...state,
-      email,
-      user: {
-        userCredential,
-        online: true,
-      },
-      errorMessage: null,
-    })
-  ),
-  on(UserActions.signInWithFacebookFailure, (state, { errorMessage }) => ({
-    ...state,
-    email: null,
-    user: {
-      userCredential: null,
-      online: false,
-    },
-    errorMessage,
-  })),
-  on(
     UserActions.signInWithTwitterSuccess,
-    (state, { userCredential, email }) => ({
-      ...state,
-      email,
-      user: {
-        userCredential,
-        online: true,
-      },
-      errorMessage: null,
-    })
-  ),
-  on(UserActions.signInWithTwitterFailure, (state, { errorMessage }) => ({
-    ...state,
-    email: null,
-    user: {
-      userCredential: null,
-      online: false,
-    },
-    errorMessage,
-  })),
-  on(
     UserActions.signInWithGoogleSuccess,
     (state, { userCredential, email }) => ({
       ...state,
@@ -93,15 +34,22 @@ export const userReducer = createReducer(
       errorMessage: null,
     })
   ),
-  on(UserActions.signInWithGoogleFailure, (state, { errorMessage }) => ({
-    ...state,
-    email: null,
-    user: {
-      userCredential: null,
-      online: false,
-    },
-    errorMessage,
-  })),
+  on(
+    UserActions.signUpFailure,
+    UserActions.signInManuallyFailure,
+    UserActions.signInWithFacebookFailure,
+    UserActions.signInWithTwitterFailure,
+    UserActions.signInWithGoogleFailure,
+    (state, { errorMessage }) => ({
+      ...state,
+      email: null,
+      user: {
+        userCredential: null,
+        online: false,
+      },
+      errorMessage,
+    })
+  ),
   on(UserActions.signInWithSocialsWrongProvider, (state, { email }) => ({
     ...state,
     email,
@@ -111,16 +59,7 @@ export const userReducer = createReducer(
     },
     errorMessage: null,
   })),
-  on(UserActions.signOutSuccess, (state) => ({
-    ...state,
-    email: null,
-    user: {
-      userCredential: null,
-      online: false,
-    },
-    errorMessage: null,
-  })),
-  on(UserActions.clearUserState, (state) => ({
+  on(UserActions.signOutSuccess, UserActions.clearUserState, (state) => ({
     ...state,
     email: null,
     user: {

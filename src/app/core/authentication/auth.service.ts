@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import {
   Auth,
+  createUserWithEmailAndPassword,
   FacebookAuthProvider,
   fetchSignInMethodsForEmail,
   GoogleAuthProvider,
@@ -9,14 +10,45 @@ import {
   signInWithPopup,
   signOut,
   TwitterAuthProvider,
+  updateProfile,
   UserCredential,
 } from '@angular/fire/auth';
 import { FirebaseError } from 'firebase/app';
-import { catchError, from, map, Observable, of, throwError } from 'rxjs';
+import {
+  catchError,
+  from,
+  map,
+  Observable,
+  of,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
+import { IUserSignUpData, IUserUpdate } from '../../shared/models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private auth: Auth = inject(Auth);
+
+  signUp(signUpData: IUserSignUpData): Observable<UserCredential> {
+    return from(
+      createUserWithEmailAndPassword(
+        this.auth,
+        signUpData.email,
+        signUpData.username
+      )
+    ).pipe(
+      switchMap((credential) => {
+        return this.updateUser({ displayName: signUpData.username }).pipe(
+          map(() => credential)
+        );
+      })
+    );
+  }
+
+  updateUser(updateData: IUserUpdate) {
+    return from(updateProfile(this.auth.currentUser!, updateData));
+  }
 
   signInManually(email: string, password: string): Observable<UserCredential> {
     return from(signInWithEmailAndPassword(this.auth, email, password));

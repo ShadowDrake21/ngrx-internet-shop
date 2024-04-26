@@ -95,7 +95,7 @@
                 />
                 <div class="control__indicator"></div>
               </label>
-              <span class="ml-auto"
+              <span class="ml-auto d-flex flex-column"
                 ><button
                   type="button"
                   class="forgot-pass btn btn-link p-0 h-100 color"
@@ -103,6 +103,12 @@
                 >
                   Forgot Password
                 </button>
+                <a
+                  class="forgot-pass btn btn-link p-0 h-100 color"
+                  [routerLink]="['/sign-up']"
+                >
+                  Create an account
+                </a>
               </span>
             </div>
 

@@ -11,7 +11,11 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 // components
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
-import { IStoreUserCredential, IUser } from './shared/models/user.model';
+import {
+  IStoreUserCredential,
+  IUser,
+  ProviderData,
+} from './shared/models/user.model';
 import { Store } from '@ngrx/store';
 import { AppState } from './store/app.state';
 
@@ -57,7 +61,12 @@ export class AppComponent implements OnInit {
     );
 
     if (userCredential) {
-      this.store.dispatch(UserActions.browserReload({ userCredential }));
+      this.store.dispatch(
+        UserActions.browserReload({
+          email: userCredential.providerData[0].email,
+          userCredential,
+        })
+      );
     }
   }
 

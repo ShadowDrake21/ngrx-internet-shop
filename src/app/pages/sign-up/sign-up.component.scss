@@ -20,7 +20,7 @@ body {
 input,
 textarea,
 select,
-button {
+.register-btn {
   font-family: "Poppins-Regular";
   color: #333;
   font-size: 13px;
@@ -135,18 +135,21 @@ select {
     display: none;
   }
 }
-button {
+.btns {
+  margin-top: 40px;
+}
+.register-btn {
   border: none;
   width: 164px;
   height: 51px;
   margin: auto;
-  margin-top: 40px;
+
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  background: #333;
+  background: #292929;
   font-size: 15px;
   color: #fff;
   vertical-align: middle;
@@ -172,6 +175,9 @@ button {
       -webkit-animation-iteration-count: 1;
       animation-iteration-count: 1;
     }
+  }
+  &:disabled {
+    background: #777777;
   }
 }
 @-webkit-keyframes hvr-icon-wobble-horizontal {
@@ -226,6 +232,14 @@ button {
     transform: translateX(0);
   }
 }
+
+.error-message {
+  text-align: center;
+  background-color: rgb(255, 0, 0);
+  color: rgb(255, 255, 255);
+  padding: 15px 25px;
+}
+
 @media (max-width: 1199px) {
   .wrapper {
     background-position: right center;
@@ -249,7 +263,7 @@ button {
       padding: 40px 0 30px;
     }
   }
-  button {
+  .register-btn {
     margin-top: 60px;
   }
 }
