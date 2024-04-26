@@ -1,7 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { UserCredential } from '@angular/fire/auth';
-import { IStoreUserCredential, IUser } from '../../shared/models/user.model';
-import { Observable } from 'rxjs';
+import { IStoreUserCredential } from '../../shared/models/user.model';
 
 export const signInManually = createAction(
   '[User Component] SignInManually',
@@ -9,7 +7,7 @@ export const signInManually = createAction(
 );
 export const signInManuallySuccess = createAction(
   '[User Component] SignInManuallySuccess',
-  props<{ userCredential: IStoreUserCredential }>()
+  props<{ email: string; userCredential: IStoreUserCredential }>()
 );
 export const signInManuallyFailure = createAction(
   '[User Component] SignInManuallyFailure',

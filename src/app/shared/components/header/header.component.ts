@@ -24,7 +24,6 @@ import { ProductService } from '../../../core/services/product.service';
 import { IProduct } from '../../models/product.model';
 
 // created ngrx stuff
-import { CartState } from '../../../store/cart/cart.reducer';
 import * as CartSelectors from '../../../store/cart/cart.selectors';
 import * as UserSelectors from '../../../store/user/user.selectors';
 import * as UserActions from '../../../store/user/user.actions';

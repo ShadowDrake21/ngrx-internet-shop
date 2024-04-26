@@ -7,61 +7,12 @@ $background-color_1: #fff;
 $background-color_2: #7e0cf5;
 $border-color_1: #7b7b7b;
 
-body {
-  font-family: $font-family_1;
-  background-color: $background-color_1;
-}
 p {
   color: $color_1;
   font-weight: 300;
 }
-h1 {
-  font-family: $font-family_1;
-}
-h2 {
-  font-family: $font-family_1;
-  font-size: 20px;
-}
 h3 {
   font-family: $font-family_1;
-}
-h4 {
-  font-family: $font-family_1;
-}
-h5 {
-  font-family: $font-family_1;
-}
-h6 {
-  font-family: $font-family_1;
-}
-.h1 {
-  font-family: $font-family_1;
-}
-.h2 {
-  font-family: $font-family_1;
-}
-.h3 {
-  font-family: $font-family_1;
-}
-.h4 {
-  font-family: $font-family_1;
-}
-.h5 {
-  font-family: $font-family_1;
-}
-.h6 {
-  font-family: $font-family_1;
-}
-a {
-  -webkit-transition: 0.3s all ease;
-  -o-transition: 0.3s all ease;
-  transition: 0.3s all ease;
-  &:hover {
-    text-decoration: none !important;
-  }
-}
-.content {
-  padding: 7rem 0;
 }
 .half {
   height: 100vh;
@@ -111,11 +62,6 @@ a {
       border-bottom: 1px solid #efefef;
       border-bottom-left-radius: 7px;
       border-bottom-right-radius: 7px;
-    }
-    .form-group.field--not-empty {
-      label {
-        margin-top: -20px;
-      }
     }
     .form-control {
       border: none;
@@ -178,11 +124,6 @@ a {
       border-bottom-left-radius: 7px;
       border-bottom-right-radius: 7px;
     }
-    .form-group.field--not-empty {
-      label {
-        margin-top: -20px;
-      }
-    }
     .form-control {
       border: none;
       padding: 15;
@@ -200,10 +141,6 @@ a {
         box-shadow: none;
       }
     }
-  }
-  a {
-    color: $color_2;
-    text-decoration: underline;
   }
   .btn {
     height: 54px;
@@ -338,11 +275,6 @@ a {
     transition: 0.3s all ease;
   }
 }
-.control--radio {
-  .control__indicator {
-    border-radius: 50%;
-  }
-}
 .control--checkbox {
   .control__indicator {
     &:after {
@@ -409,52 +341,5 @@ a {
     .bg {
       width: 100%;
     }
-  }
-}
-
-/* HTML: <div class="loader"></div> */
-.loader {
-  width: 65px;
-  aspect-ratio: 1;
-  position: relative;
-}
-.loader:before,
-.loader:after {
-  content: "";
-  position: absolute;
-  border-radius: 50px;
-  box-shadow: 0 0 0 3px inset #000000;
-  animation: l4 2.5s infinite;
-}
-.loader:after {
-  animation-delay: -1.25s;
-}
-@keyframes l4 {
-  0% {
-    inset: 0 35px 35px 0;
-  }
-  12.5% {
-    inset: 0 35px 0 0;
-  }
-  25% {
-    inset: 35px 35px 0 0;
-  }
-  37.5% {
-    inset: 35px 0 0 0;
-  }
-  50% {
-    inset: 35px 0 0 35px;
-  }
-  62.5% {
-    inset: 0 0 0 35px;
-  }
-  75% {
-    inset: 0 0 35px 35px;
-  }
-  87.5% {
-    inset: 0 0 35px 0;
-  }
-  100% {
-    inset: 0 35px 35px 0;
   }
 }

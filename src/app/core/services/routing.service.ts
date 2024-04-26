@@ -21,4 +21,8 @@ export class RoutingService {
   public getPreviousUrl() {
     return this.previousUrl;
   }
+
+  public goToPreviousPage(page: string = this.previousUrl) {
+    this.router.navigate([page]);
+  }
 }

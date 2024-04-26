@@ -1,34 +1,24 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import {
-  faFacebookF,
-  faGoogle,
-  faXTwitter,
-} from '@fortawesome/free-brands-svg-icons';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { Store } from '@ngrx/store';
-import { debounceTime, Observable, Subscription, take, takeLast } from 'rxjs';
+import { debounceTime, Observable, Subscription, take } from 'rxjs';
 import { RoutingService } from '../../core/services/routing.service';
 import { CommonModule } from '@angular/common';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { UserState } from '../../store/user/user.reducer';
 
-import * as UserActions from '../../store/user/user.actions';
 import * as UserSelectors from '../../store/user/user.selectors';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
 import { AlertType } from '../../shared/models/alerts.model';
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
-import { IStoreUserCredential, IUser } from '../../shared/models/user.model';
+import { IUser } from '../../shared/models/user.model';
 import { ResetPasswordModalComponent } from './components/reset-password-modal/reset-password-modal.component';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { AuthService } from '../../core/authentication/auth.service';
 import { AvailableProvidersModalComponent } from './components/available-providers-modal/available-providers-modal.component';
+import { createAuthInLS } from '../../core/utils/auth.utils';
+import { signInModalIcons } from '../../shared/utils/icons.utils';
+import { SignInService } from '../../core/services/signIn.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -45,47 +35,34 @@ import { AvailableProvidersModalComponent } from './components/available-provide
 
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.scss',
-  providers: [BsModalService],
+  providers: [BsModalService, SignInService],
 })
 export class SignInComponent implements OnInit {
-  facebookIcon = faFacebookF;
-  googleIcon = faGoogle;
-  xIcon = faXTwitter;
-  close = faClose;
+  icons = signInModalIcons;
 
   private store = inject(Store<UserState>);
   private routingService = inject(RoutingService);
-  private router = inject(Router);
   private modalService = inject(BsModalService);
   private authService = inject(AuthService);
+  private signInService = inject(SignInService);
 
   previousRoute!: string;
-
-  user$!: Observable<IUser | null>;
-
-  alerts: AlertType[] = [];
-
   bsModalRef?: BsModalRef;
 
+  alerts: AlertType[] = [];
+  user$!: Observable<IUser | null>;
   private userStateSubscription!: Subscription | undefined;
 
-  signInForm = new FormGroup({
-    email: new FormControl('', [
-      Validators.email,
-      Validators.required,
-      Validators.minLength(6),
-    ]),
-    password: new FormControl('', [
-      Validators.required,
-      Validators.minLength(6),
-      Validators.maxLength(20),
-    ]),
-    rememberMe: new FormControl(true),
-  });
+  signInForm!: FormGroup<{
+    email: FormControl<string | null>;
+    password: FormControl<string | null>;
+    rememberMe: FormControl<boolean | null>;
+  }>;
 
   isLogging: boolean = false;
 
   ngOnInit(): void {
+    this.signInForm = this.signInService.getSignInForm();
     this.previousRoute = this.routingService.getPreviousUrl() ?? '/';
   }
 
@@ -93,37 +70,26 @@ export class SignInComponent implements OnInit {
     this.isLogging = true;
     this.alerts = [];
 
-    this.store.dispatch(
-      UserActions.signInManually({
-        email: this.signInForm.value.email as string,
-        password: this.signInForm.value.password as string,
-      })
-    );
+    this.signInService.signInManuallyDispatch();
 
     this.store
       .select(UserSelectors.selectUser)
       .pipe(debounceTime(5000), take(1))
       .subscribe((user) => {
         if (user?.userCredential && this.isLogging) {
-          const now = new Date();
-          const updatedUserCredential = {
-            ...user.userCredential,
-            tokenResult: {
-              ...user.userCredential.tokenResult,
-              expirationTime: this.signInForm.value.rememberMe
-                ? new Date(now.setMonth(now.getMonth() + 3)).toUTCString()
-                : user?.userCredential.tokenResult.expirationTime,
-            },
-          };
-          this.createAuthInLS(updatedUserCredential);
+          this.signInService.signInManuallyFormReducedUserCredential(
+            user.userCredential
+          );
 
           this.goToPrevious();
         } else {
-          this.alerts.push({
-            type: 'danger',
-            msg: `Incorrect user credential!`,
-            timeout: 5000,
-          });
+          this.alerts.push(
+            this.signInService.setAlert(
+              'danger',
+              'Incorrect user credential!',
+              5000
+            )
+          );
 
           this.signInForm.reset();
           this.signInForm.controls.rememberMe.setValue(true);
@@ -135,8 +101,7 @@ export class SignInComponent implements OnInit {
 
   openResetPasswordModal() {
     this.bsModalRef = this.modalService.show(ResetPasswordModalComponent);
-    this.bsModalRef.setClass('sign-in__modals modal-dialog-centered');
-    this.bsModalRef.content.closeBtnName = 'Close';
+    this.setModalFeatures('sign-in__modals modal-dialog-centered');
   }
 
   openAvailableProvidersModal(providers: string[]) {
@@ -150,36 +115,35 @@ export class SignInComponent implements OnInit {
       AvailableProvidersModalComponent,
       initialState
     );
-    this.bsModalRef.setClass('sign-in__modals modal-dialog-centered');
-    this.bsModalRef.content.closeBtnName = 'Close';
+    this.setModalFeatures('sign-in__modals modal-dialog-centered');
   }
 
-  signInWithFB() {
-    this.store.dispatch(UserActions.clearUserState());
-    this.store.dispatch(UserActions.signInWithFacebook());
+  signInWithFacebook() {
+    this.signInService.signInWithFacebookDispatch();
     this.signInWithSocialsResults();
   }
 
   signInWithTwitter() {
-    this.store.dispatch(UserActions.clearUserState());
-    this.store.dispatch(UserActions.signInWithTwitter());
+    this.signInService.signInWithTwitterDispatch();
     this.signInWithSocialsResults();
   }
 
   signInWithGoogle() {
-    this.store.dispatch(UserActions.clearUserState());
-    this.store.dispatch(UserActions.signInWithGoogle());
+    this.signInService.signInWithGoogleDispatch();
     this.signInWithSocialsResults();
   }
 
   signInWithSocialsResults() {
+    this.alerts = [];
     this.userStateSubscription = this.store
       .select(UserSelectors.selectUserState)
       .subscribe((userState) => {
         if (userState.errorMessage) {
-          console.log(userState.errorMessage);
+          this.alerts.push(
+            this.signInService.setAlert('danger', userState.errorMessage, 5000)
+          );
         } else if (userState.email && userState.user?.userCredential) {
-          this.createAuthInLS(userState.user?.userCredential!);
+          createAuthInLS(userState.user?.userCredential!);
           this.goToPrevious();
           if (this.userStateSubscription) {
             this.userStateSubscription.unsubscribe();
@@ -198,15 +162,12 @@ export class SignInComponent implements OnInit {
       });
   }
 
-  createAuthInLS(userCredential: IStoreUserCredential) {
-    console.log('createAuthInLS');
-    localStorage.setItem(
-      'ngrx-user-credential',
-      JSON.stringify(userCredential)
-    );
+  setModalFeatures(classStr: string) {
+    this.bsModalRef?.setClass(classStr);
+    this.bsModalRef!.content.closeBtnName = 'Close';
   }
 
   goToPrevious() {
-    this.router.navigate([this.previousRoute]);
+    this.routingService.goToPreviousPage(this.previousRoute);
   }
 }

@@ -11,9 +11,12 @@
     </button>
   </div>
   <div class="modal-body" *ngIf="!isLogging; else loading">
-    <p>
+    <p *ngIf="!errorMessage; else incorrectCredential">
       This email has already been used and it connected to the next provider:
     </p>
+    <ng-template #incorrectCredential
+      ><p style="color: red">{{ errorMessage }}</p></ng-template
+    >
     <div *ngIf="availableProviders.length">
       <div *ngFor="let item of availableProviders">
         <ng-container *ngIf="item === 'password'">
@@ -105,10 +108,10 @@
             <button
               type="button"
               class="facebook btn d-flex justify-content-center align-items-center"
-              (click)="signInWithFB()"
+              (click)="signInWithFacebook()"
             >
-              <fa-icon [icon]="facebookIcon" class="me-3"></fa-icon> Login with
-              Facebook
+              <fa-icon [icon]="icons.faFacebookF" class="me-3"></fa-icon> Login
+              with Facebook
             </button>
           </div>
         </ng-container>
@@ -119,8 +122,8 @@
               class="twitter btn d-flex justify-content-center align-items-center"
               (click)="signInWithTwitter()"
             >
-              <fa-icon [icon]="xIcon" class="me-3"></fa-icon> Login with X
-              (initially known as Twitter)
+              <fa-icon [icon]="icons.faXTwitter" class="me-3"></fa-icon> Login
+              with X (initially known as Twitter)
             </button>
           </div>
         </ng-container>
@@ -131,8 +134,8 @@
               class="google btn d-flex justify-content-center align-items-center"
               (click)="signInWithGoogle()"
             >
-              <fa-icon [icon]="googleIcon" class="me-3"></fa-icon> Login with
-              Google
+              <fa-icon [icon]="icons.faGoogle" class="me-3"></fa-icon> Login
+              with Google
             </button>
           </div></ng-container
         >

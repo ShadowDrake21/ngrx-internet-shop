@@ -3,7 +3,6 @@ import { Component, inject, OnInit } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { IProduct } from '../../../../models/product.model';
 import { Store } from '@ngrx/store';
-import { CartState } from '../../../../../store/cart/cart.reducer';
 import { Observable, switchMap } from 'rxjs';
 
 import * as CartActions from '../../../../../store/cart/cart.actions';
@@ -12,8 +11,7 @@ import * as UserSelectors from '../../../../../store/user/user.selectors';
 import { ClearURLPipe } from '../../../../pipes/clear-url.pipe';
 import { SafeHTMLPipe } from '../../../../pipes/safe-html.pipe';
 import { TruncateTextPipe } from '../../../../pipes/truncate-text.pipe';
-import { Router, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { RouterLink } from '@angular/router';
 import { loadStripe } from '@stripe/stripe-js';
 import { CheckoutService } from '../../../../../core/services/checkout.service';
 import { AppState } from '../../../../../store/app.state';
