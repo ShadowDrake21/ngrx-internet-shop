@@ -1,10 +1,14 @@
-import { ApplicationConfig, isDevMode } from '@angular/core';
+import {
+  ApplicationConfig,
+  importProvidersFrom,
+  isDevMode,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
-import { provideRouterStore } from '@ngrx/router-store';
+import { provideRouterStore, routerReducer } from '@ngrx/router-store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideHttpClient } from '@angular/common/http';
 import { productReducer } from './store/product/products.reducer';
@@ -14,6 +18,13 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { favoritesReducer } from './store/favorites/favorites.reducer';
 import { categoryReducer } from './store/category/category.reducer';
 import { CategoryEffects } from './store/category/category.effects';
+import { provideFirebaseApp, getApp, initializeApp } from '@angular/fire/app';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { environment } from '../environments/environment.development';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { provideDatabase, getDatabase } from '@angular/fire/database';
+import { userReducer } from './store/user/user.reducer';
+import { UserEffects } from './store/user/user.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,9 +36,16 @@ export const appConfig: ApplicationConfig = {
       cart: cartReducer,
       category: categoryReducer,
       favorites: favoritesReducer,
+      user: userReducer,
+      router: routerReducer,
     }),
-    provideEffects([ProductEffects, CategoryEffects]),
+    provideEffects([ProductEffects, CategoryEffects, UserEffects]),
     provideRouterStore(),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
+    importProvidersFrom([
+      provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+      provideAuth(() => getAuth()),
+      provideDatabase(() => getDatabase()),
+    ]),
   ],
 };
