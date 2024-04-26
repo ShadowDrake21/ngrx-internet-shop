@@ -19,6 +19,7 @@ import { AvailableProvidersModalComponent } from './components/available-provide
 import { createAuthInLS } from '../../core/utils/auth.utils';
 import { signInModalIcons } from '../../shared/utils/icons.utils';
 import { SignInService } from '../../core/services/signIn.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-sign-in',
@@ -31,6 +32,7 @@ import { SignInService } from '../../core/services/signIn.service';
     LoaderComponent,
     ResetPasswordModalComponent,
     AvailableProvidersModalComponent,
+    RouterLink,
   ],
 
   templateUrl: './sign-in.component.html',

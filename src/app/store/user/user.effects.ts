@@ -4,11 +4,35 @@ import { AuthService } from '../../core/authentication/auth.service';
 import * as UserActions from './user.actions';
 import { catchError, exhaustMap, map, mergeMap, of } from 'rxjs';
 import { minimalizeUserCredential } from '../../shared/utils/store.utils';
+import { FirebaseError } from 'firebase/app';
 
 @Injectable()
 export class UserEffects {
   private actions$ = inject(Actions);
   private authService = inject(AuthService);
+
+  signUp$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.signUp),
+      exhaustMap(({ data }) =>
+        this.authService.signUp(data).pipe(
+          mergeMap(async (userCredential) => {
+            return UserActions.signUpSuccess({
+              email: userCredential.user.email!,
+              userCredential: await minimalizeUserCredential(userCredential),
+            });
+          }),
+          catchError((error: FirebaseError) =>
+            of(
+              UserActions.signInManuallyFailure({
+                errorMessage: error.code,
+              })
+            )
+          )
+        )
+      )
+    )
+  );
 
   signInManually$ = createEffect(() =>
     this.actions$.pipe(
