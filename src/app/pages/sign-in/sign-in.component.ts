@@ -135,7 +135,7 @@ export class SignInComponent implements OnInit {
 
   openResetPasswordModal() {
     this.bsModalRef = this.modalService.show(ResetPasswordModalComponent);
-    this.bsModalRef.setClass('reset-password__modal modal-dialog-centered');
+    this.bsModalRef.setClass('sign-in__modals modal-dialog-centered');
     this.bsModalRef.content.closeBtnName = 'Close';
   }
 
@@ -143,13 +143,14 @@ export class SignInComponent implements OnInit {
     const initialState: ModalOptions = {
       initialState: {
         availableProviders: providers,
+        previousRoute: this.previousRoute,
       },
     };
     this.bsModalRef = this.modalService.show(
       AvailableProvidersModalComponent,
       initialState
     );
-    this.bsModalRef.setClass('modal-dialog-centered');
+    this.bsModalRef.setClass('sign-in__modals modal-dialog-centered');
     this.bsModalRef.content.closeBtnName = 'Close';
   }
 
@@ -198,6 +199,7 @@ export class SignInComponent implements OnInit {
   }
 
   createAuthInLS(userCredential: IStoreUserCredential) {
+    console.log('createAuthInLS');
     localStorage.setItem(
       'ngrx-user-credential',
       JSON.stringify(userCredential)
