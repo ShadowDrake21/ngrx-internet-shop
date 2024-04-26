@@ -24,8 +24,11 @@ import { ProductService } from '../../../core/services/product.service';
 import { IProduct } from '../../models/product.model';
 
 // created ngrx stuff
-import { CartState } from '../../../store/cart/cart.reducer';
 import * as CartSelectors from '../../../store/cart/cart.selectors';
+import * as UserSelectors from '../../../store/user/user.selectors';
+import * as UserActions from '../../../store/user/user.actions';
+import { AppState } from '../../../store/app.state';
+import { IUser } from '../../models/user.model';
 
 @Component({
   selector: 'app-header',
@@ -43,7 +46,7 @@ import * as CartSelectors from '../../../store/cart/cart.selectors';
   providers: [BsModalService],
 })
 export class HeaderComponent implements OnInit {
-  private store = inject(Store<CartState>);
+  private store = inject(Store<AppState>);
   private modalService = inject(BsModalService);
   private productService = inject(ProductService);
   private router = inject(Router);
@@ -61,11 +64,12 @@ export class HeaderComponent implements OnInit {
   suggestions$?: Observable<string[]>;
   errorMessage?: string;
 
+  user$!: Observable<IUser | null>;
   noResult = false;
 
   ngOnInit(): void {
     this.cartProducts$ = this.store.select(CartSelectors.selectCartProducts);
-
+    this.user$ = this.store.select(UserSelectors.selectUser);
     this.searchTypeahead();
   }
 
@@ -111,18 +115,20 @@ export class HeaderComponent implements OnInit {
   openModalWithComponent() {
     const initialState: ModalOptions = {
       initialState: {
-        list: [
-          'Open a modal with component',
-          'Pass your data',
-          'Do something else',
-          '...',
-        ],
         title: 'My Cart',
-        class: 'modal-dialog-centered',
       },
     };
     this.bsModalRef = this.modalService.show(CartModalComponent, initialState);
     this.bsModalRef.setClass('modal-dialog-centered');
     this.bsModalRef.content.closeBtnName = 'Close';
+  }
+
+  onSignIn() {
+    this.router.navigate(['/sign-in']);
+  }
+
+  onSignOut() {
+    this.store.dispatch(UserActions.signOut());
+    localStorage.removeItem('ngrx-user-credential');
   }
 }

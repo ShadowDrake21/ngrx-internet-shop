@@ -1,0 +1,8 @@
+<div *ngFor="let alert of alerts" class="alert position-absolute">
+  <alert
+    [type]="alert.type"
+    [dismissOnTimeout]="alert.timeout"
+    (onClosed)="onClosed(alert)"
+    >{{ alert.msg }}</alert
+  >
+</div>

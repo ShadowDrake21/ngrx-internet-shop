@@ -3,18 +3,19 @@ import { Component, inject, OnInit } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { IProduct } from '../../../../models/product.model';
 import { Store } from '@ngrx/store';
-import { CartState } from '../../../../../store/cart/cart.reducer';
 import { Observable, switchMap } from 'rxjs';
 
 import * as CartActions from '../../../../../store/cart/cart.actions';
 import * as CartSelectors from '../../../../../store/cart/cart.selectors';
+import * as UserSelectors from '../../../../../store/user/user.selectors';
 import { ClearURLPipe } from '../../../../pipes/clear-url.pipe';
 import { SafeHTMLPipe } from '../../../../pipes/safe-html.pipe';
 import { TruncateTextPipe } from '../../../../pipes/truncate-text.pipe';
-import { Router, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { RouterLink } from '@angular/router';
 import { loadStripe } from '@stripe/stripe-js';
 import { CheckoutService } from '../../../../../core/services/checkout.service';
+import { AppState } from '../../../../../store/app.state';
+import { IUser } from '../../../../models/user.model';
 
 @Component({
   selector: 'app-cart-modal',
@@ -30,14 +31,12 @@ import { CheckoutService } from '../../../../../core/services/checkout.service';
   styleUrl: './cart-modal.component.scss',
 })
 export class CartModalComponent implements OnInit {
-  private store = inject(Store<CartState>);
-  private http = inject(HttpClient);
+  private store = inject(Store<AppState>);
   private checkoutService = inject(CheckoutService);
   public bsModalRef = inject(BsModalRef);
 
   title?: string;
   closeBtnName?: string;
-  class?: string;
 
   products$!: Observable<IProduct[]>;
   totalPrice$!: Observable<number>;
@@ -45,9 +44,12 @@ export class CartModalComponent implements OnInit {
   cartProducts$!: Observable<IProduct[]>;
   cartProductsArr: IProduct[] = [];
 
+  user$!: Observable<IUser | null>;
+
   ngOnInit(): void {
     this.products$ = this.store.select(CartSelectors.selectCartProducts);
     this.totalPrice$ = this.store.select(CartSelectors.selectCartTotalPrice);
+    this.user$ = this.store.select(UserSelectors.selectUser);
   }
 
   onIncreaseQuantity(productId: number) {

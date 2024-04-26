@@ -23,6 +23,14 @@ main {
   justify-content: space-between;
 }
 
+.withHeader {
+  padding-top: 5rem;
+}
+
+.withoutHeader {
+  padding-top: 0;
+}
+
 .content {
   flex: 1 1;
 }
@@ -30,6 +38,10 @@ main {
 .modal-dialog {
   max-width: 900px;
   width: 100%;
+}
+
+.sign-in__modals {
+  max-width: 500px;
 }
 
 .product-list {

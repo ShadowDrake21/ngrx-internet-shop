@@ -1,0 +1,154 @@
+<div>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Available providers</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="bsModalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body" *ngIf="!isLogging; else loading">
+    <p *ngIf="!errorMessage; else incorrectCredential">
+      This email has already been used and it connected to the next provider:
+    </p>
+    <ng-template #incorrectCredential
+      ><p style="color: red">{{ errorMessage }}</p></ng-template
+    >
+    <div *ngIf="availableProviders.length">
+      <div *ngFor="let item of availableProviders">
+        <ng-container *ngIf="item === 'password'">
+          <form [formGroup]="signInForm" (ngSubmit)="onFormSubmit()">
+            <div
+              class="form-group first"
+              [class.formError]="
+                signInForm.controls.email.dirty &&
+                signInForm.controls.email.invalid
+              "
+            >
+              <input
+                type="text"
+                class="form-control"
+                id="email"
+                placeholder="Email"
+                formControlName="email"
+              />
+            </div>
+
+            <div
+              class="form-group last mb-3"
+              [class.formError]="
+                signInForm.controls.password.dirty &&
+                signInForm.controls.password.invalid
+              "
+            >
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="Password"
+                formControlName="password"
+              />
+            </div>
+            <div
+              *ngIf="signInForm.invalid && signInForm.dirty"
+              style="color: red"
+            >
+              <div
+                *ngIf="signInForm.controls.email.errors?.['required'] && signInForm.controls.email.touched"
+              >
+                The email field is mandatory
+              </div>
+              <div *ngIf="signInForm.controls.email.errors?.['email']">
+                {{ signInForm.value.email + " is not an email" }}
+              </div>
+              <div *ngIf="signInForm.controls.email.errors?.['minlength']">
+                Email should be at least 6 characters long. Now it is
+                {{ signInForm.value.email?.length }}
+              </div>
+              <div
+                *ngIf="signInForm.controls.password.errors?.['required'] && signInForm.controls.password.touched"
+              >
+                The password field is mandatory
+              </div>
+              <div *ngIf="signInForm.controls.password.errors?.['minlength']">
+                Password should be at least 6 characters long. Now it is
+                {{ signInForm.value.password?.length }}
+              </div>
+              <div *ngIf="signInForm.controls.password.errors?.['maxlength']">
+                Maximum length of a password is 20 characters. Your has
+                {{ signInForm.value.password?.length }} characters.
+              </div>
+            </div>
+            <div class="d-flex mb-5 align-items-center justify-content-between">
+              <label class="control control--checkbox mb-0"
+                ><span class="caption">Remember me</span>
+                <input
+                  type="checkbox"
+                  checked="checked"
+                  formControlName="rememberMe"
+                />
+                <div class="control__indicator"></div>
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-block btn-primary w-100"
+              [disabled]="signInForm.invalid"
+            >
+              Sign In
+            </button>
+          </form>
+        </ng-container>
+        <ng-container *ngIf="item === 'facebook.com'">
+          <div class="social-login">
+            <button
+              type="button"
+              class="facebook btn d-flex justify-content-center align-items-center"
+              (click)="signInWithFacebook()"
+            >
+              <fa-icon [icon]="icons.faFacebookF" class="me-3"></fa-icon> Login
+              with Facebook
+            </button>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="item === 'twitter.com'">
+          <div class="social-login">
+            <button
+              type="button"
+              class="twitter btn d-flex justify-content-center align-items-center"
+              (click)="signInWithTwitter()"
+            >
+              <fa-icon [icon]="icons.faXTwitter" class="me-3"></fa-icon> Login
+              with X (initially known as Twitter)
+            </button>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="item === 'google.com'"
+          ><div class="social-login">
+            <button
+              type="button"
+              class="google btn d-flex justify-content-center align-items-center"
+              (click)="signInWithGoogle()"
+            >
+              <fa-icon [icon]="icons.faGoogle" class="me-3"></fa-icon> Login
+              with Google
+            </button>
+          </div></ng-container
+        >
+      </div>
+    </div>
+  </div>
+  <ng-template #loading
+    ><div class="modal-body">
+      <app-loader class="d-flex justify-content-center"></app-loader></div
+  ></ng-template>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">
+      {{ closeBtnName }}
+    </button>
+  </div>
+</div>

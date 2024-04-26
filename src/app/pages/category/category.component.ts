@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnChanges, OnInit } from '@angular/core';
-import { CategoryService } from '../../core/services/category.service';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, RouterLink } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { Store } from '@ngrx/store';

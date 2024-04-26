@@ -10,6 +10,7 @@
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
+  @if ((user$|async)?.online) {
   <div class="modal-body" *ngIf="products$ | async as products">
     <ng-container *ngIf="products.length; else emptyCart">
       <div
@@ -74,11 +75,16 @@
       </div>
     </ng-container>
   </div>
+
   <ng-template #emptyCart>
     <div class="modal-body">
       <h5>Your cart is a bit empty right here...</h5>
-    </div>
-  </ng-template>
+    </div> </ng-template
+  >} @else {
+  <div class="modal-body">
+    <h5>To use a cart, you need to sign in.</h5>
+  </div>
+  }
   <div class="modal-footer d-flex flex-column align-items-end">
     <div class="d-flex justify-content-end" *ngIf="(products$ | async)?.length">
       <h4 class="me-4">
