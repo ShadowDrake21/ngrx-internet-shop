@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
-import { IBreadcrumbs } from '../../shared/models/breadcrumbs.model';
-import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
+import { IBreadcrumbs } from '@shared/models/breadcrumbs.model';
+import { BreadcrumbsComponent } from '@shared/components/breadcrumbs/breadcrumbs.component';
+import { CommonModule } from '@angular/common';
+import { ProductSliderComponent } from './components/product-slider/product-slider.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [BreadcrumbsComponent],
+  imports: [CommonModule, BreadcrumbsComponent, ProductSliderComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })

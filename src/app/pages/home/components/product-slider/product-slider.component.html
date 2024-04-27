@@ -1,0 +1,19 @@
+<div class="product-slider">
+  <carousel [noPause]="false">
+    <slide
+      *ngFor="let item of sliderItems; index as idx"
+      class="position-relative product-slider__slide"
+    >
+      <div class="product-slider__slide-blackout"></div>
+      <img
+        [src]="item.path"
+        class="product-slider__slide-image"
+        alt="slider image"
+      />
+      <div class="carousel-caption product-slider__slide-content">
+        <h4>NgRxShop</h4>
+        <div #slideContentRef></div>
+      </div>
+    </slide>
+  </carousel>
+</div>

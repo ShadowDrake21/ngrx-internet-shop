@@ -38,6 +38,7 @@
       [totalItems]="(listProducts$ | async)!.length"
       (pageChanged)="pageChanged($event)"
       [itemsPerPage]="itemsPerPage"
+      [maxSize]="maxSize"
     ></pagination>
   </div>
   @if (productError$ | async) {
