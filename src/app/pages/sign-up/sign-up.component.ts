@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { Component, inject, OnDestroy } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -12,20 +12,35 @@ import * as UserActions from '../../store/user/user.actions';
 import * as UserSelectors from '../../store/user/user.selectors';
 import { IUserSignUpData } from '../../shared/models/user.model';
 import { Router } from '@angular/router';
-import { delay, map, Observable, of, switchMap } from 'rxjs';
+import { delay, map, Observable, of, Subscription, switchMap } from 'rxjs';
 import { faRefresh } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { createAuthInLS } from '../../core/utils/auth.utils';
+import { LoaderComponent } from '../../shared/components/loader/loader.component';
+import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { EmailVerificationModalComponent } from './components/email-verification-modal/email-verification-modal.component';
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    LoaderComponent,
+    EmailVerificationModalComponent,
+  ],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.scss',
+  providers: [BsModalService],
 })
-export class SignUpComponent {
+export class SignUpComponent implements OnDestroy {
   refreshIcon = faRefresh;
+
   private store = inject(Store<UserState>);
   private router = inject(Router);
+  private modalService = inject(BsModalService);
+
+  bsModalRef?: BsModalRef;
 
   error$!: Observable<string | null>;
 
@@ -54,28 +69,55 @@ export class SignUpComponent {
       Validators.maxLength(20),
     ]),
   });
+  isLogging: boolean = false;
+
+  subscriptions: Subscription[] = [];
 
   onFormSubmit() {
+    this.isLogging = true;
+
+    this.store.dispatch(UserActions.clearUserState());
     const signUpData: IUserSignUpData = {
       email: this.signUpForm.value.email!,
       password: this.signUpForm.value.password!,
       username: this.signUpForm.value.username!,
     };
+
     this.store.dispatch(UserActions.signUp({ data: signUpData }));
-    this.store.select(UserSelectors.selectUser).subscribe((user) => {
-      if (user?.online) {
-        this.router.navigate(['/']);
-      }
-    });
+    const userSubcription: Subscription = this.store
+      .select(UserSelectors.selectUser)
+      .subscribe((user) => {
+        if (user?.online) {
+          createAuthInLS(user.userCredential!);
+          this.isLogging = false;
+          this.router.navigate(['/']);
+
+          this.store.dispatch(UserActions.sendEmailVerification());
+          this.bsModalRef = this.modalService.show(
+            EmailVerificationModalComponent
+          );
+        }
+      });
+
+    this.subscriptions.push(userSubcription);
 
     this.error$ = this.store.select(UserSelectors.selectErrorMessage);
-    this.error$.subscribe((error) => {
+    const errorSubcription: Subscription = this.error$.subscribe((error) => {
       if (error) {
         setTimeout(() => {
           this.error$ = of(null);
         }, 5000);
+        this.isLogging = false;
         this.signUpForm.reset();
       }
     });
+
+    this.subscriptions.push(errorSubcription);
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscriptions) {
+      this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    }
   }
 }

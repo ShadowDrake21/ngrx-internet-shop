@@ -24,6 +24,7 @@ export const userReducer = createReducer(
     UserActions.signInWithFacebookSuccess,
     UserActions.signInWithTwitterSuccess,
     UserActions.signInWithGoogleSuccess,
+    UserActions.getUserSuccess,
     (state, { userCredential, email }) => ({
       ...state,
       email,
@@ -40,6 +41,7 @@ export const userReducer = createReducer(
     UserActions.signInWithFacebookFailure,
     UserActions.signInWithTwitterFailure,
     UserActions.signInWithGoogleFailure,
+    UserActions.getUserFailure,
     (state, { errorMessage }) => ({
       ...state,
       email: null,

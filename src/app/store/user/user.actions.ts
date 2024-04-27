@@ -79,6 +79,20 @@ export const sendPasswordReset = createAction(
   props<{ email: string }>()
 );
 
+export const sendEmailVerification = createAction(
+  '[User Component] SendEmailVerification'
+);
+
+export const getUser = createAction('[User Component] GetUser');
+export const getUserSuccess = createAction(
+  '[User Component] GetUserSuccess',
+  props<{ email: string; userCredential: IStoreUserCredential }>()
+);
+export const getUserFailure = createAction(
+  '[User Component] GetUserFailure',
+  props<{ errorMessage: string }>()
+);
+
 export const signOut = createAction('[User Component] SignOut');
 export const signOutSuccess = createAction('[User Component] SignOutSuccess');
 

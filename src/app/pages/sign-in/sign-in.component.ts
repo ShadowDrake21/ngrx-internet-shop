@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Store } from '@ngrx/store';
 import { debounceTime, Observable, Subscription, take } from 'rxjs';
@@ -39,7 +39,7 @@ import { RouterLink } from '@angular/router';
   styleUrl: './sign-in.component.scss',
   providers: [BsModalService, SignInService],
 })
-export class SignInComponent implements OnInit {
+export class SignInComponent implements OnInit, OnDestroy {
   icons = signInModalIcons;
 
   private store = inject(Store<UserState>);
@@ -53,15 +53,18 @@ export class SignInComponent implements OnInit {
 
   alerts: AlertType[] = [];
   user$!: Observable<IUser | null>;
-  private userStateSubscription!: Subscription | undefined;
 
   signInForm!: FormGroup<{
     email: FormControl<string | null>;
     password: FormControl<string | null>;
     rememberMe: FormControl<boolean | null>;
   }>;
-
   isLogging: boolean = false;
+
+  private userStateSubscription!: Subscription | undefined;
+  private subcriptions: Subscription[] = [];
+
+  private modalsClasses = 'sign-in__modals modal-dialog-centered';
 
   ngOnInit(): void {
     this.signInForm = this.signInService.getSignInForm();
@@ -74,7 +77,7 @@ export class SignInComponent implements OnInit {
 
     this.signInService.signInManuallyDispatch();
 
-    this.store
+    const userSubscription: Subscription = this.store
       .select(UserSelectors.selectUser)
       .pipe(debounceTime(5000), take(1))
       .subscribe((user) => {
@@ -85,25 +88,28 @@ export class SignInComponent implements OnInit {
 
           this.goToPrevious();
         } else {
-          this.alerts.push(
-            this.signInService.setAlert(
-              'danger',
-              'Incorrect user credential!',
-              5000
-            )
-          );
-
-          this.signInForm.reset();
-          this.signInForm.controls.rememberMe.setValue(true);
+          const errorSubscription: Subscription = this.store
+            .select(UserSelectors.selectErrorMessage)
+            .subscribe((errorMessage) => {
+              if (errorMessage) {
+                this.alerts.push(
+                  this.signInService.setAlert('danger', errorMessage!, 5000)
+                );
+                this.signInForm.reset();
+                this.signInForm.controls.rememberMe.setValue(true);
+              }
+            });
+          this.subcriptions.push(errorSubscription);
         }
-
         this.isLogging = false;
       });
+
+    this.subcriptions.push(userSubscription);
   }
 
   openResetPasswordModal() {
     this.bsModalRef = this.modalService.show(ResetPasswordModalComponent);
-    this.setModalFeatures('sign-in__modals modal-dialog-centered');
+    this.setModalFeatures(this.modalsClasses);
   }
 
   openAvailableProvidersModal(providers: string[]) {
@@ -117,21 +123,21 @@ export class SignInComponent implements OnInit {
       AvailableProvidersModalComponent,
       initialState
     );
-    this.setModalFeatures('sign-in__modals modal-dialog-centered');
+    this.setModalFeatures(this.modalsClasses);
   }
 
-  signInWithFacebook() {
-    this.signInService.signInWithFacebookDispatch();
-    this.signInWithSocialsResults();
-  }
-
-  signInWithTwitter() {
-    this.signInService.signInWithTwitterDispatch();
-    this.signInWithSocialsResults();
-  }
-
-  signInWithGoogle() {
-    this.signInService.signInWithGoogleDispatch();
+  signInWithSocial(socialName: 'facebook' | 'twitter' | 'google') {
+    switch (socialName) {
+      case 'facebook':
+        this.signInService.signInWithFacebookDispatch();
+        break;
+      case 'twitter':
+        this.signInService.signInWithTwitterDispatch();
+        break;
+      case 'google':
+        this.signInService.signInWithGoogleDispatch();
+        break;
+    }
     this.signInWithSocialsResults();
   }
 
@@ -171,5 +177,11 @@ export class SignInComponent implements OnInit {
 
   goToPrevious() {
     this.routingService.goToPreviousPage(this.previousRoute);
+  }
+
+  ngOnDestroy(): void {
+    if (this.subcriptions) {
+      this.subcriptions.forEach((subscribtion) => subscribtion.unsubscribe());
+    }
   }
 }
