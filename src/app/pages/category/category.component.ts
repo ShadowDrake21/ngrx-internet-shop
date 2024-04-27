@@ -1,20 +1,27 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, RouterLink } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { AppState } from '../../store/app.state';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+// interfaces
 import { IProduct } from '../../shared/models/product.model';
+import { ICategory } from '../../shared/models/category.model';
+
+// created ngrx stuff
+import { AppState } from '../../store/app.state';
 import * as ProductActions from '../../store/product/product.actions';
 import * as ProductSelectors from '../../store/product/product.selectors';
 import * as CategoryActions from '../../store/category/category.actions';
 import * as CategorySelectors from '../../store/category/category.selectors';
-import { ICategory } from '../../shared/models/category.model';
-import { PaginationModule } from 'ngx-bootstrap/pagination';
+
+// components
 import { ProductsItemComponent } from '../../shared/components/products-item/products-item.component';
 import { ProductsListComponent } from '../../shared/components/products-list/products-list.component';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'app-category',

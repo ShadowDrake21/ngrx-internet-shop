@@ -1,4 +1,6 @@
 import { createAction, props } from '@ngrx/store';
+
+// interfaces
 import {
   IStoreUserCredential,
   IUserSignUpData,

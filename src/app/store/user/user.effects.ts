@@ -1,14 +1,23 @@
+// angular stuff
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { AuthService } from '../../core/authentication/auth.service';
-import * as UserActions from './user.actions';
 import { catchError, exhaustMap, map, mergeMap, of } from 'rxjs';
-import { minimalizeUserCredential } from '../../shared/utils/store.utils';
 import { FirebaseError } from 'firebase/app';
+
+// interfaces
 import {
   IStoreUserCredential,
   ProviderData,
 } from '../../shared/models/user.model';
+
+// services
+import { AuthService } from '../../core/authentication/auth.service';
+
+// actions
+import * as UserActions from './user.actions';
+
+// utils
+import { minimalizeUserCredential } from '../../shared/utils/store.utils';
 
 @Injectable()
 export class UserEffects {

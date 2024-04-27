@@ -1,4 +1,7 @@
+// angular stuff
 import { UserCredential } from 'firebase/auth';
+
+// interfaces
 import { IStoreUserCredential, ProviderData } from '../models/user.model';
 
 export const minimalizeUserCredential = async (

@@ -1,5 +1,6 @@
-import { inject, Injectable, OnInit } from '@angular/core';
-import { NavigationEnd, Router, RoutesRecognized } from '@angular/router';
+// angular stuff
+import { inject, Injectable } from '@angular/core';
+import { Router, RoutesRecognized } from '@angular/router';
 import { filter, pairwise } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })

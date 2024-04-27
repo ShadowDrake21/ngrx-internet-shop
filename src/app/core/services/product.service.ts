@@ -1,11 +1,16 @@
+// angular stuff
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 
+// interfaces
 import { IProduct } from '../../shared/models/product.model';
-import { BASE_URL_API } from '../constants/api.constant';
-import { ICategory } from '../../shared/models/category.model';
 import { IFilterFormObj } from '../../shared/models/forms.model';
+
+// constants
+import { BASE_URL_API } from '../constants/api.constants';
+
+// utils
 import { mapQuantity } from '../utils/services.utils';
 
 @Injectable({

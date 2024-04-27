@@ -1,11 +1,18 @@
+// angular stuff
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { loadStripe } from '@stripe/stripe-js';
 import { Observable } from 'rxjs';
-import { CartState } from '../../store/cart/cart.reducer';
+
+// interfaces
 import { IProduct } from '../../shared/models/product.model';
+
+// created ngrx stuff
+import { CartState } from '../../store/cart/cart.reducer';
 import * as CartSelectors from '../../store/cart/cart.selectors';
+import { environment } from '../../../environments/environment.development';
+
 @Component({
   selector: 'app-checkout',
   standalone: true,
@@ -31,9 +38,7 @@ export class CheckoutComponent implements OnInit {
         items: this.cartProductsArr,
       })
       .subscribe(async (res: any) => {
-        let stripe = await loadStripe(
-          'pk_test_51OSDbAAGBN9qzN7Z82crr3YkNTsqfwb2wsrBREzDKe0qDVRYSyS9hzEPxv4ZE9aeqtfZyKvT8CVzqVGV0SkpwYAO004zou70Ro'
-        );
+        let stripe = await loadStripe(environment.stripe.publishableKey);
 
         stripe?.redirectToCheckout({
           sessionId: res.id,

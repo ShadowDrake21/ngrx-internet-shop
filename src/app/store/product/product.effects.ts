@@ -1,9 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { catchError, exhaustMap, map, of } from 'rxjs';
+
+// services
 import { ProductService } from '../../core/services/product.service';
 
+// actions
 import * as ProductActions from '../../store/product/product.actions';
-import { catchError, exhaustMap, map, of } from 'rxjs';
 
 @Injectable()
 export class ProductEffects {

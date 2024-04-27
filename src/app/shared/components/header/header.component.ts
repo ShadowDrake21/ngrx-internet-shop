@@ -29,6 +29,7 @@ import * as UserSelectors from '../../../store/user/user.selectors';
 import * as UserActions from '../../../store/user/user.actions';
 import { AppState } from '../../../store/app.state';
 import { IUser } from '../../models/user.model';
+import { LS_AUTH_ITEM_NAME } from '../../../core/constants/auth.constants';
 
 @Component({
   selector: 'app-header',
@@ -129,6 +130,6 @@ export class HeaderComponent implements OnInit {
 
   onSignOut() {
     this.store.dispatch(UserActions.signOut());
-    localStorage.removeItem('ngrx-user-credential');
+    localStorage.removeItem(LS_AUTH_ITEM_NAME);
   }
 }
