@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, of, Subscription } from 'rxjs';
 import { faRefresh } from '@fortawesome/free-solid-svg-icons';
@@ -38,6 +38,7 @@ import { EmailVerificationModalComponent } from './components/email-verification
     FontAwesomeModule,
     LoaderComponent,
     EmailVerificationModalComponent,
+    RouterLink,
   ],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.scss',
