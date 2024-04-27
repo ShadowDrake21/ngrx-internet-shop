@@ -7,22 +7,22 @@ import { FormsModule } from '@angular/forms';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 // components
-import { ProductsItemComponent } from '../../shared/components/products-item/products-item.component';
+import { ProductsItemComponent } from '@shared/components/products-item/products-item.component';
 import { FilterSidebarComponent } from './components/filter-sidebar/filter-sidebar.component';
-import { BreadcrumbsComponent } from '../../shared/components/breadcrumbs/breadcrumbs.component';
+import { BreadcrumbsComponent } from '@shared/components/breadcrumbs/breadcrumbs.component';
 
 // interfaces
-import { IFilterFormObj } from '../../shared/models/forms.model';
-import { IBreadcrumbs } from '../../shared/models/breadcrumbs.model';
-import { IProduct } from '../../shared/models/product.model';
+import { IFilterFormObj } from '@shared/models/forms.model';
+import { IBreadcrumbs } from '@shared/models/breadcrumbs.model';
+import { IProduct } from '@shared/models/product.model';
 
 // created ngrx stuff
-import { AppState } from '../../store/app.state';
-import * as ProductActions from '../../store/product/product.actions';
-import * as ProductSelectors from '../../store/product/product.selectors';
+import { AppState } from '@store/app.state';
+import * as ProductActions from '@store/product/product.actions';
+import * as ProductSelectors from '@store/product/product.selectors';
 
 // utils
-import { ProductsListComponent } from '../../shared/components/products-list/products-list.component';
+import { ProductsListComponent } from '@shared/components/products-list/products-list.component';
 
 @Component({
   selector: 'app-products',
