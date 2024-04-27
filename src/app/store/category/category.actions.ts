@@ -1,4 +1,6 @@
 import { createAction, props } from '@ngrx/store';
+
+// interfaces
 import { ICategory } from '../../shared/models/category.model';
 
 export const loadCategories = createAction(

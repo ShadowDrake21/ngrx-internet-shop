@@ -1,8 +1,13 @@
+// angular stuff
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { CategoryService } from '../../core/services/category.service';
-import * as CategoryActions from './category.actions';
 import { catchError, exhaustMap, map, of } from 'rxjs';
+
+// services
+import { CategoryService } from '../../core/services/category.service';
+
+// actions
+import * as CategoryActions from './category.actions';
 
 @Injectable()
 export class CategoryEffects {

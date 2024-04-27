@@ -1,3 +1,4 @@
+// angular stuff
 import {
   faFacebookF,
   faGoogle,

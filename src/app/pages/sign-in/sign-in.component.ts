@@ -1,24 +1,35 @@
-import { Component, inject, OnInit } from '@angular/core';
+// angular stuff
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Store } from '@ngrx/store';
 import { debounceTime, Observable, Subscription, take } from 'rxjs';
-import { RoutingService } from '../../core/services/routing.service';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { UserState } from '../../store/user/user.reducer';
-
-import * as UserSelectors from '../../store/user/user.selectors';
-import { AlertComponent } from '../../shared/components/alert/alert.component';
-import { AlertType } from '../../shared/models/alerts.model';
-import { LoaderComponent } from '../../shared/components/loader/loader.component';
-import { IUser } from '../../shared/models/user.model';
-import { ResetPasswordModalComponent } from './components/reset-password-modal/reset-password-modal.component';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { RouterLink } from '@angular/router';
+
+// services
+import { RoutingService } from '../../core/services/routing.service';
 import { AuthService } from '../../core/authentication/auth.service';
+import { SignInService } from '../../core/services/signIn.service';
+
+// created ngrx stuff
+import { UserState } from '../../store/user/user.reducer';
+import * as UserSelectors from '../../store/user/user.selectors';
+
+// interfaces and types
+import { AlertType } from '../../shared/models/alerts.model';
+import { IUser } from '../../shared/models/user.model';
+
+// components
+import { AlertComponent } from '../../shared/components/alert/alert.component';
+import { LoaderComponent } from '../../shared/components/loader/loader.component';
+import { ResetPasswordModalComponent } from './components/reset-password-modal/reset-password-modal.component';
 import { AvailableProvidersModalComponent } from './components/available-providers-modal/available-providers-modal.component';
+
+// utils
 import { createAuthInLS } from '../../core/utils/auth.utils';
 import { signInModalIcons } from '../../shared/utils/icons.utils';
-import { SignInService } from '../../core/services/signIn.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -31,13 +42,14 @@ import { SignInService } from '../../core/services/signIn.service';
     LoaderComponent,
     ResetPasswordModalComponent,
     AvailableProvidersModalComponent,
+    RouterLink,
   ],
 
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.scss',
   providers: [BsModalService, SignInService],
 })
-export class SignInComponent implements OnInit {
+export class SignInComponent implements OnInit, OnDestroy {
   icons = signInModalIcons;
 
   private store = inject(Store<UserState>);
@@ -51,15 +63,18 @@ export class SignInComponent implements OnInit {
 
   alerts: AlertType[] = [];
   user$!: Observable<IUser | null>;
-  private userStateSubscription!: Subscription | undefined;
 
   signInForm!: FormGroup<{
     email: FormControl<string | null>;
     password: FormControl<string | null>;
     rememberMe: FormControl<boolean | null>;
   }>;
-
   isLogging: boolean = false;
+
+  private userStateSubscription!: Subscription | undefined;
+  private subcriptions: Subscription[] = [];
+
+  private modalsClasses = 'sign-in__modals modal-dialog-centered';
 
   ngOnInit(): void {
     this.signInForm = this.signInService.getSignInForm();
@@ -72,7 +87,7 @@ export class SignInComponent implements OnInit {
 
     this.signInService.signInManuallyDispatch();
 
-    this.store
+    const userSubscription: Subscription = this.store
       .select(UserSelectors.selectUser)
       .pipe(debounceTime(5000), take(1))
       .subscribe((user) => {
@@ -83,25 +98,28 @@ export class SignInComponent implements OnInit {
 
           this.goToPrevious();
         } else {
-          this.alerts.push(
-            this.signInService.setAlert(
-              'danger',
-              'Incorrect user credential!',
-              5000
-            )
-          );
-
-          this.signInForm.reset();
-          this.signInForm.controls.rememberMe.setValue(true);
+          const errorSubscription: Subscription = this.store
+            .select(UserSelectors.selectErrorMessage)
+            .subscribe((errorMessage) => {
+              if (errorMessage) {
+                this.alerts.push(
+                  this.signInService.setAlert('danger', errorMessage!, 5000)
+                );
+                this.signInForm.reset();
+                this.signInForm.controls.rememberMe.setValue(true);
+              }
+            });
+          this.subcriptions.push(errorSubscription);
         }
-
         this.isLogging = false;
       });
+
+    this.subcriptions.push(userSubscription);
   }
 
   openResetPasswordModal() {
     this.bsModalRef = this.modalService.show(ResetPasswordModalComponent);
-    this.setModalFeatures('sign-in__modals modal-dialog-centered');
+    this.setModalFeatures(this.modalsClasses);
   }
 
   openAvailableProvidersModal(providers: string[]) {
@@ -115,21 +133,21 @@ export class SignInComponent implements OnInit {
       AvailableProvidersModalComponent,
       initialState
     );
-    this.setModalFeatures('sign-in__modals modal-dialog-centered');
+    this.setModalFeatures(this.modalsClasses);
   }
 
-  signInWithFacebook() {
-    this.signInService.signInWithFacebookDispatch();
-    this.signInWithSocialsResults();
-  }
-
-  signInWithTwitter() {
-    this.signInService.signInWithTwitterDispatch();
-    this.signInWithSocialsResults();
-  }
-
-  signInWithGoogle() {
-    this.signInService.signInWithGoogleDispatch();
+  signInWithSocial(socialName: 'facebook' | 'twitter' | 'google') {
+    switch (socialName) {
+      case 'facebook':
+        this.signInService.signInWithFacebookDispatch();
+        break;
+      case 'twitter':
+        this.signInService.signInWithTwitterDispatch();
+        break;
+      case 'google':
+        this.signInService.signInWithGoogleDispatch();
+        break;
+    }
     this.signInWithSocialsResults();
   }
 
@@ -169,5 +187,11 @@ export class SignInComponent implements OnInit {
 
   goToPrevious() {
     this.routingService.goToPreviousPage(this.previousRoute);
+  }
+
+  ngOnDestroy(): void {
+    if (this.subcriptions) {
+      this.subcriptions.forEach((subscribtion) => subscribtion.unsubscribe());
+    }
   }
 }

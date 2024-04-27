@@ -1,4 +1,6 @@
 import { createAction, props } from '@ngrx/store';
+
+// interfaces
 import { IProduct } from '../../shared/models/product.model';
 import { IFilterFormObj } from '../../shared/models/forms.model';
 
