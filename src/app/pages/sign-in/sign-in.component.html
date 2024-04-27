@@ -95,7 +95,7 @@
                 />
                 <div class="control__indicator"></div>
               </label>
-              <span class="ml-auto"
+              <span class="ml-auto d-flex flex-column"
                 ><button
                   type="button"
                   class="forgot-pass btn btn-link p-0 h-100 color"
@@ -103,6 +103,12 @@
                 >
                   Forgot Password
                 </button>
+                <a
+                  class="forgot-pass btn btn-link p-0 h-100 color"
+                  [routerLink]="['/sign-up']"
+                >
+                  Create an account
+                </a>
               </span>
             </div>
 
@@ -122,7 +128,7 @@
               <button
                 type="button"
                 class="facebook btn d-flex justify-content-center align-items-center"
-                (click)="signInWithFacebook()"
+                (click)="signInWithSocial('facebook')"
               >
                 <fa-icon [icon]="icons.faFacebookF" class="me-3"></fa-icon>
                 Login with Facebook
@@ -130,7 +136,7 @@
               <button
                 type="button"
                 class="twitter btn d-flex justify-content-center align-items-center"
-                (click)="signInWithTwitter()"
+                (click)="signInWithSocial('twitter')"
               >
                 <fa-icon [icon]="icons.faXTwitter" class="me-3"></fa-icon> Login
                 with X (initially known as Twitter)
@@ -138,7 +144,7 @@
               <button
                 type="button"
                 class="google btn d-flex justify-content-center align-items-center"
-                (click)="signInWithGoogle()"
+                (click)="signInWithSocial('google')"
               >
                 <fa-icon [icon]="icons.faGoogle" class="me-3"></fa-icon> Login
                 with Google

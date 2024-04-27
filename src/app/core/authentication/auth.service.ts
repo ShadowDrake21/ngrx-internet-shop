@@ -1,22 +1,49 @@
+// angular stuff
 import { inject, Injectable } from '@angular/core';
 import {
   Auth,
+  createUserWithEmailAndPassword,
   FacebookAuthProvider,
   fetchSignInMethodsForEmail,
   GoogleAuthProvider,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
   TwitterAuthProvider,
+  updateProfile,
   UserCredential,
 } from '@angular/fire/auth';
 import { FirebaseError } from 'firebase/app';
-import { catchError, from, map, Observable, of, throwError } from 'rxjs';
+import { catchError, from, map, Observable, of, switchMap } from 'rxjs';
+
+// interfaces
+import { IUserSignUpData, IUserUpdate } from '../../shared/models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private auth: Auth = inject(Auth);
+
+  signUp(signUpData: IUserSignUpData): Observable<UserCredential> {
+    return from(
+      createUserWithEmailAndPassword(
+        this.auth,
+        signUpData.email,
+        signUpData.password
+      )
+    ).pipe(
+      switchMap((credential) => {
+        return this.updateUser({ displayName: signUpData.username }).pipe(
+          map(() => credential)
+        );
+      })
+    );
+  }
+
+  updateUser(updateData: IUserUpdate) {
+    return from(updateProfile(this.auth.currentUser!, updateData));
+  }
 
   signInManually(email: string, password: string): Observable<UserCredential> {
     return from(signInWithEmailAndPassword(this.auth, email, password));
@@ -58,6 +85,14 @@ export class AuthService {
 
   signInWithAnotherMethods(email: string): Observable<string[]> {
     return from(fetchSignInMethodsForEmail(this.auth, email));
+  }
+
+  sendEmailVerification() {
+    return from(sendEmailVerification(this.auth.currentUser!));
+  }
+
+  getUser() {
+    return of(this.auth.currentUser);
   }
 
   signOut(): Observable<void> {

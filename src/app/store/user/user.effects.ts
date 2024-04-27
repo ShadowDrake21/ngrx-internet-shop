@@ -1,14 +1,51 @@
+// angular stuff
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { AuthService } from '../../core/authentication/auth.service';
-import * as UserActions from './user.actions';
 import { catchError, exhaustMap, map, mergeMap, of } from 'rxjs';
+import { FirebaseError } from 'firebase/app';
+
+// interfaces
+import {
+  IStoreUserCredential,
+  ProviderData,
+} from '../../shared/models/user.model';
+
+// services
+import { AuthService } from '../../core/authentication/auth.service';
+
+// actions
+import * as UserActions from './user.actions';
+
+// utils
 import { minimalizeUserCredential } from '../../shared/utils/store.utils';
 
 @Injectable()
 export class UserEffects {
   private actions$ = inject(Actions);
   private authService = inject(AuthService);
+
+  signUp$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.signUp),
+      exhaustMap(({ data }) =>
+        this.authService.signUp(data).pipe(
+          mergeMap(async (userCredential) => {
+            return UserActions.signUpSuccess({
+              email: userCredential.user.email!,
+              userCredential: await minimalizeUserCredential(userCredential),
+            });
+          }),
+          catchError((error: FirebaseError) =>
+            of(
+              UserActions.signInManuallyFailure({
+                errorMessage: error.code,
+              })
+            )
+          )
+        )
+      )
+    )
+  );
 
   signInManually$ = createEffect(() =>
     this.actions$.pipe(
@@ -21,11 +58,10 @@ export class UserEffects {
               userCredential: await minimalizeUserCredential(userCredential),
             });
           }),
-          catchError((error) =>
+          catchError((error: FirebaseError) =>
             of(
               UserActions.signInManuallyFailure({
-                errorMessage:
-                  'Error during a signing up by email and password!',
+                errorMessage: error.message,
               })
             )
           )
@@ -114,6 +150,7 @@ export class UserEffects {
       )
     )
   );
+
   sendPasswordReset$ = createEffect(
     () =>
       this.actions$.pipe(
@@ -122,6 +159,42 @@ export class UserEffects {
       ),
     { dispatch: false }
   );
+  sendEmailVerification$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(UserActions.sendEmailVerification),
+        exhaustMap(() => this.authService.sendEmailVerification())
+      ),
+    { dispatch: false }
+  );
+
+  getUser$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.getUser),
+      exhaustMap(() =>
+        this.authService.getUser().pipe(
+          mergeMap(async (user) => {
+            const storeUserCredentials: IStoreUserCredential = {
+              providerData: user?.providerData! as ProviderData[],
+              tokenResult: await user?.getIdTokenResult()!,
+            };
+            return UserActions.getUserSuccess({
+              email: user?.email!,
+              userCredential: storeUserCredentials,
+            });
+          }),
+          catchError((error: FirebaseError) =>
+            of(
+              UserActions.getUserFailure({
+                errorMessage: error.code,
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
   signOut$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.signOut),

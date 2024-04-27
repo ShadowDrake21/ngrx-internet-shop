@@ -1,8 +1,12 @@
 import { Component, Input } from '@angular/core';
-import { IProduct } from '../../../../shared/models/product.model';
 import { CommonModule } from '@angular/common';
-import { CarouselConfig, CarouselModule } from 'ngx-bootstrap/carousel';
 import { RouterLink } from '@angular/router';
+import { CarouselConfig, CarouselModule } from 'ngx-bootstrap/carousel';
+
+// interfaces
+import { IProduct } from '../../../../shared/models/product.model';
+
+// pipes
 import { SafeHTMLPipe } from '../../../../shared/pipes/safe-html.pipe';
 import { ClearURLPipe } from '../../../../shared/pipes/clear-url.pipe';
 

@@ -1,3 +1,4 @@
+// interfaces
 import { IProduct } from '../../shared/models/product.model';
 
 export const mapQuantity = (products: IProduct[]): IProduct[] => {
