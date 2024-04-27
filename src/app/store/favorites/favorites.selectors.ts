@@ -1,4 +1,6 @@
 import { createSelector } from '@ngrx/store';
+
+// states
 import { AppState } from '../app.state';
 import { FavoritesState } from './favorites.reducer';
 

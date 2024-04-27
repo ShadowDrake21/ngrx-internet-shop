@@ -1,4 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
+
+// actions
 import * as FavoritesActions from './favorites.action';
 
 export interface FavoritesState {

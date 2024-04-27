@@ -1,20 +1,30 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { debounceTime, Observable, Subscription, take } from 'rxjs';
-import { IUser } from '../../../../shared/models/user.model';
 import { Store } from '@ngrx/store';
+
+// interfaces
+import { IUser } from '../../../../shared/models/user.model';
+
+// services
 import { RoutingService } from '../../../../core/services/routing.service';
+import { SignInService } from '../../../../core/services/signIn.service';
+
+// created ngrx stuff
 import { UserState } from '../../../../store/user/user.reducer';
-import { AlertType } from '../../../../shared/models/alerts.model';
 import * as UserSelectors from '../../../../store/user/user.selectors';
+
+// components
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
+import { AlertComponent } from '../../../../shared/components/alert/alert.component';
+
+// utils
 import { createAuthInLS } from '../../../../core/utils/auth.utils';
 import { signInModalIcons } from '../../../../shared/utils/icons.utils';
-import { SignInService } from '../../../../core/services/signIn.service';
-import { AlertComponent } from '../../../../shared/components/alert/alert.component';
 
 @Component({
   selector: 'app-available-providers-modal',

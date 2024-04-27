@@ -1,14 +1,23 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { CategoryState } from '../../store/category/category.reducer';
 import { Observable, of } from 'rxjs';
+import { RouterLink } from '@angular/router';
+
+// interfaces
 import { ICategory } from '../../shared/models/category.model';
+
+// created ngrx stuff
+import { CategoryState } from '../../store/category/category.reducer';
 import * as CategoryActions from '../../store/category/category.actions';
 import * as CategorySelectors from '../../store/category/category.selectors';
+
+// pipes
 import { SafeHTMLPipe } from '../../shared/pipes/safe-html.pipe';
 import { ClearURLPipe } from '../../shared/pipes/clear-url.pipe';
-import { RouterLink } from '@angular/router';
+
+// utils
 import { handleImageUnavailable } from '../../shared/utils/errorHandlers.utils';
 
 @Component({

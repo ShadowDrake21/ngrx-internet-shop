@@ -1,7 +1,11 @@
-import { UserCredential } from 'firebase/auth';
-import * as UserActions from './user.actions';
+// angular stuff
 import { createReducer, on } from '@ngrx/store';
-import { IStoreUserCredential, IUser } from '../../shared/models/user.model';
+
+// interfaces
+import { IUser } from '../../shared/models/user.model';
+
+// actions
+import * as UserActions from './user.actions';
 
 export interface UserState {
   email: string | null;

@@ -1,10 +1,13 @@
+// angular stuff
 import { Component, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { BsModalRef } from 'ngx-bootstrap/modal';
-import { UserState } from '../../../../store/user/user.reducer';
-import * as UserActions from '../../../../store/user/user.actions';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
+import { BsModalRef } from 'ngx-bootstrap/modal';
+
+// created ngrx stuff
+import { UserState } from '../../../../store/user/user.reducer';
+import * as UserActions from '../../../../store/user/user.actions';
 
 @Component({
   selector: 'app-reset-password-modal',

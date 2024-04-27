@@ -1,24 +1,34 @@
-import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { Component, inject, OnDestroy } from '@angular/core';
+// angular stuff
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { Observable, of, Subscription } from 'rxjs';
+import { faRefresh } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+
+// interfaces
+import { IUserSignUpData } from '../../shared/models/user.model';
+
+// created ngrx stuff
 import { UserState } from '../../store/user/user.reducer';
 import * as UserActions from '../../store/user/user.actions';
 import * as UserSelectors from '../../store/user/user.selectors';
-import { IUserSignUpData } from '../../shared/models/user.model';
-import { Router } from '@angular/router';
-import { delay, map, Observable, of, Subscription, switchMap } from 'rxjs';
-import { faRefresh } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+// utils
 import { createAuthInLS } from '../../core/utils/auth.utils';
+
+// components
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
-import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { EmailVerificationModalComponent } from './components/email-verification-modal/email-verification-modal.component';
+
 @Component({
   selector: 'app-sign-up',
   standalone: true,
@@ -33,7 +43,7 @@ import { EmailVerificationModalComponent } from './components/email-verification
   styleUrl: './sign-up.component.scss',
   providers: [BsModalService],
 })
-export class SignUpComponent implements OnDestroy {
+export class SignUpComponent {
   refreshIcon = faRefresh;
 
   private store = inject(Store<UserState>);
@@ -44,14 +54,14 @@ export class SignUpComponent implements OnDestroy {
 
   error$!: Observable<string | null>;
 
+  usernamePattern =
+    '^(?=.{6,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$';
   signUpForm = new FormGroup({
     username: new FormControl('', [
       Validators.required,
       Validators.minLength(6),
       Validators.maxLength(20),
-      Validators.pattern(
-        '^(?=.{6,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$'
-      ),
+      Validators.pattern(this.usernamePattern),
     ]),
     email: new FormControl('', [
       Validators.email,
@@ -71,7 +81,8 @@ export class SignUpComponent implements OnDestroy {
   });
   isLogging: boolean = false;
 
-  subscriptions: Subscription[] = [];
+  private userSubcription!: Subscription;
+  private errorSubcription!: Subscription;
 
   onFormSubmit() {
     this.isLogging = true;
@@ -84,7 +95,7 @@ export class SignUpComponent implements OnDestroy {
     };
 
     this.store.dispatch(UserActions.signUp({ data: signUpData }));
-    const userSubcription: Subscription = this.store
+    this.userSubcription = this.store
       .select(UserSelectors.selectUser)
       .subscribe((user) => {
         if (user?.online) {
@@ -97,12 +108,14 @@ export class SignUpComponent implements OnDestroy {
             EmailVerificationModalComponent
           );
         }
+
+        if (this.userSubcription) {
+          this.userSubcription.unsubscribe();
+        }
       });
 
-    this.subscriptions.push(userSubcription);
-
     this.error$ = this.store.select(UserSelectors.selectErrorMessage);
-    const errorSubcription: Subscription = this.error$.subscribe((error) => {
+    this.errorSubcription = this.error$.subscribe((error) => {
       if (error) {
         setTimeout(() => {
           this.error$ = of(null);
@@ -110,14 +123,10 @@ export class SignUpComponent implements OnDestroy {
         this.isLogging = false;
         this.signUpForm.reset();
       }
+
+      if (this.errorSubcription) {
+        this.errorSubcription.unsubscribe();
+      }
     });
-
-    this.subscriptions.push(errorSubcription);
-  }
-
-  ngOnDestroy(): void {
-    if (this.subscriptions) {
-      this.subscriptions.forEach((subscription) => subscription.unsubscribe());
-    }
   }
 }

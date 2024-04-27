@@ -1,26 +1,24 @@
-import { Component, inject, OnInit, TemplateRef } from '@angular/core';
+// angular stuff
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  NavigationEnd,
-  Router,
-  RouterLink,
-  RouterOutlet,
-} from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { Store } from '@ngrx/store';
+
+// interfaces
+import { IStoreUserCredential } from './shared/models/user.model';
 
 // components
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
-import {
-  IStoreUserCredential,
-  IUser,
-  ProviderData,
-} from './shared/models/user.model';
-import { Store } from '@ngrx/store';
-import { AppState } from './store/app.state';
-
-import * as UserActions from './store/user/user.actions';
 import { ExpirationModalComponent } from './shared/components/expiration-modal/expiration-modal.component';
+
+// created ngrx stuff
+import { AppState } from './store/app.state';
+import * as UserActions from './store/user/user.actions';
+
+// constants
+import { LS_AUTH_ITEM_NAME } from './core/constants/auth.constants';
 
 @Component({
   selector: 'app-root',
@@ -57,7 +55,7 @@ export class AppComponent implements OnInit {
 
   getUserFromLS() {
     const userCredential: IStoreUserCredential | null = JSON.parse(
-      localStorage.getItem('ngrx-user-credential')!
+      localStorage.getItem(LS_AUTH_ITEM_NAME)!
     );
 
     if (userCredential) {
@@ -71,13 +69,13 @@ export class AppComponent implements OnInit {
   }
 
   checkExpirationTime() {
-    const userString = localStorage.getItem('ngrx-user-credential');
+    const userString = localStorage.getItem(LS_AUTH_ITEM_NAME);
     let user: IStoreUserCredential | null = null;
     if (userString) {
       user = JSON.parse(userString);
 
       if (new Date(user?.tokenResult.expirationTime!) <= new Date()) {
-        localStorage.removeItem('ngrx-user-credential');
+        localStorage.removeItem(LS_AUTH_ITEM_NAME);
 
         (document.querySelector('#openModalBtn') as HTMLButtonElement).click();
       }

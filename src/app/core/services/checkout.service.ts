@@ -1,7 +1,10 @@
+// angular stuff
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { IProduct } from '../../shared/models/product.model';
 import { Observable } from 'rxjs';
+
+// interfaces
+import { IProduct } from '../../shared/models/product.model';
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {

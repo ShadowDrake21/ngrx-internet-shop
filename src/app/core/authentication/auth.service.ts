@@ -1,3 +1,4 @@
+// angular stuff
 import { inject, Injectable } from '@angular/core';
 import {
   Auth,
@@ -15,16 +16,9 @@ import {
   UserCredential,
 } from '@angular/fire/auth';
 import { FirebaseError } from 'firebase/app';
-import {
-  catchError,
-  from,
-  map,
-  Observable,
-  of,
-  switchMap,
-  tap,
-  throwError,
-} from 'rxjs';
+import { catchError, from, map, Observable, of, switchMap } from 'rxjs';
+
+// interfaces
 import { IUserSignUpData, IUserUpdate } from '../../shared/models/user.model';
 
 @Injectable({ providedIn: 'root' })

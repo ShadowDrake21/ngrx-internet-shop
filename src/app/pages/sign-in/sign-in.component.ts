@@ -1,25 +1,35 @@
+// angular stuff
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Store } from '@ngrx/store';
 import { debounceTime, Observable, Subscription, take } from 'rxjs';
-import { RoutingService } from '../../core/services/routing.service';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { UserState } from '../../store/user/user.reducer';
-
-import * as UserSelectors from '../../store/user/user.selectors';
-import { AlertComponent } from '../../shared/components/alert/alert.component';
-import { AlertType } from '../../shared/models/alerts.model';
-import { LoaderComponent } from '../../shared/components/loader/loader.component';
-import { IUser } from '../../shared/models/user.model';
-import { ResetPasswordModalComponent } from './components/reset-password-modal/reset-password-modal.component';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { RouterLink } from '@angular/router';
+
+// services
+import { RoutingService } from '../../core/services/routing.service';
 import { AuthService } from '../../core/authentication/auth.service';
+import { SignInService } from '../../core/services/signIn.service';
+
+// created ngrx stuff
+import { UserState } from '../../store/user/user.reducer';
+import * as UserSelectors from '../../store/user/user.selectors';
+
+// interfaces and types
+import { AlertType } from '../../shared/models/alerts.model';
+import { IUser } from '../../shared/models/user.model';
+
+// components
+import { AlertComponent } from '../../shared/components/alert/alert.component';
+import { LoaderComponent } from '../../shared/components/loader/loader.component';
+import { ResetPasswordModalComponent } from './components/reset-password-modal/reset-password-modal.component';
 import { AvailableProvidersModalComponent } from './components/available-providers-modal/available-providers-modal.component';
+
+// utils
 import { createAuthInLS } from '../../core/utils/auth.utils';
 import { signInModalIcons } from '../../shared/utils/icons.utils';
-import { SignInService } from '../../core/services/signIn.service';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-sign-in',
