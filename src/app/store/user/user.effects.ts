@@ -5,6 +5,10 @@ import * as UserActions from './user.actions';
 import { catchError, exhaustMap, map, mergeMap, of } from 'rxjs';
 import { minimalizeUserCredential } from '../../shared/utils/store.utils';
 import { FirebaseError } from 'firebase/app';
+import {
+  IStoreUserCredential,
+  ProviderData,
+} from '../../shared/models/user.model';
 
 @Injectable()
 export class UserEffects {
@@ -45,11 +49,10 @@ export class UserEffects {
               userCredential: await minimalizeUserCredential(userCredential),
             });
           }),
-          catchError((error) =>
+          catchError((error: FirebaseError) =>
             of(
               UserActions.signInManuallyFailure({
-                errorMessage:
-                  'Error during a signing up by email and password!',
+                errorMessage: error.message,
               })
             )
           )
@@ -138,6 +141,7 @@ export class UserEffects {
       )
     )
   );
+
   sendPasswordReset$ = createEffect(
     () =>
       this.actions$.pipe(
@@ -146,6 +150,42 @@ export class UserEffects {
       ),
     { dispatch: false }
   );
+  sendEmailVerification$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(UserActions.sendEmailVerification),
+        exhaustMap(() => this.authService.sendEmailVerification())
+      ),
+    { dispatch: false }
+  );
+
+  getUser$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.getUser),
+      exhaustMap(() =>
+        this.authService.getUser().pipe(
+          mergeMap(async (user) => {
+            const storeUserCredentials: IStoreUserCredential = {
+              providerData: user?.providerData! as ProviderData[],
+              tokenResult: await user?.getIdTokenResult()!,
+            };
+            return UserActions.getUserSuccess({
+              email: user?.email!,
+              userCredential: storeUserCredentials,
+            });
+          }),
+          catchError((error: FirebaseError) =>
+            of(
+              UserActions.getUserFailure({
+                errorMessage: error.code,
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
   signOut$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.signOut),

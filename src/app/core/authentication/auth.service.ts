@@ -5,6 +5,7 @@ import {
   FacebookAuthProvider,
   fetchSignInMethodsForEmail,
   GoogleAuthProvider,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -35,7 +36,7 @@ export class AuthService {
       createUserWithEmailAndPassword(
         this.auth,
         signUpData.email,
-        signUpData.username
+        signUpData.password
       )
     ).pipe(
       switchMap((credential) => {
@@ -90,6 +91,14 @@ export class AuthService {
 
   signInWithAnotherMethods(email: string): Observable<string[]> {
     return from(fetchSignInMethodsForEmail(this.auth, email));
+  }
+
+  sendEmailVerification() {
+    return from(sendEmailVerification(this.auth.currentUser!));
+  }
+
+  getUser() {
+    return of(this.auth.currentUser);
   }
 
   signOut(): Observable<void> {
