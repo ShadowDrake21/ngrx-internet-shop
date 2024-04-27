@@ -2,13 +2,13 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  OnInit,
   QueryList,
   ViewChildren,
 } from '@angular/core';
+
 import {
   IProductSliderImage,
-  ProductSliderImages,
+  productSliderImages,
 } from './content/product-slider.content';
 import { CommonModule } from '@angular/common';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
@@ -21,7 +21,7 @@ import { CarouselModule } from 'ngx-bootstrap/carousel';
   styleUrl: './product-slider.component.scss',
 })
 export class ProductSliderComponent implements AfterViewInit {
-  sliderItems: IProductSliderImage[] = ProductSliderImages;
+  sliderItems: IProductSliderImage[] = productSliderImages;
 
   @ViewChildren('slideContentRef', { read: ElementRef })
   slideContentRefs!: QueryList<ElementRef>;

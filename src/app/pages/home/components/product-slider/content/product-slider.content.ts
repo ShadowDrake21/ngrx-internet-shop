@@ -4,7 +4,7 @@ export interface IProductSliderImage {
   // link: string;
 }
 
-export const ProductSliderImages: IProductSliderImage[] = [
+export const productSliderImages: IProductSliderImage[] = [
   {
     path: '/assets/images/slider-images/slider-img-1.jpg',
     author:
