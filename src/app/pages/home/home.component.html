@@ -1,9 +1,21 @@
 <div class="container">
   <app-breadcrumbs [breadcrumbs]="breadcrumbs"></app-breadcrumbs>
   <app-product-slider></app-product-slider>
-  <div class="d-flex align-items-center h-100" style="gap: 35px">
+  <div class="d-flex align-items-center pb-4" style="gap: 35px">
     <app-user-sidebar></app-user-sidebar>
     <app-products-promotions></app-products-promotions>
+  </div>
+  <div class="pb-4">
+    <h4>Clothes</h4>
+    <app-products-category-slider
+      categoryName="clothes"
+    ></app-products-category-slider>
+  </div>
+  <div class="pb-4">
+    <h4>Furniture</h4>
+    <app-products-category-slider
+      categoryName="furniture"
+    ></app-products-category-slider>
   </div>
   <p>something with grid</p>
 </div>

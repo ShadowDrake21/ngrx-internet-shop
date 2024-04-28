@@ -1,0 +1,30 @@
+<a class="card" style="width: 18rem; height: 100%">
+  <img
+    [src]="product.images[0] | clearURL | safeHTML"
+    class="card-img-top"
+    alt="product"
+  />
+  <div class="card-body card-display">
+    <h5 class="card-title">{{ product.title | truncateText : 20 }}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">
+      Category:
+      <a
+        class="text-muted"
+        [routerLink]="['/products']"
+        [queryParams]="{ category: product.category.name }"
+        >{{ product.category.name }}</a
+      >
+    </h6>
+
+    <p class="fs-3 text-center">
+      Price:<span class="fw-bolder ms-1">{{
+        product.price | currency : "PLN"
+      }}</span>
+    </p>
+    <div>
+      <a class="btn btn-danger w-100" [routerLink]="['/product', product.id]">{{
+        "Go to page" | uppercase
+      }}</a>
+    </div>
+  </div>
+</a>

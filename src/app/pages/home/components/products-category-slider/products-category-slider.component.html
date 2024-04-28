@@ -1,0 +1,16 @@
+<div *ngIf="products$ | async as products" class="pb-4">
+  <carousel
+    [itemsPerSlide]="itemsPerSlide"
+    [singleSlideOffset]="singleSlideOffset"
+    [interval]="0"
+    [noWrap]="true"
+    data-slider="custom-slider"
+  >
+    <slide *ngFor="let product of products">
+      <!-- change showAddBtn to true -->
+      <app-products-category-slider-item
+        [item]="product"
+      ></app-products-category-slider-item>
+    </slide>
+  </carousel>
+</div>

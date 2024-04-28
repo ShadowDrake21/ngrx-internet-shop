@@ -47,3 +47,9 @@ main {
 .product-list {
   list-style: none;
 }
+
+[data-slider="custom-slider"] .carousel .carousel-indicators {
+  background-color: #000;
+  margin-bottom: 0;
+  bottom: -23px;
+}
