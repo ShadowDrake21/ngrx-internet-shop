@@ -4,6 +4,7 @@ import { BreadcrumbsComponent } from '@shared/components/breadcrumbs/breadcrumbs
 import { CommonModule } from '@angular/common';
 import { ProductSliderComponent } from './components/product-slider/product-slider.component';
 import { SponsorsComponent } from './components/sponsors/sponsors.component';
+import { UserSidebarComponent } from './components/user-sidebar/user-sidebar.component';
 
 @Component({
   selector: 'app-home',
@@ -13,6 +14,7 @@ import { SponsorsComponent } from './components/sponsors/sponsors.component';
     BreadcrumbsComponent,
     ProductSliderComponent,
     SponsorsComponent,
+    UserSidebarComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
