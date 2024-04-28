@@ -6,9 +6,12 @@
     >
       <div class="product-slider__slide-blackout"></div>
       <img
-        [src]="item.path"
+        [ngSrc]="item.path"
         class="product-slider__slide-image"
         alt="slider image"
+        [width]="1296"
+        [height]="600"
+        priority="lazy"
       />
       <div class="carousel-caption product-slider__slide-content">
         <h4>NgRxShop</h4>
