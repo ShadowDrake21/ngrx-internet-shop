@@ -3,7 +3,12 @@
     <h2 class="text-center fw-bold">{{ "Our sponsors" | titlecase }}</h2>
     <div class="d-flex justify-content-between align-items-center">
       <div *ngFor="let sponsor of sponsors" class="sponsor-item">
-        <img [src]="sponsor" alt="sponsor img" width="175" />
+        <img
+          [ngSrc]="sponsor.url"
+          alt="sponsor img"
+          width="175"
+          [height]="sponsor.height"
+        />
       </div>
     </div>
   </div>

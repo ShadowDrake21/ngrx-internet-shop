@@ -10,13 +10,13 @@ import {
   IProductSliderImage,
   productSliderImages,
 } from './content/product-slider.content';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 
 @Component({
   selector: 'app-product-slider',
   standalone: true,
-  imports: [CommonModule, CarouselModule],
+  imports: [CommonModule, CarouselModule, NgOptimizedImage],
   templateUrl: './product-slider.component.html',
   styleUrl: './product-slider.component.scss',
 })

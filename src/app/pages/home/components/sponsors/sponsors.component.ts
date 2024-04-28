@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { sponsors } from './content/sponsors.content';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-sponsors',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgOptimizedImage],
   templateUrl: './sponsors.component.html',
   styleUrl: './sponsors.component.scss',
 })
