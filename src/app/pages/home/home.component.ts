@@ -8,6 +8,7 @@ import { UserSidebarComponent } from './components/user-sidebar/user-sidebar.com
 import { ProductsItemComponent } from '@app/shared/components/products-item/products-item.component';
 import { AuthService } from '@app/core/authentication/auth.service';
 import { ProductsPromotionsComponent } from './components/products-promotions/products-promotions.component';
+import { ProductsCategorySliderComponent } from './components/products-category-slider/products-category-slider.component';
 
 @Component({
   selector: 'app-home',
@@ -19,6 +20,7 @@ import { ProductsPromotionsComponent } from './components/products-promotions/pr
     SponsorsComponent,
     UserSidebarComponent,
     ProductsPromotionsComponent,
+    ProductsCategorySliderComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
