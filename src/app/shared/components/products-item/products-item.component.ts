@@ -26,8 +26,9 @@ import { TruncateTextPipe } from '../../pipes/truncate-text.pipe';
 })
 export class ProductsItemComponent {
   @Input({ required: true, alias: 'item' }) product!: IProduct;
-  @Input({ required: true, alias: 'isInCart' }) isAlreadyInCart: boolean =
-    false;
+  @Input({ alias: 'isInCart' }) isAlreadyInCart: boolean = false;
+  @Input() showAddBtn: boolean = true;
+  @Input() innerTitle!: string;
 
   @Output('onAddToCart') onAdd: EventEmitter<IProduct> =
     new EventEmitter<IProduct>();
