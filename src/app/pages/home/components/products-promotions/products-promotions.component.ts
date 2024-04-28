@@ -17,8 +17,10 @@ export class ProductsPromotionsComponent implements OnInit {
   private productService = inject(ProductService);
 
   allProducts$!: Observable<IProduct[]>;
+
   canBeInterestingProduct!: IProduct;
   productOfTheDay!: IProduct;
+  theMostExpensiveProduct!: IProduct;
 
   ngOnInit(): void {
     this.allProducts$ = this.productService.getAllProducts().pipe(
@@ -26,39 +28,63 @@ export class ProductsPromotionsComponent implements OnInit {
         (products) =>
           (this.canBeInterestingProduct = this.getRandomProduct(products))
       ),
+      tap(
+        (products) =>
+          (this.theMostExpensiveProduct =
+            this.getTheMostExpesiveProduct(products))
+      ),
       tap((products) => this.productOfTheDayManipulations(products))
     );
 
     this.allProducts$.subscribe();
   }
 
-  // refactor!!!
   productOfTheDayManipulations(products: IProduct[]) {
     const productOfTheDayStr = localStorage.getItem('productOfTheDay');
 
-    if (productOfTheDayStr) {
-      this.productOfTheDay = JSON.parse(productOfTheDayStr) as IProduct;
-      if (this.productOfTheDay.expirationTime! <= new Date().toUTCString()) {
-        this.setNewProductOfTheDay(products);
-      }
-    } else {
+    if (!productOfTheDayStr || this.checkProductOfTheDayExpired()) {
       this.setNewProductOfTheDay(products);
+    } else {
+      this.productOfTheDay = JSON.parse(productOfTheDayStr) as IProduct;
     }
   }
 
   setNewProductOfTheDay(products: IProduct[]) {
     this.productOfTheDay = this.getRandomProduct(products);
-
-    const date = new Date();
-    date.setDate(date.getDate() + 1), date.setUTCHours(0, 0, 0, 0);
-    this.productOfTheDay.expirationTime = date.toUTCString();
+    this.productOfTheDay.expirationTime = this.calculateNextDay();
     localStorage.setItem(
       'productOfTheDay',
       JSON.stringify(this.productOfTheDay)
     );
   }
 
+  checkProductOfTheDayExpired(): boolean {
+    const productOfTheDayStr = localStorage.getItem('productOfTheDay');
+
+    if (!productOfTheDayStr) {
+      return true;
+    }
+
+    const productOfTheDay = JSON.parse(productOfTheDayStr) as IProduct;
+    return new Date(productOfTheDay.expirationTime!) <= new Date();
+  }
+
+  calculateNextDay(): string {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    date.setUTCHours(0, 0, 0, 0);
+    return date.toUTCString();
+  }
+
   getRandomProduct(products: IProduct[]) {
     return products[Math.floor(Math.random() * products.length)];
+  }
+
+  getTheMostExpesiveProduct(products: IProduct[]): IProduct {
+    const productsDesc: IProduct[] = products.sort(
+      (productA, productB) => productB.price - productA.price
+    );
+
+    return productsDesc[0];
   }
 }

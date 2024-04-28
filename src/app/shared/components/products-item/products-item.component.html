@@ -1,4 +1,14 @@
-<a class="card" style="width: 18rem; height: 100%">
+<a
+  class="card"
+  style="width: 18rem; height: 100%"
+  [class.position-relative]="innerTitle"
+>
+  <h5
+    class="p-2 text-center position-absolute card-inner__title"
+    *ngIf="innerTitle"
+  >
+    {{ innerTitle | titlecase }}
+  </h5>
   <img
     [src]="product.images[0] | clearURL | safeHTML"
     class="card-img-top"
@@ -24,14 +34,18 @@
     <div class="d-flex card-btns">
       <button
         class="btn btn-primary"
+        [class.d-none]="!showAddBtn"
         (click)="onAddToCart()"
         [disabled]="isAlreadyInCart"
       >
         {{ (isAlreadyInCart ? "In cart" : "Add to cart") | uppercase }}
       </button>
-      <a class="btn btn-danger" [routerLink]="['/product', product.id]">{{
-        "Go to page" | uppercase
-      }}</a>
+      <a
+        class="btn btn-danger"
+        [routerLink]="['/product', product.id]"
+        [class.w-100]="!showAddBtn"
+        >{{ "Go to page" | uppercase }}</a
+      >
     </div>
   </div>
 </a>
