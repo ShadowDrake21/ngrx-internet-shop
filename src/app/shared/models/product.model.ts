@@ -10,4 +10,5 @@ export interface IProduct {
   updatedAt: string;
   category: ICategory;
   quantity: number;
+  expirationTime?: string;
 }

@@ -1,0 +1,23 @@
+<div>
+  <div class="d-flex" style="gap: 30px">
+    <div>
+      <h4 class="pb-2 text-center">
+        {{ "Can be interesting for you" | titlecase }}
+      </h4>
+      <app-single-product
+        *ngIf="canBeInterestingProduct"
+        [item]="canBeInterestingProduct"
+        [isInCart]="false"
+      ></app-single-product>
+    </div>
+
+    <div>
+      <h4 class="pb-2 text-center">{{ "Product of the day" | titlecase }}</h4>
+      <app-single-product
+        *ngIf="productOfTheDay"
+        [item]="productOfTheDay"
+        [isInCart]="false"
+      ></app-single-product>
+    </div>
+  </div>
+</div>
