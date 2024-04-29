@@ -44,11 +44,12 @@ export class ProductsCategorySliderComponent implements OnInit {
     //       )
     //     );
     // });
-    this.products$ = this.productService
-      .getProductsByCategory(parseInt(this.categoryIdStr), {
+    this.products$ = this.productService.getProductsByCategory(
+      parseInt(this.categoryIdStr),
+      {
         offset: 0,
         limit: 15,
-      })
-      .pipe(tap((products) => console.log(products)));
+      }
+    );
   }
 }
