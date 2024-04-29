@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap");
+
+@mixin mQ($px) {
+  @media screen and (max-width: $px) {
+    @content;
+  }
+}
+
+img {
+  width: 100%;
+  display: block;
+  height: 100%;
+  object-fit: cover;
+}
+
+.grid-gallery {
+  display: grid;
+  grid-template-columns: 25% 30% 15% 25%;
+  gap: 15px;
+  place-content: center;
+  grid-template-rows: 50% 50%;
+  height: 80vh;
+  min-height: 460px;
+  padding: max(2vh, 1.5rem);
+
+  @include mQ(690px) {
+    height: 65vh;
+  }
+
+  @include mQ(470px) {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 35%);
+  }
+
+  .grid-gallery__card {
+    border-radius: 25px;
+    box-shadow: -2px 4px 15px rgb(0 0 0 / 26%);
+
+    @include mQ(470px) {
+      grid-column: span 1;
+    }
+
+    &:nth-child(2) {
+      grid-column: 2/3;
+      grid-row: span 2;
+
+      @include mQ(690px) {
+        grid-column: span 1;
+        grid-row: span 1;
+      }
+    }
+
+    &:nth-child(3) {
+      grid-column: span 2;
+
+      @include mQ(690px) {
+        grid-column: 2/4;
+        grid-row: 1/2;
+      }
+    }
+
+    @include mQ(690px) {
+      &:nth-child(6) {
+        grid-column: 2/4;
+        grid-row: 2/3;
+      }
+    }
+
+    @include mQ(470px) {
+      &:nth-child(5) {
+        grid-column: span 2;
+      }
+    }
+
+    p {
+      font-size: clamp(0.9rem, 0.875rem + 0.125vw, 1rem);
+      line-height: 1.4;
+    }
+
+    img {
+      border-radius: 25px;
+    }
+    .grid-gallery__card-img {
+      position: relative;
+      height: 100%;
+
+      .grid-gallery__card-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        content: "";
+        color: #fff;
+        padding: clamp(0.938rem, 5vw, 1.563rem);
+        background: rgb(2, 2, 46);
+        background: linear-gradient(
+          0deg,
+          rgb(0 0 0 / 57%) 0%,
+          rgb(255 255 255 / 0%) 100%
+        );
+        width: 100%;
+        height: 100%;
+        border-radius: 25px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: column;
+      }
+    }
+  }
+}

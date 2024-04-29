@@ -9,6 +9,7 @@ import { ProductsItemComponent } from '@app/shared/components/products-item/prod
 import { AuthService } from '@app/core/authentication/auth.service';
 import { ProductsPromotionsComponent } from './components/products-promotions/products-promotions.component';
 import { ProductsCategorySliderComponent } from './components/products-category-slider/products-category-slider.component';
+import { GridGalleryComponent } from './components/grid-gallery/grid-gallery.component';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +22,7 @@ import { ProductsCategorySliderComponent } from './components/products-category-
     UserSidebarComponent,
     ProductsPromotionsComponent,
     ProductsCategorySliderComponent,
+    GridGalleryComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
