@@ -6,7 +6,7 @@ import { ProductsItemComponent } from '@app/shared/components/products-item/prod
 import { ICategory } from '@app/shared/models/category.model';
 import { IProduct } from '@app/shared/models/product.model';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { ProductsCategorySliderItemComponent } from './components/products-category-slider-item/products-category-slider-item.component';
 
 @Component({
@@ -36,10 +36,9 @@ export class ProductsCategorySliderComponent implements OnInit {
   ngOnInit(): void {
     this.category$ = this.categoryService.getCategoryByName(this.categoryName);
     this.category$.subscribe((category) => {
-      this.products$ = this.productService.getProductsByCategory(
-        category?.id!,
-        { offset: 0, limit: 15 }
-      );
+      this.products$ = this.productService
+        .getProductsByCategory(category?.id!, { offset: 0, limit: 15 })
+        .pipe(tap((products) => console.log('products', products)));
     });
   }
 }
