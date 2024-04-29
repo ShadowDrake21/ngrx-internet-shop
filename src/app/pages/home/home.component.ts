@@ -10,6 +10,7 @@ import { AuthService } from '@app/core/authentication/auth.service';
 import { ProductsPromotionsComponent } from './components/products-promotions/products-promotions.component';
 import { ProductsCategorySliderComponent } from './components/products-category-slider/products-category-slider.component';
 import { GridGalleryComponent } from './components/grid-gallery/grid-gallery.component';
+import { VideoSectionComponent } from './components/video-section/video-section.component';
 
 @Component({
   selector: 'app-home',
@@ -23,6 +24,7 @@ import { GridGalleryComponent } from './components/grid-gallery/grid-gallery.com
     ProductsPromotionsComponent,
     ProductsCategorySliderComponent,
     GridGalleryComponent,
+    VideoSectionComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
