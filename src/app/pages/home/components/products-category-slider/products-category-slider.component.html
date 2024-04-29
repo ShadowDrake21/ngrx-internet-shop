@@ -1,4 +1,5 @@
 <div *ngIf="products$ | async as products" class="pb-4">
+  <h4 class="text-center pb-2">{{ products[0].category.name }}</h4>
   <ng-container *ngIf="products.length; else noProducts">
     <carousel
       [itemsPerSlide]="itemsPerSlide"
@@ -13,8 +14,9 @@
         <app-products-category-slider-item
           [item]="product"
         ></app-products-category-slider-item>
-      </slide> </carousel></ng-container
-  ><ng-template #noProducts>
+      </slide> </carousel
+  ></ng-container>
+  <ng-template #noProducts>
     <div class="text-center">
       <p class="fs-4">This category has no products...</p>
     </div>

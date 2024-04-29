@@ -25,7 +25,7 @@ export class ProductsCategorySliderComponent implements OnInit {
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
 
-  @Input({ required: true }) categoryName!: string;
+  @Input({ required: true, alias: 'categoryId' }) categoryIdStr!: string;
 
   category$!: Observable<ICategory | null>;
   products$!: Observable<IProduct[]>;
@@ -34,11 +34,21 @@ export class ProductsCategorySliderComponent implements OnInit {
   singleSlideOffset = true;
 
   ngOnInit(): void {
-    this.category$ = this.categoryService.getCategoryByName(this.categoryName);
-    this.category$.subscribe((category) => {
-      this.products$ = this.productService
-        .getProductsByCategory(category?.id!, { offset: 0, limit: 15 })
-        .pipe(tap((products) => console.log('products', products)));
-    });
+    // this.category$ = this.categoryService.getCategoryByName(this.categoryName);
+    // this.category$.subscribe((category) => {
+    //   this.products$ = this.productService
+    //     .getProductsByCategory(category?.id!, { offset: 0, limit: 15 })
+    //     .pipe(
+    //       tap((products) =>
+    //         console.log('products and category', products, category)
+    //       )
+    //     );
+    // });
+    this.products$ = this.productService
+      .getProductsByCategory(parseInt(this.categoryIdStr), {
+        offset: 0,
+        limit: 15,
+      })
+      .pipe(tap((products) => console.log(products)));
   }
 }
