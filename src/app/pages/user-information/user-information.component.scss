@@ -1,5 +1,8 @@
 .user-information {
-  height: 100vh;
+  height: 100%;
+  &__inner {
+    min-height: 100vh;
+  }
 }
 .dropdown-toggle {
   outline: 0;

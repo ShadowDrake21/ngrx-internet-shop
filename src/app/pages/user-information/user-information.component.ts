@@ -19,8 +19,6 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
   imports: [
     CommonModule,
     RouterOutlet,
-    HeaderComponent,
-    FooterComponent,
     FontAwesomeModule,
     TabsModule,
     RouterLink,
