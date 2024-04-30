@@ -21,6 +21,12 @@
                       name="name"
                       placeholder="Name"
                       formControlName="name"
+                      [class.error]="
+                        (contactUsForm.controls.name.touched &&
+                          contactUsForm.controls.name.invalid) ||
+                        (contactUsForm.controls.name.dirty &&
+                          contactUsForm.controls.name.invalid)
+                      "
                     />
                   </div>
                 </div>
@@ -33,6 +39,12 @@
                       name="email"
                       placeholder="Email"
                       formControlName="email"
+                      [class.error]="
+                        (contactUsForm.controls.email.touched &&
+                          contactUsForm.controls.email.invalid) ||
+                        (contactUsForm.controls.email.dirty &&
+                          contactUsForm.controls.email.invalid)
+                      "
                     />
                   </div>
                 </div>
@@ -45,13 +57,22 @@
                       name="subject"
                       placeholder="Subject"
                       formControlName="subject"
+                      [class.error]="
+                        (contactUsForm.controls.subject.touched &&
+                          contactUsForm.controls.subject.invalid) ||
+                        (contactUsForm.controls.subject.dirty &&
+                          contactUsForm.controls.subject.invalid)
+                      "
                     />
                   </div>
                 </div>
                 <div class="col-md-12 mb-3">
                   <div class="form-group">
-                    <label class="label" for="#">Message</label>
+                    <label class="label" for="contact-us-textarea"
+                      >Message</label
+                    >
                     <textarea
+                      id="contact-us-textarea"
                       name="message"
                       class="form-control"
                       cols="30"
@@ -59,12 +80,22 @@
                       placeholder="Message"
                       style="resize: none"
                       formControlName="message"
+                      [class.error]="
+                        (contactUsForm.controls.message.touched &&
+                          contactUsForm.controls.message.invalid) ||
+                        (contactUsForm.controls.message.dirty &&
+                          contactUsForm.controls.message.invalid)
+                      "
                     ></textarea>
                   </div>
                 </div>
                 <div class="col-md-12">
                   <div class="form-group">
-                    <button type="submit" class="btn btn-primary">
+                    <button
+                      type="submit"
+                      class="btn btn-primary"
+                      [disabled]="contactUsForm.invalid"
+                    >
                       Send message
                     </button>
                   </div>
@@ -73,7 +104,81 @@
             </form>
           </div>
         </div>
-        <div class="col-md-5">
+        <div class="col-md-5 position-relative">
+          <ul
+            *ngIf="
+              (contactUsForm.invalid && contactUsForm.touched) ||
+              (contactUsForm.invalid && contactUsForm.dirty)
+            "
+            class="position-absolute w-100 h-100"
+          >
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.name.errors?.['required'] && contactUsForm.controls.name.touched"
+            >
+              The name field is mandatory
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.name.errors?.['maxlength']"
+            >
+              Name should be maximum 50 characters long. Now it is
+              {{ contactUsForm.value.name?.length }}
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.email.errors?.['required'] && contactUsForm.controls.email.touched"
+            >
+              The email field is mandatory
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.email.errors?.['email']"
+            >
+              {{ contactUsForm.value.email + " is not an email" }}
+            </li>
+
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.subject.errors?.['required'] && contactUsForm.controls.subject.touched"
+            >
+              The subject field is mandatory
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.subject.errors?.['minlength']"
+            >
+              Subject should be at least 6 characters long. Now it is
+              {{ contactUsForm.value.subject?.length }}
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.subject.errors?.['maxlength']"
+            >
+              Subject should be maximum 60 characters long. Now it is
+              {{ contactUsForm.value.subject?.length }}
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.message.errors?.['required'] && contactUsForm.controls.message.touched"
+            >
+              The message field is mandatory
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.message.errors?.['minlength']"
+            >
+              Message should be at least 10 characters long. Now it is
+              {{ contactUsForm.value.message?.length }}
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.message.errors?.['maxlength']"
+            >
+              Message should be maximum 255 characters long. Now it is
+              {{ contactUsForm.value.message?.length }}
+            </li>
+          </ul>
           <img
             class="contact-us__img"
             src="/assets/images/contact-us.jpg"

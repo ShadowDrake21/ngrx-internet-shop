@@ -61,3 +61,12 @@ main {
     }
   }
 }
+
+.error {
+  color: red !important;
+  border-color: red !important;
+  background-color: rgb(255, 227, 227) !important;
+  &::placeholder {
+    color: red !important;
+  }
+}

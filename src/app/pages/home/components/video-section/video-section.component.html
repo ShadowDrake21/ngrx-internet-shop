@@ -14,7 +14,18 @@
     </h2>
     <h3 class="text-end">Anonymous</h3>
   </div>
-  <video autoplay="true" loop class="video-section__frame">
+  <button
+    #playButton
+    type="button"
+    class="position-absolute bg-transparent border-0 video-section__play"
+  >
+    <fa-icon
+      [icon]="playIcon"
+      class="text-white"
+      style="font-size: 90px"
+    ></fa-icon>
+  </button>
+  <video loop muted class="video-section__frame" #videoPlayer>
     <source [src]="videoItem.url" type="video/mp4" />
   </video>
 </div>

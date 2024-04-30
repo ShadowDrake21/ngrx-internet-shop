@@ -11,11 +11,17 @@ import emailjs from '@emailjs/browser';
 import { from } from 'rxjs';
 import { AlertComponent } from '@app/shared/components/alert/alert.component';
 import { AlertType } from '@app/shared/models/alerts.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-contact-us',
   standalone: true,
-  imports: [FontAwesomeModule, ReactiveFormsModule, AlertComponent],
+  imports: [
+    CommonModule,
+    FontAwesomeModule,
+    ReactiveFormsModule,
+    AlertComponent,
+  ],
   templateUrl: './contact-us.component.html',
   styleUrl: './contact-us.component.scss',
 })
@@ -27,13 +33,13 @@ export class ContactUsComponent {
     email: new FormControl('', [Validators.required, Validators.email]),
     subject: new FormControl('', [
       Validators.required,
-      Validators.minLength(10),
-      Validators.maxLength(150),
+      Validators.minLength(6),
+      Validators.maxLength(60),
     ]),
     message: new FormControl('', [
       Validators.required,
       Validators.minLength(10),
-      Validators.maxLength(350),
+      Validators.maxLength(255),
     ]),
   });
 
