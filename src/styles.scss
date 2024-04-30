@@ -47,3 +47,26 @@ main {
 .product-list {
   list-style: none;
 }
+
+[data-slider="custom-slider"] .carousel {
+  & .carousel-indicators {
+    background-color: #000;
+    margin-bottom: 0;
+    bottom: -23px;
+  }
+  & .carousel-control {
+    & .carousel-control-next-icon,
+    & .carousel-control-prev-icon {
+      background-color: #000;
+    }
+  }
+}
+
+.error {
+  color: red !important;
+  border-color: red !important;
+  background-color: rgb(255, 227, 227) !important;
+  &::placeholder {
+    color: red !important;
+  }
+}

@@ -1,0 +1,31 @@
+<div class="video-section position-relative">
+  <div class="video-section__dim"></div>
+  <div class="video-section__info">
+    <h6>
+      Video made by
+      <a class="text-white" [href]="videoItem.link" target="_blank">{{
+        videoItem.author
+      }}</a>
+    </h6>
+  </div>
+  <div class="video-section__title fw-bold w-75">
+    <h2 class="fs-1">
+      “Online shopping gives me a reason to live for another 3-5 business days.”
+    </h2>
+    <h3 class="text-end">Anonymous</h3>
+  </div>
+  <button
+    #playButton
+    type="button"
+    class="position-absolute bg-transparent border-0 video-section__play"
+  >
+    <fa-icon
+      [icon]="playIcon"
+      class="text-white"
+      style="font-size: 90px"
+    ></fa-icon>
+  </button>
+  <video loop muted class="video-section__frame" #videoPlayer>
+    <source [src]="videoItem.url" type="video/mp4" />
+  </video>
+</div>

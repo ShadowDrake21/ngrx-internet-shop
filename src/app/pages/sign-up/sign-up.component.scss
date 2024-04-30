@@ -136,7 +136,8 @@ select {
   }
 }
 .btns {
-  margin-top: 40px;
+  margin-top: 30px;
+  gap: 25px;
 }
 .register-btn {
   border: none;
@@ -238,6 +239,13 @@ select {
   background-color: rgb(255, 0, 0);
   color: rgb(255, 255, 255);
   padding: 15px 25px;
+}
+
+.reset__btn {
+  &:disabled {
+    background-color: #777777ad;
+    border: 1px solid #646464;
+  }
 }
 
 @media (max-width: 1199px) {

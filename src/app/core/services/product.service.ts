@@ -70,9 +70,21 @@ export class ProductService {
       .pipe(map((product) => ({ ...product, quantity: 1 })));
   }
 
-  getAllProductsByCategory(categoryId: number): Observable<IProduct[]> {
+  getProductsByCategory(
+    categoryId: number,
+    pagination?: { offset: number; limit: number }
+  ): Observable<IProduct[]> {
+    let params = new HttpParams();
+    if (pagination) {
+      params = params
+        .set('offset', pagination.offset.toString())
+        .set('limit', pagination.limit.toString());
+    }
+
     return this.http
-      .get<IProduct[]>(`${BASE_URL_API}/categories/${categoryId}/products`)
+      .get<IProduct[]>(`${BASE_URL_API}/categories/${categoryId}/products`, {
+        params,
+      })
       .pipe(map(mapQuantity));
   }
 }

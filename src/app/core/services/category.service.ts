@@ -1,7 +1,7 @@
 // angular stuff
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { filter, map, Observable } from 'rxjs';
 
 // interfaces
 import { ICategory } from '../../shared/models/category.model';
@@ -19,5 +19,17 @@ export class CategoryService {
 
   getCategoryById(categoryId: number): Observable<ICategory> {
     return this.http.get<ICategory>(`${BASE_URL_API}/categories/${categoryId}`);
+  }
+
+  getCategoryByName(categoryName: string): Observable<ICategory | null> {
+    const allCategories$ = this.getAllCategories();
+    return allCategories$.pipe(
+      map(
+        (categories) =>
+          categories.find(
+            (category) => category.name.toLowerCase() === categoryName
+          ) as ICategory | null
+      )
+    );
   }
 }

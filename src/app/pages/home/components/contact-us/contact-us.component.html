@@ -1,0 +1,250 @@
+<div class="contact-us position-relative">
+  <app-alert [alerts]="alerts"></app-alert>
+  <div class="col-md-12">
+    <div class="wrapper">
+      <div class="row mb-5">
+        <div class="col-md-7">
+          <div class="contact-wrap w-100 p-md-5 p-4">
+            <h3 class="mb-4">Contact Us</h3>
+            <form
+              class="contactForm"
+              [formGroup]="contactUsForm"
+              (ngSubmit)="onFormSubmit()"
+            >
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <div class="form-group">
+                    <label class="label" for="name">Full Name</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="name"
+                      placeholder="Name"
+                      formControlName="name"
+                      [class.error]="
+                        (contactUsForm.controls.name.touched &&
+                          contactUsForm.controls.name.invalid) ||
+                        (contactUsForm.controls.name.dirty &&
+                          contactUsForm.controls.name.invalid)
+                      "
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <div class="form-group">
+                    <label class="label" for="email">Email Address</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      name="email"
+                      placeholder="Email"
+                      formControlName="email"
+                      [class.error]="
+                        (contactUsForm.controls.email.touched &&
+                          contactUsForm.controls.email.invalid) ||
+                        (contactUsForm.controls.email.dirty &&
+                          contactUsForm.controls.email.invalid)
+                      "
+                    />
+                  </div>
+                </div>
+                <div class="col-md-12 mb-3">
+                  <div class="form-group">
+                    <label class="label" for="subject">Subject</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="subject"
+                      placeholder="Subject"
+                      formControlName="subject"
+                      [class.error]="
+                        (contactUsForm.controls.subject.touched &&
+                          contactUsForm.controls.subject.invalid) ||
+                        (contactUsForm.controls.subject.dirty &&
+                          contactUsForm.controls.subject.invalid)
+                      "
+                    />
+                  </div>
+                </div>
+                <div class="col-md-12 mb-3">
+                  <div class="form-group">
+                    <label class="label" for="contact-us-textarea"
+                      >Message</label
+                    >
+                    <textarea
+                      id="contact-us-textarea"
+                      name="message"
+                      class="form-control"
+                      cols="30"
+                      rows="4"
+                      placeholder="Message"
+                      style="resize: none"
+                      formControlName="message"
+                      [class.error]="
+                        (contactUsForm.controls.message.touched &&
+                          contactUsForm.controls.message.invalid) ||
+                        (contactUsForm.controls.message.dirty &&
+                          contactUsForm.controls.message.invalid)
+                      "
+                    ></textarea>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <button
+                      type="submit"
+                      class="btn btn-primary"
+                      [disabled]="contactUsForm.invalid"
+                    >
+                      Send message
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="col-md-5 position-relative">
+          <ul
+            *ngIf="
+              (contactUsForm.invalid && contactUsForm.touched) ||
+              (contactUsForm.invalid && contactUsForm.dirty)
+            "
+            class="position-absolute w-100 h-100"
+          >
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.name.errors?.['required'] && contactUsForm.controls.name.touched"
+            >
+              The name field is mandatory
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.name.errors?.['maxlength']"
+            >
+              Name should be maximum 50 characters long. Now it is
+              {{ contactUsForm.value.name?.length }}
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.email.errors?.['required'] && contactUsForm.controls.email.touched"
+            >
+              The email field is mandatory
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.email.errors?.['email']"
+            >
+              {{ contactUsForm.value.email + " is not an email" }}
+            </li>
+
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.subject.errors?.['required'] && contactUsForm.controls.subject.touched"
+            >
+              The subject field is mandatory
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.subject.errors?.['minlength']"
+            >
+              Subject should be at least 6 characters long. Now it is
+              {{ contactUsForm.value.subject?.length }}
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.subject.errors?.['maxlength']"
+            >
+              Subject should be maximum 60 characters long. Now it is
+              {{ contactUsForm.value.subject?.length }}
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.message.errors?.['required'] && contactUsForm.controls.message.touched"
+            >
+              The message field is mandatory
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.message.errors?.['minlength']"
+            >
+              Message should be at least 10 characters long. Now it is
+              {{ contactUsForm.value.message?.length }}
+            </li>
+            <li
+              class="errors-list__item"
+              *ngIf="contactUsForm.controls.message.errors?.['maxlength']"
+            >
+              Message should be maximum 255 characters long. Now it is
+              {{ contactUsForm.value.message?.length }}
+            </li>
+          </ul>
+          <img
+            class="contact-us__img"
+            src="/assets/images/contact-us.jpg"
+            alt="contact-us img"
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="dbox w-100 text-center">
+            <div class="icon d-flex align-items-center justify-content-center">
+              <fa-icon
+                [icon]="icons.faLocationDot"
+                class="text-white"
+              ></fa-icon>
+            </div>
+            <div class="text">
+              <p>
+                <span>Address:</span> 14000, Mikhail Grushevsky Avenue 180,
+                Chernihiv, Ukraine
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="dbox w-100 text-center">
+            <div class="icon d-flex align-items-center justify-content-center">
+              <fa-icon [icon]="icons.faPhone" class="text-white"></fa-icon>
+            </div>
+            <div class="text">
+              <p>
+                <span>Phone:</span>
+                <a href="tel:+380931926350"> +380 50 679 90 14</a>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="dbox w-100 text-center">
+            <div class="icon d-flex align-items-center justify-content-center">
+              <fa-icon [icon]="icons.faAt" class="text-white"></fa-icon>
+            </div>
+            <div class="text">
+              <p>
+                <span>Email:</span>
+                dimka670020040&#64;gmail.com
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="dbox w-100 text-center">
+            <div class="icon d-flex align-items-center justify-content-center">
+              <fa-icon [icon]="icons.faGlobe" class="text-white"></fa-icon>
+            </div>
+            <div class="text">
+              <p>
+                <span>Website: </span>
+                <a href="https://github.com/ShadowDrake21" target="_blank"
+                  >GitHub.com</a
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
