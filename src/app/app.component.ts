@@ -42,7 +42,11 @@ export class AppComponent implements OnInit {
 
     this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationEnd) {
-        if (this.router.url === '/sign-in' || this.router.url === '/sign-up') {
+        if (
+          this.router.url === '/sign-in' ||
+          this.router.url === '/sign-up' ||
+          this.router.url.includes('/user-information')
+        ) {
           this.headerFooterAvailable = false;
         } else {
           this.headerFooterAvailable = true;

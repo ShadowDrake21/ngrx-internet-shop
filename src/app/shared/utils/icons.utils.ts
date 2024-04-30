@@ -19,6 +19,7 @@ import {
   faLocationDot,
   faPerson,
   faPhone,
+  faPowerOff,
 } from '@fortawesome/free-solid-svg-icons';
 
 export const signInModalIcons = { faFacebookF, faGoogle, faXTwitter, faClose };
@@ -30,4 +31,5 @@ export const userInformationSidebar = {
   faEarthEurope,
   faCreditCard,
   faHeartCircleCheck,
+  faPowerOff,
 };
