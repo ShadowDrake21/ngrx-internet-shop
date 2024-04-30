@@ -1,1 +1,19 @@
-<p>general works!</p>
+<!-- <div class="w-100 h-100">
+  <div style="height: 200px">User card</div>
+  <div style="height: 200px">main info</div>
+  <div style="height: 200px">data about cart content</div>
+  <div style="height: 200px">data about last purchese</div>
+  <div style="height: 200px">tabs with important questions</div>
+</div> -->
+
+<accordion [closeOthers]="true">
+  <accordion-group heading="Header">
+    This content is straight in the template.
+  </accordion-group>
+  <accordion-group heading="Content 1">
+    <p>Content 1</p>
+  </accordion-group>
+  <accordion-group heading="Content 2">
+    <p>Content 2</p>
+  </accordion-group>
+</accordion>
