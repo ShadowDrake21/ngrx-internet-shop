@@ -6,7 +6,7 @@
     <div class="p-3" style="position: fixed; width: 280px">
       <div class="w-100">
         <a
-          href="/"
+          [routerLink]="['/user-information']"
           class="d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none"
         >
           <span class="fs-4">NgRxShop User</span>
@@ -14,19 +14,22 @@
         <hr />
         <ul class="nav nav-pills flex-column mb-auto">
           <li class="nav-item">
-            <a href="#" class="nav-link active" aria-current="page">
+            <a class="nav-link active" [routerLink]="['personal-information']">
               <fa-icon [icon]="sidebarIcons.faInfo" class="me-3"></fa-icon>
               General
             </a>
           </li>
           <li>
-            <a href="#" class="nav-link link-dark">
+            <a
+              class="nav-link link-dark"
+              [routerLink]="['personal-information']"
+            >
               <fa-icon [icon]="sidebarIcons.faPerson" class="me-3"></fa-icon>
               Personal information
             </a>
           </li>
           <li>
-            <a href="#" class="nav-link link-dark">
+            <a class="nav-link link-dark" [routerLink]="['purcheses']">
               <fa-icon
                 [icon]="sidebarIcons.faBasketShopping"
                 class="me-3"
@@ -35,7 +38,7 @@
             </a>
           </li>
           <li>
-            <a href="#" class="nav-link link-dark">
+            <a class="nav-link link-dark" [routerLink]="['delivery-details']">
               <fa-icon
                 [icon]="sidebarIcons.faEarthEurope"
                 class="me-3"
@@ -44,7 +47,7 @@
             </a>
           </li>
           <li>
-            <a href="#" class="nav-link link-dark">
+            <a class="nav-link link-dark" [routerLink]="['card-details']">
               <fa-icon
                 [icon]="sidebarIcons.faCreditCard"
                 class="me-3"
@@ -53,7 +56,7 @@
             </a>
           </li>
           <li>
-            <a href="#" class="nav-link link-dark">
+            <a class="nav-link link-dark" [routerLink]="['favorite-products']">
               <fa-icon
                 [icon]="sidebarIcons.faHeartCircleCheck"
                 class="me-3"
@@ -65,14 +68,13 @@
         <hr />
         <div class="dropdown">
           <a
-            href="#"
             class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
             id="dropdownUser2"
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
             <img
-              src="https://github.com/mdo.png"
+              src="https://avatars.githubusercontent.com/u/122775021?v=4"
               alt=""
               width="32"
               height="32"
@@ -93,10 +95,6 @@
     </div>
   </div>
   <div class="w-100 h-100">
-    <div style="height: 200px">User card</div>
-    <div style="height: 200px">main info</div>
-    <div style="height: 200px">data about cart content</div>
-    <div style="height: 200px">data about last purchese</div>
-    <div style="height: 200px">tabs with important questions</div>
+    <router-outlet></router-outlet>
   </div>
 </div>
