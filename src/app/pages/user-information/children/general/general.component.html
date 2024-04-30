@@ -6,14 +6,53 @@
   <div style="height: 200px">tabs with important questions</div>
 </div> -->
 
-<accordion [closeOthers]="true">
-  <accordion-group heading="Header">
-    This content is straight in the template.
-  </accordion-group>
-  <accordion-group heading="Content 1">
-    <p>Content 1</p>
-  </accordion-group>
-  <accordion-group heading="Content 2">
-    <p>Content 2</p>
-  </accordion-group>
-</accordion>
+<div class="pt-3">
+  <app-basic-card></app-basic-card>
+  <accordion [closeOthers]="true">
+    <accordion-group
+      heading="{{ 'main user info' | titlecase }}"
+      *ngIf="user$ | async as user"
+    >
+      <ng-container
+        *ngIf="user.userCredential!.providerData[0] as userCredential"
+      >
+        <div class="d-flex" style="gap: 25px">
+          <div class="" style="width: 200px">
+            <img
+              [src]="
+                userCredential.photoURL ??
+                '/assets/images/profile-image-placeholder.jpg'
+              "
+              alt="user img"
+              style="width: 100%"
+            />
+          </div>
+          <div>
+            <h3 class="fst-italic fw-lighter fs-4">
+              {{ userCredential.email | truncateText : 60 }}
+            </h3>
+            <p class="fw-bold">
+              {{
+                userCredential.displayName ?? "Unknown username"
+                  | truncateText : 40
+              }}
+            </p>
+          </div>
+        </div></ng-container
+      >
+    </accordion-group>
+    <accordion-group heading="{{ 'shopping cart content' | titlecase }}">
+      <p>Content 1</p>
+    </accordion-group>
+    <accordion-group heading="{{ 'last purchese' | titlecase }}">
+      <p>Content 2</p>
+    </accordion-group>
+    <accordion-group heading="{{ 'main questions' | titlecase }}">
+      <tabset>
+        <tab heading="Basic title" id="tab1">Basic content</tab>
+        <tab heading="Basic Title 1">Basic content 1</tab>
+        <tab heading="Basic Title 2">Basic content 2</tab>
+      </tabset>
+    </accordion-group>
+  </accordion>
+</div>

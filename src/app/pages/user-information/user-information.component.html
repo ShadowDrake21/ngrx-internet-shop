@@ -1,13 +1,10 @@
 <div class="user-information">
-  <div class="d-flex h-100">
+  <div class="d-flex user-information__inner">
     <div
       class="d-flex flex-column flex-shrink-0 bg-light position-relative"
-      style="max-width: 280px; width: 100%; margin-top: -23px"
+      style="max-width: 280px; width: 100%"
     >
-      <div
-        class="pe-3 pb-5 ps-3 pt-5 h-100"
-        style="position: fixed; width: 280px"
-      >
+      <div class="p-3 h-100" style="position: fixed; width: 280px">
         <div class="w-100 h-100 d-flex flex-column justify-content-between">
           <div>
             <a
@@ -123,6 +120,16 @@
             </div>
           </div>
           <div>
+            <div class="text-dark">
+              <a
+                class="footer-link text-dark text-decoration-none"
+                target="_blank"
+                href="https://github.com/ShadowDrake21"
+              >
+                © 2024 Dmytro (Dmitrii) Krapyvianskiy a.k.a Drake21 | All rights
+                reserved</a
+              >
+            </div>
             <hr />
             <a class="nav-link link-dark" [routerLink]="[previousRoute]">
               <fa-icon [icon]="sidebarIcons.faPowerOff" class="me-3"></fa-icon>
@@ -136,5 +143,4 @@
       <router-outlet></router-outlet>
     </div>
   </div>
-  <app-footer class="position-absolute w-100 bottom-0"></app-footer>
 </div>
