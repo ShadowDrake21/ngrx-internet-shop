@@ -56,4 +56,11 @@ export const routes: Routes = [
         (c) => c.SearchResultsComponent
       ),
   },
+  {
+    path: 'user-information',
+    loadComponent: () =>
+      import('./pages/user-information/user-information.component').then(
+        (c) => c.UserInformationComponent
+      ),
+  },
 ];
