@@ -90,7 +90,7 @@ export class ProductEffects {
     this.actions$.pipe(
       ofType(ProductActions.loadProductsByCategory),
       exhaustMap(({ categoryId }) =>
-        this.productService.getAllProductsByCategory(categoryId).pipe(
+        this.productService.getProductsByCategory(categoryId).pipe(
           map((products) =>
             ProductActions.loadProductsByCategorySuccess({ products })
           ),

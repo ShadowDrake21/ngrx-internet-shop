@@ -21,6 +21,12 @@
             placeholder="Username"
             class="form-control"
             formControlName="username"
+            [class.error]="
+              (signUpForm.controls.username.touched &&
+                signUpForm.controls.username.invalid) ||
+              (signUpForm.controls.username.dirty &&
+                signUpForm.controls.username.invalid)
+            "
           />
         </div>
         <div class="form-wrapper">
@@ -29,6 +35,12 @@
             placeholder="Email Address"
             class="form-control"
             formControlName="email"
+            [class.error]="
+              (signUpForm.controls.email.touched &&
+                signUpForm.controls.email.invalid) ||
+              (signUpForm.controls.email.dirty &&
+                signUpForm.controls.email.invalid)
+            "
           />
         </div>
         <div class="form-wrapper">
@@ -37,6 +49,13 @@
             placeholder="Password"
             class="form-control"
             formControlName="password"
+            [class.error]="
+              (signUpForm.controls.password.touched &&
+                signUpForm.controls.password.invalid) ||
+              (signUpForm.controls.password.dirty &&
+                signUpForm.controls.password.invalid) ||
+              signUpForm.value.password !== signUpForm.value.confirmPassword
+            "
           />
         </div>
         <div class="form-wrapper">
@@ -45,11 +64,19 @@
             placeholder="Confirm Password"
             class="form-control"
             formControlName="confirmPassword"
+            [class.error]="
+              (signUpForm.controls.confirmPassword.touched &&
+                signUpForm.controls.confirmPassword.invalid) ||
+              (signUpForm.controls.confirmPassword.dirty &&
+                signUpForm.controls.confirmPassword.invalid) ||
+              signUpForm.value.password !== signUpForm.value.confirmPassword
+            "
           />
         </div>
-        <div class="d-flex justify-content-center btns">
+        <div class="d-flex justify-content-center align-items-center btns">
+          <a [routerLink]="['/']" class="btn btn-link">Go to home</a>
           <button
-            class="register-btn"
+            class="btn btn-dark p-3"
             type="submit"
             [disabled]="
               signUpForm.invalid ||
@@ -60,7 +87,7 @@
           </button>
           <button
             type="button"
-            class="btn btn-primary"
+            class="btn btn-primary reset__btn p-3"
             (click)="signUpForm.reset()"
             [disabled]="!signUpForm.dirty"
           >
@@ -69,6 +96,7 @@
         </div>
         <ul
           *ngIf="
+            (signUpForm.invalid && signUpForm.touched) ||
             (signUpForm.invalid && signUpForm.dirty) ||
             signUpForm.value.password !== signUpForm.value.confirmPassword
           "
@@ -98,10 +126,6 @@
           </li>
           <li *ngIf="signUpForm.controls.email.errors?.['email']">
             {{ signUpForm.value.email + " is not an email" }}
-          </li>
-          <li *ngIf="signUpForm.controls.email.errors?.['minlength']">
-            Email should be at least 6 characters long. Now it is
-            {{ signUpForm.value.email?.length }}
           </li>
           <li
             *ngIf="signUpForm.controls.password.errors?.['required'] && signUpForm.controls.password.touched"

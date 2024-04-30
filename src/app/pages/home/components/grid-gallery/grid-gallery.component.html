@@ -1,0 +1,14 @@
+<div class="pb-4">
+  <h2 class="text-center pb-2 fw-bold">Our Ambassadors</h2>
+  <div class="grid-gallery">
+    <div class="grid-gallery__card" *ngFor="let ambassador of ourAmbassadors">
+      <div class="grid-gallery__card-img">
+        <img [src]="ambassador.url" alt="Ambassador image" />
+        <div class="grid-gallery__card-overlay">
+          <h2>{{ ambassador.name }}</h2>
+          <p>{{ ambassador.profession }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

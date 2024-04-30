@@ -47,6 +47,7 @@ export class ProductsListComponent implements OnInit, OnChanges {
   cartProductsIdxs$!: Observable<number[]>;
 
   calcPageNum = calcPageNum;
+  maxSize = 5;
 
   breadcrumbs: IBreadcrumbs = {
     links: ['home'],

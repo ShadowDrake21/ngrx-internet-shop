@@ -1,0 +1,20 @@
+<div class="d-flex" style="gap: 30px">
+  <app-single-product
+    *ngIf="canBeInterestingProduct"
+    [item]="canBeInterestingProduct"
+    [showAddBtn]="false"
+    innerTitle="Can be interesting for you"
+  ></app-single-product>
+  <app-single-product
+    *ngIf="productOfTheDay"
+    [item]="productOfTheDay"
+    [showAddBtn]="false"
+    innerTitle="Product of the day"
+  ></app-single-product>
+  <app-single-product
+    *ngIf="theMostExpensiveProduct"
+    [item]="theMostExpensiveProduct"
+    [showAddBtn]="false"
+    innerTitle="The most elite product"
+  ></app-single-product>
+</div>

@@ -1,0 +1,65 @@
+<div class="user-sidebar border-secondary border p-3">
+  <div *ngIf="onlineStatus; else unauthorizedUser">
+    <ng-container *ngIf="user$ | async as user">
+      <div class="pb-3">
+        <h5 class="fw-light fst-italic">
+          {{ user.userCredential!.providerData[0].email | truncateText : 24 }}
+        </h5>
+        <h3>
+          {{
+            user.userCredential!.providerData[0].displayName ?? "No name user"
+              | truncateText : 24
+          }}
+        </h3>
+      </div>
+      <div class="w-100 pb-3">
+        <img
+          class="w-100 object-fit-cover"
+          [src]="
+            user.userCredential!.providerData[0].photoURL ??
+            '/assets/images/profile-image-placeholder.jpg'
+          "
+          alt="user-sidebar-img"
+        />
+      </div>
+      <div>
+        <p>
+          <span class="fw-bold">Auth time:</span>
+          {{ user.userCredential?.tokenResult?.authTime | date : "medium" }}
+        </p>
+        <p><span class="fw-bold">Number of purchases:</span> 3</p>
+        <p><span class="fw-bold">Total price of purchases:</span> 1234 zł</p>
+        <p>
+          <span class="fw-bold">Number of favourites:</span>
+          {{ (favorites$ | async)?.length }}
+        </p>
+        <p>
+          <span class="fw-bold">Last viewed product:</span> Sleek Futuristic
+          Electric Bicycle
+        </p>
+      </div>
+    </ng-container>
+  </div>
+  <ng-template #unauthorizedUser>
+    <div
+      class="d-flex w-100 justify-content-center align-items-center text-center"
+      style="height: 630px"
+    >
+      <div>
+        <p>You didn't sign in nor sign up.</p>
+        <div class="pb-3">
+          <p>To sign in, click:</p>
+          <a class="btn btn-primary" [routerLink]="['/sign-in']">
+            Go to sign in page
+          </a>
+        </div>
+        <div>
+          <p>To sign up, click:</p>
+          <a class="btn btn-success" [routerLink]="['/sign-up']">
+            Go to sign up page
+          </a>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>
