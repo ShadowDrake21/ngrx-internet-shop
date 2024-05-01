@@ -32,6 +32,7 @@ import { UserEffects } from './store/user/user.effects';
 
 // environment
 import { environment } from '../environments/environment.development';
+import { getStorage, provideStorage } from '@angular/fire/storage';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -53,6 +54,7 @@ export const appConfig: ApplicationConfig = {
       provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
       provideAuth(() => getAuth()),
       provideDatabase(() => getDatabase()),
+      provideStorage(() => getStorage()),
     ]),
   ],
 };

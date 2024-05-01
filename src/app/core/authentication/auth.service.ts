@@ -20,12 +20,11 @@ import { catchError, from, map, Observable, of, switchMap } from 'rxjs';
 
 // interfaces
 import { IUserSignUpData, IUserUpdate } from '../../shared/models/user.model';
-import { RealtimeDatabaseService } from '../services/realtimeDatabase.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private auth: Auth = inject(Auth);
-  private realtimeDatabaseService = inject(RealtimeDatabaseService);
+  // private databaseService = inject(DatabaseService);
 
   signUp(signUpData: IUserSignUpData): Observable<UserCredential> {
     return from(
@@ -36,26 +35,30 @@ export class AuthService {
       )
     ).pipe(
       switchMap((credential) => {
-        return this.updateDisplayName({
+        return this.updateUser({
           displayName: signUpData.username,
         }).pipe(map(() => credential));
       })
     );
   }
 
-  updateDisplayName(updateData: IUserUpdate) {
+  updateUser(updateData: IUserUpdate) {
     return from(updateProfile(this.auth.currentUser!, updateData));
   }
 
-  async updateUser(updateData: IUserUpdate) {
-    if (updateData.photoURL) {
-      this.realtimeDatabaseService.saveUserImage(
-        await this.auth.currentUser?.getIdToken()!,
-        updateData.photoURL
-      );
-    }
-    return from(updateProfile(this.auth.currentUser!, updateData));
+  updateUserPromise(updateData: IUserUpdate) {
+    return updateProfile(this.auth.currentUser!, updateData);
   }
+
+  // async updateUser(updateData: IUserUpdate) {
+  //   if (updateData.photoURL) {
+  //     this.databaseService.saveUserImage(
+  //       await this.auth.currentUser?.getIdToken()!,
+  //       updateData.photoURL
+  //     );
+  //   }
+  //   return from(updateProfile(this.auth.currentUser!, updateData));
+  // }
 
   signInManually(email: string, password: string): Observable<UserCredential> {
     return from(signInWithEmailAndPassword(this.auth, email, password));
