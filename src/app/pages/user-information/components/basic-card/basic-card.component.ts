@@ -1,5 +1,6 @@
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { IUserInformationContentItem } from '../../content/user-information.content';
 
 @Component({
   selector: 'app-basic-card',
@@ -8,4 +9,6 @@ import { Component } from '@angular/core';
   templateUrl: './basic-card.component.html',
   styleUrl: './basic-card.component.scss',
 })
-export class BasicCardComponent {}
+export class BasicCardComponent {
+  @Input({ required: true }) item!: IUserInformationContentItem;
+}

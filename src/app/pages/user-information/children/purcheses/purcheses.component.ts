@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
+import { userInformationContent } from '../../content/user-information.content';
 
 @Component({
   selector: 'app-purcheses',
@@ -8,4 +9,6 @@ import { BasicCardComponent } from '../../components/basic-card/basic-card.compo
   templateUrl: './purcheses.component.html',
   styleUrl: './purcheses.component.scss',
 })
-export class PurchesesComponent {}
+export class PurchesesComponent {
+  userInformationItem = userInformationContent[2];
+}
