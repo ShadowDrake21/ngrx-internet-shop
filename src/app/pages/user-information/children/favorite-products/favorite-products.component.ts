@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
+import { userInformationContent } from '../../content/user-information.content';
 
 @Component({
   selector: 'app-favorite-products',
@@ -8,4 +9,6 @@ import { BasicCardComponent } from '../../components/basic-card/basic-card.compo
   templateUrl: './favorite-products.component.html',
   styleUrl: './favorite-products.component.scss',
 })
-export class FavoriteProductsComponent {}
+export class FavoriteProductsComponent {
+  userInformationItem = userInformationContent[5];
+}

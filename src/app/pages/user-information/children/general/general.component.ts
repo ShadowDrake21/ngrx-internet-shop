@@ -16,6 +16,7 @@ import { CartState } from '@app/store/cart/cart.reducer';
 import { ClearURLPipe } from '@app/shared/pipes/clear-url.pipe';
 import { SafeHTMLPipe } from '@app/shared/pipes/safe-html.pipe';
 import { ReadonlyCartItemComponent } from './components/readonly-cart-item/readonly-cart-item.component';
+import { userInformationContent } from '../../content/user-information.content';
 
 @Component({
   selector: 'app-general',
@@ -34,6 +35,8 @@ import { ReadonlyCartItemComponent } from './components/readonly-cart-item/reado
   styleUrl: './general.component.scss',
 })
 export class GeneralComponent implements OnInit {
+  userInformationItem = userInformationContent[0];
+
   private store = inject(Store<AppState>);
 
   user$!: Observable<IUser | null>;

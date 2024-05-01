@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
+import { userInformationContent } from '../../content/user-information.content';
 
 @Component({
   selector: 'app-delivery-details',
@@ -9,4 +10,6 @@ import { BasicCardComponent } from '../../components/basic-card/basic-card.compo
   templateUrl: './delivery-details.component.html',
   styleUrl: './delivery-details.component.scss',
 })
-export class DeliveryDetailsComponent {}
+export class DeliveryDetailsComponent {
+  userInformationItem = userInformationContent[3];
+}
