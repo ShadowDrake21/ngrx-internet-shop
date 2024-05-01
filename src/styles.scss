@@ -70,3 +70,23 @@ main {
     color: red !important;
   }
 }
+
+.faq-tabset .nav-tabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  li {
+    width: 100%;
+
+    a {
+      padding: 15px 10px;
+      span {
+        display: block;
+        width: 100%;
+        text-wrap: nowrap;
+        text-align: center;
+      }
+    }
+  }
+}

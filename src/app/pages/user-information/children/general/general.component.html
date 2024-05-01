@@ -1,12 +1,4 @@
-<!-- <div class="w-100 h-100">
-  <div style="height: 200px">User card</div>
-  <div style="height: 200px">main info</div>
-  <div style="height: 200px">data about cart content</div>
-  <div style="height: 200px">data about last purchese</div>
-  <div style="height: 200px">tabs with important questions</div>
-</div> -->
-
-<div class="pt-3">
+<div class="pt-3 pb-3">
   <app-basic-card></app-basic-card>
   <accordion [closeOthers]="true">
     <accordion-group
@@ -17,7 +9,7 @@
         *ngIf="user.userCredential!.providerData[0] as userCredential"
       >
         <div class="d-flex" style="gap: 25px">
-          <div class="" style="width: 200px">
+          <div class="flex-shrink-0" style="width: 225px">
             <img
               [src]="
                 userCredential.photoURL ??
@@ -27,31 +19,147 @@
               style="width: 100%"
             />
           </div>
-          <div>
-            <h3 class="fst-italic fw-lighter fs-4">
-              {{ userCredential.email | truncateText : 60 }}
-            </h3>
+          <div class="w-100">
+            <div class="d-flex align-items-center" style="gap: 50px">
+              <h3 class="fst-italic fw-lighter fs-4 pb-2">
+                {{ userCredential.email | truncateText : 60 }}
+              </h3>
+              <p>
+                <span class="fw-bold"> Email verified: </span>
+                {{ user.userCredential?.tokenResult?.claims?.['email_verified'] }}
+              </p>
+            </div>
             <p class="fw-bold">
               {{
                 userCredential.displayName ?? "Unknown username"
                   | truncateText : 40
               }}
             </p>
+            <hr />
+            <p>
+              <span class="fw-bold"> Auth time: </span>
+              {{ user.userCredential?.tokenResult?.authTime | date : "medium" }}
+            </p>
+            <p>
+              <span class="fw-bold"> Auth expiration time: </span>
+              {{
+                user.userCredential?.tokenResult?.expirationTime
+                  | date : "medium"
+              }}
+            </p>
+            <p>
+              <span class="fw-bold"> Sign in provider: </span>
+              {{ user.userCredential?.tokenResult?.signInProvider }}
+            </p>
           </div>
         </div></ng-container
       >
     </accordion-group>
-    <accordion-group heading="{{ 'shopping cart content' | titlecase }}">
-      <p>Content 1</p>
+    <accordion-group
+      heading="{{ 'shopping cart content' | titlecase }}"
+      *ngIf="cartState$ | async as cartState"
+    >
+      <div *ngIf="cartState.products as products">
+        <ng-container *ngIf="products.length; else noProductsInCart">
+          <div class="cart-product__list">
+            @for (product of products; track $index) {
+            <app-readonly-cart-item [product]="product" />
+            }
+          </div>
+          <h3 class="text-end pt-4 pb-4">
+            Total price: {{ cartState.totalPrice | currency : "PLN" }}
+          </h3>
+        </ng-container>
+        <ng-template #noProductsInCart>
+          <h3 class="text-center">No products in cart</h3>
+        </ng-template>
+      </div>
     </accordion-group>
     <accordion-group heading="{{ 'last purchese' | titlecase }}">
       <p>Content 2</p>
     </accordion-group>
-    <accordion-group heading="{{ 'main questions' | titlecase }}">
-      <tabset>
-        <tab heading="Basic title" id="tab1">Basic content</tab>
-        <tab heading="Basic Title 1">Basic content 1</tab>
-        <tab heading="Basic Title 2">Basic content 2</tab>
+    <accordion-group heading="{{ 'faq' | uppercase }}">
+      <tabset class="faq-tabset">
+        <tab heading="What countries do you ship to?" id="tab1">
+          We currently offer shipping to Ukraine and Poland. However, we're
+          always looking to expand our reach to serve more customers around the
+          globe, so stay tuned for updates on additional shipping destinations!
+        </tab>
+        <tab heading="What is your return/exchange policy?">
+          Our return and exchange policy is designed to ensure your satisfaction
+          with every purchase. If for any reason you're not completely satisfied
+          with your order, you can return or exchange it within 30 days of
+          delivery. Items must be in their original condition, unworn, and with
+          tags attached. Please note that personalized or customized items may
+          not be eligible for return or exchange unless they are defective or
+          damaged upon arrival. For more details on how to initiate a return or
+          exchange, please write to us an email on the home page for assistance.
+          Your satisfaction is our top priority, and we're here to help make
+          sure you're happy with your purchase!
+        </tab>
+        <tab heading="How long will it take to get my order?">
+          The delivery time for your order depends on several factors, including
+          the shipping method selected at checkout and your location. Typically,
+          orders are processed and shipped within 1-3 business days after
+          payment is received. Once your order has been shipped, you will
+          receive a tracking number via email so you can monitor its progress.
+        </tab>
+        <tab heading="What payment methods do you accept?">
+          We accept a variety of payment methods to make your shopping
+          experience convenient and secure. Currently, we accept all major
+          credit and debit cards, providing a seamless checkout process.
+          Additionally, we also support payment via the BLIK system, offering a
+          fast and reliable payment solution for our customers.
+        </tab>
+        <tab heading="Do you have gift packaging options?">
+          At the moment, we don't offer gift packaging options, but we're
+          constantly updating and improving our services to better meet your
+          needs. Stay tuned for future updates, as we're working on implementing
+          gift packaging options to enhance your shopping experience. Your
+          feedback and suggestions are valuable to us, so thank you for bringing
+          this to our attention.
+        </tab>
+        <tab heading="How long does order processing take?">
+          Order processing typically takes between 1 to 3 business days from the
+          time your order is placed and payment is confirmed. During this time,
+          our team carefully prepares and packages your items to ensure they're
+          ready for shipment. Once your order has been processed, you will
+          receive a notification with tracking information so you can monitor
+          its progress.
+        </tab>
+        <tab heading="How do I cancel/modify an order?">
+          If you need to cancel or modify an order, please contact our team as
+          soon as possible. We understand that circumstances can change, and
+          we'll do our best to accommodate your request. However, please note
+          that once an order has been processed and shipped, it may not be
+          possible to cancel or modify it. In such cases, you may need to wait
+          for the order to arrive and then initiate a return or exchange if
+          needed. To cancel or modify your order, please provide your order
+          details and any specific instructions you have, and our team will
+          assist you accordingly.
+        </tab>
+        <tab heading="How can I track my order?">
+          Tracking your order is easy! Once your order has been processed and
+          shipped, you will receive a shipping confirmation email containing a
+          tracking number and instructions on how to track your package. Simply
+          click on the tracking number link provided in the email, and you'll be
+          directed to the carrier's website where you can see the real-time
+          status of your shipment.
+        </tab>
+        <tab heading="What if my order arrives damaged?">
+          If your order arrives damaged, please notify us immediately by
+          contacting our customer support team. Provide details of the damage
+          and include any relevant photos. We'll work swiftly to resolve the
+          issue by offering a replacement, exchange, or refund, depending on the
+          circumstances.
+        </tab>
+        <tab heading="How can I find your stationary store?">
+          While we don't currently have a physical stationary store, we're
+          focused on providing a seamless online shopping experience to meet
+          your needs. However, if demand continues to grow and there's a strong
+          interest from our customers, we may consider expanding to a physical
+          location in the future.
+        </tab>
       </tabset>
     </accordion-group>
   </accordion>
