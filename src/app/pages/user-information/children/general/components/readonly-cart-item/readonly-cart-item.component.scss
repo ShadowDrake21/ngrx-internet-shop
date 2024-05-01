@@ -1,0 +1,15 @@
+.product {
+  gap: 40px;
+
+  &-img {
+    width: 200px;
+  }
+
+  &-quantity__btns {
+    gap: 25px;
+  }
+
+  &-prices {
+    gap: 25px;
+  }
+}

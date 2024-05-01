@@ -1,0 +1,9 @@
+.cart-product__list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.nav-tabs {
+  flex-wrap: nowrap;
+  overflow-x: scroll;
+}
