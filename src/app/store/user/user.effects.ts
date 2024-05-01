@@ -195,6 +195,18 @@ export class UserEffects {
     )
   );
 
+  // updateUser$ = createEffect(
+  //   () =>
+  //     this.actions$.pipe(
+  //       ofType(UserActions.updateUser),
+  //       exhaustMap(({ updateData }) =>
+  //         this.authService
+  //           .updateUser(updateData)
+  //           .pipe(map(() => UserActions.getUser()))
+  //       )
+  //     ),
+  //   { dispatch: false }
+  // );
   signOut$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.signOut),

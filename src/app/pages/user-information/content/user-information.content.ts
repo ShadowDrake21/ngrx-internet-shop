@@ -10,7 +10,7 @@ export interface IUserInformationContentItem {
 export const userInformationContent: IUserInformationContentItem[] = [
   {
     title: 'General information',
-    url: '/assets/images/user-information-general-img.jpg',
+    url: '/assets/images/user-information/user-information-general-img.jpg',
     text: "In this section, you'll discover basic user information and more.",
     authorName: 'Brooke Cagle',
     authorUrl:
@@ -20,7 +20,7 @@ export const userInformationContent: IUserInformationContentItem[] = [
   },
   {
     title: 'Personal information',
-    url: '/assets/images/user-information-personal-information-img.jpg',
+    url: '/assets/images/user-information/user-information-personal-information-img.jpg',
     text: "In this section, you'll be able to change your personal information.",
     authorName: 'Christopher Campbell',
     authorUrl:
@@ -30,7 +30,7 @@ export const userInformationContent: IUserInformationContentItem[] = [
   },
   {
     title: 'Purchases',
-    url: '/assets/images/user-information-purchases-img.jpg',
+    url: '/assets/images/user-information/user-information-purchases-img.jpg',
     text: "In this section, you'll find a comprehensive record of all your purchases.",
     authorName: 'Clay Banks',
     authorUrl:
@@ -40,7 +40,7 @@ export const userInformationContent: IUserInformationContentItem[] = [
   },
   {
     title: 'Delivery details',
-    url: '/assets/images/user-information-delivery-img.jpg',
+    url: '/assets/images/user-information/user-information-delivery-img.jpg',
     text: 'In this section, you can configure all the necessary delivery settings.',
     authorName: 'Rowan Freeman',
     authorUrl:
@@ -50,7 +50,7 @@ export const userInformationContent: IUserInformationContentItem[] = [
   },
   {
     title: 'Card details',
-    url: '/assets/images/user-information-credit-card-img.jpg',
+    url: '/assets/images/user-information/user-information-credit-card-img.jpg',
     text: 'In this section, you have the option to securely save all your credit card information for convenient future use..',
     authorName: 'Stephen Phillips - Hostreviews.co.uk',
     authorUrl:
@@ -60,7 +60,7 @@ export const userInformationContent: IUserInformationContentItem[] = [
   },
   {
     title: 'Favorite products',
-    url: '/assets/images/user-information-favorites-img.jpg',
+    url: '/assets/images/user-information/user-information-favorites-img.jpg',
     text: "In this section, you'll discover all the products you've marked as favorites for easy access and future reference.",
     authorName: 'Elin Melaas',
     authorUrl:

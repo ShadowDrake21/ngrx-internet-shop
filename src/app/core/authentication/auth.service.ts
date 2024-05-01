@@ -20,10 +20,12 @@ import { catchError, from, map, Observable, of, switchMap } from 'rxjs';
 
 // interfaces
 import { IUserSignUpData, IUserUpdate } from '../../shared/models/user.model';
+import { RealtimeDatabaseService } from '../services/realtimeDatabase.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private auth: Auth = inject(Auth);
+  private realtimeDatabaseService = inject(RealtimeDatabaseService);
 
   signUp(signUpData: IUserSignUpData): Observable<UserCredential> {
     return from(
@@ -34,14 +36,24 @@ export class AuthService {
       )
     ).pipe(
       switchMap((credential) => {
-        return this.updateUser({ displayName: signUpData.username }).pipe(
-          map(() => credential)
-        );
+        return this.updateDisplayName({
+          displayName: signUpData.username,
+        }).pipe(map(() => credential));
       })
     );
   }
 
-  updateUser(updateData: IUserUpdate) {
+  updateDisplayName(updateData: IUserUpdate) {
+    return from(updateProfile(this.auth.currentUser!, updateData));
+  }
+
+  async updateUser(updateData: IUserUpdate) {
+    if (updateData.photoURL) {
+      this.realtimeDatabaseService.saveUserImage(
+        await this.auth.currentUser?.getIdToken()!,
+        updateData.photoURL
+      );
+    }
     return from(updateProfile(this.auth.currentUser!, updateData));
   }
 
