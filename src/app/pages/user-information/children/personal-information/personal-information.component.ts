@@ -11,17 +11,31 @@ import { userInformationContent } from '../../content/user-information.content';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { UserState } from '@app/store/user/user.reducer';
-import { Observable } from 'rxjs';
+import { Observable, switchMap, take, tap } from 'rxjs';
 import { IUser } from '@app/shared/models/user.model';
 
 import * as UserSelectors from '@store/user/user.selectors';
 import * as UserActions from '@store/user/user.actions';
 import { AuthService } from '@app/core/authentication/auth.service';
+import { MEDIA_STORAGE_PATH } from '@app/core/constants/storage.constants';
+import { StorageService } from '@app/core/services/storage.service';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-personal-information',
   standalone: true,
-  imports: [CommonModule, BasicCardComponent, NgOptimizedImage],
+  imports: [
+    CommonModule,
+    BasicCardComponent,
+    NgOptimizedImage,
+    ReactiveFormsModule,
+    FormsModule,
+  ],
   templateUrl: './personal-information.component.html',
   styleUrl: './personal-information.component.scss',
 })
@@ -34,15 +48,19 @@ export class PersonalInformationComponent implements OnInit, AfterViewInit {
 
   private store = inject(Store<UserState>);
   private authService = inject(AuthService);
+  private storageService = inject(StorageService);
 
   user$!: Observable<IUser | null>;
   userPhotoURL: string | null = null;
+  displayName: string | null = null;
+
   areThereChanges: boolean = false;
 
   ngOnInit(): void {
     this.user$ = this.store.select(UserSelectors.selectUser);
     this.user$.subscribe((user) => {
       this.userPhotoURL = user?.userCredential?.providerData[0].photoURL;
+      this.displayName = user?.userCredential?.providerData[0].displayName;
     });
   }
 
@@ -70,17 +88,31 @@ export class PersonalInformationComponent implements OnInit, AfterViewInit {
   }
 
   // dorobić
-
   onSaveChanges() {
-    console.log('photo url', this.userPhotoURL);
-    this.authService.updateUser({ photoURL: this.userPhotoURL! }).then(() => {
-      this.store.dispatch(UserActions.getUser());
-    });
-    // this.store.dispatch(
-    //   UserActions.updateUser({
-    //     updateData: { photoURL: this.userPhotoURL! },
-    //   })
-    // );
+    const newUserPhoto = this.changeImageInput.nativeElement.files?.[0];
+    if (newUserPhoto) {
+      this.user$
+        .pipe(
+          take(1),
+          switchMap((user) => {
+            const mediaFolderPath = `${MEDIA_STORAGE_PATH}/profilePhotos/${user?.userCredential?.providerData[0].uid}/`;
+            return this.storageService
+              .updateFileAndGetDownloadURL(mediaFolderPath, newUserPhoto)
+              .pipe(
+                switchMap((url) => {
+                  console.log('updateFileAndGetDownloadURL');
+                  return this.authService.updateUserPromise({
+                    photoURL: url,
+                    displayName: this.displayName!,
+                  });
+                })
+              );
+          })
+        )
+        .subscribe(() => {
+          this.store.dispatch(UserActions.getUser());
+        });
+    }
   }
 
   onCancel() {

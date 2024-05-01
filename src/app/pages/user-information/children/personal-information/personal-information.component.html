@@ -3,21 +3,30 @@
 
   <div class="border w-100 h-100 p-5" *ngIf="user$ | async as user">
     <div *ngIf="user.userCredential!.providerData[0] as userCredentialData">
-      <div class="personal-info__image-change" #changeImageEl>
-        <input
-          type="file"
-          accept="image/png, image/jpeg"
-          id="input-change"
-          #changeImageInput
-        />
-        <div class="personal-info__image-change__icon">
-          <img src="/assets/images/icons/image-editing.png" alt="change-img" />
+      <div class="d-flex">
+        <div class="personal-info__image-change" #changeImageEl>
+          <input
+            type="file"
+            accept="image/png, image/jpeg"
+            id="input-change"
+            #changeImageInput
+          />
+          <div class="personal-info__image-change__icon">
+            <img
+              src="/assets/images/icons/image-editing.png"
+              alt="change-img"
+            />
+          </div>
+          <img
+            [src]="userPhotoURL"
+            alt="user img"
+            class="personal-info__image-change__img"
+          />
         </div>
-        <img
-          [src]="userPhotoURL"
-          alt="user img"
-          class="personal-info__image-change__img"
-        />
+        <div>
+          <input type="text" class="form-control" [(ngModel)]="displayName" />
+          {{ displayName | json }}
+        </div>
       </div>
       <div>
         <button
