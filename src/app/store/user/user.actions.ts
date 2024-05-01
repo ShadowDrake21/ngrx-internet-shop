@@ -4,6 +4,7 @@ import { createAction, props } from '@ngrx/store';
 import {
   IStoreUserCredential,
   IUserSignUpData,
+  IUserUpdate,
 } from '../../shared/models/user.model';
 
 export const signUp = createAction(
@@ -95,6 +96,16 @@ export const getUserFailure = createAction(
   props<{ errorMessage: string }>()
 );
 
+export const updateUser = createAction(
+  '[User Component] UpdateUser',
+  props<{ updateData: IUserUpdate }>()
+);
+export const updateUserSuccess = createAction(
+  '[User Component] UpdateUserSuccess'
+);
+export const updateUserFailure = createAction(
+  '[User Component] UpdateUserFailure'
+);
 export const signOut = createAction('[User Component] SignOut');
 export const signOutSuccess = createAction('[User Component] SignOutSuccess');
 

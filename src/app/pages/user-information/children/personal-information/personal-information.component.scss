@@ -1,0 +1,57 @@
+.personal-info {
+  &__image-change {
+    position: relative;
+    width: 250px;
+    height: 300px;
+
+    &:hover {
+      .personal-info__image-change__icon {
+        opacity: 1;
+      }
+    }
+
+    &:hover::after {
+      position: absolute;
+      content: "";
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+
+      cursor: pointer;
+    }
+  }
+
+  &__image-change__icon {
+    position: absolute;
+    z-index: 98;
+    width: 60px;
+    height: 60px;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+
+    opacity: 0;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__image-change__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+#input-change {
+  position: absolute;
+  z-index: 99;
+  width: 0.1px;
+  height: 0.1px;
+  overflow: hidden;
+}
