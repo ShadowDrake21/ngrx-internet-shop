@@ -35,18 +35,18 @@ export class AuthService {
       )
     ).pipe(
       switchMap((credential) => {
-        return this.updateUser({
-          displayName: signUpData.username,
-        }).pipe(map(() => credential));
+        const updateData = {} as Partial<IUserUpdate>;
+        updateData.displayName = signUpData.username;
+        return this.updateUser(updateData).pipe(map(() => credential));
       })
     );
   }
 
-  updateUser(updateData: IUserUpdate) {
+  updateUser(updateData: Partial<IUserUpdate>) {
     return from(updateProfile(this.auth.currentUser!, updateData));
   }
 
-  updateUserPromise(updateData: IUserUpdate) {
+  updateUserPromise(updateData: Partial<IUserUpdate>) {
     return updateProfile(this.auth.currentUser!, updateData);
   }
 

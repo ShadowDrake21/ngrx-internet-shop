@@ -24,15 +24,20 @@
           />
         </div>
         <div>
-          <input type="text" class="form-control" [(ngModel)]="displayName" />
-          {{ displayName | json }}
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="newDisplayName"
+            #displayName
+          />
+          <!-- {{ displayName | json }} -->
         </div>
       </div>
-      <div>
+      <div *ngIf="controlButtonsActive">
         <button
           class="btn btn-primary"
           (click)="onSaveChanges()"
-          [disabled]="!areThereChanges"
+          [disabled]="!saveButtonActive"
         >
           Save changes
         </button>
