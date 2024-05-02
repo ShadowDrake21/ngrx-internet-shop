@@ -1,12 +1,22 @@
 // angular stuff
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, exhaustMap, map, mergeMap, of } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  exhaustMap,
+  map,
+  mergeMap,
+  of,
+  switchMap,
+  take,
+} from 'rxjs';
 import { FirebaseError } from 'firebase/app';
 
 // interfaces
 import {
   IStoreUserCredential,
+  IUserUpdate,
   ProviderData,
 } from '../../shared/models/user.model';
 
@@ -15,14 +25,21 @@ import { AuthService } from '../../core/authentication/auth.service';
 
 // actions
 import * as UserActions from './user.actions';
+import * as UserSelectors from './user.selectors';
 
 // utils
 import { minimalizeUserCredential } from '../../shared/utils/store.utils';
+import { Store } from '@ngrx/store';
+import { UserState } from './user.reducer';
+import { MEDIA_STORAGE_PATH } from '@app/core/constants/storage.constants';
+import { StorageService } from '@app/core/services/storage.service';
 
 @Injectable()
 export class UserEffects {
   private actions$ = inject(Actions);
   private authService = inject(AuthService);
+  private store = inject(Store<UserState>);
+  private storageService = inject(StorageService);
 
   signUp$ = createEffect(() =>
     this.actions$.pipe(
@@ -194,19 +211,6 @@ export class UserEffects {
       )
     )
   );
-
-  // updateUser$ = createEffect(
-  //   () =>
-  //     this.actions$.pipe(
-  //       ofType(UserActions.updateUser),
-  //       exhaustMap(({ updateData }) =>
-  //         this.authService
-  //           .updateUser(updateData)
-  //           .pipe(map(() => UserActions.getUser()))
-  //       )
-  //     ),
-  //   { dispatch: false }
-  // );
   signOut$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.signOut),

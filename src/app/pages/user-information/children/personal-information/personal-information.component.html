@@ -4,7 +4,11 @@
   <div class="border w-100 h-100 p-5" *ngIf="user$ | async as user">
     <div *ngIf="user.userCredential!.providerData[0] as userCredentialData">
       <div class="d-flex">
-        <div class="personal-info__image-change" #changeImageEl>
+        <div
+          class="personal-info__image-change"
+          #changeImageEl
+          [class.disabled]="isProfileChanged"
+        >
           <input
             type="file"
             accept="image/png, image/jpeg"
@@ -29,6 +33,7 @@
             class="form-control"
             [(ngModel)]="newDisplayName"
             #displayName
+            [disabled]="isProfileChanged"
           />
           <!-- {{ displayName | json }} -->
         </div>
