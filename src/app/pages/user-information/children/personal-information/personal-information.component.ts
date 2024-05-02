@@ -40,6 +40,8 @@ import {
 } from '@angular/forms';
 import { createAuthInLS } from '@app/core/utils/auth.utils';
 import { minimalizeUserCredential } from '@app/shared/utils/store.utils';
+import { faGear } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'app-personal-information',
@@ -50,6 +52,7 @@ import { minimalizeUserCredential } from '@app/shared/utils/store.utils';
     NgOptimizedImage,
     ReactiveFormsModule,
     FormsModule,
+    FontAwesomeModule,
   ],
   templateUrl: './personal-information.component.html',
   styleUrl: './personal-information.component.scss',
@@ -58,6 +61,7 @@ export class PersonalInformationComponent
   implements OnInit, AfterViewInit, OnDestroy
 {
   userInformationItem = userInformationContent[1];
+  settingsIcon = faGear;
 
   @ViewChild('displayName')
   displayName!: ElementRef<HTMLInputElement>;
@@ -71,6 +75,7 @@ export class PersonalInformationComponent
 
   user$!: Observable<IUser | null>;
 
+  isChangeMode: boolean = false;
   isProfileChanged: boolean = false;
 
   updatedUserPhotoFile: File | null = null;
@@ -190,7 +195,7 @@ export class PersonalInformationComponent
         next: () => {
           this.controlButtonsActive = false;
           this.store.dispatch(UserActions.getUser());
-          this.store.dispatch(UserActions.setChangeFlag());
+
           this.updateLocalStorageData();
         },
         error: (error) => {
@@ -242,12 +247,14 @@ export class PersonalInformationComponent
 
   onCancel() {
     this.controlButtonsActive = false;
+    this.onToggleChangeMode();
     this.store.dispatch(UserActions.getUser());
   }
 
-  resetSubscriptions(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
-    this.subscriptions = [];
+  onToggleChangeMode() {
+    this.isChangeMode = !this.isChangeMode;
+    this.controlButtonsActive = false;
+    // this.store.dispatch(UserActions.getUser());
   }
 
   ngOnDestroy(): void {

@@ -3,7 +3,7 @@
 
   <div class="border w-100 h-100 p-5" *ngIf="user$ | async as user">
     <div *ngIf="user.userCredential!.providerData[0] as userCredentialData">
-      <div class="d-flex">
+      <div class="d-flex" style="gap: 50px">
         <div
           class="personal-info__image-change"
           #changeImageEl
@@ -27,26 +27,49 @@
             class="personal-info__image-change__img"
           />
         </div>
-        <div>
-          <input
-            type="text"
-            class="form-control"
-            [(ngModel)]="newDisplayName"
-            #displayName
-            [disabled]="isProfileChanged"
-          />
-          <!-- {{ displayName | json }} -->
+        <div class="personal-info__displayname">
+          <div class="w-100 pb-4">
+            <div class="pb-3">
+              <label for="displayName" class="fw-bold fs-5 pb-2"
+                >Username</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="displayName"
+                #displayName
+                [(ngModel)]="newDisplayName"
+                [disabled]="isProfileChanged"
+              />
+            </div>
+            <button
+              type="button"
+              class="btn btn-success w-100"
+              (click)="onToggleChangeMode()"
+              [class.d-none]="isProfileChanged"
+            >
+              Turn to {{ isChangeMode ? "view" : "change" }} mode
+              <fa-icon [icon]="settingsIcon"></fa-icon>
+            </button>
+          </div>
+
+          <div
+            *ngIf="controlButtonsActive"
+            class="d-flex justify-content-between"
+            style="gap: 25px"
+          >
+            <button
+              class="btn btn-primary w-100"
+              (click)="onSaveChanges()"
+              [disabled]="!saveButtonActive"
+            >
+              Save changes
+            </button>
+            <button class="btn btn-danger w-100" (click)="onCancel()">
+              Cancel
+            </button>
+          </div>
         </div>
-      </div>
-      <div *ngIf="controlButtonsActive">
-        <button
-          class="btn btn-primary"
-          (click)="onSaveChanges()"
-          [disabled]="!saveButtonActive"
-        >
-          Save changes
-        </button>
-        <button class="btn btn-danger" (click)="onCancel()">Cancel</button>
       </div>
     </div>
   </div>

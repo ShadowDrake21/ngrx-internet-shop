@@ -38,8 +38,6 @@ import { StorageService } from '@app/core/services/storage.service';
 export class UserEffects {
   private actions$ = inject(Actions);
   private authService = inject(AuthService);
-  private store = inject(Store<UserState>);
-  private storageService = inject(StorageService);
 
   signUp$ = createEffect(() =>
     this.actions$.pipe(
@@ -191,8 +189,16 @@ export class UserEffects {
       exhaustMap(() =>
         this.authService.getUser().pipe(
           mergeMap(async (user) => {
+            const providerData: ProviderData = {
+              providerId: user?.providerData[0].providerId!,
+              uid: user?.providerData[0].uid!,
+              displayName: user?.providerData[0].displayName!,
+              email: user?.providerData[0].email!,
+              phoneNumber: user?.providerData[0].phoneNumber!,
+              photoURL: user?.providerData[0].photoURL!,
+            };
             const storeUserCredentials: IStoreUserCredential = {
-              providerData: user?.providerData! as ProviderData[],
+              providerData: [providerData],
               tokenResult: await user?.getIdTokenResult()!,
             };
             return UserActions.getUserSuccess({
