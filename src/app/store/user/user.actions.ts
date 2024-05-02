@@ -96,19 +96,10 @@ export const getUserFailure = createAction(
   props<{ errorMessage: string }>()
 );
 
-export const updateUser = createAction(
-  '[User Component] UpdateUser',
-  props<{ updateData: IUserUpdate }>()
-);
-export const updateUserSuccess = createAction(
-  '[User Component] UpdateUserSuccess'
-);
-export const updateUserFailure = createAction(
-  '[User Component] UpdateUserFailure'
-);
 export const signOut = createAction('[User Component] SignOut');
 export const signOutSuccess = createAction('[User Component] SignOutSuccess');
 
+export const setChangeFlag = createAction('[User Component] SetUpdateFlag');
 export const browserReload = createAction(
   '[User Component] BrowserReload',
   props<{ email: string; userCredential: IStoreUserCredential }>()

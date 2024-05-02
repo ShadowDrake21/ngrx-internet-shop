@@ -15,6 +15,11 @@ export const selectUser = createSelector(
   (state: UserState) => state.user
 );
 
+export const selectChanged = createSelector(
+  selectUserState,
+  (state: UserState) => state.changed
+);
+
 export const selectErrorMessage = createSelector(
   selectUserState,
   (state: UserState) => state.errorMessage

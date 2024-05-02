@@ -12,7 +12,15 @@ import { userInformationContent } from '../../content/user-information.content';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { UserState } from '@app/store/user/user.reducer';
-import { Observable, of, Subscription, switchMap, take, tap } from 'rxjs';
+import {
+  forkJoin,
+  Observable,
+  of,
+  Subscription,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs';
 import {
   IStoreUserCredential,
   IUser,
@@ -63,6 +71,8 @@ export class PersonalInformationComponent
 
   user$!: Observable<IUser | null>;
 
+  isProfileChanged: boolean = false;
+
   updatedUserPhotoFile: File | null = null;
   userPhotoURL: string | null = null;
 
@@ -84,7 +94,13 @@ export class PersonalInformationComponent
       this.newDisplayName = this.previousDisplayName;
     });
 
-    this.subscriptions.push(userSubscription);
+    const changedSubscription = this.store
+      .select(UserSelectors.selectChanged)
+      .subscribe((value) => {
+        this.isProfileChanged = value;
+      });
+
+    this.subscriptions.push(userSubscription, changedSubscription);
   }
 
   ngAfterViewInit(): void {
@@ -97,15 +113,19 @@ export class PersonalInformationComponent
     const changeInput = this.changeImageInput.nativeElement;
 
     displayNameInput.addEventListener('input', () => {
-      console.log(this.newDisplayName, this.previousDisplayName);
-      if (!this.controlButtonsActive) {
-        this.controlButtonsActive = true;
+      if (!this.isProfileChanged) {
+        console.log(this.newDisplayName, this.previousDisplayName);
+        if (!this.controlButtonsActive) {
+          this.controlButtonsActive = true;
+        }
+        this.updateSaveButtonState();
       }
-      this.updateSaveButtonState();
     });
 
     changeEl.addEventListener('click', () => {
-      changeInput.click();
+      if (!this.isProfileChanged) {
+        changeInput.click();
+      }
     });
 
     changeInput.addEventListener('change', (event) => {
@@ -163,13 +183,14 @@ export class PersonalInformationComponent
             updateData.displayName = this.newDisplayName!;
           }
 
-          return this.authService.updateUserPromise(updateData);
+          return this.authService.updateUser(updateData);
         })
       )
       .subscribe({
         next: () => {
           this.controlButtonsActive = false;
           this.store.dispatch(UserActions.getUser());
+          this.store.dispatch(UserActions.setChangeFlag());
           this.updateLocalStorageData();
         },
         error: (error) => {
@@ -177,7 +198,7 @@ export class PersonalInformationComponent
         },
       });
 
-    userSubscription.unsubscribe();
+    this.subscriptions.push(userSubscription);
   }
 
   updateLocalStorageData() {
@@ -222,6 +243,11 @@ export class PersonalInformationComponent
   onCancel() {
     this.controlButtonsActive = false;
     this.store.dispatch(UserActions.getUser());
+  }
+
+  resetSubscriptions(): void {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.subscriptions = [];
   }
 
   ngOnDestroy(): void {

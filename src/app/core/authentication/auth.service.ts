@@ -45,11 +45,6 @@ export class AuthService {
   updateUser(updateData: Partial<IUserUpdate>) {
     return from(updateProfile(this.auth.currentUser!, updateData));
   }
-
-  updateUserPromise(updateData: Partial<IUserUpdate>) {
-    return updateProfile(this.auth.currentUser!, updateData);
-  }
-
   // async updateUser(updateData: IUserUpdate) {
   //   if (updateData.photoURL) {
   //     this.databaseService.saveUserImage(
