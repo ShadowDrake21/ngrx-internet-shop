@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   inject,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -11,8 +12,12 @@ import { userInformationContent } from '../../content/user-information.content';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { UserState } from '@app/store/user/user.reducer';
-import { Observable, switchMap, take, tap } from 'rxjs';
-import { IUser } from '@app/shared/models/user.model';
+import { Observable, of, Subscription, switchMap, take, tap } from 'rxjs';
+import {
+  IStoreUserCredential,
+  IUser,
+  IUserUpdate,
+} from '@app/shared/models/user.model';
 
 import * as UserSelectors from '@store/user/user.selectors';
 import * as UserActions from '@store/user/user.actions';
@@ -25,6 +30,8 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
+import { createAuthInLS } from '@app/core/utils/auth.utils';
+import { minimalizeUserCredential } from '@app/shared/utils/store.utils';
 
 @Component({
   selector: 'app-personal-information',
@@ -39,9 +46,13 @@ import {
   templateUrl: './personal-information.component.html',
   styleUrl: './personal-information.component.scss',
 })
-export class PersonalInformationComponent implements OnInit, AfterViewInit {
+export class PersonalInformationComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   userInformationItem = userInformationContent[1];
 
+  @ViewChild('displayName')
+  displayName!: ElementRef<HTMLInputElement>;
   @ViewChild('changeImageEl') changeImageEl!: ElementRef<HTMLDivElement>;
   @ViewChild('changeImageInput')
   changeImageInput!: ElementRef<HTMLInputElement>;
@@ -51,26 +62,47 @@ export class PersonalInformationComponent implements OnInit, AfterViewInit {
   private storageService = inject(StorageService);
 
   user$!: Observable<IUser | null>;
-  userPhotoURL: string | null = null;
-  displayName: string | null = null;
 
-  areThereChanges: boolean = false;
+  updatedUserPhotoFile: File | null = null;
+  userPhotoURL: string | null = null;
+
+  previousDisplayName: string | null = null;
+  newDisplayName: string | null = null;
+
+  controlButtonsActive: boolean = false;
+  saveButtonActive: boolean = false;
+
+  private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     this.user$ = this.store.select(UserSelectors.selectUser);
-    this.user$.subscribe((user) => {
+    const userSubscription = this.user$.subscribe((user) => {
       this.userPhotoURL = user?.userCredential?.providerData[0].photoURL;
-      this.displayName = user?.userCredential?.providerData[0].displayName;
+
+      this.previousDisplayName =
+        user?.userCredential?.providerData[0].displayName;
+      this.newDisplayName = this.previousDisplayName;
     });
+
+    this.subscriptions.push(userSubscription);
   }
 
   ngAfterViewInit(): void {
-    this.changeProfileImage();
+    this.changeProfile();
   }
 
-  changeProfileImage() {
+  changeProfile() {
+    const displayNameInput = this.displayName.nativeElement;
     const changeEl = this.changeImageEl.nativeElement;
     const changeInput = this.changeImageInput.nativeElement;
+
+    displayNameInput.addEventListener('input', () => {
+      console.log(this.newDisplayName, this.previousDisplayName);
+      if (!this.controlButtonsActive) {
+        this.controlButtonsActive = true;
+      }
+      this.updateSaveButtonState();
+    });
 
     changeEl.addEventListener('click', () => {
       changeInput.click();
@@ -80,42 +112,119 @@ export class PersonalInformationComponent implements OnInit, AfterViewInit {
       const file = (event.target as HTMLInputElement).files?.[0];
 
       if (file) {
-        console.log('uploaded file: ', file);
+        this.updatedUserPhotoFile = file;
         this.userPhotoURL = URL.createObjectURL(file);
-        this.areThereChanges = true;
       }
+
+      if (!this.controlButtonsActive) {
+        this.controlButtonsActive = true;
+      }
+      this.updateSaveButtonState();
     });
   }
 
-  // dorobić
-  onSaveChanges() {
-    const newUserPhoto = this.changeImageInput.nativeElement.files?.[0];
-    if (newUserPhoto) {
-      this.user$
-        .pipe(
-          take(1),
-          switchMap((user) => {
-            const mediaFolderPath = `${MEDIA_STORAGE_PATH}/profilePhotos/${user?.userCredential?.providerData[0].uid}/`;
-            return this.storageService
-              .updateFileAndGetDownloadURL(mediaFolderPath, newUserPhoto)
-              .pipe(
-                switchMap((url) => {
-                  console.log('updateFileAndGetDownloadURL');
-                  return this.authService.updateUserPromise({
-                    photoURL: url,
-                    displayName: this.displayName!,
-                  });
-                })
-              );
-          })
-        )
-        .subscribe(() => {
-          this.store.dispatch(UserActions.getUser());
-        });
+  private updateSaveButtonState() {
+    if (
+      !this.updatedUserPhotoFile &&
+      this.newDisplayName === this.previousDisplayName
+    ) {
+      this.saveButtonActive = false;
+    } else {
+      this.saveButtonActive = true;
     }
   }
 
+  onSaveChanges() {
+    if (!this.saveButtonActive) {
+      return;
+    }
+
+    const userSubscription = this.user$
+      .pipe(
+        take(1),
+        switchMap((user) => {
+          if (this.updatedUserPhotoFile) {
+            const mediaFolderPath = `${MEDIA_STORAGE_PATH}/profilePhotos/${user?.userCredential?.providerData[0].uid}/`;
+            return this.storageService.updateFileAndGetDownloadURL(
+              mediaFolderPath,
+              this.updatedUserPhotoFile!
+            );
+          } else {
+            return of(null);
+          }
+        }),
+        switchMap((url) => {
+          let updateData = {} as Partial<IUserUpdate>;
+
+          if (this.updatedUserPhotoFile) {
+            updateData.photoURL = url!;
+          }
+          if (this.newDisplayName !== this.previousDisplayName) {
+            updateData.displayName = this.newDisplayName!;
+          }
+
+          return this.authService.updateUserPromise(updateData);
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.controlButtonsActive = false;
+          this.store.dispatch(UserActions.getUser());
+          this.updateLocalStorageData();
+        },
+        error: (error) => {
+          console.log(error);
+        },
+      });
+
+    userSubscription.unsubscribe();
+  }
+
+  updateLocalStorageData() {
+    const storeSubscription = this.store
+      .select(UserSelectors.selectUser)
+      .subscribe((user) => {
+        let updatedUserCredential = user?.userCredential;
+
+        if (updatedUserCredential) {
+          const updatedUserCredentialObj: IStoreUserCredential = {
+            ...updatedUserCredential,
+            tokenResult: {
+              ...updatedUserCredential.tokenResult,
+              expirationTime: this.getExistingExpirationTime(),
+            },
+          };
+
+          createAuthInLS(updatedUserCredentialObj);
+        }
+      });
+
+    this.subscriptions.push(storeSubscription);
+  }
+
+  getExistingExpirationTime(): string {
+    let expirationTime = '';
+    const userCredentialStrFromLS = localStorage.getItem(
+      'ngrx-user-credential'
+    );
+
+    if (userCredentialStrFromLS) {
+      let userCredentialFromLS = JSON.parse(
+        userCredentialStrFromLS
+      ) as IStoreUserCredential;
+
+      expirationTime = userCredentialFromLS.tokenResult.expirationTime;
+    }
+
+    return expirationTime;
+  }
+
   onCancel() {
+    this.controlButtonsActive = false;
     this.store.dispatch(UserActions.getUser());
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }
