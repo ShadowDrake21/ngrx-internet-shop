@@ -22,29 +22,6 @@
       cursor: pointer;
     }
 
-    // &.disabled {
-    //   &:hover {
-    //     .personal-info__image-change__icon {
-    //       display: none;
-    //     }
-    //   }
-    //   &:hover::before {
-    //     width: 100%;
-    //     position: absolute;
-    //     z-index: 99;
-    //     content: "Only one profile change is allowed during one session";
-    //     top: 50%;
-    //     left: 50%;
-    //     transform: translate(-50%, -50%);
-    //     color: #fff;
-    //     padding: 15px;
-    //     text-align: center;
-    //   }
-    //   &:hover::after {
-    //     cursor: default;
-    //   }
-    // }
-
     &.viewMode {
       pointer-events: none;
       &:hover {
@@ -53,7 +30,7 @@
         }
       }
       &:hover::after {
-        background-color: transparent;
+        content: none;
       }
     }
   }
@@ -83,12 +60,33 @@
     object-fit: cover;
   }
 
-  &__displayname {
+  &__settings-left {
+    flex-shrink: 0;
     width: 400px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
 
     input {
+      width: 100%;
+    }
+  }
+  &__settings-right {
+    width: 100%;
+
+    ul {
+    }
+  }
+
+  &__settings-username {
+    max-width: 400px;
+    width: 100%;
+  }
+
+  &__settings-password {
+    &__inner,
+    &__btn {
+      max-width: 400px;
       width: 100%;
     }
   }

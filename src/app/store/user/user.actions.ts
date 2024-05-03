@@ -4,7 +4,6 @@ import { createAction, props } from '@ngrx/store';
 import {
   IStoreUserCredential,
   IUserSignUpData,
-  IUserUpdate,
 } from '../../shared/models/user.model';
 
 export const signUp = createAction(
@@ -99,7 +98,6 @@ export const getUserFailure = createAction(
 export const signOut = createAction('[User Component] SignOut');
 export const signOutSuccess = createAction('[User Component] SignOutSuccess');
 
-export const setChangeFlag = createAction('[User Component] SetUpdateFlag');
 export const browserReload = createAction(
   '[User Component] BrowserReload',
   props<{ email: string; userCredential: IStoreUserCredential }>()

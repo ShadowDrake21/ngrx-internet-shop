@@ -1,4 +1,5 @@
 <div class="pt-3 pb-3">
+  <app-alert [alerts]="alerts"></app-alert>
   <app-basic-card [item]="userInformationItem"></app-basic-card>
 
   <div class="border w-100 h-100 p-5" *ngIf="user$ | async as user">
@@ -7,7 +8,7 @@
         <div
           class="personal-info__image-change"
           #changeImageEl
-          [class.disabled]="isProfileChanged"
+          [class.viewMode]="!isChangeMode"
         >
           <input
             type="file"
@@ -27,47 +28,102 @@
             class="personal-info__image-change__img"
           />
         </div>
-        <div class="personal-info__displayname">
-          <div class="w-100 pb-4">
-            <div class="pb-3">
-              <label for="displayName" class="fw-bold fs-5 pb-2"
-                >Username</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="displayName"
-                #displayName
-                [(ngModel)]="newDisplayName"
-                [disabled]="isProfileChanged"
-              />
-            </div>
-            <button
-              type="button"
-              class="btn btn-success w-100"
-              (click)="onToggleChangeMode()"
-              [class.d-none]="isProfileChanged"
-            >
-              Turn to {{ isChangeMode ? "view" : "change" }} mode
-              <fa-icon [icon]="settingsIcon"></fa-icon>
-            </button>
-          </div>
+        <div class="d-flex w-100">
+          <div class="personal-info__settings-left">
+            <div class="personal-info__settings-username">
+              <div class="w-100 pb-3">
+                <div class="pb-3">
+                  <label for="displayName" class="fw-bold fs-5 pb-2"
+                    >Username</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="displayName"
+                    #displayName
+                    [(ngModel)]="newDisplayName"
+                    [disabled]="!isChangeMode"
+                  />
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-success w-100"
+                  (click)="onToggleChangeMode()"
+                >
+                  Turn to {{ isChangeMode ? "view" : "change" }} mode
+                  <fa-icon [icon]="settingsIcon" class="ms-1"></fa-icon>
+                </button>
+              </div>
 
-          <div
-            *ngIf="controlButtonsActive"
-            class="d-flex justify-content-between"
-            style="gap: 25px"
-          >
-            <button
-              class="btn btn-primary w-100"
-              (click)="onSaveChanges()"
-              [disabled]="!saveButtonActive"
-            >
-              Save changes
-            </button>
-            <button class="btn btn-danger w-100" (click)="onCancel()">
-              Cancel
-            </button>
+              <div
+                *ngIf="controlButtonsActive"
+                class="d-flex justify-content-between"
+                style="gap: 25px"
+              >
+                <button
+                  class="btn btn-primary w-100"
+                  (click)="onSaveChanges()"
+                  [disabled]="!saveButtonActive"
+                >
+                  Update data
+                </button>
+                <button class="btn btn-danger w-100" (click)="onCancel()">
+                  Cancel
+                </button>
+              </div>
+            </div>
+
+            <div class="pb-3 personal-info__settings-password">
+              @if (isPasswordChangeMode) {
+              <div class="d-flex align-items-end w-100" style="gap: 25px">
+                <div
+                  class="flex-shrink-0 personal-info__settings-password__inner"
+                >
+                  <label for="changePassword" class="fw-bold fs-5 pb-2"
+                    >Change password</label
+                  >
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="changePassword"
+                    [formControl]="passwordControl"
+                  />
+                  <div class="d-flex h-100 w-100 pt-2" style="gap: 10px">
+                    <button
+                      class="btn btn-primary w-100"
+                      (click)="onSaveNewPassword()"
+                    >
+                      Update password
+                    </button>
+                    <button
+                      class="btn btn-danger w-100"
+                      (click)="isPasswordChangeMode = false"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              } @else {
+              <div class="personal-info__settings-password__btn">
+                <button
+                  class="btn btn-dark w-100"
+                  (click)="isPasswordChangeMode = true"
+                >
+                  Change password
+                  <fa-icon [icon]="passwordIcon" class="ms-1"></fa-icon>
+                </button>
+              </div>
+              }
+            </div>
+          </div>
+          <div class="personal-info__settings-right">
+            <ul *ngIf="hasError()">
+              <li style="color: red" *ngFor="let error of getErrorMessage()">
+                {{ error }}
+              </li>
+            </ul>
           </div>
         </div>
       </div>

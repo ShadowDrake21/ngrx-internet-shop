@@ -12,6 +12,7 @@ import {
   signInWithPopup,
   signOut,
   TwitterAuthProvider,
+  updatePassword,
   updateProfile,
   UserCredential,
 } from '@angular/fire/auth';
@@ -24,7 +25,6 @@ import { IUserSignUpData, IUserUpdate } from '../../shared/models/user.model';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private auth: Auth = inject(Auth);
-  // private databaseService = inject(DatabaseService);
 
   signUp(signUpData: IUserSignUpData): Observable<UserCredential> {
     return from(
@@ -42,18 +42,16 @@ export class AuthService {
     );
   }
 
-  updateUser(updateData: Partial<IUserUpdate>) {
+  updateUser(updateData: Partial<IUserUpdate>): Observable<void> {
     return from(updateProfile(this.auth.currentUser!, updateData));
   }
-  // async updateUser(updateData: IUserUpdate) {
-  //   if (updateData.photoURL) {
-  //     this.databaseService.saveUserImage(
-  //       await this.auth.currentUser?.getIdToken()!,
-  //       updateData.photoURL
-  //     );
-  //   }
-  //   return from(updateProfile(this.auth.currentUser!, updateData));
-  // }
+
+  updatePassword(password: string): Observable<string> {
+    return from(updatePassword(this.auth.currentUser!, password)).pipe(
+      map(() => 'The password was successfully updated!'),
+      catchError((error: FirebaseError) => error.message)
+    );
+  }
 
   signInManually(email: string, password: string): Observable<UserCredential> {
     return from(signInWithEmailAndPassword(this.auth, email, password));
