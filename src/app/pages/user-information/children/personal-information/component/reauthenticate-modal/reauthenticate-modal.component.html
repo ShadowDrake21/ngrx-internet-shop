@@ -1,0 +1,52 @@
+<div>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Profile reauthentication</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="bsModalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="!error; else errorDuringReauthentication">
+      <form
+        [formGroup]="reauthenticationForm"
+        (ngSubmit)="onReauthenticationSubmit()"
+      >
+        <div class="form-group">
+          <input
+            class="form-control input-lg"
+            placeholder="Password"
+            name="password"
+            type="password"
+            formControlName="password"
+            [class.error]="
+              (reauthenticationForm.controls.password.touched &&
+                reauthenticationForm.controls.password.invalid) ||
+              (reauthenticationForm.controls.password.dirty &&
+                reauthenticationForm.controls.password.invalid)
+            "
+          />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-dark w-100 mt-3"
+          [disabled]="reauthenticationForm.invalid"
+        >
+          Reset password
+        </button>
+      </form>
+    </div>
+    <ng-template #errorDuringReauthentication>
+      <p>{{ error }}</p>
+    </ng-template>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">
+      {{ closeBtnName }}
+    </button>
+  </div>
+</div>

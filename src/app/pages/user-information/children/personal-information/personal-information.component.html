@@ -41,8 +41,7 @@
                     class="form-control"
                     id="displayName"
                     #displayName
-                    [(ngModel)]="newDisplayName"
-                    [disabled]="!isChangeMode"
+                    [formControl]="usernameControl"
                   />
                 </div>
                 <button
@@ -92,12 +91,13 @@
                     <button
                       class="btn btn-primary w-100"
                       (click)="onSaveNewPassword()"
+                      [disabled]="changePasswordForm.invalid"
                     >
                       Update password
                     </button>
                     <button
                       class="btn btn-danger w-100"
-                      (click)="isPasswordChangeMode = false"
+                      (click)="onCancelChangePasswordForm()"
                     >
                       Cancel
                     </button>
@@ -119,8 +119,31 @@
             </div>
           </div>
           <div class="personal-info__settings-right">
-            <ul *ngIf="hasError()">
-              <li style="color: red" *ngFor="let error of getErrorMessage()">
+            <ul *ngIf="hasErrorUsernameControl()">
+              <li
+                class="fs-5 fw-bold pb-2"
+                style="list-style-type: none; color: red"
+              >
+                {{ "profile update errors" | titlecase }}
+              </li>
+              <li
+                style="color: red"
+                *ngFor="let error of getErrorMessageUsernameControl()"
+              >
+                {{ error }}
+              </li>
+            </ul>
+            <ul *ngIf="hasErrorChangePasswordForm()">
+              <li
+                class="fs-5 fw-bold pb-2"
+                style="list-style-type: none; color: red"
+              >
+                {{ "password errors" | titlecase }}
+              </li>
+              <li
+                style="color: red"
+                *ngFor="let error of getErrorMessageChangePasswordForm()"
+              >
                 {{ error }}
               </li>
             </ul>

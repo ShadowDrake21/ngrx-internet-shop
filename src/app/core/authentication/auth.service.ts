@@ -2,10 +2,14 @@
 import { inject, Injectable } from '@angular/core';
 import {
   Auth,
+  AuthCredential,
   createUserWithEmailAndPassword,
+  EmailAuthCredential,
+  EmailAuthProvider,
   FacebookAuthProvider,
   fetchSignInMethodsForEmail,
   GoogleAuthProvider,
+  reauthenticateWithCredential,
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
@@ -46,11 +50,10 @@ export class AuthService {
     return from(updateProfile(this.auth.currentUser!, updateData));
   }
 
-  updatePassword(password: string): Observable<string> {
-    return from(updatePassword(this.auth.currentUser!, password)).pipe(
-      map(() => 'The password was successfully updated!'),
-      catchError((error: FirebaseError) => error.message)
-    );
+  async updatePassword(password: string) {
+    return await updatePassword(this.auth.currentUser!, password)
+      .then(() => 'The password was successfully updated!')
+      .catch((error: FirebaseError) => error.message);
   }
 
   signInManually(email: string, password: string): Observable<UserCredential> {
@@ -97,6 +100,11 @@ export class AuthService {
 
   sendEmailVerification() {
     return from(sendEmailVerification(this.auth.currentUser!));
+  }
+
+  reauthenticateUser(email: string, password: string): Promise<UserCredential> {
+    const credential = EmailAuthProvider.credential(email, password);
+    return reauthenticateWithCredential(this.auth.currentUser!, credential);
   }
 
   getUser() {

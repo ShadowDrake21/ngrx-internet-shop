@@ -65,11 +65,7 @@ export class SignUpComponent {
       Validators.maxLength(20),
       Validators.pattern(this.usernamePattern),
     ]),
-    email: new FormControl('', [
-      Validators.email,
-      Validators.required,
-      Validators.minLength(6),
-    ]),
+    email: new FormControl('', [Validators.email, Validators.required]),
     password: new FormControl('', [
       Validators.required,
       Validators.minLength(6),
