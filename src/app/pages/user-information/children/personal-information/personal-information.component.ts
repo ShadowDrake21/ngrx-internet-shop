@@ -46,6 +46,8 @@ import { faGear, faKey } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AlertComponent } from '@app/shared/components/alert/alert.component';
 import { AlertType } from '@app/shared/models/alerts.model';
+import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { ReauthenticateModalComponent } from './component/reauthenticate-modal/reauthenticate-modal.component';
 
 @Component({
   selector: 'app-personal-information',
@@ -58,9 +60,11 @@ import { AlertType } from '@app/shared/models/alerts.model';
     FormsModule,
     FontAwesomeModule,
     AlertComponent,
+    ReauthenticateModalComponent,
   ],
   templateUrl: './personal-information.component.html',
   styleUrl: './personal-information.component.scss',
+  providers: [BsModalService],
 })
 export class PersonalInformationComponent
   implements OnInit, AfterViewInit, OnDestroy
@@ -79,6 +83,9 @@ export class PersonalInformationComponent
   private authService = inject(AuthService);
   private storageService = inject(StorageService);
   private fb = inject(FormBuilder);
+  private modalService = inject(BsModalService);
+
+  bsModalRef?: BsModalRef;
 
   user$!: Observable<IUser | null>;
 
@@ -87,10 +94,9 @@ export class PersonalInformationComponent
   updatedUserPhotoFile: File | null = null;
   userPhotoURL: string | null = null;
 
-  private displayNamePattern: RegExp =
-    /^(?=.{6,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;
+  private displayNamePattern: string =
+    '^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$';
   previousDisplayName: string | null = null;
-  newDisplayName: string | null = null;
 
   isPasswordChangeMode: boolean = false;
   newPassword: string = '';
@@ -101,6 +107,7 @@ export class PersonalInformationComponent
   alerts: AlertType[] = [];
 
   changePasswordForm!: FormGroup;
+  usernameControl!: FormControl;
 
   private subscriptions: Subscription[] = [];
 
@@ -116,13 +123,26 @@ export class PersonalInformationComponent
       ],
     });
 
+    this.usernameControl = this.fb.control(
+      {
+        value: '',
+        disabled: true,
+      },
+      [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(20),
+        Validators.pattern(this.displayNamePattern),
+      ]
+    );
+
     this.user$ = this.store.select(UserSelectors.selectUser);
     const userSubscription = this.user$.subscribe((user) => {
       this.userPhotoURL = user?.userCredential?.providerData[0].photoURL;
 
       this.previousDisplayName =
         user?.userCredential?.providerData[0].displayName;
-      this.newDisplayName = this.previousDisplayName;
+      this.usernameControl.patchValue(this.previousDisplayName);
     });
 
     this.subscriptions.push(userSubscription);
@@ -142,7 +162,6 @@ export class PersonalInformationComponent
         this.controlButtonsActive = true;
       }
 
-      this.validateDisplayName(displayNameInput.value);
       this.updateSaveButtonState();
     });
 
@@ -154,6 +173,10 @@ export class PersonalInformationComponent
       const file = (event.target as HTMLInputElement).files?.[0];
 
       if (file) {
+        if (!this.controlButtonsActive) {
+          this.controlButtonsActive = true;
+        }
+
         this.updatedUserPhotoFile = file;
         this.userPhotoURL = URL.createObjectURL(file);
       }
@@ -162,20 +185,10 @@ export class PersonalInformationComponent
     });
   }
 
-  validateDisplayName(testedValue: string) {
-    if (this.displayNamePattern.test(testedValue)) {
-      if (this.displayName.nativeElement.classList.contains('error')) {
-        this.displayName.nativeElement.classList.remove('error');
-      }
-    } else {
-      this.displayName.nativeElement.classList.add('error');
-    }
-  }
-
   private updateSaveButtonState() {
     if (
       !this.updatedUserPhotoFile &&
-      this.newDisplayName === this.previousDisplayName
+      this.usernameControl.value === this.previousDisplayName
     ) {
       this.saveButtonActive = false;
     } else {
@@ -210,8 +223,8 @@ export class PersonalInformationComponent
           if (this.updatedUserPhotoFile) {
             updateData.photoURL = url!;
           }
-          if (this.newDisplayName !== this.previousDisplayName) {
-            updateData.displayName = this.newDisplayName!;
+          if (this.usernameControl.value !== this.previousDisplayName) {
+            updateData.displayName = this.usernameControl.value!;
           }
 
           return this.authService.updateUser(updateData);
@@ -220,7 +233,7 @@ export class PersonalInformationComponent
       .subscribe({
         next: () => {
           this.onToggleChangeMode();
-          this.previousDisplayName = this.newDisplayName;
+          this.previousDisplayName = this.usernameControl.value;
           this.updateLocalStorageData();
         },
         error: (error) => {
@@ -284,7 +297,7 @@ export class PersonalInformationComponent
     this.buttonCancelEffects();
     if (
       this.updatedUserPhotoFile ||
-      this.previousDisplayName !== this.newDisplayName
+      this.previousDisplayName !== this.usernameControl.value
     ) {
       this.store.dispatch(UserActions.getUser());
     }
@@ -292,13 +305,56 @@ export class PersonalInformationComponent
 
   buttonCancelEffects() {
     this.isChangeMode = !this.isChangeMode;
+    if (this.isChangeMode) {
+      this.usernameControl.enable();
+    } else {
+      this.usernameControl.disable();
+    }
     this.controlButtonsActive = false;
   }
 
   onSaveNewPassword() {
-    this.authService.updatePassword(this.newPassword).subscribe((result) => {
-      this.alerts.push({ type: 'success', timeout: 5000, msg: result });
+    this.alerts = [];
+    this.store
+      .select(UserSelectors.selectEmail)
+      .pipe(take(1))
+      .subscribe((email) => this.openModalWithComponent(email!));
+
+    // .subscribe((result) => {
+    //   this.alerts.push({ type: 'success', timeout: 5000, msg: result });
+    // });
+  }
+
+  openModalWithComponent(email: string) {
+    const initialState: ModalOptions = {
+      initialState: {
+        email: email,
+      },
+    };
+    this.bsModalRef = this.modalService.show(
+      ReauthenticateModalComponent,
+      initialState
+    );
+    this.bsModalRef.content.closeBtnName = 'Close';
+
+    const onHiddenSubscription = this.bsModalRef.onHidden?.subscribe(() => {
+      this.authService
+        .updatePassword(this.changePasswordForm.value.password)
+        .then((value: string) =>
+          this.alerts.push({ type: 'success', timeout: 5000, msg: value })
+        )
+        .catch((error) =>
+          this.alerts.push({
+            type: 'danger',
+            timeout: 5000,
+            msg: error.message,
+          })
+        );
     });
+
+    if (onHiddenSubscription) {
+      this.subscriptions.push(onHiddenSubscription);
+    }
   }
 
   // password form
@@ -306,12 +362,12 @@ export class PersonalInformationComponent
     return this.changePasswordForm.get('password') as FormControl;
   }
 
-  hasError() {
+  hasErrorChangePasswordForm() {
     const control = this.passwordControl;
     return control && control.invalid && (control.dirty || control.touched);
   }
 
-  getErrorMessage() {
+  getErrorMessageChangePasswordForm() {
     const control = this.passwordControl;
     if (control && control.errors) {
       let errorMessages: string[] = [];
@@ -331,7 +387,44 @@ export class PersonalInformationComponent
     }
     return [];
   }
+
+  onCancelChangePasswordForm() {
+    this.isPasswordChangeMode = false;
+    this.changePasswordForm.reset();
+  }
   // password form
+
+  // updateUser form
+  hasErrorUsernameControl() {
+    const control = this.usernameControl;
+    return control && control.invalid && (control.dirty || control.touched);
+  }
+
+  getErrorMessageUsernameControl() {
+    const control = this.usernameControl;
+    if (control && control.errors) {
+      let errorMessages: string[] = [];
+      if (control.errors?.['required']) {
+        errorMessages.push('The username field is required');
+      }
+      if (control.errors?.['minlength']) {
+        errorMessages.push('Username should be at least 6 characters long');
+      }
+      if (control.errors?.['maxlength']) {
+        errorMessages.push(
+          'Username length should be less than or equal to 20'
+        );
+      }
+      if (control.errors?.['pattern']) {
+        errorMessages.push('Username has unsupported symbols');
+      }
+
+      return errorMessages;
+    }
+    return [];
+  }
+  // updateUser form
+
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
