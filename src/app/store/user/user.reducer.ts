@@ -10,14 +10,12 @@ import * as UserActions from './user.actions';
 export interface UserState {
   email: string | null;
   user: IUser | null;
-  changed: boolean;
   errorMessage: string | null;
 }
 
 export const initialUserState: UserState = {
   email: null,
   user: null,
-  changed: false,
   errorMessage: null,
 };
 
@@ -66,10 +64,6 @@ export const userReducer = createReducer(
       online: false,
     },
     errorMessage: null,
-  })),
-  on(UserActions.setChangeFlag, (state) => ({
-    ...state,
-    changed: true,
   })),
   on(UserActions.signOutSuccess, UserActions.clearUserState, (state) => ({
     ...state,

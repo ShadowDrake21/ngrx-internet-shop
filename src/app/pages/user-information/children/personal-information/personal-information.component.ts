@@ -33,15 +33,19 @@ import { AuthService } from '@app/core/authentication/auth.service';
 import { MEDIA_STORAGE_PATH } from '@app/core/constants/storage.constants';
 import { StorageService } from '@app/core/services/storage.service';
 import {
+  FormBuilder,
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { createAuthInLS } from '@app/core/utils/auth.utils';
 import { minimalizeUserCredential } from '@app/shared/utils/store.utils';
-import { faGear } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faKey } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { AlertComponent } from '@app/shared/components/alert/alert.component';
+import { AlertType } from '@app/shared/models/alerts.model';
 
 @Component({
   selector: 'app-personal-information',
@@ -53,6 +57,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     ReactiveFormsModule,
     FormsModule,
     FontAwesomeModule,
+    AlertComponent,
   ],
   templateUrl: './personal-information.component.html',
   styleUrl: './personal-information.component.scss',
@@ -62,6 +67,7 @@ export class PersonalInformationComponent
 {
   userInformationItem = userInformationContent[1];
   settingsIcon = faGear;
+  passwordIcon = faKey;
 
   @ViewChild('displayName')
   displayName!: ElementRef<HTMLInputElement>;
@@ -72,24 +78,44 @@ export class PersonalInformationComponent
   private store = inject(Store<UserState>);
   private authService = inject(AuthService);
   private storageService = inject(StorageService);
+  private fb = inject(FormBuilder);
 
   user$!: Observable<IUser | null>;
 
   isChangeMode: boolean = false;
-  isProfileChanged: boolean = false;
 
   updatedUserPhotoFile: File | null = null;
   userPhotoURL: string | null = null;
 
+  private displayNamePattern: RegExp =
+    /^(?=.{6,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/;
   previousDisplayName: string | null = null;
   newDisplayName: string | null = null;
+
+  isPasswordChangeMode: boolean = false;
+  newPassword: string = '';
 
   controlButtonsActive: boolean = false;
   saveButtonActive: boolean = false;
 
+  alerts: AlertType[] = [];
+
+  changePasswordForm!: FormGroup;
+
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
+    this.changePasswordForm = this.fb.group({
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(6),
+          Validators.maxLength(20),
+        ],
+      ],
+    });
+
     this.user$ = this.store.select(UserSelectors.selectUser);
     const userSubscription = this.user$.subscribe((user) => {
       this.userPhotoURL = user?.userCredential?.providerData[0].photoURL;
@@ -99,13 +125,7 @@ export class PersonalInformationComponent
       this.newDisplayName = this.previousDisplayName;
     });
 
-    const changedSubscription = this.store
-      .select(UserSelectors.selectChanged)
-      .subscribe((value) => {
-        this.isProfileChanged = value;
-      });
-
-    this.subscriptions.push(userSubscription, changedSubscription);
+    this.subscriptions.push(userSubscription);
   }
 
   ngAfterViewInit(): void {
@@ -118,19 +138,16 @@ export class PersonalInformationComponent
     const changeInput = this.changeImageInput.nativeElement;
 
     displayNameInput.addEventListener('input', () => {
-      if (!this.isProfileChanged) {
-        console.log(this.newDisplayName, this.previousDisplayName);
-        if (!this.controlButtonsActive) {
-          this.controlButtonsActive = true;
-        }
-        this.updateSaveButtonState();
+      if (!this.controlButtonsActive) {
+        this.controlButtonsActive = true;
       }
+
+      this.validateDisplayName(displayNameInput.value);
+      this.updateSaveButtonState();
     });
 
     changeEl.addEventListener('click', () => {
-      if (!this.isProfileChanged) {
-        changeInput.click();
-      }
+      changeInput.click();
     });
 
     changeInput.addEventListener('change', (event) => {
@@ -141,11 +158,18 @@ export class PersonalInformationComponent
         this.userPhotoURL = URL.createObjectURL(file);
       }
 
-      if (!this.controlButtonsActive) {
-        this.controlButtonsActive = true;
-      }
       this.updateSaveButtonState();
     });
+  }
+
+  validateDisplayName(testedValue: string) {
+    if (this.displayNamePattern.test(testedValue)) {
+      if (this.displayName.nativeElement.classList.contains('error')) {
+        this.displayName.nativeElement.classList.remove('error');
+      }
+    } else {
+      this.displayName.nativeElement.classList.add('error');
+    }
   }
 
   private updateSaveButtonState() {
@@ -163,6 +187,8 @@ export class PersonalInformationComponent
     if (!this.saveButtonActive) {
       return;
     }
+
+    this.alerts = [];
 
     const userSubscription = this.user$
       .pipe(
@@ -193,13 +219,17 @@ export class PersonalInformationComponent
       )
       .subscribe({
         next: () => {
-          this.controlButtonsActive = false;
-          this.store.dispatch(UserActions.getUser());
-
+          this.onToggleChangeMode();
+          this.previousDisplayName = this.newDisplayName;
           this.updateLocalStorageData();
         },
         error: (error) => {
-          console.log(error);
+          this.onToggleChangeMode();
+          this.alerts.push({
+            type: 'danger',
+            timeout: 5000,
+            msg: error.message,
+          });
         },
       });
 
@@ -246,17 +276,62 @@ export class PersonalInformationComponent
   }
 
   onCancel() {
-    this.controlButtonsActive = false;
-    this.onToggleChangeMode();
+    this.buttonCancelEffects();
     this.store.dispatch(UserActions.getUser());
   }
 
   onToggleChangeMode() {
-    this.isChangeMode = !this.isChangeMode;
-    this.controlButtonsActive = false;
-    // this.store.dispatch(UserActions.getUser());
+    this.buttonCancelEffects();
+    if (
+      this.updatedUserPhotoFile ||
+      this.previousDisplayName !== this.newDisplayName
+    ) {
+      this.store.dispatch(UserActions.getUser());
+    }
   }
 
+  buttonCancelEffects() {
+    this.isChangeMode = !this.isChangeMode;
+    this.controlButtonsActive = false;
+  }
+
+  onSaveNewPassword() {
+    this.authService.updatePassword(this.newPassword).subscribe((result) => {
+      this.alerts.push({ type: 'success', timeout: 5000, msg: result });
+    });
+  }
+
+  // password form
+  get passwordControl() {
+    return this.changePasswordForm.get('password') as FormControl;
+  }
+
+  hasError() {
+    const control = this.passwordControl;
+    return control && control.invalid && (control.dirty || control.touched);
+  }
+
+  getErrorMessage() {
+    const control = this.passwordControl;
+    if (control && control.errors) {
+      let errorMessages: string[] = [];
+      if (control.errors?.['required']) {
+        errorMessages.push('The password field is required');
+      }
+      if (control.errors?.['minlength']) {
+        errorMessages.push('A password should be at least 6 characters long');
+      }
+      if (control.errors?.['maxlength']) {
+        errorMessages.push(
+          'A password length should be less than or equal to 20'
+        );
+      }
+
+      return errorMessages;
+    }
+    return [];
+  }
+  // password form
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
