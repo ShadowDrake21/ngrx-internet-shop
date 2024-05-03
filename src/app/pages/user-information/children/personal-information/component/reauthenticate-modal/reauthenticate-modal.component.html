@@ -41,7 +41,9 @@
       </form>
     </div>
     <ng-template #errorDuringReauthentication>
-      <p>{{ error }}</p>
+      <div class="d-flex justify-content-center">
+        <p class="fs-5 fw-bold" style="color: red">{{ error }}</p>
+      </div>
     </ng-template>
   </div>
   <div class="modal-footer">

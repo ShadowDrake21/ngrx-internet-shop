@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -20,6 +20,8 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 export class ReauthenticateModalComponent {
   private authService = inject(AuthService);
   public bsModalRef = inject(BsModalRef);
+
+  @Output() occuredError: EventEmitter<string> = new EventEmitter<string>();
 
   email?: string;
   closeBtnName?: string;
@@ -44,7 +46,8 @@ export class ReauthenticateModalComponent {
         this.bsModalRef.hide();
       })
       .catch((err: FirebaseError) => {
-        this.error = err.message;
+        console.log('occurredError', err.message);
+        this.occuredError.emit(err.message);
       });
   }
 }

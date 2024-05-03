@@ -78,6 +78,8 @@ export class PersonalInformationComponent
   @ViewChild('changeImageEl') changeImageEl!: ElementRef<HTMLDivElement>;
   @ViewChild('changeImageInput')
   changeImageInput!: ElementRef<HTMLInputElement>;
+  @ViewChild(ReauthenticateModalComponent)
+  reauthModal!: ReauthenticateModalComponent;
 
   private store = inject(Store<UserState>);
   private authService = inject(AuthService);
@@ -325,7 +327,13 @@ export class PersonalInformationComponent
     // });
   }
 
+  handleReauthError(error: string) {
+    console.error('Reauthentication error: ', error);
+  }
+
   openModalWithComponent(email: string) {
+    let errorOccurred = false;
+
     const initialState: ModalOptions = {
       initialState: {
         email: email,
@@ -337,19 +345,41 @@ export class PersonalInformationComponent
     );
     this.bsModalRef.content.closeBtnName = 'Close';
 
+    this.reauthModal = this.bsModalRef.content;
+
     const onHiddenSubscription = this.bsModalRef.onHidden?.subscribe(() => {
-      this.authService
-        .updatePassword(this.changePasswordForm.value.password)
-        .then((value: string) =>
-          this.alerts.push({ type: 'success', timeout: 5000, msg: value })
-        )
-        .catch((error) =>
+      // dopisać!!!!
+      const errorSubcription = this.reauthModal.occuredError.subscribe(
+        (error) => {
+          console.log('occuredError1', error);
           this.alerts.push({
             type: 'danger',
             timeout: 5000,
-            msg: error.message,
-          })
-        );
+            msg: error,
+          });
+          errorOccurred = true;
+        }
+      );
+      this.subscriptions.push(errorSubcription);
+
+      this.authService
+        .updatePassword(this.changePasswordForm.value.password)
+        .then((value: string) => {
+          if (!errorOccurred) {
+            this.alerts.push({ type: 'success', timeout: 5000, msg: value });
+          }
+        })
+        .catch((error) => {
+          if (!errorOccurred) {
+            this.alerts.push({
+              type: 'danger',
+              timeout: 5000,
+              msg: error.message,
+            });
+          }
+
+          onHiddenSubscription?.unsubscribe();
+        });
     });
 
     if (onHiddenSubscription) {
