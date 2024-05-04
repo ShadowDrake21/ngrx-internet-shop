@@ -7,8 +7,8 @@ export interface IUserSignUpData {
 }
 
 export interface IUserUpdate {
-  displayName?: string;
-  photoURL?: string;
+  displayName: string;
+  photoURL: string;
 }
 
 export interface IUser {
