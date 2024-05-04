@@ -4,7 +4,9 @@ import { createAction, props } from '@ngrx/store';
 import {
   IStoreUserCredential,
   IUserSignUpData,
+  IUserUpdate,
 } from '../../shared/models/user.model';
+import { UserCredential } from 'firebase/auth';
 
 export const signUp = createAction(
   '[User Component] SignUp',
@@ -92,6 +94,45 @@ export const getUserSuccess = createAction(
 );
 export const getUserFailure = createAction(
   '[User Component] GetUserFailure',
+  props<{ errorMessage: string }>()
+);
+
+export const reauthenticateUser = createAction(
+  '[User Component] ReauthenticateUser',
+  props<{ email: string; password: string }>()
+);
+export const reauthenticateUserSuccess = createAction(
+  '[User Component] ReauthenticateUserSuccess',
+  props<{ email: string; userCredential: IStoreUserCredential }>()
+);
+export const reauthenticateUserFailure = createAction(
+  '[User Component] ReauthenticateUserFailure',
+  props<{ errorMessage: string }>()
+);
+
+export const updateDisplayName = createAction(
+  '[User Component] UpdateDisplayName',
+  props<{ displayName: string }>()
+);
+export const updateDisplayNameSuccess = createAction(
+  '[User Component] UpdateDisplayNameSuccess',
+  props<{ email: string; userCredential: IStoreUserCredential }>()
+);
+export const updateDisplayNameFailure = createAction(
+  '[User Component] UpdateDisplayNameFailure',
+  props<{ errorMessage: string }>()
+);
+
+export const updateProfileImage = createAction(
+  '[User Component] UpdateProfileImage',
+  props<{ imageURL: string }>()
+);
+export const updateProfileImageSuccess = createAction(
+  '[User Component] UpdateProfileImageSuccess',
+  props<{ email: string; userCredential: IStoreUserCredential }>()
+);
+export const updateProfileImageFailure = createAction(
+  '[User Component] UpdateProfileImageFailure',
   props<{ errorMessage: string }>()
 );
 

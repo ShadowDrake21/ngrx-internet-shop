@@ -33,6 +33,7 @@ import { Store } from '@ngrx/store';
 import { UserState } from './user.reducer';
 import { MEDIA_STORAGE_PATH } from '@app/core/constants/storage.constants';
 import { StorageService } from '@app/core/services/storage.service';
+import { createAuthInLS } from '@app/core/utils/auth.utils';
 
 @Injectable()
 export class UserEffects {
@@ -197,8 +198,6 @@ export class UserEffects {
               phoneNumber: user?.providerData[0].phoneNumber!,
               photoURL: user?.providerData[0].photoURL!,
             };
-
-            console.log('providerData', providerData);
             const storeUserCredentials: IStoreUserCredential = {
               providerData: [providerData],
               tokenResult: await user?.getIdTokenResult()!,
@@ -219,6 +218,100 @@ export class UserEffects {
       )
     )
   );
+
+  reauthenticateUser$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.reauthenticateUser),
+      exhaustMap(({ email, password }) =>
+        this.authService.reauthenticateUserObservable(email, password).pipe(
+          mergeMap(async (userCredential) => {
+            return UserActions.reauthenticateUserSuccess({
+              email: userCredential.user.email!,
+              userCredential: await minimalizeUserCredential(userCredential),
+            });
+          }),
+          catchError((error: FirebaseError) =>
+            of(
+              UserActions.reauthenticateUserFailure({
+                errorMessage: error.message,
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
+  updateDisplayName$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.updateDisplayName),
+      exhaustMap(({ displayName }) =>
+        this.authService.getUser().pipe(
+          mergeMap(async (user) => {
+            const providerData: ProviderData = {
+              providerId: user?.providerData[0].providerId!,
+              uid: user?.providerData[0].uid!,
+              displayName: displayName,
+              email: user?.providerData[0].email!,
+              phoneNumber: user?.providerData[0].phoneNumber!,
+              photoURL: user?.providerData[0].photoURL!,
+            };
+            const storeUserCredentials: IStoreUserCredential = {
+              providerData: [providerData],
+              tokenResult: await user?.getIdTokenResult()!,
+            };
+            return UserActions.updateDisplayNameSuccess({
+              email: user?.email!,
+              userCredential: storeUserCredentials,
+            });
+          }),
+          catchError((error: FirebaseError) =>
+            of(
+              UserActions.updateDisplayNameFailure({
+                errorMessage: error.message,
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+  updateProfileImage$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(UserActions.updateProfileImage),
+      exhaustMap(({ imageURL }) =>
+        this.authService.getUser().pipe(
+          mergeMap(async (user) => {
+            const providerData: ProviderData = {
+              providerId: user?.providerData[0].providerId!,
+              uid: user?.providerData[0].uid!,
+              displayName: user?.providerData[0].displayName!,
+              email: user?.providerData[0].email!,
+              phoneNumber: user?.providerData[0].phoneNumber!,
+              photoURL: imageURL,
+            };
+            const storeUserCredentials: IStoreUserCredential = {
+              providerData: [providerData],
+              tokenResult: await user?.getIdTokenResult()!,
+            };
+            createAuthInLS(storeUserCredentials);
+            return UserActions.updateProfileImageSuccess({
+              email: user?.email!,
+              userCredential: storeUserCredentials,
+            });
+          }),
+          catchError((error: FirebaseError) =>
+            of(
+              UserActions.updateProfileImageFailure({
+                errorMessage: error.message,
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
   signOut$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.signOut),

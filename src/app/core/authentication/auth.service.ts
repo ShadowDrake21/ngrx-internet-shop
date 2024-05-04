@@ -28,15 +28,25 @@ import {
   Observable,
   of,
   switchMap,
+  tap,
   throwError,
 } from 'rxjs';
 
+import * as UserActions from '@store/user/user.actions';
+import * as UserSelectors from '@store/user/user.selectors';
+
 // interfaces
 import { IUserSignUpData, IUserUpdate } from '../../shared/models/user.model';
+import { Database, ref, set, update } from '@angular/fire/database';
+import { SIGN_IN_PHOTO_URL } from '../constants/auth.constants';
+import { Store } from '@ngrx/store';
+import { UserState } from '@app/store/user/user.reducer';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private store = inject(Store<UserState>);
   private auth: Auth = inject(Auth);
+  private database: Database = inject(Database);
 
   signUp(signUpData: IUserSignUpData): Observable<UserCredential> {
     return from(
@@ -49,30 +59,36 @@ export class AuthService {
       switchMap((credential) => {
         const updateData = {} as Partial<IUserUpdate>;
         updateData.displayName = signUpData.displayName;
-        return this.updateUser(updateData).pipe(map(() => credential));
+        return this.updateUser(updateData).pipe(
+          tap(() => this.setProfileImage(SIGN_IN_PHOTO_URL)),
+          map(() => credential)
+        );
       })
     );
   }
-  // !!!!!
-  updateUser(updateData: Partial<IUserUpdate>): Observable<void> {
-    if (Object.getOwnPropertyDescriptor(updateData, 'displayName')?.writable) {
-      console.log('updateData Auth', updateData);
-    }
+  // photoURL(pin):'https://fireba…984d' => null !!!!
 
-    return from(
-      updateProfile(this.auth.currentUser!, { displayName: 'example111' })
-    ).pipe(
-      catchError((err, caught) => {
-        console.error(err);
-        return throwError(err);
-      })
-    );
+  updateUser(updateData: Partial<IUserUpdate>): Observable<void> {
+    return from(updateProfile(this.auth.currentUser!, updateData));
   }
 
   async updatePassword(password: string) {
     return await updatePassword(this.auth.currentUser!, password)
       .then(() => 'The password was successfully updated!')
       .catch((error: FirebaseError) => error.message);
+  }
+
+  setDisplayName(displayName: string) {
+    update(ref(this.database, 'users/' + this.auth.currentUser?.uid), {
+      displayName,
+    });
+  }
+
+  setProfileImage(imageURL: string) {
+    update(ref(this.database, 'users/' + this.auth.currentUser?.uid), {
+      profileImage: imageURL,
+    });
+    this.store.dispatch(UserActions.updateProfileImage({ imageURL }));
   }
 
   signInManually(email: string, password: string): Observable<UserCredential> {
@@ -124,6 +140,19 @@ export class AuthService {
   reauthenticateUser(email: string, password: string): Promise<UserCredential> {
     const credential = EmailAuthProvider.credential(email, password);
     return reauthenticateWithCredential(this.auth.currentUser!, credential);
+  }
+
+  reauthenticateUserObservable(
+    email: string,
+    password: string
+  ): Observable<UserCredential> {
+    const credential = EmailAuthProvider.credential(email, password);
+    return from(
+      reauthenticateWithCredential(this.auth.currentUser!, credential)
+    ).pipe(
+      map((credential) => credential),
+      catchError((error: FirebaseError) => throwError(() => error))
+    );
   }
 
   getUser() {

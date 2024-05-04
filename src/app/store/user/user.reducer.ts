@@ -29,6 +29,9 @@ export const userReducer = createReducer(
     UserActions.signInWithTwitterSuccess,
     UserActions.signInWithGoogleSuccess,
     UserActions.getUserSuccess,
+    UserActions.reauthenticateUserSuccess,
+    UserActions.updateDisplayNameSuccess,
+    UserActions.updateProfileImageSuccess,
     (state, { userCredential, email }) => ({
       ...state,
       email,
@@ -46,6 +49,9 @@ export const userReducer = createReducer(
     UserActions.signInWithTwitterFailure,
     UserActions.signInWithGoogleFailure,
     UserActions.getUserFailure,
+    UserActions.reauthenticateUserFailure,
+    UserActions.updateDisplayNameFailure,
+    UserActions.updateProfileImageFailure,
     (state, { errorMessage }) => ({
       ...state,
       email: null,
@@ -65,6 +71,9 @@ export const userReducer = createReducer(
     },
     errorMessage: null,
   })),
+
+  // on(UserActions.updateDisplayName,)
+
   on(UserActions.signOutSuccess, UserActions.clearUserState, (state) => ({
     ...state,
     email: null,

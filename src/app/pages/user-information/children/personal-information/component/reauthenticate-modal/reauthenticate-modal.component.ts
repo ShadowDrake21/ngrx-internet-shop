@@ -7,6 +7,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '@app/core/authentication/auth.service';
+import { UserState } from '@app/store/user/user.reducer';
+import { Store } from '@ngrx/store';
 import { FirebaseError } from 'firebase/app';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
@@ -18,6 +20,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
   styleUrl: './reauthenticate-modal.component.scss',
 })
 export class ReauthenticateModalComponent {
+  private store = inject(Store<UserState>);
   private authService = inject(AuthService);
   public bsModalRef = inject(BsModalRef);
 
@@ -38,6 +41,8 @@ export class ReauthenticateModalComponent {
   });
 
   onReauthenticationSubmit() {
+    // this.store.dispatch(UserActions.reauthenticateUser({email: this.email!, password: this.reauthenticationForm.value.password!}))
+
     this.authService
       .reauthenticateUser(
         this.email!,
