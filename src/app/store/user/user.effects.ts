@@ -48,6 +48,7 @@ export class UserEffects {
           mergeMap(async (userCredential) => {
             return UserActions.signUpSuccess({
               email: userCredential.user.email!,
+
               userCredential: await minimalizeUserCredential(userCredential),
             });
           }),
@@ -70,7 +71,11 @@ export class UserEffects {
         this.authService.signInManually(email, password).pipe(
           mergeMap(async (userCredential) => {
             return UserActions.signInManuallySuccess({
-              email: userCredential.user.email!,
+              basicInfo: {
+                displayName: this.authService.getDisplayName(),
+                photoURL: this.authService.getProfileImage(),
+                email: userCredential.user.email!,
+              },
               userCredential: await minimalizeUserCredential(userCredential),
             });
           }),
@@ -93,11 +98,19 @@ export class UserEffects {
           mergeMap(async ({ data }) => {
             if (typeof data === 'string') {
               return UserActions.signInWithSocialsWrongProvider({
-                email: data,
+                basicInfo: {
+                  displayName: '',
+                  photoURL: '',
+                  email: data,
+                },
               });
             }
             return UserActions.signInWithFacebookSuccess({
-              email: data.user.email!,
+              basicInfo: {
+                displayName: this.authService.getDisplayName(),
+                photoURL: this.authService.getProfileImage(),
+                email: data.user.email!,
+              },
               userCredential: await minimalizeUserCredential(data),
             });
           }),
@@ -120,11 +133,19 @@ export class UserEffects {
           mergeMap(async ({ data }) => {
             if (typeof data === 'string') {
               return UserActions.signInWithSocialsWrongProvider({
-                email: data,
+                basicInfo: {
+                  displayName: '',
+                  photoURL: '',
+                  email: data,
+                },
               });
             }
             return UserActions.signInWithTwitterSuccess({
-              email: data.user.email!,
+              basicInfo: {
+                displayName: this.authService.getDisplayName(),
+                photoURL: this.authService.getProfileImage(),
+                email: data.user.email!,
+              },
               userCredential: await minimalizeUserCredential(data),
             });
           }),
@@ -147,11 +168,19 @@ export class UserEffects {
           mergeMap(async ({ data }) => {
             if (typeof data === 'string') {
               return UserActions.signInWithSocialsWrongProvider({
-                email: data,
+                basicInfo: {
+                  displayName: '',
+                  photoURL: '',
+                  email: data,
+                },
               });
             }
             return UserActions.signInWithTwitterSuccess({
-              email: data.user.email!,
+              basicInfo: {
+                displayName: this.authService.getDisplayName(),
+                photoURL: this.authService.getProfileImage(),
+                email: data.user.email!,
+              },
               userCredential: await minimalizeUserCredential(data),
             });
           }),
@@ -203,7 +232,12 @@ export class UserEffects {
               tokenResult: await user?.getIdTokenResult()!,
             };
             return UserActions.getUserSuccess({
-              email: user?.email!,
+              basicInfo: {
+                displayName: this.authService.getDisplayName(),
+                photoURL: this.authService.getProfileImage(),
+                email: user?.email!,
+              },
+
               userCredential: storeUserCredentials,
             });
           }),
@@ -226,7 +260,11 @@ export class UserEffects {
         this.authService.reauthenticateUserObservable(email, password).pipe(
           mergeMap(async (userCredential) => {
             return UserActions.reauthenticateUserSuccess({
-              email: userCredential.user.email!,
+              basicInfo: {
+                displayName: this.authService.getDisplayName(),
+                photoURL: this.authService.getProfileImage(),
+                email: userCredential.user.email!,
+              },
               userCredential: await minimalizeUserCredential(userCredential),
             });
           }),
@@ -242,40 +280,42 @@ export class UserEffects {
     )
   );
 
-  updateDisplayName$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(UserActions.updateDisplayName),
-      exhaustMap(({ displayName }) =>
-        this.authService.getUser().pipe(
-          mergeMap(async (user) => {
-            const providerData: ProviderData = {
-              providerId: user?.providerData[0].providerId!,
-              uid: user?.providerData[0].uid!,
-              displayName: displayName,
-              email: user?.providerData[0].email!,
-              phoneNumber: user?.providerData[0].phoneNumber!,
-              photoURL: user?.providerData[0].photoURL!,
-            };
-            const storeUserCredentials: IStoreUserCredential = {
-              providerData: [providerData],
-              tokenResult: await user?.getIdTokenResult()!,
-            };
-            return UserActions.updateDisplayNameSuccess({
-              email: user?.email!,
-              userCredential: storeUserCredentials,
-            });
-          }),
-          catchError((error: FirebaseError) =>
-            of(
-              UserActions.updateDisplayNameFailure({
-                errorMessage: error.message,
-              })
-            )
-          )
-        )
-      )
-    )
-  );
+  // updateDisplayName$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(UserActions.updateDisplayName),
+  //     exhaustMap(({ displayName }) =>
+  //       this.authService.getUser().pipe(
+  //         mergeMap(async (user) => {
+  //           const providerData: ProviderData = {
+  //             providerId: user?.providerData[0].providerId!,
+  //             uid: user?.providerData[0].uid!,
+  //             displayName: displayName,
+  //             email: user?.providerData[0].email!,
+  //             phoneNumber: user?.providerData[0].phoneNumber!,
+  //             photoURL: user?.providerData[0].photoURL!,
+  //           };
+  //           const storeUserCredentials: IStoreUserCredential = {
+  //             providerData: [providerData],
+  //             tokenResult: await user?.getIdTokenResult()!,
+  //           };
+  //           createAuthInLS(storeUserCredentials);
+  //           return UserActions.updateDisplayNameSuccess({
+  //             basicInfo: {
+  //               displayName: this.authService.getDisplayName(),
+  //             },
+  //           });
+  //         }),
+  //         catchError((error: FirebaseError) =>
+  //           of(
+  //             UserActions.updateDisplayNameFailure({
+  //               errorMessage: error.message,
+  //             })
+  //           )
+  //         )
+  //       )
+  //     )
+  //   )
+  // );
   updateProfileImage$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.updateProfileImage),
@@ -296,8 +336,7 @@ export class UserEffects {
             };
             createAuthInLS(storeUserCredentials);
             return UserActions.updateProfileImageSuccess({
-              email: user?.email!,
-              userCredential: storeUserCredentials,
+              imageURL: this.authService.getProfileImage(),
             });
           }),
           catchError((error: FirebaseError) =>

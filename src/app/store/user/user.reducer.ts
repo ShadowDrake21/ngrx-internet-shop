@@ -2,19 +2,19 @@
 import { createReducer, on } from '@ngrx/store';
 
 // interfaces
-import { IUser } from '../../shared/models/user.model';
+import { IUser, IUserBasic } from '../../shared/models/user.model';
 
 // actions
 import * as UserActions from './user.actions';
 
 export interface UserState {
-  email: string | null;
+  basicInfo: IUserBasic | null;
   user: IUser | null;
   errorMessage: string | null;
 }
 
 export const initialUserState: UserState = {
-  email: null,
+  basicInfo: null,
   user: null,
   errorMessage: null,
 };
@@ -22,7 +22,6 @@ export const initialUserState: UserState = {
 export const userReducer = createReducer(
   initialUserState,
   on(
-    UserActions.signUpSuccess,
     UserActions.signInManuallySuccess,
     UserActions.browserReload,
     UserActions.signInWithFacebookSuccess,
@@ -30,11 +29,14 @@ export const userReducer = createReducer(
     UserActions.signInWithGoogleSuccess,
     UserActions.getUserSuccess,
     UserActions.reauthenticateUserSuccess,
-    UserActions.updateDisplayNameSuccess,
-    UserActions.updateProfileImageSuccess,
-    (state, { userCredential, email }) => ({
+
+    (state, { userCredential, basicInfo }) => ({
       ...state,
-      email,
+      basicInfo: {
+        displayName: basicInfo.displayName ?? state.basicInfo?.displayName,
+        photoURL: basicInfo.photoURL ?? state.basicInfo?.photoURL,
+        email: basicInfo.email ?? state.basicInfo?.email,
+      },
       user: {
         userCredential,
         online: true,
@@ -42,6 +44,48 @@ export const userReducer = createReducer(
       errorMessage: null,
     })
   ),
+  on(
+    UserActions.signUpSuccess,
+
+    (state, { userCredential, email }) => ({
+      ...state,
+      basicInfo: {
+        displayName: state.basicInfo?.displayName!,
+        photoURL: state.basicInfo?.photoURL!,
+        email: email,
+      },
+      user: {
+        userCredential,
+        online: true,
+      },
+      errorMessage: null,
+    })
+  ),
+  on(
+    UserActions.updateDisplayName,
+
+    (state, { displayName }) => ({
+      ...state,
+      basicInfo: {
+        displayName,
+        email: state.basicInfo?.email!,
+        photoURL: state.basicInfo?.photoURL!,
+      },
+    })
+  ),
+  on(
+    UserActions.updateProfileImage,
+
+    (state, { imageURL }) => ({
+      ...state,
+      basicInfo: {
+        displayName: state.basicInfo?.displayName!,
+        email: state.basicInfo?.email!,
+        photoURL: imageURL,
+      },
+    })
+  ),
+
   on(
     UserActions.signUpFailure,
     UserActions.signInManuallyFailure,
@@ -54,7 +98,7 @@ export const userReducer = createReducer(
     UserActions.updateProfileImageFailure,
     (state, { errorMessage }) => ({
       ...state,
-      email: null,
+      basicInfo: null,
       user: {
         userCredential: null,
         online: false,
@@ -62,9 +106,9 @@ export const userReducer = createReducer(
       errorMessage,
     })
   ),
-  on(UserActions.signInWithSocialsWrongProvider, (state, { email }) => ({
+  on(UserActions.signInWithSocialsWrongProvider, (state, { basicInfo }) => ({
     ...state,
-    email,
+    basicInfo,
     user: {
       userCredential: null,
       online: false,
@@ -76,7 +120,7 @@ export const userReducer = createReducer(
 
   on(UserActions.signOutSuccess, UserActions.clearUserState, (state) => ({
     ...state,
-    email: null,
+    basicInfo: null,
     user: {
       userCredential: null,
       online: false,

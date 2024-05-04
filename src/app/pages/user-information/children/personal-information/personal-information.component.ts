@@ -315,9 +315,9 @@ export class PersonalInformationComponent
   onSaveNewPassword() {
     this.alerts = [];
     this.store
-      .select(UserSelectors.selectEmail)
+      .select(UserSelectors.selectBasicInfo)
       .pipe(take(1))
-      .subscribe((email) => this.openModalWithComponent(email!));
+      .subscribe((info) => this.openModalWithComponent(info?.email!));
 
     // .subscribe((result) => {
     //   this.alerts.push({ type: 'success', timeout: 5000, msg: result });

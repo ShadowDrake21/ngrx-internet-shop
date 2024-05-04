@@ -18,7 +18,8 @@ import { AppState } from './store/app.state';
 import * as UserActions from './store/user/user.actions';
 
 // constants
-import { LS_AUTH_ITEM_NAME } from './core/constants/auth.constants';
+import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
+import { AuthService } from '@core/authentication/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -32,6 +33,7 @@ export class AppComponent implements OnInit {
   private store = inject(Store<AppState>);
   private router = inject(Router);
   private modalService = inject(BsModalService);
+  private authService = inject(AuthService);
 
   public headerFooterAvailable: boolean = true;
 
@@ -65,7 +67,12 @@ export class AppComponent implements OnInit {
     if (userCredential) {
       this.store.dispatch(
         UserActions.browserReload({
-          email: userCredential.providerData[0].email,
+          basicInfo: {
+            displayName: this.authService.getDisplayName(),
+            photoURL: this.authService.getProfileImage(),
+            email: userCredential.providerData[0].email,
+          },
+
           userCredential,
         })
       );
