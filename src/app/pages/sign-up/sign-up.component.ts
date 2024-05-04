@@ -56,14 +56,11 @@ export class SignUpComponent {
 
   error$!: Observable<string | null>;
 
-  usernamePattern =
-    '^(?=.{6,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$';
   signUpForm = new FormGroup({
-    username: new FormControl('', [
+    displayName: new FormControl('', [
       Validators.required,
       Validators.minLength(6),
       Validators.maxLength(20),
-      Validators.pattern(this.usernamePattern),
     ]),
     email: new FormControl('', [Validators.email, Validators.required]),
     password: new FormControl('', [
@@ -89,7 +86,7 @@ export class SignUpComponent {
     const signUpData: IUserSignUpData = {
       email: this.signUpForm.value.email!,
       password: this.signUpForm.value.password!,
-      username: this.signUpForm.value.username!,
+      displayName: this.signUpForm.value.displayName!,
     };
 
     this.store.dispatch(UserActions.signUp({ data: signUpData }));

@@ -21,7 +21,15 @@ import {
   UserCredential,
 } from '@angular/fire/auth';
 import { FirebaseError } from 'firebase/app';
-import { catchError, from, map, Observable, of, switchMap } from 'rxjs';
+import {
+  catchError,
+  from,
+  map,
+  Observable,
+  of,
+  switchMap,
+  throwError,
+} from 'rxjs';
 
 // interfaces
 import { IUserSignUpData, IUserUpdate } from '../../shared/models/user.model';
@@ -40,14 +48,25 @@ export class AuthService {
     ).pipe(
       switchMap((credential) => {
         const updateData = {} as Partial<IUserUpdate>;
-        updateData.displayName = signUpData.username;
+        updateData.displayName = signUpData.displayName;
         return this.updateUser(updateData).pipe(map(() => credential));
       })
     );
   }
-
+  // !!!!!
   updateUser(updateData: Partial<IUserUpdate>): Observable<void> {
-    return from(updateProfile(this.auth.currentUser!, updateData));
+    if (Object.getOwnPropertyDescriptor(updateData, 'displayName')?.writable) {
+      console.log('updateData Auth', updateData);
+    }
+
+    return from(
+      updateProfile(this.auth.currentUser!, { displayName: 'example111' })
+    ).pipe(
+      catchError((err, caught) => {
+        console.error(err);
+        return throwError(err);
+      })
+    );
   }
 
   async updatePassword(password: string) {

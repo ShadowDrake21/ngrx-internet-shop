@@ -96,8 +96,6 @@ export class PersonalInformationComponent
   updatedUserPhotoFile: File | null = null;
   userPhotoURL: string | null = null;
 
-  private displayNamePattern: string =
-    '^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$';
   previousDisplayName: string | null = null;
 
   isPasswordChangeMode: boolean = false;
@@ -109,7 +107,7 @@ export class PersonalInformationComponent
   alerts: AlertType[] = [];
 
   changePasswordForm!: FormGroup;
-  usernameControl!: FormControl;
+  displayNameControl!: FormControl;
 
   private subscriptions: Subscription[] = [];
 
@@ -125,17 +123,12 @@ export class PersonalInformationComponent
       ],
     });
 
-    this.usernameControl = this.fb.control(
+    this.displayNameControl = this.fb.control(
       {
         value: '',
         disabled: true,
       },
-      [
-        Validators.required,
-        Validators.minLength(6),
-        Validators.maxLength(20),
-        Validators.pattern(this.displayNamePattern),
-      ]
+      [Validators.required, Validators.minLength(6), Validators.maxLength(20)]
     );
 
     this.user$ = this.store.select(UserSelectors.selectUser);
@@ -144,7 +137,7 @@ export class PersonalInformationComponent
 
       this.previousDisplayName =
         user?.userCredential?.providerData[0].displayName;
-      this.usernameControl.patchValue(this.previousDisplayName);
+      this.displayNameControl.patchValue(this.previousDisplayName);
     });
 
     this.subscriptions.push(userSubscription);
@@ -190,7 +183,7 @@ export class PersonalInformationComponent
   private updateSaveButtonState() {
     if (
       !this.updatedUserPhotoFile &&
-      this.usernameControl.value === this.previousDisplayName
+      this.displayNameControl.value === this.previousDisplayName
     ) {
       this.saveButtonActive = false;
     } else {
@@ -211,6 +204,7 @@ export class PersonalInformationComponent
         switchMap((user) => {
           if (this.updatedUserPhotoFile) {
             const mediaFolderPath = `${MEDIA_STORAGE_PATH}/profilePhotos/${user?.userCredential?.providerData[0].uid}/`;
+            console.log('mediaFolderPath', mediaFolderPath);
             return this.storageService.updateFileAndGetDownloadURL(
               mediaFolderPath,
               this.updatedUserPhotoFile!
@@ -220,14 +214,16 @@ export class PersonalInformationComponent
           }
         }),
         switchMap((url) => {
-          let updateData = {} as Partial<IUserUpdate>;
+          let updateData: Partial<IUserUpdate> = {};
 
           if (this.updatedUserPhotoFile) {
             updateData.photoURL = url!;
           }
-          if (this.usernameControl.value !== this.previousDisplayName) {
-            updateData.displayName = this.usernameControl.value!;
+          if (this.displayNameControl.value !== this.previousDisplayName) {
+            updateData.displayName = this.displayNameControl.value;
           }
+
+          console.log('updateData', updateData);
 
           return this.authService.updateUser(updateData);
         })
@@ -235,11 +231,12 @@ export class PersonalInformationComponent
       .subscribe({
         next: () => {
           this.onToggleChangeMode();
-          this.previousDisplayName = this.usernameControl.value;
+          this.previousDisplayName = this.displayNameControl.value;
           this.updateLocalStorageData();
         },
         error: (error) => {
-          this.onToggleChangeMode();
+          console.log('error', error);
+          // this.onToggleChangeMode();
           this.alerts.push({
             type: 'danger',
             timeout: 5000,
@@ -299,7 +296,7 @@ export class PersonalInformationComponent
     this.buttonCancelEffects();
     if (
       this.updatedUserPhotoFile ||
-      this.previousDisplayName !== this.usernameControl.value
+      this.previousDisplayName !== this.displayNameControl.value
     ) {
       this.store.dispatch(UserActions.getUser());
     }
@@ -308,9 +305,9 @@ export class PersonalInformationComponent
   buttonCancelEffects() {
     this.isChangeMode = !this.isChangeMode;
     if (this.isChangeMode) {
-      this.usernameControl.enable();
+      this.displayNameControl.enable();
     } else {
-      this.usernameControl.disable();
+      this.displayNameControl.disable();
     }
     this.controlButtonsActive = false;
   }
@@ -349,37 +346,48 @@ export class PersonalInformationComponent
 
     const onHiddenSubscription = this.bsModalRef.onHidden?.subscribe(() => {
       // dopisać!!!!
-      const errorSubcription = this.reauthModal.occuredError.subscribe(
-        (error) => {
-          console.log('occuredError1', error);
-          this.alerts.push({
-            type: 'danger',
-            timeout: 5000,
-            msg: error,
+
+      if (this.reauthModal.isSuccessReauthentication) {
+        this.authService
+          .updatePassword(this.changePasswordForm.value.password)
+          .then((value: string) => {
+            if (!errorOccurred) {
+              this.alerts.push({ type: 'success', timeout: 5000, msg: value });
+            }
+          })
+          .catch((error) => {
+            if (!errorOccurred) {
+              this.alerts.push({
+                type: 'danger',
+                timeout: 5000,
+                msg: error.message,
+              });
+            }
+
+            // onHiddenSubscription?.unsubscribe();
           });
-          errorOccurred = true;
-        }
-      );
-      this.subscriptions.push(errorSubcription);
-
-      this.authService
-        .updatePassword(this.changePasswordForm.value.password)
-        .then((value: string) => {
-          if (!errorOccurred) {
-            this.alerts.push({ type: 'success', timeout: 5000, msg: value });
-          }
-        })
-        .catch((error) => {
-          if (!errorOccurred) {
-            this.alerts.push({
-              type: 'danger',
-              timeout: 5000,
-              msg: error.message,
-            });
-          }
-
-          onHiddenSubscription?.unsubscribe();
+      } else {
+        this.alerts.push({
+          type: 'danger',
+          timeout: 5000,
+          msg: 'Incorrect user credential. Try one more time.',
         });
+      }
+      onHiddenSubscription?.unsubscribe();
+      // this.subscriptions.push(errorSubcription);
+
+      // const errorSubcription = this.reauthModal.occuredError.subscribe(
+      //   (error) => {
+      //     console.log('occuredError1', error);
+      //     this.alerts.push({
+      //       type: 'danger',
+      //       timeout: 5000,
+      //       msg: error,
+      //     });
+      //     errorOccurred = true;
+      //   }
+      // );
+      // this.subscriptions.push(errorSubcription);
     });
 
     if (onHiddenSubscription) {
@@ -426,12 +434,12 @@ export class PersonalInformationComponent
 
   // updateUser form
   hasErrorUsernameControl() {
-    const control = this.usernameControl;
+    const control = this.displayNameControl;
     return control && control.invalid && (control.dirty || control.touched);
   }
 
   getErrorMessageUsernameControl() {
-    const control = this.usernameControl;
+    const control = this.displayNameControl;
     if (control && control.errors) {
       let errorMessages: string[] = [];
       if (control.errors?.['required']) {
@@ -444,9 +452,6 @@ export class PersonalInformationComponent
         errorMessages.push(
           'Username length should be less than or equal to 20'
         );
-      }
-      if (control.errors?.['pattern']) {
-        errorMessages.push('Username has unsupported symbols');
       }
 
       return errorMessages;
