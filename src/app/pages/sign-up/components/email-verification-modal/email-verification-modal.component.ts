@@ -2,7 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BsModalRef } from 'ngx-bootstrap/modal';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 // created ngrx stuff
 import { UserState } from '../../../../store/user/user.reducer';
@@ -24,7 +24,9 @@ export class EmailVerificationModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.sendVefirication();
-    this.email$ = this.store.select(UserSelectors.selectEmail);
+    this.store.select(UserSelectors.selectBasicInfo).subscribe((info) => {
+      this.email$ = of(info?.email!);
+    });
   }
 
   sendVefirication() {

@@ -160,15 +160,21 @@ export class SignInComponent implements OnInit, OnDestroy {
           this.alerts.push(
             this.signInService.setAlert('danger', userState.errorMessage, 5000)
           );
-        } else if (userState.email && userState.user?.userCredential) {
+        } else if (
+          userState.basicInfo!.email &&
+          userState.user?.userCredential
+        ) {
           createAuthInLS(userState.user?.userCredential!);
           this.goToPrevious();
           if (this.userStateSubscription) {
             this.userStateSubscription.unsubscribe();
           }
-        } else if (userState.email && !userState.user?.userCredential) {
+        } else if (
+          userState.basicInfo!.email &&
+          !userState.user?.userCredential
+        ) {
           this.authService
-            .signInWithAnotherMethods(userState.email)
+            .signInWithAnotherMethods(userState.basicInfo!.email)
             .subscribe((providers) => {
               this.openAvailableProvidersModal(providers);
 

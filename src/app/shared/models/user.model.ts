@@ -13,12 +13,17 @@ export interface IUserUpdate {
 
 export interface IUser {
   userCredential: IStoreUserCredential | null;
-
   online: boolean;
 }
 export interface IStoreUserCredential {
   tokenResult: IdTokenResult;
   providerData: ProviderData[];
+}
+
+export interface IUserBasic {
+  email: string;
+  displayName: string;
+  photoURL: string;
 }
 
 export interface ProviderData {

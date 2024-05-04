@@ -37,7 +37,7 @@ import * as UserSelectors from '@store/user/user.selectors';
 
 // interfaces
 import { IUserSignUpData, IUserUpdate } from '../../shared/models/user.model';
-import { Database, ref, set, update } from '@angular/fire/database';
+import { child, Database, get, ref, set, update } from '@angular/fire/database';
 import { SIGN_IN_PHOTO_URL } from '../constants/auth.constants';
 import { Store } from '@ngrx/store';
 import { UserState } from '@app/store/user/user.reducer';
@@ -57,9 +57,9 @@ export class AuthService {
       )
     ).pipe(
       switchMap((credential) => {
-        const updateData = {} as Partial<IUserUpdate>;
-        updateData.displayName = signUpData.displayName;
-        return this.updateUser(updateData).pipe(
+        // const updateData = {} as Partial<IUserUpdate>;
+        const displayName = signUpData.displayName;
+        return this.setDisplayName(displayName).pipe(
           tap(() => this.setProfileImage(SIGN_IN_PHOTO_URL)),
           map(() => credential)
         );
@@ -78,17 +78,58 @@ export class AuthService {
       .catch((error: FirebaseError) => error.message);
   }
 
-  setDisplayName(displayName: string) {
-    update(ref(this.database, 'users/' + this.auth.currentUser?.uid), {
-      displayName,
-    });
+  setDisplayName(displayName: string): Observable<void> {
+    this.store.dispatch(UserActions.updateDisplayName({ displayName }));
+    return from(
+      update(ref(this.database, 'users/' + this.auth.currentUser?.uid), {
+        displayName,
+      })
+    );
   }
 
-  setProfileImage(imageURL: string) {
-    update(ref(this.database, 'users/' + this.auth.currentUser?.uid), {
-      profileImage: imageURL,
-    });
+  getDisplayName(): string {
+    let displayName = '';
+    get(child(ref(this.database), 'users/' + this.auth.currentUser?.uid)).then(
+      (snaphot) => {
+        if (snaphot.exists()) {
+          const result = snaphot.val() as {
+            displayName: string;
+            profileImage: string;
+          };
+          displayName = result.displayName;
+          console.log('getDisplayName', displayName);
+        }
+      }
+    );
+
+    return displayName;
+  }
+
+  setProfileImage(imageURL: string): Observable<void> {
     this.store.dispatch(UserActions.updateProfileImage({ imageURL }));
+    return from(
+      update(ref(this.database, 'users/' + this.auth.currentUser?.uid), {
+        profileImage: imageURL,
+      })
+    );
+  }
+
+  getProfileImage(): string {
+    let profileImage = '';
+    get(child(ref(this.database), 'users/' + this.auth.currentUser?.uid)).then(
+      (snaphot) => {
+        if (snaphot.exists()) {
+          const result = snaphot.val() as {
+            displayName: string;
+            profileImage: string;
+          };
+          profileImage = result.profileImage;
+          console.log('getProfileImage', profileImage);
+        }
+      }
+    );
+
+    return profileImage;
   }
 
   signInManually(email: string, password: string): Observable<UserCredential> {
