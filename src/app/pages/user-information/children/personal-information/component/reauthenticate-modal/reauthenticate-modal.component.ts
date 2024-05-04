@@ -27,6 +27,8 @@ export class ReauthenticateModalComponent {
   closeBtnName?: string;
   error: string = '';
 
+  isSuccessReauthentication: boolean = false;
+
   reauthenticationForm = new FormGroup({
     password: new FormControl('', [
       Validators.required,
@@ -43,10 +45,12 @@ export class ReauthenticateModalComponent {
       )
       .then((credential) => {
         console.log('Reauthentication success!');
+        this.isSuccessReauthentication = true;
         this.bsModalRef.hide();
       })
       .catch((err: FirebaseError) => {
-        console.log('occurredError', err.message);
+        this.error = err.message;
+        this.isSuccessReauthentication = false;
         this.occuredError.emit(err.message);
       });
   }

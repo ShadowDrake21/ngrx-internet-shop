@@ -1,7 +1,7 @@
 import { IdTokenResult } from 'firebase/auth';
 
 export interface IUserSignUpData {
-  username: string;
+  displayName: string;
   email: string;
   password: string;
 }

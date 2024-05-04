@@ -197,6 +197,8 @@ export class UserEffects {
               phoneNumber: user?.providerData[0].phoneNumber!,
               photoURL: user?.providerData[0].photoURL!,
             };
+
+            console.log('providerData', providerData);
             const storeUserCredentials: IStoreUserCredential = {
               providerData: [providerData],
               tokenResult: await user?.getIdTokenResult()!,

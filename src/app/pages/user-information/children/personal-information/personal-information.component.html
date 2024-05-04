@@ -34,14 +34,14 @@
               <div class="w-100 pb-3">
                 <div class="pb-3">
                   <label for="displayName" class="fw-bold fs-5 pb-2"
-                    >Username</label
+                    >Display name</label
                   >
                   <input
                     type="text"
                     class="form-control"
                     id="displayName"
                     #displayName
-                    [formControl]="usernameControl"
+                    [formControl]="displayNameControl"
                   />
                 </div>
                 <button
@@ -90,9 +90,9 @@
                   <div class="d-flex h-100 w-100 pt-2" style="gap: 10px">
                     <button
                       class="btn btn-primary w-100"
-                      (click)="onSaveNewPassword()"
                       [disabled]="changePasswordForm.invalid"
                     >
+                      <!-- (click)="onSaveNewPassword()" -->
                       Update password
                     </button>
                     <button
