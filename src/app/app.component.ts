@@ -68,8 +68,8 @@ export class AppComponent implements OnInit {
       this.store.dispatch(
         UserActions.browserReload({
           basicInfo: {
-            displayName: this.authService.getDisplayName(),
-            photoURL: this.authService.getProfileImage(),
+            displayName: userCredential.providerData[0].displayName,
+            photoURL: userCredential.providerData[0].photoURL,
             email: userCredential.providerData[0].email,
           },
 

@@ -19,7 +19,11 @@ import * as UserSelectors from '../../store/user/user.selectors';
 
 // interfaces and types
 import { AlertType } from '../../shared/models/alerts.model';
-import { IUser } from '../../shared/models/user.model';
+import {
+  IStoreUserCredential,
+  IUser,
+  ProviderData,
+} from '../../shared/models/user.model';
 
 // components
 import { AlertComponent } from '../../shared/components/alert/alert.component';
@@ -30,6 +34,7 @@ import { AvailableProvidersModalComponent } from './components/available-provide
 // utils
 import { createAuthInLS } from '../../core/utils/auth.utils';
 import { signInModalIcons } from '../../shared/utils/icons.utils';
+import { IdTokenResult } from 'firebase/auth';
 
 @Component({
   selector: 'app-sign-in',
@@ -164,7 +169,21 @@ export class SignInComponent implements OnInit, OnDestroy {
           userState.basicInfo!.email &&
           userState.user?.userCredential
         ) {
-          createAuthInLS(userState.user?.userCredential!);
+          const updatedUserCredential: IStoreUserCredential = {
+            ...userState.user.userCredential,
+            providerData: [
+              {
+                ...userState.user.userCredential?.providerData[0],
+                displayName: this.authService.getDisplayName(),
+                photoURL: this.authService.getProfileImage(),
+                email: userState.basicInfo!.email,
+              },
+            ] as ProviderData[],
+            tokenResult: {
+              ...userState.user.userCredential?.tokenResult,
+            } as IdTokenResult,
+          };
+          createAuthInLS(updatedUserCredential);
           this.goToPrevious();
           if (this.userStateSubscription) {
             this.userStateSubscription.unsubscribe();

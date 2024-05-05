@@ -57,7 +57,6 @@ export class AuthService {
       )
     ).pipe(
       switchMap((credential) => {
-        // const updateData = {} as Partial<IUserUpdate>;
         const displayName = signUpData.displayName;
         return this.setDisplayName(displayName).pipe(
           tap(() => this.setProfileImage(SIGN_IN_PHOTO_URL)),
@@ -66,7 +65,6 @@ export class AuthService {
       })
     );
   }
-  // photoURL(pin):'https://fireba…984d' => null !!!!
 
   updateUser(updateData: Partial<IUserUpdate>): Observable<void> {
     return from(updateProfile(this.auth.currentUser!, updateData));

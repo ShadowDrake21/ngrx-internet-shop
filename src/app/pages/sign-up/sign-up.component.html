@@ -112,7 +112,7 @@
             The user name field is mandatory
           </li>
           <li *ngIf="signUpForm.controls.displayName.errors?.['minlength']">
-            User name should be at least 6 characters long. Now it is
+            User name should be at least 3 characters long. Now it is
             {{ signUpForm.value.displayName?.length }}
           </li>
           <li *ngIf="signUpForm.controls.displayName.errors?.['maxlength']">
