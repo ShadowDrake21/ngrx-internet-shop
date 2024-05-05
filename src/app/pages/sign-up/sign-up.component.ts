@@ -16,7 +16,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 // interfaces
-import { IUserSignUpData } from '../../shared/models/user.model';
+import {
+  IStoreUserCredential,
+  IUserSignUpData,
+  ProviderData,
+} from '../../shared/models/user.model';
 
 // created ngrx stuff
 import { UserState } from '../../store/user/user.reducer';
@@ -29,6 +33,7 @@ import { createAuthInLS } from '../../core/utils/auth.utils';
 // components
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
 import { EmailVerificationModalComponent } from './components/email-verification-modal/email-verification-modal.component';
+import { IdTokenResult } from 'firebase/auth';
 
 @Component({
   selector: 'app-sign-up',
@@ -59,7 +64,7 @@ export class SignUpComponent {
   signUpForm = new FormGroup({
     displayName: new FormControl('', [
       Validators.required,
-      Validators.minLength(6),
+      Validators.minLength(3),
       Validators.maxLength(20),
     ]),
     email: new FormControl('', [Validators.email, Validators.required]),
@@ -93,16 +98,34 @@ export class SignUpComponent {
     this.userSubcription = this.store
       .select(UserSelectors.selectUser)
       .subscribe((user) => {
-        if (user?.online) {
-          createAuthInLS(user.userCredential!);
-          this.isLogging = false;
-          this.router.navigate(['/']);
+        this.store.select(UserSelectors.selectBasicInfo).subscribe((info) => {
+          if (user?.online) {
+            const updatedUserCredential: IStoreUserCredential = {
+              ...user.userCredential,
+              providerData: [
+                {
+                  ...user.userCredential?.providerData[0],
+                  displayName: info!.displayName,
+                  photoURL: info!.photoURL,
+                  email: info!.email,
+                },
+              ] as ProviderData[],
+              tokenResult: {
+                ...user.userCredential?.tokenResult,
+              } as IdTokenResult,
+            };
+            console.log('updatedProviderData', updatedUserCredential);
 
-          this.store.dispatch(UserActions.sendEmailVerification());
-          this.bsModalRef = this.modalService.show(
-            EmailVerificationModalComponent
-          );
-        }
+            createAuthInLS(updatedUserCredential);
+            this.isLogging = false;
+            this.router.navigate(['/']);
+
+            this.store.dispatch(UserActions.sendEmailVerification());
+            this.bsModalRef = this.modalService.show(
+              EmailVerificationModalComponent
+            );
+          }
+        });
 
         if (this.userSubcription) {
           this.userSubcription.unsubscribe();
