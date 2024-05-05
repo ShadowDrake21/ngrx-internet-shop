@@ -97,9 +97,12 @@ export class SignInComponent implements OnInit, OnDestroy {
       .pipe(debounceTime(5000), take(1))
       .subscribe((user) => {
         if (user?.userCredential && this.isLogging) {
-          this.signInService.signInManuallyFormReducedUserCredential(
-            user.userCredential
-          );
+          this.store.select(UserSelectors.selectBasicInfo).subscribe((info) => {
+            this.signInService.signInManuallyFormReducedUserCredential(
+              user.userCredential!,
+              info!
+            );
+          });
 
           this.goToPrevious();
         } else {
@@ -174,8 +177,8 @@ export class SignInComponent implements OnInit, OnDestroy {
             providerData: [
               {
                 ...userState.user.userCredential?.providerData[0],
-                displayName: this.authService.getDisplayName(),
-                photoURL: this.authService.getProfileImage(),
+                displayName: userState.basicInfo!.displayName,
+                photoURL: userState.basicInfo!.photoURL,
                 email: userState.basicInfo!.email,
               },
             ] as ProviderData[],
