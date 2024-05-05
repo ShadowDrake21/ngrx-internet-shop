@@ -12,6 +12,7 @@ export interface IUserUpdate {
 }
 
 export interface IUser {
+  // basicInfo !!!!
   userCredential: IStoreUserCredential | null;
   online: boolean;
 }

@@ -37,7 +37,15 @@ import * as UserSelectors from '@store/user/user.selectors';
 
 // interfaces
 import { IUserSignUpData, IUserUpdate } from '../../shared/models/user.model';
-import { child, Database, get, ref, set, update } from '@angular/fire/database';
+import {
+  child,
+  Database,
+  DataSnapshot,
+  get,
+  ref,
+  set,
+  update,
+} from '@angular/fire/database';
 import { SIGN_IN_PHOTO_URL } from '../constants/auth.constants';
 import { Store } from '@ngrx/store';
 import { UserState } from '@app/store/user/user.reducer';
@@ -85,22 +93,24 @@ export class AuthService {
     );
   }
 
-  getDisplayName(): string {
-    let displayName = '';
-    get(child(ref(this.database), 'users/' + this.auth.currentUser?.uid)).then(
-      (snaphot) => {
+  getDisplayName(): Observable<string> {
+    console.log('users/' + this.auth.currentUser?.uid);
+    return from(
+      get(child(ref(this.database), 'users/' + this.auth.currentUser?.uid))
+    ).pipe(
+      map((snaphot: DataSnapshot) => {
         if (snaphot.exists()) {
           const result = snaphot.val() as {
             displayName: string;
             profileImage: string;
           };
-          displayName = result.displayName;
-          console.log('getDisplayName', displayName);
-        }
-      }
-    );
 
-    return displayName;
+          return result.displayName;
+        } else {
+          return '';
+        }
+      })
+    );
   }
 
   setProfileImage(imageURL: string): Observable<void> {
@@ -112,22 +122,22 @@ export class AuthService {
     );
   }
 
-  getProfileImage(): string {
-    let profileImage = '';
-    get(child(ref(this.database), 'users/' + this.auth.currentUser?.uid)).then(
-      (snaphot) => {
+  getProfileImage(): Observable<string> {
+    return from(
+      get(child(ref(this.database), 'users/' + this.auth.currentUser?.uid))
+    ).pipe(
+      map((snaphot: DataSnapshot) => {
         if (snaphot.exists()) {
           const result = snaphot.val() as {
             displayName: string;
             profileImage: string;
           };
-          profileImage = result.profileImage;
-          console.log('getProfileImage', profileImage);
+          return result.profileImage;
+        } else {
+          return '';
         }
-      }
+      })
     );
-
-    return profileImage;
   }
 
   signInManually(email: string, password: string): Observable<UserCredential> {

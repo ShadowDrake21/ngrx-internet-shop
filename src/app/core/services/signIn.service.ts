@@ -4,7 +4,11 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 
 // interfaces and types
-import { IStoreUserCredential } from '../../shared/models/user.model';
+import {
+  IStoreUserCredential,
+  IUserBasic,
+  ProviderData,
+} from '../../shared/models/user.model';
 import { AlertType } from '../../shared/models/alerts.model';
 
 // created ngrx stuff
@@ -13,6 +17,7 @@ import * as UserActions from '../../store/user/user.actions';
 
 // utils
 import { createAuthInLS } from '../utils/auth.utils';
+import { IdTokenResult } from 'firebase/auth';
 
 @Injectable()
 export class SignInService {
@@ -57,19 +62,48 @@ export class SignInService {
     );
   }
 
+  // signInManuallyFormReducedUserCredential(
+  //   userCredential: IStoreUserCredential
+  // ) {
+  //   const now = new Date();
+  //   const updatedUserCredential = {
+  //     ...userCredential,
+  //     tokenResult: {
+  //       ...userCredential.tokenResult,
+  //       expirationTime: this.signInForm.value.rememberMe
+  //         ? new Date(now.setMonth(now.getMonth() + 3)).toUTCString()
+  //         : userCredential.tokenResult.expirationTime,
+  //     },
+  //   };
+  //   createAuthInLS(updatedUserCredential);
+  // }
+
   signInManuallyFormReducedUserCredential(
-    userCredential: IStoreUserCredential
+    userCredential: IStoreUserCredential,
+    basicInfo: IUserBasic
   ) {
     const now = new Date();
-    const updatedUserCredential = {
-      ...userCredential,
-      tokenResult: {
-        ...userCredential.tokenResult,
-        expirationTime: this.signInForm.value.rememberMe
-          ? new Date(now.setMonth(now.getMonth() + 3)).toUTCString()
-          : userCredential.tokenResult.expirationTime,
-      },
+    const updatedTokenResult: IdTokenResult = {
+      ...userCredential.tokenResult,
+      expirationTime: this.signInForm.value.rememberMe
+        ? new Date(now.setMonth(now.getMonth() + 3)).toUTCString()
+        : userCredential.tokenResult.expirationTime,
     };
+
+    const updatedProviderData: ProviderData = {
+      ...userCredential.providerData[0],
+
+      displayName: basicInfo.displayName,
+      photoURL: basicInfo.photoURL,
+      email: basicInfo.email,
+    };
+
+    const updatedUserCredential: IStoreUserCredential = {
+      ...userCredential,
+      providerData: [updatedProviderData],
+      tokenResult: updatedTokenResult,
+    };
+
     createAuthInLS(updatedUserCredential);
   }
 

@@ -67,6 +67,84 @@ export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.signInForm = this.signInService.getSignInForm();
   }
+  // onFormSubmit() {
+  //   this.isLogging = true;
+
+  //   this.signInService.signInManuallyDispatch();
+
+  //   const signInManuallySubscription: Subscription = this.store
+  //     .select(UserSelectors.selectUser)
+  //     .pipe(debounceTime(5000), take(1))
+  //     .subscribe((user) => {
+  //       if (user?.userCredential && this.isLogging) {
+  //         this.store
+  //           .select(UserSelectors.selectBasicInfo)
+  //           .subscribe((info) =>
+  //             this.signInService.signInManuallyFormReducedUserCredential(
+  //               user.userCredential!,
+  //               info!
+  //             )
+  //           );
+
+  //         this.routingService.goToPreviousPage(this.previousRoute);
+  //         this.bsModalRef.hide();
+  //       } else {
+  //         this.errorMessage = 'Incorrect user credential!';
+  //         setTimeout(() => {
+  //           this.errorMessage = '';
+  //         }, 5000);
+  //         this.signInForm.reset();
+  //         this.signInForm.controls.rememberMe.setValue(true);
+  //         // this.bsModalRef.hide();
+  //       }
+
+  //       this.isLogging = false;
+  //     });
+  //   this.addSubscription(signInManuallySubscription);
+  // }
+
+  // onFormSubmit() {
+  //   this.isLogging = true;
+
+  //   this.signInService.signInManuallyDispatch();
+
+  //   const signInManuallySubscription: Subscription = this.store
+  //     .select(UserSelectors.selectUser)
+  //     .pipe(
+  //       debounceTime(5000),
+  //       take(1),
+  //       filter((user) => !!user && !!user.userCredential && this.isLogging),
+  //       switchMap((user) => {
+  //         return this.store.select(UserSelectors.selectBasicInfo).pipe(
+  //           take(1),
+  //           map((info) => ({ user, info }))
+  //         );
+  //       })
+  //     )
+  //     .subscribe({
+  //       next: ({ user, info }) => {
+  //         this.signInService.signInManuallyFormReducedUserCredential(
+  //           user?.userCredential!,
+  //           info!
+  //         );
+  //         this.routingService.goToPreviousPage(this.previousRoute);
+  //         this.bsModalRef.hide();
+  //         this.isLogging = false;
+  //       },
+  //       error: (error) => {
+  //         this.errorMessage = 'Incorrect user credential!';
+  //         setTimeout(() => {
+  //           this.errorMessage = '';
+  //         }, 5000);
+  //         this.signInForm.reset();
+  //         this.signInForm.controls.rememberMe.setValue(true);
+  //         // this.bsModalRef.hide();
+  //         this.isLogging = false;
+  //       },
+  //     });
+  //   this.addSubscription(signInManuallySubscription);
+  // }
+
   onFormSubmit() {
     this.isLogging = true;
 
@@ -77,9 +155,14 @@ export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
       .pipe(debounceTime(5000), take(1))
       .subscribe((user) => {
         if (user?.userCredential && this.isLogging) {
-          this.signInService.signInManuallyFormReducedUserCredential(
-            user.userCredential
-          );
+          this.store
+            .select(UserSelectors.selectBasicInfo)
+            .subscribe((info) =>
+              this.signInService.signInManuallyFormReducedUserCredential(
+                user.userCredential!,
+                info!
+              )
+            );
 
           this.routingService.goToPreviousPage(this.previousRoute);
           this.bsModalRef.hide();
