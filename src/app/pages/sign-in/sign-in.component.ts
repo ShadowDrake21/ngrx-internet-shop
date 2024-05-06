@@ -97,12 +97,9 @@ export class SignInComponent implements OnInit, OnDestroy {
       .pipe(debounceTime(5000), take(1))
       .subscribe((user) => {
         if (user?.userCredential && this.isLogging) {
-          this.store.select(UserSelectors.selectBasicInfo).subscribe((info) => {
-            this.signInService.signInManuallyFormReducedUserCredential(
-              user.userCredential!,
-              info!
-            );
-          });
+          this.signInService.signInManuallyFormReducedUserCredential(
+            user.userCredential!
+          );
 
           this.goToPrevious();
         } else {
@@ -168,35 +165,15 @@ export class SignInComponent implements OnInit, OnDestroy {
           this.alerts.push(
             this.signInService.setAlert('danger', userState.errorMessage, 5000)
           );
-        } else if (
-          userState.basicInfo!.email &&
-          userState.user?.userCredential
-        ) {
-          const updatedUserCredential: IStoreUserCredential = {
-            ...userState.user.userCredential,
-            providerData: [
-              {
-                ...userState.user.userCredential?.providerData[0],
-                displayName: userState.basicInfo!.displayName,
-                photoURL: userState.basicInfo!.photoURL,
-                email: userState.basicInfo!.email,
-              },
-            ] as ProviderData[],
-            tokenResult: {
-              ...userState.user.userCredential?.tokenResult,
-            } as IdTokenResult,
-          };
-          createAuthInLS(updatedUserCredential);
+        } else if (userState.email && userState.user?.userCredential) {
+          createAuthInLS(userState.user.userCredential);
           this.goToPrevious();
           if (this.userStateSubscription) {
             this.userStateSubscription.unsubscribe();
           }
-        } else if (
-          userState.basicInfo!.email &&
-          !userState.user?.userCredential
-        ) {
+        } else if (userState.email && !userState.user?.userCredential) {
           this.authService
-            .signInWithAnotherMethods(userState.basicInfo!.email)
+            .signInWithAnotherMethods(userState.email)
             .subscribe((providers) => {
               this.openAvailableProvidersModal(providers);
 

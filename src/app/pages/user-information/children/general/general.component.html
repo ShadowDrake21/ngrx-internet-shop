@@ -11,10 +11,7 @@
         <div class="d-flex" style="gap: 25px">
           <div class="flex-shrink-0" style="width: 225px">
             <img
-              [src]="
-                userCredential.photoURL ??
-                '/assets/images/profile-image-placeholder.jpg'
-              "
+              [src]="userCredential.photoURL"
               alt="user img"
               style="width: 100%"
             />
@@ -30,10 +27,7 @@
               </p>
             </div>
             <p class="fw-bold">
-              {{
-                userCredential.displayName ?? "Unknown username"
-                  | truncateText : 40
-              }}
+              {{ userCredential.displayName }}
             </p>
             <hr />
             <p>

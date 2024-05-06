@@ -21,17 +21,11 @@ export interface IStoreUserCredential {
   providerData: ProviderData[];
 }
 
-export interface IUserBasic {
-  email: string;
-  displayName: string;
-  photoURL: string;
-}
-
 export interface ProviderData {
   providerId: string;
   uid: string;
-  displayName: any;
+  displayName: string;
   email: string;
-  phoneNumber: any;
-  photoURL: any;
+  phoneNumber: string;
+  photoURL: string;
 }

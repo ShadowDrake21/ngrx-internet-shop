@@ -24,8 +24,8 @@ export class EmailVerificationModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.sendVefirication();
-    this.store.select(UserSelectors.selectBasicInfo).subscribe((info) => {
-      this.email$ = of(info?.email!);
+    this.store.select(UserSelectors.selectEmail).subscribe((email) => {
+      this.email$ = of(email);
     });
   }
 

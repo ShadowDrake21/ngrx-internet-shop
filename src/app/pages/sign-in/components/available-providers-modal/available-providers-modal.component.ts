@@ -155,14 +155,9 @@ export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
       .pipe(debounceTime(5000), take(1))
       .subscribe((user) => {
         if (user?.userCredential && this.isLogging) {
-          this.store
-            .select(UserSelectors.selectBasicInfo)
-            .subscribe((info) =>
-              this.signInService.signInManuallyFormReducedUserCredential(
-                user.userCredential!,
-                info!
-              )
-            );
+          this.signInService.signInManuallyFormReducedUserCredential(
+            user.userCredential!
+          );
 
           this.routingService.goToPreviousPage(this.previousRoute);
           this.bsModalRef.hide();

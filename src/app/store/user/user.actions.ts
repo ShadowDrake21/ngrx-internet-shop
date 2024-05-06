@@ -3,7 +3,6 @@ import { createAction, props } from '@ngrx/store';
 // interfaces
 import {
   IStoreUserCredential,
-  IUserBasic,
   IUserSignUpData,
   IUserUpdate,
 } from '../../shared/models/user.model';
@@ -27,7 +26,7 @@ export const signInManually = createAction(
 );
 export const signInManuallySuccess = createAction(
   '[User Component] SignInManuallySuccess',
-  props<{ basicInfo: IUserBasic; userCredential: IStoreUserCredential }>()
+  props<{ email: string; userCredential: IStoreUserCredential }>()
 );
 export const signInManuallyFailure = createAction(
   '[User Component] SignInManuallyFailure',
@@ -39,7 +38,7 @@ export const signInWithFacebook = createAction(
 );
 export const signInWithFacebookSuccess = createAction(
   '[User Component] SignInWithFacebookSuccess',
-  props<{ basicInfo: IUserBasic; userCredential: IStoreUserCredential }>()
+  props<{ email: string; userCredential: IStoreUserCredential }>()
 );
 export const signInWithFacebookFailure = createAction(
   '[User Component] SignInWithFacebookFailure',
@@ -52,7 +51,7 @@ export const signInWithTwitter = createAction(
 );
 export const signInWithTwitterSuccess = createAction(
   '[User Component] SignInWithTwitterSuccess',
-  props<{ basicInfo: IUserBasic; userCredential: IStoreUserCredential }>()
+  props<{ email: string; userCredential: IStoreUserCredential }>()
 );
 export const signInWithTwitterFailure = createAction(
   '[User Component] SignInWithTwitterFailure',
@@ -65,7 +64,7 @@ export const signInWithGoogle = createAction(
 );
 export const signInWithGoogleSuccess = createAction(
   '[User Component] SignInWithGoogleSuccess',
-  props<{ basicInfo: IUserBasic; userCredential: IStoreUserCredential }>()
+  props<{ email: string; userCredential: IStoreUserCredential }>()
 );
 export const signInWithGoogleFailure = createAction(
   '[User Component] SignInWithGoogleFailure',
@@ -76,7 +75,7 @@ export const signInWithGoogleFailure = createAction(
 
 export const signInWithSocialsWrongProvider = createAction(
   '[User Component] SignInWithSocialsWrongProvider',
-  props<{ basicInfo: IUserBasic }>()
+  props<{ email: string }>()
 );
 
 export const sendPasswordReset = createAction(
@@ -91,7 +90,7 @@ export const sendEmailVerification = createAction(
 export const getUser = createAction('[User Component] GetUser');
 export const getUserSuccess = createAction(
   '[User Component] GetUserSuccess',
-  props<{ basicInfo: IUserBasic; userCredential: IStoreUserCredential }>()
+  props<{ email: string; userCredential: IStoreUserCredential }>()
 );
 export const getUserFailure = createAction(
   '[User Component] GetUserFailure',
@@ -104,23 +103,10 @@ export const reauthenticateUser = createAction(
 );
 export const reauthenticateUserSuccess = createAction(
   '[User Component] ReauthenticateUserSuccess',
-  props<{ basicInfo: IUserBasic; userCredential: IStoreUserCredential }>()
+  props<{ email: string; userCredential: IStoreUserCredential }>()
 );
 export const reauthenticateUserFailure = createAction(
   '[User Component] ReauthenticateUserFailure',
-  props<{ errorMessage: string }>()
-);
-
-export const updateDisplayName = createAction(
-  '[User Component] UpdateDisplayName',
-  props<{ displayName: string }>()
-);
-export const updateDisplayNameSuccess = createAction(
-  '[User Component] UpdateDisplayNameSuccess',
-  props<{ displayName: string }>()
-);
-export const updateDisplayNameFailure = createAction(
-  '[User Component] UpdateDisplayNameFailure',
   props<{ errorMessage: string }>()
 );
 
@@ -130,7 +116,7 @@ export const updateProfileImage = createAction(
 );
 export const updateProfileImageSuccess = createAction(
   '[User Component] UpdateProfileImageSuccess',
-  props<{ imageURL: string }>()
+  props<{ email: string; userCredential: IStoreUserCredential }>()
 );
 export const updateProfileImageFailure = createAction(
   '[User Component] UpdateProfileImageFailure',
@@ -142,6 +128,6 @@ export const signOutSuccess = createAction('[User Component] SignOutSuccess');
 
 export const browserReload = createAction(
   '[User Component] BrowserReload',
-  props<{ basicInfo: IUserBasic; userCredential: IStoreUserCredential }>()
+  props<{ email: string; userCredential: IStoreUserCredential }>()
 );
 export const clearUserState = createAction('[User Component] ClearUserState');
