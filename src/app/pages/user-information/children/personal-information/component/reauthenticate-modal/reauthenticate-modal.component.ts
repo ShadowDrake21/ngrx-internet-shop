@@ -8,11 +8,12 @@ import {
 } from '@angular/forms';
 import { AuthService } from '@app/core/authentication/auth.service';
 import { SignInService } from '@app/core/services/signIn.service';
+import { IUser } from '@app/shared/models/user.model';
 import { minimalizeUserCredential } from '@app/shared/utils/store.utils';
 import { UserState } from '@app/store/user/user.reducer';
 import { Store } from '@ngrx/store';
 import { FirebaseError } from 'firebase/app';
-import { UserCredential } from 'firebase/auth';
+import { User, UserCredential } from 'firebase/auth';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
@@ -55,13 +56,33 @@ export class ReauthenticateModalComponent {
         this.email!,
         this.reauthenticationForm.value.password!
       )
-      .then(async (credential) => {
-        console.log('Reauthentication success!', credential);
-        this.signInService.signInManuallyFormReducedUserCredential(
-          await minimalizeUserCredential(credential)
-        );
-        this.isSuccessReauthentication = true;
-        this.bsModalRef.hide();
+      .then((credential) => {
+        this.authService.getProfileImage().subscribe(async (imageURL) => {
+          console.log('image', imageURL);
+          const updatedUser: User = {
+            ...credential.user,
+            providerData: [
+              {
+                ...credential.user.providerData[0],
+                photoURL: imageURL,
+              },
+            ],
+            getIdToken: credential.user.getIdToken,
+            getIdTokenResult: credential.user.getIdTokenResult,
+          };
+
+          const updatedUserCredential: UserCredential = {
+            ...credential,
+            user: updatedUser,
+          };
+          console.log('updatedUserCredential', updatedUserCredential);
+          this.signInService.signInManuallyFormReducedUserCredential(
+            await minimalizeUserCredential(updatedUserCredential),
+            this.reauthenticationForm.value.rememberMe!
+          );
+          this.isSuccessReauthentication = true;
+          this.bsModalRef.hide();
+        });
       })
       .catch((err: FirebaseError) => {
         console.log(err);
@@ -69,17 +90,5 @@ export class ReauthenticateModalComponent {
         this.isSuccessReauthentication = false;
         this.occuredError.emit(err.message);
       });
-
-    //   TypeError: Cannot read properties of undefined (reading 'value')
-    // at _SignInService.signInManuallyFormReducedUserCredential (signIn.service.ts:69:41)
-    // at _ReauthenticateModalComponent.<anonymous> (reauthenticate-modal.component.ts:60:28)
-    // at Generator.next (<anonymous>)
-    // at fulfilled (chunk-4WXVOEFY.js:24:24)
-    // at _ZoneDelegate.invoke (zone.js:368:26)
-    // at Object.onInvoke (core.mjs:14882:33)
-    // at _ZoneDelegate.invoke (zone.js:367:52)
-    // at _Zone.run (zone.js:130:43)
-    // at zone.js:1260:36
-    // at _ZoneDelegate.invokeTask (zone.js:403:31)
   }
 }

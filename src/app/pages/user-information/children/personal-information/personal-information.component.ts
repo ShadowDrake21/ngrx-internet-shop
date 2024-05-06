@@ -38,7 +38,7 @@ import {
 } from '@angular/forms';
 import { createAuthInLS } from '@app/core/utils/auth.utils';
 import { minimalizeUserCredential } from '@app/shared/utils/store.utils';
-import { faGear, faKey } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faKey, faRotate } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AlertComponent } from '@app/shared/components/alert/alert.component';
 import { AlertType } from '@app/shared/models/alerts.model';
@@ -68,6 +68,7 @@ export class PersonalInformationComponent
   userInformationItem = userInformationContent[1];
   settingsIcon = faGear;
   passwordIcon = faKey;
+  reauthenticateIcon = faRotate;
 
   @ViewChild('changeImageEl') changeImageEl!: ElementRef<HTMLDivElement>;
   @ViewChild('changeImageInput')
@@ -195,6 +196,11 @@ export class PersonalInformationComponent
           this.store.dispatch(UserActions.getUser());
           this.buttonCancelEffects();
           this.updateLocalStorageData();
+          this.alerts.push({
+            type: 'success',
+            timeout: 5000,
+            msg: 'Image was successfully changed!',
+          });
         },
         error: (error) => {
           this.alerts.push({
@@ -292,6 +298,7 @@ export class PersonalInformationComponent
       ReauthenticateModalComponent,
       initialState
     );
+    this.bsModalRef?.setClass('reauthentication-modal');
     this.bsModalRef.content.closeBtnName = 'Close';
 
     this.reauthModal = this.bsModalRef.content;
@@ -343,6 +350,7 @@ export class PersonalInformationComponent
   }
 
   onSendEmailVerification() {
+    this.alerts = [];
     this.wasEmailVerificationSent = true;
     this.store.dispatch(UserActions.sendEmailVerification());
     this.alerts.push({

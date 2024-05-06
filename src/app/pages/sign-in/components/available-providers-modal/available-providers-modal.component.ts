@@ -79,7 +79,8 @@ export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
       .subscribe((user) => {
         if (user?.userCredential && this.isLogging) {
           this.signInService.signInManuallyFormReducedUserCredential(
-            user.userCredential
+            user.userCredential,
+            this.signInForm.value.rememberMe!
           );
 
           this.routingService.goToPreviousPage(this.previousRoute);

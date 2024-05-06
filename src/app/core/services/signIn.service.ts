@@ -59,18 +59,21 @@ export class SignInService {
   }
 
   signInManuallyFormReducedUserCredential(
-    userCredential: IStoreUserCredential
+    userCredential: IStoreUserCredential,
+    isLongTerm: boolean
   ) {
+    console.log('userCredential signInService', userCredential);
     const now = new Date();
     const updatedUserCredential = {
       ...userCredential,
       tokenResult: {
         ...userCredential.tokenResult,
-        expirationTime: this.signInForm.value.rememberMe
+        expirationTime: isLongTerm
           ? new Date(now.setMonth(now.getMonth() + 3)).toUTCString()
           : userCredential.tokenResult.expirationTime,
       },
     };
+    console.log('updatedUserCredential', updatedUserCredential);
     createAuthInLS(updatedUserCredential);
   }
 
