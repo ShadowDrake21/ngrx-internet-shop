@@ -8,13 +8,10 @@ import {
 } from '@angular/forms';
 import { AuthService } from '@app/core/authentication/auth.service';
 import { SignInService } from '@app/core/services/signIn.service';
-import { IUser } from '@app/shared/models/user.model';
 import { minimalizeUserCredential } from '@app/shared/utils/store.utils';
-import { UserState } from '@app/store/user/user.reducer';
-import { Store } from '@ngrx/store';
-import { FirebaseError } from 'firebase/app';
 import { User, UserCredential } from 'firebase/auth';
 import { BsModalRef } from 'ngx-bootstrap/modal';
+import { concatMap, of } from 'rxjs';
 
 @Component({
   selector: 'app-reauthenticate-modal',
@@ -25,7 +22,6 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
   providers: [SignInService],
 })
 export class ReauthenticateModalComponent {
-  private store = inject(Store<UserState>);
   private authService = inject(AuthService);
   public bsModalRef = inject(BsModalRef);
   private signInService = inject(SignInService);
@@ -49,46 +45,52 @@ export class ReauthenticateModalComponent {
   });
 
   onReauthenticationSubmit() {
-    // this.store.dispatch(UserActions.reauthenticateUser({email: this.email!, password: this.reauthenticationForm.value.password!}))
-
     this.authService
       .reauthenticateUser(
         this.email!,
         this.reauthenticationForm.value.password!
       )
-      .then((credential) => {
-        this.authService.getProfileImage().subscribe(async (imageURL) => {
-          console.log('image', imageURL);
-          const updatedUser: User = {
-            ...credential.user,
-            providerData: [
-              {
-                ...credential.user.providerData[0],
-                photoURL: imageURL,
-              },
-            ],
-            getIdToken: credential.user.getIdToken,
-            getIdTokenResult: credential.user.getIdTokenResult,
-          };
+      .pipe(
+        concatMap((credential: UserCredential) =>
+          this.authService.getProfileImage().pipe(
+            concatMap(async (imageURL: string) => {
+              const updatedUser: User = {
+                ...credential.user,
+                providerData: [
+                  {
+                    ...credential.user.providerData[0],
+                    photoURL: imageURL,
+                  },
+                ],
+                getIdToken: credential.user.getIdToken,
+                getIdTokenResult: credential.user.getIdTokenResult,
+              };
 
-          const updatedUserCredential: UserCredential = {
-            ...credential,
-            user: updatedUser,
-          };
-          console.log('updatedUserCredential', updatedUserCredential);
-          this.signInService.signInManuallyFormReducedUserCredential(
-            await minimalizeUserCredential(updatedUserCredential),
-            this.reauthenticationForm.value.rememberMe!
-          );
+              const updatedUserCredential: UserCredential = {
+                ...credential,
+                user: updatedUser,
+              };
+              return of(
+                this.signInService.signInManuallyFormReducedUserCredential(
+                  await minimalizeUserCredential(updatedUserCredential),
+                  this.reauthenticationForm.value.rememberMe!
+                )
+              );
+            })
+          )
+        )
+      )
+      .subscribe({
+        next: () => {
           this.isSuccessReauthentication = true;
           this.bsModalRef.hide();
-        });
-      })
-      .catch((err: FirebaseError) => {
-        console.log(err);
-        this.error = err.message;
-        this.isSuccessReauthentication = false;
-        this.occuredError.emit(err.message);
+        },
+        error: (error) => {
+          console.log(error);
+          this.error = error.message;
+          this.isSuccessReauthentication = false;
+          this.occuredError.emit(error.message);
+        },
       });
   }
 }

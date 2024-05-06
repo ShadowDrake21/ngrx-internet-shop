@@ -1,14 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import {
-  ActivatedRoute,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { RoutingService } from '@app/core/services/routing.service';
-import { FooterComponent } from '@app/shared/components/footer/footer.component';
-import { HeaderComponent } from '@app/shared/components/header/header.component';
+
 import { userInformationSidebar } from '@app/shared/utils/icons.utils';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TabsModule } from 'ngx-bootstrap/tabs';

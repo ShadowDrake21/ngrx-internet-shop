@@ -4,9 +4,7 @@ import { createAction, props } from '@ngrx/store';
 import {
   IStoreUserCredential,
   IUserSignUpData,
-  IUserUpdate,
 } from '../../shared/models/user.model';
-import { UserCredential } from 'firebase/auth';
 
 export const signUp = createAction(
   '[User Component] SignUp',
@@ -20,6 +18,7 @@ export const signUpFailure = createAction(
   '[User Component] SignUpFailure',
   props<{ errorMessage: string }>()
 );
+
 export const signInManually = createAction(
   '[User Component] SignInManually',
   props<{ email: string; password: string }>()
@@ -46,6 +45,7 @@ export const signInWithFacebookFailure = createAction(
     errorMessage: string;
   }>()
 );
+
 export const signInWithTwitter = createAction(
   '[User Component] SignInWithTwitter'
 );
@@ -59,6 +59,7 @@ export const signInWithTwitterFailure = createAction(
     errorMessage: string;
   }>()
 );
+
 export const signInWithGoogle = createAction(
   '[User Component] SignInWithGoogle'
 );
