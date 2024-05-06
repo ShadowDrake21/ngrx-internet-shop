@@ -1,8 +1,8 @@
 .personal-info {
   &__image-change {
     position: relative;
-    width: 250px;
-    height: 300px;
+    width: 300px;
+    height: 350px;
 
     &:hover {
       .personal-info__image-change__icon {
@@ -62,7 +62,7 @@
 
   &__settings-left {
     flex-shrink: 0;
-    width: 400px;
+    width: 300px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

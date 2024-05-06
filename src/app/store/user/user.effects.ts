@@ -73,10 +73,11 @@ export class UserEffects {
       exhaustMap(({ email, password }) =>
         this.authService.signInManually(email, password).pipe(
           mergeMap(async (userCredential) => {
+            console.log('credential', userCredential);
+
             const photoURL$: Observable<string> =
               this.authService.getProfileImage();
             const photoURL = await firstValueFrom(photoURL$);
-            console.log('credential', photoURL);
 
             const minimalizedUserCredential = await minimalizeUserCredential(
               userCredential
@@ -222,6 +223,7 @@ export class UserEffects {
             };
             const storeUserCredentails: IStoreUserCredential = {
               providerData: [providerData],
+              emailVerified: user?.emailVerified!,
               tokenResult: await user?.getIdTokenResult()!,
             };
 
@@ -314,6 +316,7 @@ export class UserEffects {
             };
             const storeUserCredentials: IStoreUserCredential = {
               providerData: [providerData],
+              emailVerified: user?.emailVerified!,
               tokenResult: await user?.getIdTokenResult()!,
             };
             const photoURL$: Observable<string> =

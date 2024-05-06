@@ -5,11 +5,7 @@
   <div class="border w-100 h-100 p-5" *ngIf="user$ | async as user">
     <div *ngIf="user.userCredential as userCredential">
       <div class="d-flex" style="gap: 50px">
-        <div
-          class="personal-info__image-change"
-          #changeImageEl
-          [class.viewMode]="!isChangeMode"
-        >
+        <div class="personal-info__image-change" #changeImageEl>
           <input
             type="file"
             accept="image/png, image/jpeg"
@@ -31,43 +27,52 @@
         <div class="d-flex w-100">
           <div class="personal-info__settings-left">
             <div class="personal-info__settings-username">
-              <div class="w-100 pb-3">
-                <div class="pb-3">
-                  <label for="displayName" class="fw-bold fs-5 pb-2"
-                    >Display name</label
+              <div class="w-100 pb-2">
+                <div class="pb-2">
+                  <h6 class="fw-bold fs-5 pb-2">Change actions</h6>
+                  <div
+                    class="d-flex justify-content-between pb-2"
+                    style="gap: 25px"
                   >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="displayName"
-                    [value]="userCredential.providerData[0].displayName"
-                    disabled
-                  />
+                    <button
+                      class="btn btn-primary w-100"
+                      (click)="onSaveChanges()"
+                      [disabled]="!saveButtonActive && !controlButtonsActive"
+                    >
+                      Update data
+                    </button>
+                    <button
+                      class="btn btn-danger w-100"
+                      (click)="onCancel()"
+                      [disabled]="!controlButtonsActive"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+                <div class="pb-2">
+                  <h6 class="fw-bold fs-5 pb-1">Email verification</h6>
+                  <div class="d-flex" style="gap: 25px">
+                    <p class="form-control m-0">
+                      {{ userCredential.emailVerified }}
+                    </p>
+                    <button
+                      class="btn btn-primary w-100"
+                      (click)="onSendEmailVerification()"
+                      [disabled]="
+                        wasEmailVerificationSent || userCredential.emailVerified
+                      "
+                    >
+                      Verify email
+                    </button>
+                  </div>
                 </div>
                 <button
-                  type="button"
-                  class="btn btn-success w-100"
-                  (click)="onToggleChangeMode()"
+                  class="btn btn-secondary w-100"
+                  (click)="onReauthenticateUser()"
+                  [disabled]="wasUserReauthenticated"
                 >
-                  Turn to {{ isChangeMode ? "view" : "change" }} mode
-                  <fa-icon [icon]="settingsIcon" class="ms-1"></fa-icon>
-                </button>
-              </div>
-
-              <div
-                *ngIf="controlButtonsActive"
-                class="d-flex justify-content-between"
-                style="gap: 25px"
-              >
-                <button
-                  class="btn btn-primary w-100"
-                  (click)="onSaveChanges()"
-                  [disabled]="!saveButtonActive"
-                >
-                  Update data
-                </button>
-                <button class="btn btn-danger w-100" (click)="onCancel()">
-                  Cancel
+                  Reauthenticate a user
                 </button>
               </div>
             </div>
@@ -133,7 +138,6 @@
                 {{ error }}
               </li>
             </ul>
-            <div>Email verification</div>
           </div>
         </div>
       </div>
