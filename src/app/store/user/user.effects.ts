@@ -49,6 +49,7 @@ export class UserEffects {
       exhaustMap(({ data }) =>
         this.authService.signUp(data).pipe(
           mergeMap(async (userCredential) => {
+            console.log(userCredential);
             return UserActions.signUpSuccess({
               email: userCredential.user.email!,
               userCredential: await minimalizeUserCredential(userCredential),
@@ -72,26 +73,27 @@ export class UserEffects {
       exhaustMap(({ email, password }) =>
         this.authService.signInManually(email, password).pipe(
           mergeMap(async (userCredential) => {
-            const displayName$: Observable<string> =
-              this.authService.getDisplayName();
             const photoURL$: Observable<string> =
               this.authService.getProfileImage();
-
-            displayName$.subscribe((displayName) => {
-              console.log(displayName);
-            });
-
-            const displayName = await firstValueFrom(displayName$);
             const photoURL = await firstValueFrom(photoURL$);
-            console.log('credential', displayName, photoURL);
+            console.log('credential', photoURL);
+
+            const minimalizedUserCredential = await minimalizeUserCredential(
+              userCredential
+            );
+            const updatedUserCredential: IStoreUserCredential = {
+              ...minimalizedUserCredential,
+              providerData: [
+                {
+                  ...minimalizedUserCredential.providerData[0],
+                  photoURL,
+                },
+              ],
+            };
 
             return UserActions.signInManuallySuccess({
-              basicInfo: {
-                displayName,
-                photoURL,
-                email: userCredential.user.email!,
-              },
-              userCredential: await minimalizeUserCredential(userCredential),
+              email: userCredential.user.email!,
+              userCredential: updatedUserCredential,
             });
           }),
           catchError((error: FirebaseError) =>
@@ -113,27 +115,16 @@ export class UserEffects {
           mergeMap(async ({ data }) => {
             if (typeof data === 'string') {
               return UserActions.signInWithSocialsWrongProvider({
-                basicInfo: {
-                  displayName: '',
-                  photoURL: '',
-                  email: data,
-                },
+                email: data,
               });
             }
 
-            const displayName$: Observable<string> =
-              this.authService.getDisplayName();
             const photoURL$: Observable<string> =
               this.authService.getProfileImage();
 
-            const displayName = await firstValueFrom(displayName$);
             const photoURL = await firstValueFrom(photoURL$);
             return UserActions.signInWithFacebookSuccess({
-              basicInfo: {
-                displayName,
-                photoURL,
-                email: data.user.email!,
-              },
+              email: data.user.email!,
               userCredential: await minimalizeUserCredential(data),
             });
           }),
@@ -156,26 +147,16 @@ export class UserEffects {
           mergeMap(async ({ data }) => {
             if (typeof data === 'string') {
               return UserActions.signInWithSocialsWrongProvider({
-                basicInfo: {
-                  displayName: '',
-                  photoURL: '',
-                  email: data,
-                },
+                email: data,
               });
             }
-            const displayName$: Observable<string> =
-              this.authService.getDisplayName();
+
             const photoURL$: Observable<string> =
               this.authService.getProfileImage();
 
-            const displayName = await firstValueFrom(displayName$);
             const photoURL = await firstValueFrom(photoURL$);
             return UserActions.signInWithTwitterSuccess({
-              basicInfo: {
-                displayName,
-                photoURL,
-                email: data.user.email!,
-              },
+              email: data.user.email!,
               userCredential: await minimalizeUserCredential(data),
             });
           }),
@@ -198,26 +179,16 @@ export class UserEffects {
           mergeMap(async ({ data }) => {
             if (typeof data === 'string') {
               return UserActions.signInWithSocialsWrongProvider({
-                basicInfo: {
-                  displayName: '',
-                  photoURL: '',
-                  email: data,
-                },
+                email: data,
               });
             }
-            const displayName$: Observable<string> =
-              this.authService.getDisplayName();
+
             const photoURL$: Observable<string> =
               this.authService.getProfileImage();
 
-            const displayName = await firstValueFrom(displayName$);
             const photoURL = await firstValueFrom(photoURL$);
             return UserActions.signInWithTwitterSuccess({
-              basicInfo: {
-                displayName,
-                photoURL,
-                email: data.user.email!,
-              },
+              email: data.user.email!,
               userCredential: await minimalizeUserCredential(data),
             });
           }),
@@ -264,25 +235,29 @@ export class UserEffects {
               phoneNumber: user?.providerData[0].phoneNumber!,
               photoURL: user?.providerData[0].photoURL!,
             };
-            const storeUserCredentials: IStoreUserCredential = {
+            const storeUserCredentails: IStoreUserCredential = {
               providerData: [providerData],
               tokenResult: await user?.getIdTokenResult()!,
             };
-            const displayName$: Observable<string> =
-              this.authService.getDisplayName();
+
             const photoURL$: Observable<string> =
               this.authService.getProfileImage();
-
-            const displayName = await firstValueFrom(displayName$);
             const photoURL = await firstValueFrom(photoURL$);
-            return UserActions.getUserSuccess({
-              basicInfo: {
-                displayName,
-                photoURL,
-                email: user?.email!,
-              },
 
-              userCredential: storeUserCredentials,
+            const updatedUserCredential: IStoreUserCredential = {
+              ...storeUserCredentails,
+              providerData: [
+                {
+                  ...storeUserCredentails.providerData[0],
+                  photoURL,
+                },
+              ],
+            };
+
+            return UserActions.getUserSuccess({
+              email: user?.email!,
+
+              userCredential: updatedUserCredential,
             });
           }),
           catchError((error: FirebaseError) =>
@@ -303,20 +278,27 @@ export class UserEffects {
       exhaustMap(({ email, password }) =>
         this.authService.reauthenticateUserObservable(email, password).pipe(
           mergeMap(async (userCredential) => {
-            const displayName$: Observable<string> =
-              this.authService.getDisplayName();
             const photoURL$: Observable<string> =
               this.authService.getProfileImage();
 
-            const displayName = await firstValueFrom(displayName$);
             const photoURL = await firstValueFrom(photoURL$);
+
+            const minimalizedUserCredential = await minimalizeUserCredential(
+              userCredential
+            );
+            const updatedUserCredential: IStoreUserCredential = {
+              ...minimalizedUserCredential,
+              providerData: [
+                {
+                  ...minimalizedUserCredential.providerData[0],
+                  photoURL,
+                },
+              ],
+            };
+
             return UserActions.reauthenticateUserSuccess({
-              basicInfo: {
-                displayName,
-                photoURL,
-                email: userCredential.user.email!,
-              },
-              userCredential: await minimalizeUserCredential(userCredential),
+              email: userCredential.user.email!,
+              userCredential: updatedUserCredential,
             });
           }),
           catchError((error: FirebaseError) =>
@@ -331,48 +313,6 @@ export class UserEffects {
     )
   );
 
-  updateDisplayName$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(UserActions.updateDisplayName),
-      exhaustMap(({ displayName }) =>
-        this.authService.getUser().pipe(
-          mergeMap(async (user) => {
-            const providerData: ProviderData = {
-              providerId: user?.providerData[0].providerId!,
-              uid: user?.providerData[0].uid!,
-              displayName: displayName,
-              email: user?.providerData[0].email!,
-              phoneNumber: user?.providerData[0].phoneNumber!,
-              photoURL: user?.providerData[0].photoURL!,
-            };
-            const storeUserCredentials: IStoreUserCredential = {
-              providerData: [providerData],
-              tokenResult: await user?.getIdTokenResult()!,
-            };
-
-            const displayName$: Observable<string> =
-              this.authService.getDisplayName();
-
-            const displayNameFromObservable = await firstValueFrom(
-              displayName$
-            );
-
-            createAuthInLS(storeUserCredentials);
-            return UserActions.updateDisplayNameSuccess({
-              displayName: displayNameFromObservable,
-            });
-          }),
-          catchError((error: FirebaseError) =>
-            of(
-              UserActions.updateDisplayNameFailure({
-                errorMessage: error.message,
-              })
-            )
-          )
-        )
-      )
-    )
-  );
   updateProfileImage$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.updateProfileImage),
@@ -394,9 +334,21 @@ export class UserEffects {
             const photoURL$: Observable<string> =
               this.authService.getProfileImage();
             const photoURL = await firstValueFrom(photoURL$);
+
+            const updatedUserCredential: IStoreUserCredential = {
+              ...storeUserCredentials,
+              providerData: [
+                {
+                  ...storeUserCredentials.providerData[0],
+                  photoURL,
+                },
+              ],
+            };
+
             createAuthInLS(storeUserCredentials);
             return UserActions.updateProfileImageSuccess({
-              imageURL: photoURL,
+              email: updatedUserCredential.providerData[0].email,
+              userCredential: updatedUserCredential,
             });
           }),
           catchError((error: FirebaseError) =>

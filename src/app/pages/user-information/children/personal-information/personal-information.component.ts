@@ -21,11 +21,7 @@ import {
   take,
   tap,
 } from 'rxjs';
-import {
-  IStoreUserCredential,
-  IUser,
-  IUserUpdate,
-} from '@app/shared/models/user.model';
+import { IStoreUserCredential, IUser } from '@app/shared/models/user.model';
 
 import * as UserSelectors from '@store/user/user.selectors';
 import * as UserActions from '@store/user/user.actions';
@@ -73,8 +69,6 @@ export class PersonalInformationComponent
   settingsIcon = faGear;
   passwordIcon = faKey;
 
-  @ViewChild('displayName')
-  displayName!: ElementRef<HTMLInputElement>;
   @ViewChild('changeImageEl') changeImageEl!: ElementRef<HTMLDivElement>;
   @ViewChild('changeImageInput')
   changeImageInput!: ElementRef<HTMLInputElement>;
@@ -107,7 +101,6 @@ export class PersonalInformationComponent
   alerts: AlertType[] = [];
 
   changePasswordForm!: FormGroup;
-  displayNameControl!: FormControl;
 
   private subscriptions: Subscription[] = [];
 
@@ -123,21 +116,9 @@ export class PersonalInformationComponent
       ],
     });
 
-    this.displayNameControl = this.fb.control(
-      {
-        value: '',
-        disabled: true,
-      },
-      [Validators.required, Validators.minLength(6), Validators.maxLength(20)]
-    );
-
     this.user$ = this.store.select(UserSelectors.selectUser);
     const userSubscription = this.user$.subscribe((user) => {
-      this.userPhotoURL = user?.userCredential?.providerData[0].photoURL;
-
-      this.previousDisplayName =
-        user?.userCredential?.providerData[0].displayName;
-      this.displayNameControl.patchValue(this.previousDisplayName);
+      this.userPhotoURL = user?.userCredential?.providerData[0].photoURL!;
     });
 
     this.subscriptions.push(userSubscription);
@@ -148,17 +129,8 @@ export class PersonalInformationComponent
   }
 
   changeProfile() {
-    const displayNameInput = this.displayName.nativeElement;
     const changeEl = this.changeImageEl.nativeElement;
     const changeInput = this.changeImageInput.nativeElement;
-
-    displayNameInput.addEventListener('input', () => {
-      if (!this.controlButtonsActive) {
-        this.controlButtonsActive = true;
-      }
-
-      this.updateSaveButtonState();
-    });
 
     changeEl.addEventListener('click', () => {
       changeInput.click();
@@ -181,10 +153,7 @@ export class PersonalInformationComponent
   }
 
   private updateSaveButtonState() {
-    if (
-      !this.updatedUserPhotoFile &&
-      this.displayNameControl.value === this.previousDisplayName
-    ) {
+    if (!this.updatedUserPhotoFile) {
       this.saveButtonActive = false;
     } else {
       this.saveButtonActive = true;
@@ -198,7 +167,8 @@ export class PersonalInformationComponent
 
     this.alerts = [];
 
-    const userSubscription = this.user$
+    const userSubscription = this.store
+      .select(UserSelectors.selectUser)
       .pipe(
         take(1),
         switchMap((user) => {
@@ -214,29 +184,15 @@ export class PersonalInformationComponent
           }
         }),
         switchMap((url) => {
-          let updateData: Partial<IUserUpdate> = {};
-
-          if (this.updatedUserPhotoFile) {
-            updateData.photoURL = url!;
-          }
-          if (this.displayNameControl.value !== this.previousDisplayName) {
-            updateData.displayName = this.displayNameControl.value;
-          }
-
-          console.log('updateData', updateData);
-
-          return this.authService.updateUser(updateData);
+          return this.authService.setProfileImage(url!);
         })
       )
       .subscribe({
         next: () => {
           this.onToggleChangeMode();
-          this.previousDisplayName = this.displayNameControl.value;
           this.updateLocalStorageData();
         },
         error: (error) => {
-          console.log('error', error);
-          // this.onToggleChangeMode();
           this.alerts.push({
             type: 'danger',
             timeout: 5000,
@@ -294,30 +250,22 @@ export class PersonalInformationComponent
 
   onToggleChangeMode() {
     this.buttonCancelEffects();
-    if (
-      this.updatedUserPhotoFile ||
-      this.previousDisplayName !== this.displayNameControl.value
-    ) {
+    if (this.updatedUserPhotoFile) {
       this.store.dispatch(UserActions.getUser());
     }
   }
 
   buttonCancelEffects() {
     this.isChangeMode = !this.isChangeMode;
-    if (this.isChangeMode) {
-      this.displayNameControl.enable();
-    } else {
-      this.displayNameControl.disable();
-    }
     this.controlButtonsActive = false;
   }
 
   onSaveNewPassword() {
     this.alerts = [];
     this.store
-      .select(UserSelectors.selectBasicInfo)
+      .select(UserSelectors.selectEmail)
       .pipe(take(1))
-      .subscribe((info) => this.openModalWithComponent(info?.email!));
+      .subscribe((email) => this.openModalWithComponent(email!));
 
     // .subscribe((result) => {
     //   this.alerts.push({ type: 'success', timeout: 5000, msg: result });
@@ -431,34 +379,6 @@ export class PersonalInformationComponent
     this.changePasswordForm.reset();
   }
   // password form
-
-  // updateUser form
-  hasErrorUsernameControl() {
-    const control = this.displayNameControl;
-    return control && control.invalid && (control.dirty || control.touched);
-  }
-
-  getErrorMessageUsernameControl() {
-    const control = this.displayNameControl;
-    if (control && control.errors) {
-      let errorMessages: string[] = [];
-      if (control.errors?.['required']) {
-        errorMessages.push('The username field is required');
-      }
-      if (control.errors?.['minlength']) {
-        errorMessages.push('Username should be at least 6 characters long');
-      }
-      if (control.errors?.['maxlength']) {
-        errorMessages.push(
-          'Username length should be less than or equal to 20'
-        );
-      }
-
-      return errorMessages;
-    }
-    return [];
-  }
-  // updateUser form
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());

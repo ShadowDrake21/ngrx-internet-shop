@@ -66,13 +66,18 @@ export class AuthService {
     ).pipe(
       switchMap((credential) => {
         const displayName = signUpData.displayName;
-        return this.setDisplayName(displayName).pipe(
+        return this.updateUser({
+          displayName,
+          photoURL: SIGN_IN_PHOTO_URL,
+        }).pipe(
           tap(() => this.setProfileImage(SIGN_IN_PHOTO_URL)),
           map(() => credential)
         );
       })
     );
   }
+
+  // NIE ZEZWALAĆ NA ZMIANĘ!!!! NICKNAME
 
   updateUser(updateData: Partial<IUserUpdate>): Observable<void> {
     return from(updateProfile(this.auth.currentUser!, updateData));
@@ -84,34 +89,34 @@ export class AuthService {
       .catch((error: FirebaseError) => error.message);
   }
 
-  setDisplayName(displayName: string): Observable<void> {
-    this.store.dispatch(UserActions.updateDisplayName({ displayName }));
-    return from(
-      update(ref(this.database, 'users/' + this.auth.currentUser?.uid), {
-        displayName,
-      })
-    );
-  }
+  // setDisplayName(displayName: string): Observable<void> {
+  //   this.store.dispatch(UserActions.updateDisplayName({ displayName }));
+  //   return from(
+  //     update(ref(this.database, 'users/' + this.auth.currentUser?.uid), {
+  //       displayName,
+  //     })
+  //   );
+  // }
 
-  getDisplayName(): Observable<string> {
-    console.log('users/' + this.auth.currentUser?.uid);
-    return from(
-      get(child(ref(this.database), 'users/' + this.auth.currentUser?.uid))
-    ).pipe(
-      map((snaphot: DataSnapshot) => {
-        if (snaphot.exists()) {
-          const result = snaphot.val() as {
-            displayName: string;
-            profileImage: string;
-          };
+  // getDisplayName(): Observable<string> {
+  //   console.log('users/' + this.auth.currentUser?.uid);
+  //   return from(
+  //     get(child(ref(this.database), 'users/' + this.auth.currentUser?.uid))
+  //   ).pipe(
+  //     map((snaphot: DataSnapshot) => {
+  //       if (snaphot.exists()) {
+  //         const result = snaphot.val() as {
+  //           displayName: string;
+  //           profileImage: string;
+  //         };
 
-          return result.displayName;
-        } else {
-          return '';
-        }
-      })
-    );
-  }
+  //         return result.displayName;
+  //       } else {
+  //         return '';
+  //       }
+  //     })
+  //   );
+  // }
 
   setProfileImage(imageURL: string): Observable<void> {
     this.store.dispatch(UserActions.updateProfileImage({ imageURL }));
@@ -183,6 +188,7 @@ export class AuthService {
   }
 
   sendEmailVerification() {
+    console.log(this.auth.currentUser);
     return from(sendEmailVerification(this.auth.currentUser!));
   }
 

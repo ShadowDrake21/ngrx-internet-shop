@@ -4,11 +4,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 
 // interfaces and types
-import {
-  IStoreUserCredential,
-  IUserBasic,
-  ProviderData,
-} from '../../shared/models/user.model';
+import { IStoreUserCredential } from '../../shared/models/user.model';
 import { AlertType } from '../../shared/models/alerts.model';
 
 // created ngrx stuff
@@ -62,48 +58,19 @@ export class SignInService {
     );
   }
 
-  // signInManuallyFormReducedUserCredential(
-  //   userCredential: IStoreUserCredential
-  // ) {
-  //   const now = new Date();
-  //   const updatedUserCredential = {
-  //     ...userCredential,
-  //     tokenResult: {
-  //       ...userCredential.tokenResult,
-  //       expirationTime: this.signInForm.value.rememberMe
-  //         ? new Date(now.setMonth(now.getMonth() + 3)).toUTCString()
-  //         : userCredential.tokenResult.expirationTime,
-  //     },
-  //   };
-  //   createAuthInLS(updatedUserCredential);
-  // }
-
   signInManuallyFormReducedUserCredential(
-    userCredential: IStoreUserCredential,
-    basicInfo: IUserBasic
+    userCredential: IStoreUserCredential
   ) {
     const now = new Date();
-    const updatedTokenResult: IdTokenResult = {
-      ...userCredential.tokenResult,
-      expirationTime: this.signInForm.value.rememberMe
-        ? new Date(now.setMonth(now.getMonth() + 3)).toUTCString()
-        : userCredential.tokenResult.expirationTime,
-    };
-
-    const updatedProviderData: ProviderData = {
-      ...userCredential.providerData[0],
-
-      displayName: basicInfo.displayName,
-      photoURL: basicInfo.photoURL,
-      email: basicInfo.email,
-    };
-
-    const updatedUserCredential: IStoreUserCredential = {
+    const updatedUserCredential = {
       ...userCredential,
-      providerData: [updatedProviderData],
-      tokenResult: updatedTokenResult,
+      tokenResult: {
+        ...userCredential.tokenResult,
+        expirationTime: this.signInForm.value.rememberMe
+          ? new Date(now.setMonth(now.getMonth() + 3)).toUTCString()
+          : userCredential.tokenResult.expirationTime,
+      },
     };
-
     createAuthInLS(updatedUserCredential);
   }
 

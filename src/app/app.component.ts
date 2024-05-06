@@ -67,12 +67,7 @@ export class AppComponent implements OnInit {
     if (userCredential) {
       this.store.dispatch(
         UserActions.browserReload({
-          basicInfo: {
-            displayName: userCredential.providerData[0].displayName,
-            photoURL: userCredential.providerData[0].photoURL,
-            email: userCredential.providerData[0].email,
-          },
-
+          email: userCredential.providerData[0].email,
           userCredential,
         })
       );

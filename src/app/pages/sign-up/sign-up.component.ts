@@ -10,7 +10,7 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, of, Subscription, take } from 'rxjs';
 import { faRefresh } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
@@ -98,39 +98,36 @@ export class SignUpComponent {
     this.userSubcription = this.store
       .select(UserSelectors.selectUser)
       .subscribe((user) => {
-        this.store.select(UserSelectors.selectBasicInfo).subscribe((info) => {
-          if (user?.online) {
-            const updatedUserCredential: IStoreUserCredential = {
-              ...user.userCredential,
-              providerData: [
-                {
-                  ...user.userCredential?.providerData[0],
-                  displayName: info!.displayName,
-                  photoURL: info!.photoURL,
-                  email: info!.email,
-                },
-              ] as ProviderData[],
-              tokenResult: {
-                ...user.userCredential?.tokenResult,
-              } as IdTokenResult,
-            };
-            console.log('updatedProviderData', updatedUserCredential);
+        if (user?.online) {
+          createAuthInLS(user.userCredential!);
+          this.isLogging = false;
+          this.router.navigate(['/']);
 
-            createAuthInLS(updatedUserCredential);
-            this.isLogging = false;
-            this.router.navigate(['/']);
-
-            this.store.dispatch(UserActions.sendEmailVerification());
-            this.bsModalRef = this.modalService.show(
-              EmailVerificationModalComponent
-            );
-          }
-        });
+          this.store.dispatch(UserActions.sendEmailVerification());
+          this.bsModalRef = this.modalService.show(
+            EmailVerificationModalComponent
+          );
+        }
 
         if (this.userSubcription) {
           this.userSubcription.unsubscribe();
         }
       });
+
+    this.error$ = this.store.select(UserSelectors.selectErrorMessage);
+    this.errorSubcription = this.error$.subscribe((error) => {
+      if (error) {
+        setTimeout(() => {
+          this.error$ = of(null);
+        }, 5000);
+        this.isLogging = false;
+        this.signUpForm.reset();
+      }
+
+      if (this.errorSubcription) {
+        this.errorSubcription.unsubscribe();
+      }
+    });
 
     this.error$ = this.store.select(UserSelectors.selectErrorMessage);
     this.errorSubcription = this.error$.subscribe((error) => {
