@@ -87,6 +87,9 @@ export class PersonalInformationComponent
 
   isChangeMode: boolean = false;
 
+  wasEmailVerificationSent: boolean = false;
+  wasUserReauthenticated: boolean = false;
+
   updatedUserPhotoFile: File | null = null;
   userPhotoURL: string | null = null;
 
@@ -189,7 +192,8 @@ export class PersonalInformationComponent
       )
       .subscribe({
         next: () => {
-          this.onToggleChangeMode();
+          this.store.dispatch(UserActions.getUser());
+          this.buttonCancelEffects();
           this.updateLocalStorageData();
         },
         error: (error) => {
@@ -248,15 +252,8 @@ export class PersonalInformationComponent
     this.store.dispatch(UserActions.getUser());
   }
 
-  onToggleChangeMode() {
-    this.buttonCancelEffects();
-    if (this.updatedUserPhotoFile) {
-      this.store.dispatch(UserActions.getUser());
-    }
-  }
-
   buttonCancelEffects() {
-    this.isChangeMode = !this.isChangeMode;
+    this.saveButtonActive = false;
     this.controlButtonsActive = false;
   }
 
@@ -265,21 +262,30 @@ export class PersonalInformationComponent
     this.store
       .select(UserSelectors.selectEmail)
       .pipe(take(1))
-      .subscribe((email) => this.openModalWithComponent(email!));
-
-    // .subscribe((result) => {
-    //   this.alerts.push({ type: 'success', timeout: 5000, msg: result });
-    // });
+      .subscribe((email) => {
+        this.openModalWithComponent(email!, 'changePassword');
+        this.isPasswordChangeMode = false;
+      });
   }
 
-  handleReauthError(error: string) {
-    console.error('Reauthentication error: ', error);
+  onReauthenticateUser() {
+    this.alerts = [];
+    this.store
+      .select(UserSelectors.selectEmail)
+      .pipe(take(1))
+      .subscribe((email) =>
+        this.openModalWithComponent(email!, 'reauthentication')
+      );
   }
 
-  openModalWithComponent(email: string) {
+  openModalWithComponent(
+    email: string,
+    usageType: 'changePassword' | 'reauthentication'
+  ) {
     const initialState: ModalOptions = {
       initialState: {
         email: email,
+        isChangePassword: usageType === 'changePassword' ? true : false,
       },
     };
     this.bsModalRef = this.modalService.show(
@@ -292,13 +298,25 @@ export class PersonalInformationComponent
 
     const onHiddenSubscription = this.bsModalRef.onHidden?.subscribe(() => {
       if (this.reauthModal.isSuccessReauthentication) {
-        this.authService
-          .updatePassword(this.changePasswordForm.value.password)
-          .then((value: string) => {
-            this.alerts.push({ type: 'success', timeout: 5000, msg: value });
-            this.passwordControl.reset();
-            this.isPasswordChangeMode = false;
+        if (this.reauthModal.isChangePassword) {
+          this.authService
+            .updatePassword(this.changePasswordForm.value.password)
+            .then((value: string) => {
+              this.alerts.push({
+                type: 'success',
+                timeout: 5000,
+                msg: value,
+              });
+              this.passwordControl.reset();
+            });
+        } else {
+          this.alerts.push({
+            type: 'success',
+            timeout: 5000,
+            msg: 'User reauthenticated',
           });
+          this.wasUserReauthenticated = true;
+        }
       } else {
         if (this.reauthModal.isSuccessReauthentication === null) {
           this.alerts.push({
@@ -315,7 +333,6 @@ export class PersonalInformationComponent
         }
 
         this.passwordControl.reset();
-        this.isPasswordChangeMode = false;
       }
       onHiddenSubscription?.unsubscribe();
     });
@@ -323,6 +340,16 @@ export class PersonalInformationComponent
     if (onHiddenSubscription) {
       this.subscriptions.push(onHiddenSubscription);
     }
+  }
+
+  onSendEmailVerification() {
+    this.wasEmailVerificationSent = true;
+    this.store.dispatch(UserActions.sendEmailVerification());
+    this.alerts.push({
+      type: 'info',
+      timeout: 5000,
+      msg: 'Email verification was sent to your email. Please check it.',
+    });
   }
 
   // password form

@@ -77,8 +77,6 @@ export class AuthService {
     );
   }
 
-  // NIE ZEZWALAĆ NA ZMIANĘ!!!! NICKNAME
-
   updateUser(updateData: Partial<IUserUpdate>): Observable<void> {
     return from(updateProfile(this.auth.currentUser!, updateData));
   }
@@ -88,35 +86,6 @@ export class AuthService {
       .then(() => 'The password was successfully updated!')
       .catch((error: FirebaseError) => error.message);
   }
-
-  // setDisplayName(displayName: string): Observable<void> {
-  //   this.store.dispatch(UserActions.updateDisplayName({ displayName }));
-  //   return from(
-  //     update(ref(this.database, 'users/' + this.auth.currentUser?.uid), {
-  //       displayName,
-  //     })
-  //   );
-  // }
-
-  // getDisplayName(): Observable<string> {
-  //   console.log('users/' + this.auth.currentUser?.uid);
-  //   return from(
-  //     get(child(ref(this.database), 'users/' + this.auth.currentUser?.uid))
-  //   ).pipe(
-  //     map((snaphot: DataSnapshot) => {
-  //       if (snaphot.exists()) {
-  //         const result = snaphot.val() as {
-  //           displayName: string;
-  //           profileImage: string;
-  //         };
-
-  //         return result.displayName;
-  //       } else {
-  //         return '';
-  //       }
-  //     })
-  //   );
-  // }
 
   setProfileImage(imageURL: string): Observable<void> {
     this.store.dispatch(UserActions.updateProfileImage({ imageURL }));

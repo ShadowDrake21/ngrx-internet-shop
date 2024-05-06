@@ -78,7 +78,6 @@ export const userReducer = createReducer(
     UserActions.updateProfileImageFailure,
     (state, { errorMessage }) => ({
       ...state,
-      basicInfo: null,
       user: {
         userCredential: null,
         online: false,
@@ -100,7 +99,6 @@ export const userReducer = createReducer(
 
   on(UserActions.signOutSuccess, UserActions.clearUserState, (state) => ({
     ...state,
-    basicInfo: null,
     user: {
       userCredential: null,
       online: false,

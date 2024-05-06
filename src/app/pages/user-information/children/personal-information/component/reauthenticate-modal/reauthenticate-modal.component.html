@@ -31,12 +31,21 @@
             "
           />
         </div>
+        <label class="control control--checkbox mb-0 mt-2"
+          ><span class="caption">Remember me</span>
+          <input
+            type="checkbox"
+            checked="checked"
+            formControlName="rememberMe"
+          />
+          <div class="control__indicator"></div>
+        </label>
         <button
           type="submit"
           class="btn btn-dark w-100 mt-3"
           [disabled]="reauthenticationForm.invalid"
         >
-          Reset password
+          Reauthenticate a user
         </button>
       </form>
     </div>

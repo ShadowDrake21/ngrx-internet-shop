@@ -12,11 +12,11 @@ export interface IUserUpdate {
 }
 
 export interface IUser {
-  // basicInfo !!!!
   userCredential: IStoreUserCredential | null;
   online: boolean;
 }
 export interface IStoreUserCredential {
+  emailVerified: boolean;
   tokenResult: IdTokenResult;
   providerData: ProviderData[];
 }

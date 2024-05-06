@@ -11,6 +11,7 @@ export const minimalizeUserCredential = async (
 
   return {
     tokenResult: tokenResult!,
+    emailVerified: userCredential.user.emailVerified,
     providerData: userCredential.user.providerData as ProviderData[],
   };
 };
