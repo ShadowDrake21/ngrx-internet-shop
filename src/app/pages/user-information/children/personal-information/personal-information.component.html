@@ -73,7 +73,10 @@
                   [disabled]="wasUserReauthenticated"
                 >
                   Reauthenticate a user
-                  <fa-icon [icon]="reauthenticateIcon" class="ms-1"></fa-icon>
+                  <fa-icon
+                    [icon]="icons.reauthenticateIcon"
+                    class="ms-1"
+                  ></fa-icon>
                 </button>
               </div>
             </div>
@@ -118,7 +121,7 @@
                   (click)="isPasswordChangeMode = true"
                 >
                   Change password
-                  <fa-icon [icon]="passwordIcon" class="ms-1"></fa-icon>
+                  <fa-icon [icon]="icons.passwordIcon" class="ms-1"></fa-icon>
                 </button>
               </div>
               }

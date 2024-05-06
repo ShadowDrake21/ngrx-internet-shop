@@ -3,23 +3,18 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import {
   catchError,
-  EMPTY,
   exhaustMap,
   firstValueFrom,
-  lastValueFrom,
   map,
   mergeMap,
   Observable,
   of,
-  switchMap,
   take,
 } from 'rxjs';
 import { FirebaseError } from 'firebase/app';
 
-// interfaces
 import {
   IStoreUserCredential,
-  IUserUpdate,
   ProviderData,
 } from '../../shared/models/user.model';
 
@@ -28,14 +23,9 @@ import { AuthService } from '../../core/authentication/auth.service';
 
 // actions
 import * as UserActions from './user.actions';
-import * as UserSelectors from './user.selectors';
 
 // utils
 import { minimalizeUserCredential } from '../../shared/utils/store.utils';
-import { Store } from '@ngrx/store';
-import { UserState } from './user.reducer';
-import { MEDIA_STORAGE_PATH } from '@app/core/constants/storage.constants';
-import { StorageService } from '@app/core/services/storage.service';
 import { createAuthInLS } from '@app/core/utils/auth.utils';
 
 @Injectable()
@@ -49,7 +39,6 @@ export class UserEffects {
       exhaustMap(({ data }) =>
         this.authService.signUp(data).pipe(
           mergeMap(async (userCredential) => {
-            console.log(userCredential);
             return UserActions.signUpSuccess({
               email: userCredential.user.email!,
               userCredential: await minimalizeUserCredential(userCredential),
@@ -73,11 +62,7 @@ export class UserEffects {
       exhaustMap(({ email, password }) =>
         this.authService.signInManually(email, password).pipe(
           mergeMap(async (userCredential) => {
-            console.log('credential', userCredential);
-
-            const photoURL$: Observable<string> =
-              this.authService.getProfileImage();
-            const photoURL = await firstValueFrom(photoURL$);
+            const photoURL = await this.retrievePhotoURL();
 
             const minimalizedUserCredential = await minimalizeUserCredential(
               userCredential
@@ -227,9 +212,7 @@ export class UserEffects {
               tokenResult: await user?.getIdTokenResult()!,
             };
 
-            const photoURL$: Observable<string> =
-              this.authService.getProfileImage();
-            const photoURL = await firstValueFrom(photoURL$);
+            const photoURL = await this.retrievePhotoURL();
 
             const updatedUserCredential: IStoreUserCredential = {
               ...storeUserCredentails,
@@ -265,10 +248,7 @@ export class UserEffects {
       exhaustMap(({ email, password }) =>
         this.authService.reauthenticateUserObservable(email, password).pipe(
           mergeMap(async (userCredential) => {
-            const photoURL$: Observable<string> =
-              this.authService.getProfileImage();
-
-            const photoURL = await firstValueFrom(photoURL$);
+            const photoURL = await this.retrievePhotoURL();
 
             const minimalizedUserCredential = await minimalizeUserCredential(
               userCredential
@@ -319,9 +299,7 @@ export class UserEffects {
               emailVerified: user?.emailVerified!,
               tokenResult: await user?.getIdTokenResult()!,
             };
-            const photoURL$: Observable<string> =
-              this.authService.getProfileImage();
-            const photoURL = await firstValueFrom(photoURL$);
+            const photoURL = await this.retrievePhotoURL();
 
             const updatedUserCredential: IStoreUserCredential = {
               ...storeUserCredentials,
@@ -359,4 +337,9 @@ export class UserEffects {
       )
     )
   );
+
+  async retrievePhotoURL(): Promise<string> {
+    const photoURL$: Observable<string> = this.authService.getProfileImage();
+    return await firstValueFrom(photoURL$.pipe(take(1)));
+  }
 }

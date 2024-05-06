@@ -103,7 +103,6 @@ export class SignUpComponent {
           this.isLogging = false;
           this.router.navigate(['/']);
 
-          this.store.dispatch(UserActions.sendEmailVerification());
           this.bsModalRef = this.modalService.show(
             EmailVerificationModalComponent
           );

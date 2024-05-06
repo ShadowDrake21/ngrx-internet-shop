@@ -12,14 +12,17 @@ import {
   faClose,
   faCreditCard,
   faEarthEurope,
+  faGear,
   faGlobe,
   faHeartCircleCheck,
   faHouseMedicalCircleCheck,
   faInfo,
+  faKey,
   faLocationDot,
   faPerson,
   faPhone,
   faPowerOff,
+  faRotate,
 } from '@fortawesome/free-solid-svg-icons';
 
 export const signInModalIcons = { faFacebookF, faGoogle, faXTwitter, faClose };
@@ -32,4 +35,8 @@ export const userInformationSidebar = {
   faCreditCard,
   faHeartCircleCheck,
   faPowerOff,
+};
+export const personalInformationIcons = {
+  passwordIcon: faKey,
+  reauthenticateIcon: faRotate,
 };

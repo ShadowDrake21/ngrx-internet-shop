@@ -161,9 +161,14 @@ export class AuthService {
     return from(sendEmailVerification(this.auth.currentUser!));
   }
 
-  reauthenticateUser(email: string, password: string): Promise<UserCredential> {
+  reauthenticateUser(
+    email: string,
+    password: string
+  ): Observable<UserCredential> {
     const credential = EmailAuthProvider.credential(email, password);
-    return reauthenticateWithCredential(this.auth.currentUser!, credential);
+    return from(
+      reauthenticateWithCredential(this.auth.currentUser!, credential)
+    );
   }
 
   reauthenticateUserObservable(

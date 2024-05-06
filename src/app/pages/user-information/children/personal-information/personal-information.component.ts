@@ -12,15 +12,7 @@ import { userInformationContent } from '../../content/user-information.content';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { UserState } from '@app/store/user/user.reducer';
-import {
-  forkJoin,
-  Observable,
-  of,
-  Subscription,
-  switchMap,
-  take,
-  tap,
-} from 'rxjs';
+import { Observable, of, Subscription, switchMap, take } from 'rxjs';
 import { IStoreUserCredential, IUser } from '@app/shared/models/user.model';
 
 import * as UserSelectors from '@store/user/user.selectors';
@@ -37,13 +29,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { createAuthInLS } from '@app/core/utils/auth.utils';
-import { minimalizeUserCredential } from '@app/shared/utils/store.utils';
-import { faGear, faKey, faRotate } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AlertComponent } from '@app/shared/components/alert/alert.component';
 import { AlertType } from '@app/shared/models/alerts.model';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { ReauthenticateModalComponent } from './component/reauthenticate-modal/reauthenticate-modal.component';
+import { personalInformationIcons } from '@app/shared/utils/icons.utils';
 
 @Component({
   selector: 'app-personal-information',
@@ -66,9 +57,7 @@ export class PersonalInformationComponent
   implements OnInit, AfterViewInit, OnDestroy
 {
   userInformationItem = userInformationContent[1];
-  settingsIcon = faGear;
-  passwordIcon = faKey;
-  reauthenticateIcon = faRotate;
+  icons = personalInformationIcons;
 
   @ViewChild('changeImageEl') changeImageEl!: ElementRef<HTMLDivElement>;
   @ViewChild('changeImageInput')
@@ -196,14 +185,14 @@ export class PersonalInformationComponent
           this.store.dispatch(UserActions.getUser());
           this.buttonCancelEffects();
           this.updateLocalStorageData();
-          this.alerts.push({
+          this.pushNewAlert({
             type: 'success',
             timeout: 5000,
             msg: 'Image was successfully changed!',
           });
         },
         error: (error) => {
-          this.alerts.push({
+          this.pushNewAlert({
             type: 'danger',
             timeout: 5000,
             msg: error.message,
@@ -309,7 +298,7 @@ export class PersonalInformationComponent
           this.authService
             .updatePassword(this.changePasswordForm.value.password)
             .then((value: string) => {
-              this.alerts.push({
+              this.pushNewAlert({
                 type: 'success',
                 timeout: 5000,
                 msg: value,
@@ -317,7 +306,7 @@ export class PersonalInformationComponent
               this.passwordControl.reset();
             });
         } else {
-          this.alerts.push({
+          this.pushNewAlert({
             type: 'success',
             timeout: 5000,
             msg: 'User reauthenticated',
@@ -326,13 +315,13 @@ export class PersonalInformationComponent
         }
       } else {
         if (this.reauthModal.isSuccessReauthentication === null) {
-          this.alerts.push({
+          this.pushNewAlert({
             type: 'danger',
             timeout: 5000,
             msg: "You've closed the modal window.",
           });
         } else if (this.reauthModal.isSuccessReauthentication === false) {
-          this.alerts.push({
+          this.pushNewAlert({
             type: 'danger',
             timeout: 5000,
             msg: 'Incorrect user credential. Try one more time.',
@@ -353,11 +342,15 @@ export class PersonalInformationComponent
     this.alerts = [];
     this.wasEmailVerificationSent = true;
     this.store.dispatch(UserActions.sendEmailVerification());
-    this.alerts.push({
+    this.pushNewAlert({
       type: 'info',
       timeout: 5000,
       msg: 'Email verification was sent to your email. Please check it.',
     });
+  }
+
+  pushNewAlert(alert: AlertType) {
+    this.alerts.push(alert);
   }
 
   // password form

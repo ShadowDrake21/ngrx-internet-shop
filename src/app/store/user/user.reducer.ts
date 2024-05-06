@@ -22,6 +22,7 @@ export const initialUserState: UserState = {
 export const userReducer = createReducer(
   initialUserState,
   on(
+    UserActions.signUpSuccess,
     UserActions.signInManuallySuccess,
     UserActions.browserReload,
     UserActions.signInWithFacebookSuccess,
@@ -41,32 +42,6 @@ export const userReducer = createReducer(
       errorMessage: null,
     })
   ),
-  on(
-    UserActions.signUpSuccess,
-
-    (state, { userCredential, email }) => ({
-      ...state,
-      email,
-      user: {
-        userCredential,
-        online: true,
-      },
-      errorMessage: null,
-    })
-  ),
-  on(
-    UserActions.updateProfileImageSuccess,
-
-    (state, { userCredential, email }) => ({
-      ...state,
-      email,
-      user: {
-        userCredential,
-        online: true,
-      },
-    })
-  ),
-
   on(
     UserActions.signUpFailure,
     UserActions.signInManuallyFailure,
@@ -94,11 +69,9 @@ export const userReducer = createReducer(
     },
     errorMessage: null,
   })),
-
-  // on(UserActions.updateDisplayName,)
-
   on(UserActions.signOutSuccess, UserActions.clearUserState, (state) => ({
     ...state,
+    email: null,
     user: {
       userCredential: null,
       online: false,
