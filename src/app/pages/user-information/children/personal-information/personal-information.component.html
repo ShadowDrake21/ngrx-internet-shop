@@ -72,7 +72,7 @@
               </div>
             </div>
 
-            <div class="pb-3 personal-info__settings-password">
+            <div class="personal-info__settings-password">
               @if (isPasswordChangeMode) {
               <div class="d-flex align-items-end w-100" style="gap: 25px">
                 <div
@@ -91,9 +91,9 @@
                     <button
                       class="btn btn-primary w-100"
                       [disabled]="changePasswordForm.invalid"
+                      (click)="onSaveNewPassword()"
                     >
-                      <!-- (click)="onSaveNewPassword()" -->
-                      Update password
+                      Update
                     </button>
                     <button
                       class="btn btn-danger w-100"
@@ -133,6 +133,7 @@
                 {{ error }}
               </li>
             </ul>
+            <div>Email verification</div>
           </div>
         </div>
       </div>

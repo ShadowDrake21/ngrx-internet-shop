@@ -277,8 +277,6 @@ export class PersonalInformationComponent
   }
 
   openModalWithComponent(email: string) {
-    let errorOccurred = false;
-
     const initialState: ModalOptions = {
       initialState: {
         email: email,
@@ -293,49 +291,33 @@ export class PersonalInformationComponent
     this.reauthModal = this.bsModalRef.content;
 
     const onHiddenSubscription = this.bsModalRef.onHidden?.subscribe(() => {
-      // dopisać!!!!
-
       if (this.reauthModal.isSuccessReauthentication) {
         this.authService
           .updatePassword(this.changePasswordForm.value.password)
           .then((value: string) => {
-            if (!errorOccurred) {
-              this.alerts.push({ type: 'success', timeout: 5000, msg: value });
-            }
-          })
-          .catch((error) => {
-            if (!errorOccurred) {
-              this.alerts.push({
-                type: 'danger',
-                timeout: 5000,
-                msg: error.message,
-              });
-            }
-
-            // onHiddenSubscription?.unsubscribe();
+            this.alerts.push({ type: 'success', timeout: 5000, msg: value });
+            this.passwordControl.reset();
+            this.isPasswordChangeMode = false;
           });
       } else {
-        this.alerts.push({
-          type: 'danger',
-          timeout: 5000,
-          msg: 'Incorrect user credential. Try one more time.',
-        });
+        if (this.reauthModal.isSuccessReauthentication === null) {
+          this.alerts.push({
+            type: 'danger',
+            timeout: 5000,
+            msg: "You've closed the modal window.",
+          });
+        } else if (this.reauthModal.isSuccessReauthentication === false) {
+          this.alerts.push({
+            type: 'danger',
+            timeout: 5000,
+            msg: 'Incorrect user credential. Try one more time.',
+          });
+        }
+
+        this.passwordControl.reset();
+        this.isPasswordChangeMode = false;
       }
       onHiddenSubscription?.unsubscribe();
-      // this.subscriptions.push(errorSubcription);
-
-      // const errorSubcription = this.reauthModal.occuredError.subscribe(
-      //   (error) => {
-      //     console.log('occuredError1', error);
-      //     this.alerts.push({
-      //       type: 'danger',
-      //       timeout: 5000,
-      //       msg: error,
-      //     });
-      //     errorOccurred = true;
-      //   }
-      // );
-      // this.subscriptions.push(errorSubcription);
     });
 
     if (onHiddenSubscription) {

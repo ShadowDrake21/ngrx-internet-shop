@@ -30,7 +30,7 @@ export class ReauthenticateModalComponent {
   closeBtnName?: string;
   error: string = '';
 
-  isSuccessReauthentication: boolean = false;
+  isSuccessReauthentication: boolean | null = null;
 
   reauthenticationForm = new FormGroup({
     password: new FormControl('', [

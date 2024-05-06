@@ -118,11 +118,6 @@ export class UserEffects {
                 email: data,
               });
             }
-
-            const photoURL$: Observable<string> =
-              this.authService.getProfileImage();
-
-            const photoURL = await firstValueFrom(photoURL$);
             return UserActions.signInWithFacebookSuccess({
               email: data.user.email!,
               userCredential: await minimalizeUserCredential(data),
@@ -150,11 +145,6 @@ export class UserEffects {
                 email: data,
               });
             }
-
-            const photoURL$: Observable<string> =
-              this.authService.getProfileImage();
-
-            const photoURL = await firstValueFrom(photoURL$);
             return UserActions.signInWithTwitterSuccess({
               email: data.user.email!,
               userCredential: await minimalizeUserCredential(data),
@@ -182,11 +172,6 @@ export class UserEffects {
                 email: data,
               });
             }
-
-            const photoURL$: Observable<string> =
-              this.authService.getProfileImage();
-
-            const photoURL = await firstValueFrom(photoURL$);
             return UserActions.signInWithTwitterSuccess({
               email: data.user.email!,
               userCredential: await minimalizeUserCredential(data),
