@@ -68,11 +68,12 @@
                   </div>
                 </div>
                 <button
-                  class="btn btn-secondary w-100"
+                  class="btn btn-success w-100"
                   (click)="onReauthenticateUser()"
                   [disabled]="wasUserReauthenticated"
                 >
                   Reauthenticate a user
+                  <fa-icon [icon]="reauthenticateIcon" class="ms-1"></fa-icon>
                 </button>
               </div>
             </div>
