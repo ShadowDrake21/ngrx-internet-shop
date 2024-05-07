@@ -31,7 +31,6 @@ export const userReducer = createReducer(
     UserActions.getUserSuccess,
     UserActions.reauthenticateUserSuccess,
     UserActions.updateProfileImageSuccess,
-
     (state, { userCredential, email }) => ({
       ...state,
       email,

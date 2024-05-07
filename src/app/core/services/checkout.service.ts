@@ -1,7 +1,7 @@
 // angular stuff
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { from, mergeMap, Observable, of } from 'rxjs';
 
 // interfaces
 import { IProduct } from '../../shared/models/product.model';
@@ -26,7 +26,7 @@ export class CheckoutService {
 
     this.store.select(UserSelectors.selectEmail).subscribe((email) => {
       this.email = email!;
-      this.getCustomer();
+      // this.getCustomer();
     });
   }
 
@@ -37,23 +37,21 @@ export class CheckoutService {
     });
   }
 
-  async getCustomer() {
-    if (this.email) {
-      try {
-        const customers = await this.stripe.customers.list({
-          email: this.email,
-          limit: 1,
-        });
-
-        if (customers.data.length > 0) {
-          this.customer = customers.data[0];
+  getCustomer(email: string): Observable<Stripe.Customer | null> {
+    return from(
+      this.stripe.customers.list({
+        email,
+        limit: 1,
+      })
+    ).pipe(
+      mergeMap((result) => {
+        if ('data' in result) {
+          return result.data.length > 0 ? of(result.data[0]) : of(null);
+        } else {
+          return of(result); //????
         }
-
-        console.log('customers', this.customer);
-      } catch (error) {
-        console.log(error);
-      }
-    }
+      })
+    );
   }
 
   async getAllTransactions() {
@@ -61,7 +59,7 @@ export class CheckoutService {
       const transactions = await this.stripe.charges.list({
         customer: this.customer.id,
       });
-      console.log(transactions);
+      console.log(transactions.data);
     } else {
       console.log('no customer');
     }
