@@ -72,6 +72,8 @@ export class CartModalComponent implements OnInit {
       this.cartProductsArr = products;
     });
 
+    console.log('products', this.cartProductsArr);
+
     this.checkoutService
       .checkoutInit(this.cartProductsArr)
       .pipe(

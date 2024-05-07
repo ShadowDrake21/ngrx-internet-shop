@@ -15,6 +15,8 @@ const stripe = require("stripe")(
 
 app.post("/checkout", async (req, res, next) => {
   try {
+    const { customer } = req.body;
+
     const session = await stripe.checkout.sessions.create({
       shipping_address_collection: {
         allowed_countries: ["UA", "PL"],
@@ -76,6 +78,7 @@ app.post("/checkout", async (req, res, next) => {
       success_url: "http://localhost:4242/success.html",
       cancel_url: "http://localhost:4242/cancel.html",
     });
+    console.log("session: ", session);
     res.status(200).json(session);
   } catch (error) {
     next(error);

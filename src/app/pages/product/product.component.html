@@ -3,11 +3,7 @@
     <div class="product-image__slider-wrapper">
       <carousel [noPause]="false">
         <slide *ngFor="let image of product.images">
-          <img
-            [src]="image | clearURL | safeHTML"
-            alt="product-image"
-            class="card-img-top"
-          />
+          <img [src]="image" alt="product-image" class="card-img-top" />
         </slide>
       </carousel>
     </div>
