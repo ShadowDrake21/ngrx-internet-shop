@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { map, Observable, Subscription } from 'rxjs';
+import { filter, map, Observable, of, Subscription } from 'rxjs';
 import {
   faCartPlus,
   faHeartCirclePlus,
@@ -33,6 +33,8 @@ import * as ProductSelectors from '../../store/product/product.selectors';
 import * as CartSelectors from '../../store/cart/cart.selectors';
 import * as FavoritesActions from '../../store/favorites/favorites.action';
 import * as FavoritesSelectors from '../../store/favorites/favorites.selectors';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ProductManipulationsService } from '@app/core/services/product-manipulations.service';
 
 @Component({
   selector: 'app-product',
@@ -57,6 +59,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   private store = inject(Store<AppState>);
   private route = inject(ActivatedRoute);
   private productService = inject(ProductService);
+  private productManipulationsService = inject(ProductManipulationsService);
 
   productId$!: Observable<number>;
   product$!: Observable<IProduct>;
@@ -78,9 +81,23 @@ export class ProductComponent implements OnInit, OnDestroy {
           ProductActions.loadSingleProductById({ productId })
         );
 
-        this.product$ = this.store
+        this.store
           .select(ProductSelectors.selectProducts)
-          .pipe(map((products) => products[0]));
+          .pipe(
+            map((products) => products[0]),
+            filter((product) => !!product),
+            map((product) => {
+              const updatedProduct = { ...product };
+              updatedProduct.images = updatedProduct.images.map((image) =>
+                this.productManipulationsService.normalizeImage(image)
+              );
+
+              return updatedProduct;
+            })
+          )
+          .subscribe((product) => {
+            this.product$ = of(product);
+          });
 
         this.checkInCart(productId);
         this.checkInFavorites(productId);
@@ -102,6 +119,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
 
   onAddToCart(product: IProduct) {
+    console.log('onAddToCart', product);
     this.store.dispatch(
       CartActions.addToCart({
         product,

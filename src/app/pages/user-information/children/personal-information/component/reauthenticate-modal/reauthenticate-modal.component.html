@@ -31,6 +31,32 @@
             "
           />
         </div>
+        <ul
+          *ngIf="
+            (reauthenticationForm.invalid && reauthenticationForm.touched) ||
+            (reauthenticationForm.invalid && reauthenticationForm.dirty)
+          "
+          class="mt-3"
+          style="color: red"
+        >
+          <li
+            *ngIf="reauthenticationForm.controls.password.errors?.['required'] && reauthenticationForm.controls.password.touched"
+          >
+            The password field is mandatory
+          </li>
+          <li
+            *ngIf="reauthenticationForm.controls.password.errors?.['minlength']"
+          >
+            Password should be at least 6 characters long. Now it is
+            {{ reauthenticationForm.value.password?.length }}
+          </li>
+          <li
+            *ngIf="reauthenticationForm.controls.password.errors?.['maxlength']"
+          >
+            Password should be maximum 20 characters long. Now it is
+            {{ reauthenticationForm.value.password?.length }}
+          </li>
+        </ul>
         <label class="control control--checkbox mb-0 mt-2"
           ><span class="caption">Remember me</span>
           <input

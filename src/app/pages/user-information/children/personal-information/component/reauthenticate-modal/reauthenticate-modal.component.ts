@@ -86,7 +86,6 @@ export class ReauthenticateModalComponent {
           this.bsModalRef.hide();
         },
         error: (error) => {
-          console.log(error);
           this.error = error.message;
           this.isSuccessReauthentication = false;
           this.occuredError.emit(error.message);
