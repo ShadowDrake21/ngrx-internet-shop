@@ -15,9 +15,27 @@ const stripe = require("stripe")(
 
 app.post("/checkout", async (req, res, next) => {
   try {
-    const { customer } = req.body;
+    const { email } = req.body;
+
+    let customer;
+    try {
+      customer = await stripe.customers.list({ email: email, limit: 1 });
+    } catch (error) {
+      next(error);
+      return;
+    }
+
+    if (customer.data.length > 0) {
+      console.log("customer already exists", customer.data[0].id);
+    } else {
+      customer = await stripe.customers.create({
+        email,
+      });
+      console.log("customer created: ", customer.id);
+    }
 
     const session = await stripe.checkout.sessions.create({
+      customer_email: email,
       shipping_address_collection: {
         allowed_countries: ["UA", "PL"],
       },
@@ -77,8 +95,9 @@ app.post("/checkout", async (req, res, next) => {
       mode: "payment",
       success_url: "http://localhost:4242/success.html",
       cancel_url: "http://localhost:4242/cancel.html",
+      customer: customer.id,
     });
-    console.log("session: ", session);
+
     res.status(200).json(session);
   } catch (error) {
     next(error);
