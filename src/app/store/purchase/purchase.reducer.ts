@@ -20,13 +20,25 @@ export const purchaseReducer = createReducer(
     ...state,
     customer,
   })),
+  on(PurchaseActions.getCustomerFailure, (state, { errorMessage }) => ({
+    ...state,
+    customer: null,
+    transactions: [],
+    errorMessage,
+  })),
+  on(PurchaseActions.updateCustomerSuccess, (state, { customer }) => ({
+    ...state,
+    customer,
+    transactions: state.transactions,
+  })),
   on(PurchaseActions.getAllTransactionsSuccess, (state, { transactions }) => ({
     ...state,
     customer: state.customer,
     transactions,
   })),
+
   on(
-    PurchaseActions.getCustomerFailure,
+    PurchaseActions.updateCustomerFailure,
     PurchaseActions.getAllTransactionsFailure,
     (state, { errorMessage }) => ({
       ...state,
