@@ -1,0 +1,18 @@
+.purchases {
+  &-customer__view-address {
+    ul {
+      padding-top: 5px;
+      li {
+        padding-bottom: 5px;
+      }
+    }
+  }
+
+  &-customer__edit-address {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-column-gap: 20px;
+    grid-row-gap: 20px;
+  }
+}

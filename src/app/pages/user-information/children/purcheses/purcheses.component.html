@@ -16,111 +16,159 @@
                   </p>
                 </div>
                 <div>
-                  <p>Name: {{ customer.name ?? "unknown" }}</p>
-                  <p>Description: {{ customer.description ?? "unknown" }}</p>
-                  <p>Currency: {{ customer.currency ?? "unknown" }}</p>
-                  <div>
-                    Address:
+                  <div class="pb-2">
+                    <span class="fw-bold">Name:</span>
+                    {{ customer.name ?? "unknown" }}
+                  </div>
+                  <div class="pb-2">
+                    <span class="fw-bold">Description:</span>
+                    {{ customer.description ?? "unknown" }}
+                  </div>
+                  <div class="pb-2">
+                    <span class="fw-bold">Currency:</span>
+                    {{ customer.currency ?? "unknown" }}
+                  </div>
+                  <div class="purchases-customer__view-address">
+                    <span class="fw-bold">Address:</span>
                     <ul>
                       <li>
-                        Country: {{ customer.address?.country ?? "unknown" }}
-                      </li>
-                      <li>City: {{ customer.address?.city ?? "unknown" }}</li>
-                      <li>
-                        Address 1: {{ customer.address?.line1 ?? "unknown" }}
+                        <span class="fw-bold">Country:</span>
+                        {{ customer.address?.country ?? "unknown" }}
                       </li>
                       <li>
-                        Address 2: {{ customer.address?.line2 ?? "unknown" }}
+                        <span class="fw-bold">City:</span>
+                        {{ customer.address?.city ?? "unknown" }}
                       </li>
                       <li>
-                        Postal code:
+                        <span class="fw-bold">Address 1:</span>
+                        {{ customer.address?.line1 ?? "unknown" }}
+                      </li>
+                      <li>
+                        <span class="fw-bold">Address 2:</span>
+                        {{ customer.address?.line2 ?? "unknown" }}
+                      </li>
+                      <li>
+                        <span class="fw-bold">Postal code:</span>
                         {{ customer.address?.postal_code ?? "unknown" }}
                       </li>
                     </ul>
                   </div>
-                  <!--
-                  <p>Source: {{ customer.sources ?? "unknown" }}</p> -->
                 </div>
               </div>
             </tab>
             <tab heading="Edit">
               <div class="pt-3 pb-3">
-                <form [formGroup]="customerUpdateForm">
-                  <div class="form-group">
-                    <label for="customerName">Name</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="customerName"
-                      placeholder="Name"
-                      formControlName="name"
-                    />
-                  </div>
-                  <div class="form-group">
-                    <label for="customerDescription">Description</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="customerDescription"
-                      placeholder="Description"
-                      formControlName="description"
-                    />
-                  </div>
-                  <div formGroupName="address">
-                    <p>Address</p>
-                    <div class="form-group">
-                      <label for="customerDescription">Country</label>
+                <form
+                  [formGroup]="customerUpdateForm"
+                  (ngSubmit)="onUpdateSubmit()"
+                >
+                  <div class="row">
+                    <div class="form-group col">
+                      <label for="customerName">Name</label>
                       <input
                         type="text"
                         class="form-control"
-                        id="customerDescription"
-                        placeholder="Description"
-                        formControlName="country"
+                        id="customerName"
+                        placeholder="Name"
+                        formControlName="name"
+                        tooltip="Hello there! I was triggered manually"
+                        triggers=""
+                        #nameTooltip="bs-tooltip"
                       />
                     </div>
-                    <div class="form-group">
-                      <label for="customerDescription">City</label>
+                    <div class="form-group col">
+                      <label for="customerDescription">Description</label>
                       <input
                         type="text"
                         class="form-control"
                         id="customerDescription"
                         placeholder="Description"
-                        formControlName="city"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label for="customerDescription">Address 1</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="customerDescription"
-                        placeholder="Description"
-                        formControlName="address1"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label for="customerDescription">Address 2</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="customerDescription"
-                        placeholder="Description"
-                        formControlName="address2"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label for="customerDescription">Postal code</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="customerDescription"
-                        placeholder="Description"
-                        formControlName="postalCode"
+                        formControlName="description"
+                        tooltip="Hello there! I was triggered manually"
+                        triggers=""
+                        #descriptionTooltip="bs-tooltip"
                       />
                     </div>
                   </div>
-                </form></div
-            ></tab>
+                  <div class="pt-4 pb-3">
+                    <h5 class="pb-1">Address</h5>
+                    <div
+                      formGroupName="address"
+                      class="purchases-customer__edit-address"
+                      tooltip="Hello there! I was triggered manually"
+                      triggers=""
+                      #addressTooltip="bs-tooltip"
+                    >
+                      <div class="form-group">
+                        <label for="customerDescription">Country</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="customerDescription"
+                          placeholder="Description"
+                          formControlName="country"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="customerDescription">City</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="customerDescription"
+                          placeholder="Description"
+                          formControlName="city"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="customerDescription">Address 1</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="customerDescription"
+                          placeholder="Description"
+                          formControlName="address1"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="customerDescription">Address 2</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="customerDescription"
+                          placeholder="Description"
+                          formControlName="address2"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="customerDescription">Postal code</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="customerDescription"
+                          placeholder="Description"
+                          formControlName="postalCode"
+                        />
+                      </div>
+                      <div class="d-flex align-items-end" style="gap: 25px">
+                        <button
+                          type="submit"
+                          class="btn btn-primary w-100"
+                          [disabled]="
+                            customerUpdateForm.invalid ||
+                            !customerUpdateForm.touched
+                          "
+                        >
+                          Save changes
+                        </button>
+                        <button type="submit" class="btn btn-danger w-100">
+                          Cancel changes
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div></tab
+            >
           </tabset>
         </div>
       </div>
