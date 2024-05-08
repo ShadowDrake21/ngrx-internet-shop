@@ -9,6 +9,7 @@ import Stripe from 'stripe';
 import { Store } from '@ngrx/store';
 import { UserState } from '@app/store/user/user.reducer';
 import * as UserSelectors from '@store/user/user.selectors';
+import { IPurchaseUpdate } from '@app/shared/models/purchase.model';
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
@@ -28,7 +29,7 @@ export class CheckoutService {
   checkoutInit(products: IProduct[]): Observable<any> {
     return this.http.post('http://localhost:4242/checkout', {
       items: products,
-      email: this.email,
+      email: 'nikola.doktor_book@gmail.com',
     });
   }
 
@@ -51,12 +52,8 @@ export class CheckoutService {
 
   updateCustomer(
     customerId: string,
-    updateMap: Map<string, string>
+    updateObject: IPurchaseUpdate
   ): Observable<Stripe.Customer> {
-    const updateObject: { [key: string]: string } = {};
-    updateMap.forEach((value, key) => {
-      updateObject[key] = value;
-    });
     // lastResponse???
     return from(this.stripe.customers.update(customerId, updateObject));
   }

@@ -38,20 +38,25 @@ export class PurchaseEffects {
   updateCustomer = createEffect(() =>
     this.actions$.pipe(
       ofType(PurchaseActions.updateCustomer),
-      exhaustMap(({ customerId, updateMap }) =>
-        this.checkoutService.updateCustomer(customerId, updateMap).pipe(
-          map((customer) =>
-            PurchaseActions.updateCustomerSuccess({ customer })
-          ),
-          catchError((error) =>
-            of(
-              PurchaseActions.updateCustomerFailure({
-                errorMessage: error.message,
-              })
-            )
-          )
-        )
-      )
+      exhaustMap(({ customerId, updateObject }) => {
+        {
+          console.log('updateCustomer effect');
+          return this.checkoutService
+            .updateCustomer(customerId, updateObject)
+            .pipe(
+              map((customer) =>
+                PurchaseActions.updateCustomerSuccess({ customer })
+              ),
+              catchError((error) =>
+                of(
+                  PurchaseActions.updateCustomerFailure({
+                    errorMessage: error.message,
+                  })
+                )
+              )
+            );
+        }
+      })
     )
   );
 
