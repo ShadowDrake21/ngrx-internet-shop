@@ -1,4 +1,5 @@
 import { IProduct } from '@app/shared/models/product.model';
+import { IPurchaseUpdate } from '@app/shared/models/purchase.model';
 import { createAction, props } from '@ngrx/store';
 import { PaymentMethod } from '@stripe/stripe-js';
 import Stripe from 'stripe';
@@ -31,7 +32,7 @@ export const getCustomerFailure = createAction(
 
 export const updateCustomer = createAction(
   '[Checkout Component] UpdateCustomer',
-  props<{ customerId: string; updateMap: Map<string, string> }>()
+  props<{ customerId: string; updateObject: IPurchaseUpdate }>()
 );
 export const updateCustomerSuccess = createAction(
   '[Checkout Component] UpdateCustomerSuccess',

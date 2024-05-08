@@ -21,6 +21,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
+import { IPurchaseUpdate } from '@app/shared/models/purchase.model';
 
 // PURCHASES!
 
@@ -51,7 +52,7 @@ export class PurchesesComponent implements OnInit, OnDestroy {
   transactions$!: Observable<Stripe.Charge[]>;
 
   customerUpdateForm = new FormGroup({
-    name: new FormControl('Demtriusz', [
+    name: new FormControl('', [
       Validators.minLength(3),
       Validators.maxLength(40),
     ]),
@@ -61,17 +62,14 @@ export class PurchesesComponent implements OnInit, OnDestroy {
     ]),
     address: new FormGroup(
       {
-        country: new FormControl(''),
+        country: new FormControl('', Validators.maxLength(2)),
         city: new FormControl(''),
-        address1: new FormControl(''),
-        address2: new FormControl(''),
+        address: new FormControl(''),
         postalCode: new FormControl(''),
       },
       { validators: this.addressFieldsValidator() }
     ),
   });
-
-  updateMap!: Map<string, string>;
 
   private subscriptions: Subscription[] = [];
 
@@ -115,15 +113,14 @@ export class PurchesesComponent implements OnInit, OnDestroy {
   }
 
   fillCustomerUpdateForm(customer: Stripe.Customer) {
-    this.customerUpdateForm.setValue({
-      name: customer.name!,
-      description: customer.description!,
+    this.customerUpdateForm.patchValue({
+      name: customer.name,
+      description: customer.description,
       address: {
-        country: customer.address?.country!,
-        city: customer.address?.city!,
-        address1: customer.address?.line1!,
-        address2: customer.address?.line2!,
-        postalCode: customer.address?.postal_code!,
+        country: customer.address?.country,
+        city: customer.address?.city,
+        address: customer.address?.line1,
+        postalCode: customer.address?.postal_code,
       },
     });
   }
@@ -135,7 +132,8 @@ export class PurchesesComponent implements OnInit, OnDestroy {
         nameControl.hasError('minlength') ||
         nameControl.hasError('maxlength')
       ) {
-        console.log('minlength');
+        this.nameTooltip.tooltip =
+          'Name must be at least 3 and maximum 40 characters long';
         this.nameTooltip.show();
       } else {
         this.nameTooltip.hide();
@@ -148,7 +146,8 @@ export class PurchesesComponent implements OnInit, OnDestroy {
         descriptionControl.hasError('minlength') ||
         descriptionControl.hasError('maxlength')
       ) {
-        console.log('minlength');
+        this.descriptionTooltip.tooltip =
+          'Description must be at least 10 and maximum 100 characters long';
         this.descriptionTooltip.show();
       } else {
         this.descriptionTooltip.hide();
@@ -158,7 +157,7 @@ export class PurchesesComponent implements OnInit, OnDestroy {
     const addressGroup = this.customerUpdateForm.controls.address;
     if (addressGroup.dirty) {
       if (addressGroup.hasError('addressIncomplete')) {
-        console.log('minlength');
+        this.addressTooltip.tooltip = 'You should fulfull all these fields';
         this.addressTooltip.show();
       } else {
         this.addressTooltip.hide();
@@ -167,7 +166,41 @@ export class PurchesesComponent implements OnInit, OnDestroy {
   }
 
   onUpdateSubmit() {
-    console.log(this.customerUpdateForm.value);
+    const formValues = this.customerUpdateForm.value;
+    let updateObject: IPurchaseUpdate = {
+      name: formValues.name ?? undefined,
+      description: formValues.description ?? undefined,
+      address: formValues.address
+        ? {
+            country: formValues.address.country!,
+            city: formValues.address.city!,
+            line1: formValues.address.address!,
+            postal_code: formValues.address.postalCode!,
+          }
+        : undefined,
+    };
+
+    const customerSubscription = this.customer$.subscribe((customer) => {
+      this.store.dispatch(
+        PurchaseActions.updateCustomer({
+          customerId: customer?.id!,
+          updateObject,
+        })
+      );
+    });
+    this.customerUpdateForm.markAsUntouched();
+    this.subscriptions.push(customerSubscription);
+  }
+
+  onCancelChanges() {
+    const customerSubscription = this.customer$.subscribe((customer) => {
+      if (customer) {
+        this.fillCustomerUpdateForm(customer);
+      }
+    });
+
+    this.customerUpdateForm.markAsDirty();
+    this.subscriptions.push(customerSubscription);
   }
 
   addressFieldsValidator(): ValidatorFn {
@@ -184,13 +217,11 @@ export class PurchesesComponent implements OnInit, OnDestroy {
         let allFieldFilled = true;
         Object.values(addressGroup.controls).forEach((control) => {
           const value = control.value;
-          console.log('value', value);
           if (value === undefined || value === '') {
             allFieldFilled = false;
             return;
           }
         });
-        console.log('allFieldFilled', allFieldFilled);
 
         if (allFieldFilled) {
           return null;
