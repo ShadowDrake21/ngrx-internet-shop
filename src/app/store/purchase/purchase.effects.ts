@@ -18,11 +18,37 @@ export class PurchaseEffects {
             if (customer) {
               return PurchaseActions.getCustomerSuccess({ customer });
             } else {
-              return PurchaseActions.getCustomerFailure({ errorMessage: '' });
+              return PurchaseActions.getCustomerFailure({
+                errorMessage: 'The user has not made any purchase',
+              });
             }
           }),
           catchError((error) =>
-            of(PurchaseActions.getCustomerFailure({ errorMessage: '' }))
+            of(
+              PurchaseActions.getCustomerFailure({
+                errorMessage: error.message,
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
+  updateCustomer = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PurchaseActions.updateCustomer),
+      exhaustMap(({ customerId, updateMap }) =>
+        this.checkoutService.updateCustomer(customerId, updateMap).pipe(
+          map((customer) =>
+            PurchaseActions.updateCustomerSuccess({ customer })
+          ),
+          catchError((error) =>
+            of(
+              PurchaseActions.updateCustomerFailure({
+                errorMessage: error.message,
+              })
+            )
           )
         )
       )
@@ -30,6 +56,22 @@ export class PurchaseEffects {
   );
 
   getAllTransactions = createEffect(() =>
-    this.actions$.pipe(ofType(PurchaseActions.getAllTransactions))
+    this.actions$.pipe(
+      ofType(PurchaseActions.getAllTransactions),
+      exhaustMap(({ customerId }) =>
+        this.checkoutService.getAllTransactions(customerId).pipe(
+          map((transactions) =>
+            PurchaseActions.getAllTransactionsSuccess({ transactions })
+          ),
+          catchError((error) =>
+            of(
+              PurchaseActions.getAllTransactionsFailure({
+                errorMessage: error.message,
+              })
+            )
+          )
+        )
+      )
+    )
   );
 }

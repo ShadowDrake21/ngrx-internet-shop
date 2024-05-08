@@ -29,6 +29,19 @@ export const getCustomerFailure = createAction(
   props<{ errorMessage: string }>()
 );
 
+export const updateCustomer = createAction(
+  '[Checkout Component] UpdateCustomer',
+  props<{ customerId: string; updateMap: Map<string, string> }>()
+);
+export const updateCustomerSuccess = createAction(
+  '[Checkout Component] UpdateCustomerSuccess',
+  props<{ customer: Stripe.Customer }>()
+);
+export const updateCustomerFailure = createAction(
+  '[Checkout Component] UpdateCustomerFailure',
+  props<{ errorMessage: string }>()
+);
+
 export const getAllTransactions = createAction(
   '[Checkout Component] GetAllTransactions',
   props<{ customerId: string }>()

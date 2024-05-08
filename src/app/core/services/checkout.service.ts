@@ -1,7 +1,7 @@
 // angular stuff
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { from, mergeMap, Observable, of } from 'rxjs';
+import { from, map, mergeMap, Observable, of } from 'rxjs';
 
 // interfaces
 import { IProduct } from '../../shared/models/product.model';
@@ -12,7 +12,6 @@ import * as UserSelectors from '@store/user/user.selectors';
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
-  private store = inject(Store<UserState>);
   private http = inject(HttpClient);
 
   stripe!: Stripe;
@@ -23,13 +22,9 @@ export class CheckoutService {
     this.stripe = new Stripe(
       'sk_test_51OSDbAAGBN9qzN7ZebHv8tsmZYaQwHC0xDtAaZ3GAJJTJbO8DJpTGvLtaIMcJAsgCrW69d2W8Vx5E356Mw04dAqM00EkfSFmu1'
     );
-
-    this.store.select(UserSelectors.selectEmail).subscribe((email) => {
-      this.email = email!;
-      // this.getCustomer();
-    });
   }
 
+  // niezrobione
   checkoutInit(products: IProduct[]): Observable<any> {
     return this.http.post('http://localhost:4242/checkout', {
       items: products,
@@ -54,14 +49,32 @@ export class CheckoutService {
     );
   }
 
-  async getAllTransactions() {
-    if (this.customer) {
-      const transactions = await this.stripe.charges.list({
-        customer: this.customer.id,
-      });
-      console.log(transactions.data);
-    } else {
-      console.log('no customer');
-    }
+  updateCustomer(
+    customerId: string,
+    updateMap: Map<string, string>
+  ): Observable<Stripe.Customer> {
+    const updateObject: { [key: string]: string } = {};
+    updateMap.forEach((value, key) => {
+      updateObject[key] = value;
+    });
+    // lastResponse???
+    return from(this.stripe.customers.update(customerId, updateObject));
+  }
+
+  // by default - 10 items, so I must adjust limit functionality
+  getAllTransactions(customerId: string): Observable<Stripe.Charge[]> {
+    return from(
+      this.stripe.charges.list({
+        customer: customerId,
+      })
+    ).pipe(
+      mergeMap((result) => {
+        if ('data' in result) {
+          return of(result.data);
+        } else {
+          return of([]);
+        }
+      })
+    );
   }
 }
