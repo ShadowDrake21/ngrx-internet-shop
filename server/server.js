@@ -26,7 +26,8 @@ app.post("/checkout", async (req, res, next) => {
     }
 
     if (customer.data.length > 0) {
-      console.log("customer already exists", customer.data[0].id);
+      customer = customer.data[0];
+      console.log("customer already exists", customer);
     } else {
       customer = await stripe.customers.create({
         email,
@@ -35,7 +36,7 @@ app.post("/checkout", async (req, res, next) => {
     }
 
     const session = await stripe.checkout.sessions.create({
-      customer_email: email,
+      customer: customer.id,
       shipping_address_collection: {
         allowed_countries: ["UA", "PL"],
       },
@@ -95,7 +96,6 @@ app.post("/checkout", async (req, res, next) => {
       mode: "payment",
       success_url: "http://localhost:4242/success.html",
       cancel_url: "http://localhost:4242/cancel.html",
-      customer: customer.id,
     });
 
     res.status(200).json(session);

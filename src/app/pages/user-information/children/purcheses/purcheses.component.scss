@@ -1,5 +1,5 @@
 .purchases {
-  &-customer__view-address {
+  &-customer__view-shipping {
     ul {
       padding-top: 5px;
       li {
@@ -8,10 +8,10 @@
     }
   }
 
-  &-customer__edit-address {
+  &-customer__edit-shipping {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(1, 1fr);
     grid-column-gap: 20px;
     grid-row-gap: 20px;
   }
