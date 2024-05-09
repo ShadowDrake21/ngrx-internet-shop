@@ -27,12 +27,10 @@ app.post("/checkout", async (req, res, next) => {
 
     if (customer.data.length > 0) {
       customer = customer.data[0];
-      console.log("customer already exists", customer);
     } else {
       customer = await stripe.customers.create({
         email,
       });
-      console.log("customer created: ", customer.id);
     }
 
     const session = await stripe.checkout.sessions.create({

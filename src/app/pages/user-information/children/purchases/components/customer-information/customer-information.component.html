@@ -1,0 +1,334 @@
+<div class="card" *ngIf="customer$ | async as customer">
+  <div class="card-header fs-5">Information about customer</div>
+  <div class="card-body">
+    <tabset>
+      <tab heading="View all">
+        <div class="pt-3 pb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h4>{{ customer.email }}</h4>
+            <p>Created: {{ customer.created * 1000 | date : "medium" }}</p>
+          </div>
+          <div>
+            <div class="pb-2">
+              <span class="fw-bold">Name:</span>
+              {{ customer.name ?? "unknown" }}
+            </div>
+            <div class="pb-2">
+              <span class="fw-bold">Description:</span>
+              {{ customer.description ?? "unknown" }}
+            </div>
+            <div class="d-flex justify-content-between">
+              <div class="purchases-customer__view-shipping">
+                <span class="fw-bold">Builling address:</span>
+                <ul>
+                  <li>
+                    <span class="fw-bold">Country:</span>
+                    {{ customer.address?.country ?? "unknown" }}
+                  </li>
+                  <li>
+                    <span class="fw-bold">City:</span>
+                    {{ customer.address?.city ?? "unknown" }}
+                  </li>
+                  <li>
+                    <span class="fw-bold">Address line 1:</span>
+                    {{ customer.address?.line1 ?? "unknown" }}
+                  </li>
+                  <li>
+                    <span class="fw-bold">Address line 2:</span>
+                    {{ customer.address?.line2 ?? "unknown" }}
+                  </li>
+                  <li>
+                    <span class="fw-bold">Postal code:</span>
+                    {{ customer.address?.postal_code ?? "unknown" }}
+                  </li>
+                </ul>
+              </div>
+              <div class="purchases-customer__view-shipping">
+                <span class="fw-bold">Shipping info:</span>
+                <div class="pt-1">
+                  <div class="pb-2">
+                    <span class="fw-bold">Name:</span>
+                    {{ customer.shipping?.name ?? "unknown" }}
+                  </div>
+                  <div class="pb-2">
+                    <span class="fw-bold">Phone:</span>
+                    {{ customer.shipping?.phone ?? "unknown" }}
+                  </div>
+                </div>
+                <span class="fw-bold">Shipping address:</span>
+                <ul>
+                  <li>
+                    <span class="fw-bold">Country:</span>
+                    {{ customer.shipping?.address?.country ?? "unknown" }}
+                  </li>
+                  <li>
+                    <span class="fw-bold">City:</span>
+                    {{ customer.shipping?.address?.city ?? "unknown" }}
+                  </li>
+                  <li>
+                    <span class="fw-bold">Address line 1:</span>
+                    {{ customer.shipping?.address?.line1 ?? "unknown" }}
+                  </li>
+                  <li>
+                    <span class="fw-bold">Address line 2:</span>
+                    {{ customer.shipping?.address?.line2 ?? "unknown" }}
+                  </li>
+                  <li>
+                    <span class="fw-bold">Postal code:</span>
+                    {{ customer.shipping?.address?.postal_code ?? "unknown" }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab heading="Edit shipping info">
+        <div class="pt-3 pb-3">
+          <form [formGroup]="customerUpdateForm" (ngSubmit)="onUpdateSubmit()">
+            <h5 class="pb-1">Personal info</h5>
+            <div class="row">
+              <div class="form-group col">
+                <label
+                  for="customerName"
+                  [style.color]="
+                    customerUpdateForm.controls.name.invalid ? 'red' : ''
+                  "
+                  >Name</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="customerName"
+                  placeholder="Name"
+                  formControlName="name"
+                  tooltip=""
+                  triggers=""
+                  #nameTooltip="bs-tooltip"
+                  [class.error]="customerUpdateForm.controls.name.invalid"
+                />
+              </div>
+              <div class="form-group col">
+                <label
+                  for="customerDescription"
+                  [style.color]="
+                    customerUpdateForm.controls.description.invalid ? 'red' : ''
+                  "
+                  >Description</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="customerDescription"
+                  placeholder="Description"
+                  formControlName="description"
+                  tooltip=""
+                  triggers=""
+                  #descriptionTooltip="bs-tooltip"
+                  [class.error]="
+                    customerUpdateForm.controls.description.invalid
+                  "
+                />
+              </div>
+            </div>
+            <div class="pt-4 pb-3">
+              <h5 class="pb-1">Shipping info</h5>
+              <div
+                formGroupName="shipping"
+                tooltip=""
+                triggers=""
+                #shippingTooltip="bs-tooltip"
+              >
+                <div class="row">
+                  <div class="form-group col">
+                    <label
+                      for="customerShippingName"
+                      [style.color]="
+                        customerUpdateForm.controls.shipping.invalid
+                          ? 'red'
+                          : ''
+                      "
+                      >Customer name</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="customerShippingName"
+                      placeholder="Customer shipping name"
+                      formControlName="name"
+                      [class.error]="
+                        customerUpdateForm.controls.shipping.invalid
+                      "
+                      tooltip=""
+                      triggers=""
+                      #shippingNameTooltip="bs-tooltip"
+                    />
+                  </div>
+                  <div class="form-group col">
+                    <label
+                      for="customerPhone"
+                      [style.color]="
+                        customerUpdateForm.controls.shipping.invalid
+                          ? 'red'
+                          : ''
+                      "
+                      >Customer phone</label
+                    >
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="customerPhone"
+                      placeholder="Customer shipping phone"
+                      formControlName="phone"
+                      [class.error]="
+                        customerUpdateForm.controls.shipping.invalid
+                      "
+                      tooltip=""
+                      triggers=""
+                      #shippingPhoneTooltip="bs-tooltip"
+                    />
+                  </div>
+                </div>
+                <div class="pt-4 pb-3">
+                  <h6 class="pb-1">Address info</h6>
+                  <div
+                    formGroupName="address"
+                    class="purchases-customer__edit-shipping"
+                  >
+                    <div class="form-group">
+                      <label
+                        for="customerCountry"
+                        [style.color]="
+                          customerUpdateForm.controls.shipping.invalid
+                            ? 'red'
+                            : ''
+                        "
+                        >Country (PL/UA)</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="customerCountry"
+                        placeholder="Country"
+                        formControlName="country"
+                        [class.error]="
+                          customerUpdateForm.controls.shipping.invalid
+                        "
+                        tooltip=""
+                        triggers=""
+                        #shippingCountryTooltip="bs-tooltip"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label
+                        for="customerCity"
+                        [style.color]="
+                          customerUpdateForm.controls.shipping.invalid
+                            ? 'red'
+                            : ''
+                        "
+                        >City</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="customerCity"
+                        placeholder="City"
+                        formControlName="city"
+                        [class.error]="
+                          customerUpdateForm.controls.shipping.invalid
+                        "
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label
+                        for="customerLine1"
+                        [style.color]="
+                          customerUpdateForm.controls.shipping.invalid
+                            ? 'red'
+                            : ''
+                        "
+                        >Address line 1</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="customerLine1"
+                        placeholder="Street, PO Box, or company name"
+                        formControlName="line1"
+                        [class.error]="
+                          customerUpdateForm.controls.shipping.invalid
+                        "
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label
+                        for="customerLine2"
+                        [style.color]="
+                          customerUpdateForm.controls.shipping.invalid
+                            ? 'red'
+                            : ''
+                        "
+                        >Address line 2</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="customerLine2"
+                        placeholder="Apartment, suite, unit, or building"
+                        formControlName="line2"
+                        [class.error]="
+                          customerUpdateForm.controls.shipping.invalid
+                        "
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label
+                        for="customerPostalCode"
+                        [style.color]="
+                          customerUpdateForm.controls.shipping.invalid
+                            ? 'red'
+                            : ''
+                        "
+                        >Postal code</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="customerPostalCode"
+                        placeholder="Postal code"
+                        formControlName="postalCode"
+                        [class.error]="
+                          customerUpdateForm.controls.shipping.invalid
+                        "
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-end" style="gap: 25px">
+                  <button
+                    type="submit"
+                    class="btn btn-primary w-100"
+                    [disabled]="
+                      customerUpdateForm.invalid || !customerUpdateForm.touched
+                    "
+                  >
+                    Save changes
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-danger w-100"
+                    [disabled]="customerUpdateForm.untouched"
+                    (click)="onCancelChanges()"
+                  >
+                    Cancel changes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </tab>
+    </tabset>
+  </div>
+</div>
