@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { GeneralComponent } from './pages/user-information/children/general/general.component';
 import { PersonalInformationComponent } from './pages/user-information/children/personal-information/personal-information.component';
-import { PurchesesComponent } from './pages/user-information/children/purcheses/purcheses.component';
+import { PurchasesComponent } from './pages/user-information/children/purchases/purchases.component';
 import { DeliveryDetailsComponent } from './pages/user-information/children/delivery-details/delivery-details.component';
 import { CardDetailsComponent } from './pages/user-information/children/card-details/card-details.component';
 import { FavoriteProductsComponent } from './pages/user-information/children/favorite-products/favorite-products.component';
@@ -72,7 +72,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'general', pathMatch: 'full' },
       { path: 'general', component: GeneralComponent },
       { path: 'personal-information', component: PersonalInformationComponent },
-      { path: 'purcheses', component: PurchesesComponent },
+      { path: 'purchases', component: PurchasesComponent },
       { path: 'delivery-details', component: DeliveryDetailsComponent },
       { path: 'card-details', component: CardDetailsComponent },
       { path: 'favorite-products', component: FavoriteProductsComponent },
