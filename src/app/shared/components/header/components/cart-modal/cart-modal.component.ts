@@ -91,4 +91,5 @@ export class CartModalComponent implements OnInit {
       )
       .subscribe();
   }
+  // does not retrive a changes during the purchase
 }

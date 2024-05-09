@@ -42,10 +42,16 @@ import { IPurchaseUpdate } from '@app/shared/models/purchase.model';
 export class PurchesesComponent implements OnInit, OnDestroy {
   userInformationItem = userInformationContent[2];
 
+  //  VIEW CHILDREN
   @ViewChild('nameTooltip') nameTooltip!: TooltipDirective;
   @ViewChild('descriptionTooltip') descriptionTooltip!: TooltipDirective;
-  @ViewChild('addressTooltip') addressTooltip!: TooltipDirective;
+  @ViewChild('shippingTooltip') shippingTooltip!: TooltipDirective;
+  @ViewChild('shippingNameTooltip') shippingNameTooltip!: TooltipDirective;
+  @ViewChild('shippingPhoneTooltip') shippingPhoneTooltip!: TooltipDirective;
+  @ViewChild('shippingCountryTooltip')
+  shippingCountryTooltip!: TooltipDirective;
 
+  // REFACTORING + TRANSACTIONS + RENAME COMPONENTS (PURCHASE)
   private store = inject(Store<AppState>);
 
   customer$!: Observable<Stripe.Customer | null>;
@@ -60,14 +66,26 @@ export class PurchesesComponent implements OnInit, OnDestroy {
       Validators.minLength(10),
       Validators.maxLength(100),
     ]),
-    address: new FormGroup(
+    shipping: new FormGroup(
       {
-        country: new FormControl('', Validators.maxLength(2)),
-        city: new FormControl(''),
-        address: new FormControl(''),
-        postalCode: new FormControl(''),
+        name: new FormControl('', [
+          Validators.minLength(3),
+          Validators.maxLength(40),
+        ]),
+        phone: new FormControl('', [
+          Validators.pattern(
+            '(([+][(]?[0-9]{1,3}[)]?)|([(]?[0-9]{4}[)]?))s*[)]?[-s.]?[(]?[0-9]{1,3}[)]?([-s.]?[0-9]{3})([-s.]?[0-9]{3,4})'
+          ),
+        ]),
+        address: new FormGroup({
+          country: new FormControl('', Validators.pattern('^[A-Z]{2}$')),
+          city: new FormControl(''),
+          line1: new FormControl(''),
+          line2: new FormControl(''),
+          postalCode: new FormControl(''),
+        }),
       },
-      { validators: this.addressFieldsValidator() }
+      { validators: this.shippingFieldsValidator() }
     ),
   });
 
@@ -100,15 +118,17 @@ export class PurchesesComponent implements OnInit, OnDestroy {
       })
     );
 
-    const addressControls = Object.values(
-      this.customerUpdateForm.controls.address.controls
-    );
-    addressControls.forEach((control) => {
-      this.subscriptions.push(
-        control.valueChanges.subscribe(() => {
-          this.validateCustomerUpdateForm();
-        })
-      );
+    const shippingGroup = this.customerUpdateForm.get('shipping') as FormGroup;
+
+    const shippingControls = Object.values(shippingGroup.controls);
+    shippingControls.forEach((control) => {
+      if (control instanceof FormControl) {
+        this.subscriptions.push(
+          control.valueChanges.subscribe(() => {
+            this.validateCustomerUpdateForm();
+          })
+        );
+      }
     });
   }
 
@@ -116,11 +136,16 @@ export class PurchesesComponent implements OnInit, OnDestroy {
     this.customerUpdateForm.patchValue({
       name: customer.name,
       description: customer.description,
-      address: {
-        country: customer.address?.country,
-        city: customer.address?.city,
-        address: customer.address?.line1,
-        postalCode: customer.address?.postal_code,
+      shipping: {
+        name: customer.shipping?.name,
+        phone: customer.shipping?.phone,
+        address: {
+          country: customer.shipping?.address!.country,
+          city: customer.shipping?.address!.city,
+          line1: customer.shipping?.address!.line1,
+          line2: customer.shipping?.address!.line2,
+          postalCode: customer.shipping?.address!.postal_code,
+        },
       },
     });
   }
@@ -154,13 +179,53 @@ export class PurchesesComponent implements OnInit, OnDestroy {
       }
     }
 
-    const addressGroup = this.customerUpdateForm.controls.address;
-    if (addressGroup.dirty) {
-      if (addressGroup.hasError('addressIncomplete')) {
-        this.addressTooltip.tooltip = 'You should fulfull all these fields';
-        this.addressTooltip.show();
+    const shippingGroup = this.customerUpdateForm.controls.shipping;
+    if (shippingGroup.dirty) {
+      if (shippingGroup.hasError('shippingIncomplete')) {
+        this.shippingTooltip.tooltip = 'You should fulfull all these fields';
+        this.shippingTooltip.show();
       } else {
-        this.addressTooltip.hide();
+        this.shippingTooltip.hide();
+      }
+    }
+
+    const shippingNameControl =
+      this.customerUpdateForm.controls.shipping.controls.name;
+    if (shippingNameControl.dirty || shippingNameControl.touched) {
+      if (
+        shippingNameControl.hasError('minlength') ||
+        shippingNameControl.hasError('maxlength')
+      ) {
+        this.shippingNameTooltip.tooltip =
+          'Name must be at least 3 and maximum 40 characters long';
+        this.shippingNameTooltip.show();
+      } else {
+        this.shippingNameTooltip.hide();
+      }
+    }
+
+    const shippingPhoneControl =
+      this.customerUpdateForm.controls.shipping.controls.phone;
+    if (shippingPhoneControl.dirty || shippingPhoneControl.touched) {
+      if (shippingPhoneControl.hasError('pattern')) {
+        this.shippingPhoneTooltip.tooltip =
+          'Incorrect phone format. Here some examples: +1234567890, +1(234) 567-8901, +(123) 456.7890, (123) 456 7890';
+        this.shippingPhoneTooltip.show();
+      } else {
+        this.shippingPhoneTooltip.hide();
+      }
+    }
+
+    const shippingCountryControl =
+      this.customerUpdateForm.controls.shipping.controls.address.controls
+        .country;
+    if (shippingCountryControl.dirty || shippingCountryControl.touched) {
+      if (shippingCountryControl.hasError('pattern')) {
+        this.shippingCountryTooltip.tooltip =
+          'Incorrect country code. Here some examples: PL, US, FR';
+        this.shippingCountryTooltip.show();
+      } else {
+        this.shippingCountryTooltip.hide();
       }
     }
   }
@@ -170,12 +235,17 @@ export class PurchesesComponent implements OnInit, OnDestroy {
     let updateObject: IPurchaseUpdate = {
       name: formValues.name ?? undefined,
       description: formValues.description ?? undefined,
-      address: formValues.address
+      shipping: formValues.shipping
         ? {
-            country: formValues.address.country!,
-            city: formValues.address.city!,
-            line1: formValues.address.address!,
-            postal_code: formValues.address.postalCode!,
+            name: formValues.shipping.name!,
+            phone: formValues.shipping.phone!,
+            address: {
+              country: formValues.shipping.address!.country!,
+              city: formValues.shipping.address!.city!,
+              line1: formValues.shipping.address!.line1!,
+              line2: formValues.shipping.address!.line2!,
+              postal_code: formValues.shipping.address!.postalCode!,
+            },
           }
         : undefined,
     };
@@ -203,35 +273,49 @@ export class PurchesesComponent implements OnInit, OnDestroy {
     this.subscriptions.push(customerSubscription);
   }
 
-  addressFieldsValidator(): ValidatorFn {
+  shippingFieldsValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      const addressGroup = control as FormGroup;
-      const anyFieldFilled = Object.values(addressGroup.controls).some(
+      const shippingGroup = control as FormGroup;
+
+      const anyFieldFilled = Object.values(shippingGroup.controls).some(
         (control) => {
-          const value = control.value;
-          return value !== undefined && value !== '';
+          if (control instanceof FormGroup) {
+            return this.anyNestedFieldFilled(control);
+          } else {
+            return control.value !== undefined && control.value !== '';
+          }
         }
       );
 
       if (anyFieldFilled) {
-        let allFieldFilled = true;
-        Object.values(addressGroup.controls).forEach((control) => {
-          const value = control.value;
-          if (value === undefined || value === '') {
-            allFieldFilled = false;
-            return;
-          }
-        });
+        const allFieldsFilled = this.allFieldsFilled(shippingGroup);
 
-        if (allFieldFilled) {
-          return null;
-        } else {
-          return { addressIncomplete: true };
+        if (!allFieldsFilled) {
+          return { shippingIncomplete: true };
         }
-      } else {
-        return null;
       }
+      return null;
     };
+  }
+
+  private anyNestedFieldFilled(formGroup: FormGroup): boolean {
+    return Object.values(formGroup.controls).some((control) => {
+      if (control instanceof FormGroup) {
+        return this.anyNestedFieldFilled(control);
+      } else {
+        return control.value !== undefined && control.value !== '';
+      }
+    });
+  }
+
+  private allFieldsFilled(formGroup: FormGroup): boolean {
+    return Object.values(formGroup.controls).every((control) => {
+      if (control instanceof FormGroup) {
+        return this.allFieldsFilled(control);
+      } else {
+        return control.value !== undefined && control.value !== '';
+      }
+    });
   }
 
   ngOnDestroy(): void {

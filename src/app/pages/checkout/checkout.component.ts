@@ -46,3 +46,5 @@ export class CheckoutComponent implements OnInit {
       });
   }
 }
+
+// make a page for checkout in the app, NOT REDIRECT TO ANOTHER PORT
