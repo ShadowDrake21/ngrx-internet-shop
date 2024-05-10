@@ -20,8 +20,6 @@ section {
 }
 
 .success {
-  width: 700px;
-  height: 600px;
 }
 
 .cancel {
@@ -90,16 +88,22 @@ button:hover {
 }
 
 .image {
-  width: 60%;
-  height: 60%;
+  width: 30%;
+  height: 30%;
 }
 
 .info {
   display: flex;
   flex-direction: column;
+  padding: 15px 20px;
+  border: 1px solid #000;
+  width: 700px;
+  height: 500px;
+  overflow-y: auto;
 }
 
 .go-back-link {
   font-size: 20px;
   line-height: 26px;
+  margin-top: 15px;
 }
