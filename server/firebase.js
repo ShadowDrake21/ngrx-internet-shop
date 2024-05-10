@@ -1,5 +1,5 @@
-const { initializeApp } = require("firebase/app");
-const { default: config } = require("./config");
+import { initializeApp } from "firebase/app";
+import config from "./config.js";
 
 const firebase = initializeApp(config.firebaseConfig);
 

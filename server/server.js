@@ -1,9 +1,12 @@
-const express = require("express");
-const cors = require("cors");
-const bodyparser = require("body-parser");
-const {
-  default: createPurchase,
-} = require("./controllers/purchaseControllers");
+// const express = require("express");
+// const cors = require("cors");
+// const bodyparser = require("body-parser");
+
+import express from "express";
+import cors from "cors";
+import bodyparser from "body-parser";
+import Stripe from "stripe";
+import createPurchase from "./controllers/purchaseControllers.js";
 
 const app = express();
 app.use(express.static("public"));
@@ -12,7 +15,7 @@ app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(cors({ origin: true, credentials: true }));
 
-const stripe = require("stripe")(
+const stripe = new Stripe(
   "sk_test_51OSDbAAGBN9qzN7ZebHv8tsmZYaQwHC0xDtAaZ3GAJJTJbO8DJpTGvLtaIMcJAsgCrW69d2W8Vx5E356Mw04dAqM00EkfSFmu1"
 );
 
@@ -114,10 +117,7 @@ app.get("/success", async (req, res) => {
   const customer = await stripe.customers.retrieve(session.customer);
   const lineItems = await stripe.checkout.sessions.listLineItems(session_id);
 
-  console.log(customer.email);
-
-  await createPurchase(lineItems, customer.email, session_id);
-
+  createPurchase(lineItems, customer.id, session_id);
   res.send(
     `<html>
     <head>

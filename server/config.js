@@ -1,5 +1,5 @@
-const dotenv = require("dotenv");
-const assert = require("assert");
+import dotenv from "dotenv";
+import assert from "assert";
 
 dotenv.config();
 
@@ -13,6 +13,7 @@ const {
   STORAGE_BUCKET,
   MESSAGING_SENDER_ID,
   APP_ID,
+  DATABASE_URL,
 } = process.env;
 
 assert(PORT, "Port is required");
@@ -29,5 +30,6 @@ export default {
     storageBucket: STORAGE_BUCKET,
     messagingSenderId: MESSAGING_SENDER_ID,
     appId: APP_ID,
+    databaseURL: DATABASE_URL,
   },
 };
