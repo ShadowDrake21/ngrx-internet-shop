@@ -1,20 +1,15 @@
 import { IProduct } from '@app/shared/models/product.model';
-import { IPurchaseUpdate } from '@app/shared/models/purchase.model';
+import {
+  ICheckoutInit,
+  IPurchaseUpdate,
+} from '@app/shared/models/purchase.model';
 import { createAction, props } from '@ngrx/store';
 import { PaymentMethod } from '@stripe/stripe-js';
 import Stripe from 'stripe';
 
-export const makeCheckout = createAction(
-  '[Checkout Component] MakeCheckout',
-  props<{ products: IProduct[] }>()
-);
-export const makeCheckoutSuccess = createAction(
-  '[Checkout Component] MakeCheckoutSuccess',
-  props<{ resultMessage: string }>()
-);
-export const makeCheckoutFailure = createAction(
-  '[Checkout Component] MakeCheckoutFailure',
-  props<{ errorMessage: string }>()
+export const initializeCheckout = createAction(
+  '[Checkout Component] InitializeCheckout',
+  props<{ data: ICheckoutInit }>()
 );
 
 export const getCustomer = createAction(

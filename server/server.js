@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const bodyparser = require("body-parser");
+const {
+  default: createPurchase,
+} = require("./controllers/purchaseControllers");
 
 const app = express();
 app.use(express.static("public"));
@@ -80,9 +83,7 @@ app.post("/checkout", async (req, res, next) => {
           },
         },
       ],
-      metadata: {
-        product_id: "123",
-      },
+
       line_items: req.body.items.map((item) => ({
         price_data: {
           currency: "PLN",
@@ -100,8 +101,6 @@ app.post("/checkout", async (req, res, next) => {
       cancel_url: "http://localhost:4242/cancel.html",
     });
 
-    console.log("session", session);
-
     res.status(200).json(session);
   } catch (error) {
     next(error);
@@ -109,12 +108,16 @@ app.post("/checkout", async (req, res, next) => {
 });
 
 app.get("/success", async (req, res) => {
-  const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
+  const session_id = req.query.session_id;
+
+  const session = await stripe.checkout.sessions.retrieve(session_id);
   const customer = await stripe.customers.retrieve(session.customer);
-  const lineItems = await stripe.checkout.sessions.listLineItems(
-    req.query.session_id
-  );
-  console.log(session);
+  const lineItems = await stripe.checkout.sessions.listLineItems(session_id);
+
+  console.log(customer.email);
+
+  await createPurchase(lineItems, customer.email, session_id);
+
   res.send(
     `<html>
     <head>
