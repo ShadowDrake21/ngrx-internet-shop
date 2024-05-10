@@ -116,8 +116,14 @@ app.get("/success", async (req, res) => {
   const session = await stripe.checkout.sessions.retrieve(session_id);
   const customer = await stripe.customers.retrieve(session.customer);
   const lineItems = await stripe.checkout.sessions.listLineItems(session_id);
-
-  createPurchase(lineItems, customer.id, session_id);
+  console.log(session);
+  const purchaseItem = {
+    products: lineItems.data,
+    payment_intent: session.payment_intent,
+    customer_id: customer.id,
+    session_id: session_id,
+  };
+  createPurchase(purchaseItem);
   res.send(
     `<html>
     <head>
