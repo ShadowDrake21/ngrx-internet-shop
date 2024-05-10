@@ -1,7 +1,7 @@
 // angular stuff
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { from, map, mergeMap, Observable, of } from 'rxjs';
+import { from, map, mergeMap, Observable, of, reduce } from 'rxjs';
 
 // interfaces
 import { IProduct } from '../../shared/models/product.model';
@@ -13,10 +13,20 @@ import {
   ICheckoutInit,
   IPurchaseUpdate,
 } from '@app/shared/models/purchase.model';
+import {
+  Database,
+  get,
+  orderByChild,
+  query,
+  Query,
+  ref,
+} from '@angular/fire/database';
+import { child, DataSnapshot, equalTo } from 'firebase/database';
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
   private http = inject(HttpClient);
+  private db = inject(Database);
 
   stripe!: Stripe;
   email: string | null = null;
@@ -75,5 +85,39 @@ export class CheckoutService {
         }
       })
     );
+  }
+
+  async getTransactionProducts(customerId: string, searchValue: string) {
+    const transactionProductsQuery = query(
+      ref(this.db, `customers/${customerId}/purchases/`),
+      orderByChild('payment_intent'),
+      equalTo(searchValue)
+    );
+
+    const snapshot = await get(transactionProductsQuery);
+    console.log('snapshop', snapshot);
+    if (snapshot.exists()) {
+      const transactionProducts = [];
+      console.log(snapshot.val());
+    } else {
+      console.log('empty');
+    }
+
+    // return from(
+    //   get(
+    //     child(
+    //       ref(this.db),
+    //       `customers/${customerId}/purchases/cs_test_b1YXTy2zcCXsx6GaTqLnKPjy5cj5SFInS3QSOSyrcarROJpIGAlGzJ8Vy4`
+    //     )
+    //   )
+    // ).pipe(
+    //   map((snaphot: DataSnapshot) => {
+    //     if (snaphot.exists()) {
+    //       return snaphot.val();
+    //     } else {
+    //       return '';
+    //     }
+    //   })
+    // );
   }
 }

@@ -20,7 +20,7 @@ export const cartReducer = createReducer(
   initialCartState,
   on(CartActions.addToCart, (state, { product }) => {
     const updatedProducts =
-      state.products.length < 50
+      state.products.length < 10
         ? [...state.products, product]
         : [...state.products];
     return {
