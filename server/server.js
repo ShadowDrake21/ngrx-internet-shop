@@ -95,7 +95,8 @@ app.post("/checkout", async (req, res, next) => {
         quantity: item.quantity,
       })),
       mode: "payment",
-      success_url: "http://localhost:4242/success.html",
+      success_url:
+        "http://localhost:4242/success?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "http://localhost:4242/cancel.html",
     });
 
@@ -105,6 +106,56 @@ app.post("/checkout", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+app.get("/success", async (req, res) => {
+  const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
+  const customer = await stripe.customers.retrieve(session.customer);
+  const lineItems = await stripe.checkout.sessions.listLineItems(
+    req.query.session_id
+  );
+  console.log(session);
+  res.send(
+    `<html>
+    <head>
+      <title>Thanks for your order!</title>
+      <link rel="stylesheet" href="/style.css" />
+    </head>
+    <body>
+      <section class="success">
+      <img class="image" src="/images/check.png" alt="success purchasing" />
+        <div class="info">
+          <p>Thank you for your order, ${customer.name}!</p>
+          <p>
+            You will receive an order confirmation email with details of your
+            order. Here are your ordered items:
+          </p>
+          <h4 style="text-align: end;">Total price: ${
+            session.amount_total / 100
+          }
+          ${session.currency.toUpperCase()}</h4>
+
+          ${lineItems.data
+            .map(
+              (item) =>
+                `<ul>
+              <li>Name: ${item.description}</li>
+              <li>Price: ${item.amount_total / 100}
+              ${item.currency.toUpperCase()}</li>
+              <li>Quantity: ${item.quantity}</li></ul>`
+            )
+            .join("")}
+        </div>
+        <a
+            class="go-back-link"
+            href="http://localhost:4200/"
+            style="text-align: center"
+            >Go back to shop</a
+          >
+      </section>
+    </body>
+  </html>`
+  );
 });
 
 app.listen(4242, () => console.log("App is running on 4242..."));
