@@ -2,14 +2,40 @@ import { inject, Injectable } from '@angular/core';
 import { CheckoutService } from '@app/core/services/checkout.service';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
-import { catchError, exhaustMap, map, of } from 'rxjs';
+import { loadStripe } from '@stripe/stripe-js';
+import { catchError, exhaustMap, from, map, of, switchMap } from 'rxjs';
 
 @Injectable()
 export class PurchaseEffects {
   private actions$ = inject(Actions);
   private checkoutService = inject(CheckoutService);
 
-  getCurrentCustomer = createEffect(() =>
+  initializeCheckout$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(PurchaseActions.initializeCheckout),
+        exhaustMap(({ data }) =>
+          this.checkoutService.checkoutInit(data).pipe(
+            switchMap(async (res: any) => {
+              const stripe = from(
+                loadStripe(
+                  'pk_test_51OSDbAAGBN9qzN7Z82crr3YkNTsqfwb2wsrBREzDKe0qDVRYSyS9hzEPxv4ZE9aeqtfZyKvT8CVzqVGV0SkpwYAO004zou70Ro'
+                )
+              );
+
+              return stripe?.subscribe((stripeInit) =>
+                stripeInit?.redirectToCheckout({
+                  sessionId: res.id,
+                })
+              );
+            })
+          )
+        )
+      ),
+    { dispatch: false }
+  );
+
+  getCurrentCustomer$ = createEffect(() =>
     this.actions$.pipe(
       ofType(PurchaseActions.getCustomer),
       exhaustMap(({ email }) =>
@@ -35,7 +61,7 @@ export class PurchaseEffects {
     )
   );
 
-  updateCustomer = createEffect(() =>
+  updateCustomer$ = createEffect(() =>
     this.actions$.pipe(
       ofType(PurchaseActions.updateCustomer),
       exhaustMap(({ customerId, updateObject }) => {
@@ -60,7 +86,7 @@ export class PurchaseEffects {
     )
   );
 
-  getAllTransactions = createEffect(() =>
+  getAllTransactions$ = createEffect(() =>
     this.actions$.pipe(
       ofType(PurchaseActions.getAllTransactions),
       exhaustMap(({ customerId }) =>

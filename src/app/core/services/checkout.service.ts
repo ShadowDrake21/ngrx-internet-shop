@@ -9,7 +9,10 @@ import Stripe from 'stripe';
 import { Store } from '@ngrx/store';
 import { UserState } from '@app/store/user/user.reducer';
 import * as UserSelectors from '@store/user/user.selectors';
-import { IPurchaseUpdate } from '@app/shared/models/purchase.model';
+import {
+  ICheckoutInit,
+  IPurchaseUpdate,
+} from '@app/shared/models/purchase.model';
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
@@ -25,11 +28,10 @@ export class CheckoutService {
     );
   }
 
-  // niezrobione
-  checkoutInit(products: IProduct[]): Observable<any> {
+  checkoutInit(data: ICheckoutInit): Observable<any> {
     return this.http.post('http://localhost:4242/checkout', {
-      items: products,
-      email: 'nikola.doktor_book@gmail.com',
+      items: data.products,
+      email: data.email,
     });
   }
 

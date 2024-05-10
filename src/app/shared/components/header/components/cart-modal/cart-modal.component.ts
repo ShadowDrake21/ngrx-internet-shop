@@ -8,6 +8,7 @@ import { Observable, switchMap } from 'rxjs';
 import * as CartActions from '../../../../../store/cart/cart.actions';
 import * as CartSelectors from '../../../../../store/cart/cart.selectors';
 import * as UserSelectors from '../../../../../store/user/user.selectors';
+import * as PurchaseActions from '../../../../../store/purchase/purchase.actions';
 import { ClearURLPipe } from '../../../../pipes/clear-url.pipe';
 import { SafeHTMLPipe } from '../../../../pipes/safe-html.pipe';
 import { TruncateTextPipe } from '../../../../pipes/truncate-text.pipe';
@@ -74,22 +75,33 @@ export class CartModalComponent implements OnInit {
 
     console.log('products', this.cartProductsArr);
 
-    this.checkoutService
-      .checkoutInit(this.cartProductsArr)
-      .pipe(
-        switchMap((res: any) => {
-          const stripe = loadStripe(
-            'pk_test_51OSDbAAGBN9qzN7Z82crr3YkNTsqfwb2wsrBREzDKe0qDVRYSyS9hzEPxv4ZE9aeqtfZyKvT8CVzqVGV0SkpwYAO004zou70Ro'
-          );
-
-          return stripe.then((stripeInit) => {
-            return stripeInit?.redirectToCheckout({
-              sessionId: res.id,
-            });
-          });
+    this.user$.subscribe((user) => {
+      this.store.dispatch(
+        PurchaseActions.initializeCheckout({
+          data: {
+            email: user?.userCredential?.providerData[0].email!,
+            products: this.cartProductsArr!,
+          },
         })
-      )
-      .subscribe();
+      );
+    });
+
+    // this.checkoutService
+    //   .checkoutInit(this.cartProductsArr)
+    //   .pipe(
+    //     switchMap((res: any) => {
+    //       const stripe = loadStripe(
+    //         'pk_test_51OSDbAAGBN9qzN7Z82crr3YkNTsqfwb2wsrBREzDKe0qDVRYSyS9hzEPxv4ZE9aeqtfZyKvT8CVzqVGV0SkpwYAO004zou70Ro'
+    //       );
+
+    //       return stripe.then((stripeInit) => {
+    //         return stripeInit?.redirectToCheckout({
+    //           sessionId: res.id,
+    //         });
+    //       });
+    //     })
+    //   )
+    //   .subscribe();
   }
   // does not retrive a changes during the purchase
 }

@@ -1,3 +1,10 @@
+import { IProduct } from './product.model';
+
+export interface ICheckoutInit {
+  email: string;
+  products: IProduct[];
+}
+
 export interface IPurchaseUpdate {
   name?: string;
   description?: string;
