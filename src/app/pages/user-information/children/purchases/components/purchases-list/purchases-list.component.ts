@@ -15,6 +15,7 @@ import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import { map, Observable } from 'rxjs';
 import { PurchaseThumbnailComponent } from '../purchase-thumbnail/purchase-thumbnail.component';
 import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
+import { BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-purchases-list',
@@ -22,6 +23,7 @@ import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
   imports: [CommonModule, PurchaseThumbnailComponent, PaginationModule],
   templateUrl: './purchases-list.component.html',
   styleUrl: './purchases-list.component.scss',
+  providers: [BsModalService],
 })
 export class PurchasesListComponent implements OnInit, OnChanges {
   @Input({ required: true, alias: 'transactions' }) transactions$!: Observable<

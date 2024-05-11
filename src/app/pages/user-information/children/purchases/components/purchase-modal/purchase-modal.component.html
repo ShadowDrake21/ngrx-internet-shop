@@ -1,0 +1,72 @@
+<div>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">{{ title }}</h4>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="bsModalRef.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      {{ transaction?.charge?.amount! / 100 | currency : "PLN" }}
+    </p>
+    <div *ngIf="transaction?.products as products">
+      <div *ngFor="let product of products; let i = index">
+        <p>{{ product.product.id }}</p>
+        <p>Made: {{ product.product.created * 1000 | date : "medium" }}</p>
+        <h5>{{ product.product.name }}</h5>
+        <div>
+          <carousel>
+            <slide *ngFor="let image of product.product.images">
+              <img [src]="image" alt="product image" />
+            </slide>
+          </carousel>
+        </div>
+
+        <p>{{ product.price.id }}</p>
+        <p>Bulling type: {{ product.price.billing_scheme }}</p>
+        <p>
+          {{ product.price.unit_amount | currency : "PLN" }}
+        </p>
+        <p>Quantity: {{ product.quantity }}</p>
+        <p>{{ product.price.type }}</p>
+        <hr />
+        <div *ngIf="transaction?.charge as charge">
+          <p>{{ charge.created * 1000 | date : "medium" }}</p>
+          <p>{{ charge.amount / 100 | currency : "PLN" }}</p>
+          <p>
+            {{ charge.paid ? "paid" : "not paid" }}
+          </p>
+          <p>{{ charge.status }}</p>
+          <p>Provided by {{ charge.calculated_statement_descriptor }}</p>
+          <div *ngIf="charge.billing_details as billing_details">
+            <p>{{ billing_details.address?.country }}</p>
+            <p>{{ billing_details.address?.city }}</p>
+            <p>{{ billing_details.address?.line1 }}</p>
+            <p>{{ billing_details.address?.line2 }}</p>
+            <p>{{ billing_details.address?.postal_code }}</p>
+          </div>
+
+          <div *ngIf="charge.shipping as shipping">
+            <p>{{ shipping.name }}</p>
+            <p>{{ shipping.phone }}</p>
+            <p>{{ shipping.address?.country }}</p>
+            <p>{{ shipping.address?.city }}</p>
+            <p>{{ shipping.address?.line1 }}</p>
+            <p>{{ shipping.address?.line2 }}</p>
+            <p>{{ shipping.address?.postal_code }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">
+      Close
+    </button>
+  </div>
+</div>
