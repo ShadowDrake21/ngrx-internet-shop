@@ -1,5 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CheckoutService } from '@app/core/services/checkout.service';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-purchases-list',
@@ -9,13 +8,5 @@ import { CheckoutService } from '@app/core/services/checkout.service';
   styleUrl: './purchases-list.component.scss',
 })
 export class PurchasesListComponent implements OnInit {
-  private checkoutService = inject(CheckoutService);
-
-  // in state customer payment_intent!!!, search by that!
-  ngOnInit(): void {
-    this.checkoutService.getTransactionProducts(
-      'cus_Q3slllvYAYyxSY',
-      'pi_3PEsndAGBN9qzN7Z0LlCIhad'
-    );
-  }
+  ngOnInit(): void {}
 }

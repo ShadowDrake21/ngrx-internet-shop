@@ -3,7 +3,15 @@ import { CheckoutService } from '@app/core/services/checkout.service';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import { loadStripe } from '@stripe/stripe-js';
-import { catchError, exhaustMap, from, map, of, switchMap } from 'rxjs';
+import {
+  catchError,
+  exhaustMap,
+  forkJoin,
+  from,
+  map,
+  of,
+  switchMap,
+} from 'rxjs';
 
 @Injectable()
 export class PurchaseEffects {
@@ -91,14 +99,32 @@ export class PurchaseEffects {
       ofType(PurchaseActions.getAllTransactions),
       exhaustMap(({ customerId }) =>
         this.checkoutService.getAllTransactions(customerId).pipe(
-          map((transactions) =>
-            PurchaseActions.getAllTransactionsSuccess({ transactions })
-          ),
-          catchError((error) =>
-            of(
-              PurchaseActions.getAllTransactionsFailure({
-                errorMessage: error.message,
-              })
+          switchMap((charges) =>
+            forkJoin(
+              charges.map((charge) =>
+                this.checkoutService
+                  .getTransactionInfoFromDB(
+                    customerId,
+                    charge.payment_intent as string
+                  )
+                  .pipe(
+                    map((supplementedProducts) => ({
+                      charge,
+                      products: supplementedProducts,
+                    }))
+                  )
+              )
+            ).pipe(
+              map((transactions) =>
+                PurchaseActions.getAllTransactionsSuccess({ transactions })
+              ),
+              catchError((error) =>
+                of(
+                  PurchaseActions.getAllTransactionsFailure({
+                    errorMessage: error.message,
+                  })
+                )
+              )
             )
           )
         )

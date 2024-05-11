@@ -2,10 +2,11 @@ import Stripe from 'stripe';
 import { createReducer, on } from '@ngrx/store';
 
 import * as PurchaseActions from '@store/purchase/purchase.actions';
+import { ISupplementedCharge } from '@app/shared/models/purchase.model';
 
 export interface PurchaseState {
   customer: Stripe.Customer | null;
-  transactions: Stripe.Charge[];
+  transactions: ISupplementedCharge[];
   errorMessage: string | null;
 }
 export const initialPurchaseState: PurchaseState = {

@@ -1,17 +1,15 @@
 // angular stuff
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { from, map, mergeMap, Observable, of, reduce } from 'rxjs';
+import { forkJoin, from, map, mergeMap, Observable, of, switchMap } from 'rxjs';
 
 // interfaces
-import { IProduct } from '../../shared/models/product.model';
 import Stripe from 'stripe';
-import { Store } from '@ngrx/store';
-import { UserState } from '@app/store/user/user.reducer';
-import * as UserSelectors from '@store/user/user.selectors';
 import {
   ICheckoutInit,
   IPurchaseUpdate,
+  ISupplementedChargeProduct,
+  ITransactionIds,
 } from '@app/shared/models/purchase.model';
 import {
   Database,
@@ -21,7 +19,7 @@ import {
   Query,
   ref,
 } from '@angular/fire/database';
-import { child, DataSnapshot, equalTo } from 'firebase/database';
+import { equalTo } from 'firebase/database';
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
@@ -87,37 +85,63 @@ export class CheckoutService {
     );
   }
 
-  async getTransactionProducts(customerId: string, searchValue: string) {
+  getTransactionInfoFromDB(
+    customerId: string,
+    searchValue: string
+  ): Observable<ISupplementedChargeProduct[]> {
     const transactionProductsQuery = query(
       ref(this.db, `customers/${customerId}/purchases/`),
       orderByChild('payment_intent'),
       equalTo(searchValue)
     );
 
-    const snapshot = await get(transactionProductsQuery);
-    console.log('snapshop', snapshot);
-    if (snapshot.exists()) {
-      const transactionProducts = [];
-      console.log(snapshot.val());
-    } else {
-      console.log('empty');
-    }
+    return from(get(transactionProductsQuery)).pipe(
+      switchMap((snapshot) => {
+        if (!snapshot.exists()) {
+          return of([]);
+        }
 
-    // return from(
-    //   get(
-    //     child(
-    //       ref(this.db),
-    //       `customers/${customerId}/purchases/cs_test_b1YXTy2zcCXsx6GaTqLnKPjy5cj5SFInS3QSOSyrcarROJpIGAlGzJ8Vy4`
-    //     )
-    //   )
-    // ).pipe(
-    //   map((snaphot: DataSnapshot) => {
-    //     if (snaphot.exists()) {
-    //       return snaphot.val();
-    //     } else {
-    //       return '';
-    //     }
-    //   })
-    // );
+        const transactionIds: ITransactionIds[] = [];
+        snapshot.forEach((childSnapshot) => {
+          childSnapshot
+            .val()
+            .productsIds.forEach((productIds: ITransactionIds) =>
+              transactionIds.push(productIds)
+            );
+        });
+
+        const requests = transactionIds.map((ids) =>
+          forkJoin({
+            product: this.getTransactionProduct(ids.product_id),
+            price: this.getTransactionPrice(ids.price_id),
+          }).pipe(
+            map(({ product, price }) => ({
+              product,
+              price,
+            }))
+          )
+        );
+
+        return forkJoin(requests);
+      })
+    );
+  }
+
+  getTransactionProduct(productId: string): Observable<Stripe.Product> {
+    return from(this.stripe.products.retrieve(productId)).pipe(
+      map((product) => {
+        console.log('product', product);
+        return product as Stripe.Product;
+      })
+    );
+  }
+
+  getTransactionPrice(priceId: string): Observable<Stripe.Price> {
+    return from(this.stripe.prices.retrieve(priceId)).pipe(
+      map((price) => {
+        console.log(price);
+        return price as Stripe.Price;
+      })
+    );
   }
 }
