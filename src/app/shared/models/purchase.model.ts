@@ -30,6 +30,7 @@ export interface ISupplementedCharge {
 export interface ISupplementedChargeProduct {
   product: Stripe.Product;
   price: Stripe.Price;
+  quantity: number;
 }
 
 export interface ITransactionDataDB {
@@ -40,4 +41,5 @@ export interface ITransactionDataDB {
 export interface ITransactionIds {
   price_id: string;
   product_id: string;
+  quantity: number;
 }
