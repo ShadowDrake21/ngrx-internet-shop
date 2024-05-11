@@ -1,0 +1,18 @@
+.transaction-thumbnail {
+  position: relative;
+  cursor: pointer;
+
+  &:hover .transaction-thumbnail__click {
+    transition: opacity 0.5s;
+    opacity: 1;
+  }
+
+  &__click {
+    opacity: 0;
+    position: absolute;
+    z-index: 99;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+  }
+}
