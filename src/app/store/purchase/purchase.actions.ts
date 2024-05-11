@@ -2,6 +2,7 @@ import { IProduct } from '@app/shared/models/product.model';
 import {
   ICheckoutInit,
   IPurchaseUpdate,
+  ISupplementedCharge,
 } from '@app/shared/models/purchase.model';
 import { createAction, props } from '@ngrx/store';
 import { PaymentMethod } from '@stripe/stripe-js';
@@ -44,7 +45,7 @@ export const getAllTransactions = createAction(
 );
 export const getAllTransactionsSuccess = createAction(
   '[Checkout Component] GetAllTransactionsSuccess',
-  props<{ transactions: Stripe.Charge[] }>()
+  props<{ transactions: ISupplementedCharge[] }>()
 );
 export const getAllTransactionsFailure = createAction(
   '[Checkout Component] GetAllTransactionsFailure',
