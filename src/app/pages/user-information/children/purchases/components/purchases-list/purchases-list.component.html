@@ -1,4 +1,21 @@
-<p>purchases-list works!</p>
-<!-- id, amount, amount_captured, balance_transaction,  billing details, created, customer, outcome, payment_intent, payment_method,
-payment_method_details, shipping, status, currency, paid, receipt_url-->
-<!-- RETRIEVE PRODUCTS FROM STRIPE!!!!!! -->
+<div class="card">
+  <div class="card-header fs-5">Customer purchases</div>
+  <div class="card-body" *ngIf="transactions$ | async as transactions">
+    <div
+      class="d-flex flex-wrap pb-4"
+      style="gap: 25px"
+      *ngIf="visibleTransactions$ | async as visibleTransactions"
+    >
+      <app-purchase-thumbnail
+        *ngFor="let transaction of visibleTransactions"
+        [transaction]="transaction"
+      ></app-purchase-thumbnail>
+    </div>
+    <pagination
+      class="d-flex justify-content-center"
+      [itemsPerPage]="4"
+      [totalItems]="transactions.length"
+      (pageChanged)="pageChanged($event)"
+    ></pagination>
+  </div>
+</div>

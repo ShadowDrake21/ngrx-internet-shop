@@ -14,6 +14,7 @@ import { TooltipDirective, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CustomerInformationComponent } from './components/customer-information/customer-information.component';
 import { PurchasesListComponent } from './components/purchases-list/purchases-list.component';
+import { ISupplementedCharge } from '@app/shared/models/purchase.model';
 @Component({
   selector: 'app-purcheses',
   standalone: true,
@@ -33,11 +34,10 @@ import { PurchasesListComponent } from './components/purchases-list/purchases-li
 export class PurchasesComponent implements OnInit, OnDestroy {
   userInformationItem = userInformationContent[2];
 
-  // REFACTORING + TRANSACTIONS + RENAME COMPONENTS (PURCHASE)
   private store = inject(Store<AppState>);
 
   customer$!: Observable<Stripe.Customer | null>;
-  transactions$!: Observable<Stripe.Charge[]>;
+  transactions$!: Observable<ISupplementedCharge[]>;
 
   private subscriptions: Subscription[] = [];
 
@@ -57,6 +57,9 @@ export class PurchasesComponent implements OnInit, OnDestroy {
       if (customer) {
         this.store.dispatch(
           PurchaseActions.getAllTransactions({ customerId: customer?.id })
+        );
+        this.transactions$ = this.store.select(
+          PurchaseSelectors.selectTransactions
         );
       }
     });

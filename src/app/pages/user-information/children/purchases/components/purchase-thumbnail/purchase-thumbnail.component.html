@@ -1,0 +1,36 @@
+<div
+  class="card transaction-thumbnail"
+  style="width: 20rem"
+  *ngIf="transaction.charge as charge"
+>
+  <img
+    src="/assets/images/icons/click.svg"
+    class="transaction-thumbnail__click"
+    alt="click"
+    width="30"
+    height="30"
+  />
+  <div class="card-header">{{ charge.id }}</div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">
+      <span class="fw-bold">Made:</span>
+      {{ charge.created * 1000 | date : "medium" }}
+    </li>
+    <li class="list-group-item">
+      <span class="fw-bold">Price:</span> {{ charge.amount / 100
+      }}{{ charge.currency | uppercase }}
+    </li>
+    <li class="list-group-item">
+      <span class="fw-bold">Payment:</span>
+      {{ charge.paid ? "paid" : "not paid" }}
+    </li>
+    <li class="list-group-item">
+      <span class="fw-bold">Status:</span> {{ charge.status }}
+    </li>
+    <li class="list-group-item">
+      <span class="fw-bold"
+        >Provided by {{ charge.calculated_statement_descriptor }}</span
+      >
+    </li>
+  </ul>
+</div>

@@ -1,11 +1,11 @@
 <div class="pt-3 pb-3">
   <app-basic-card [item]="userInformationItem"></app-basic-card>
-  <div>
+  <div class="pb-4">
     <app-customer-information
       [customer]="customer$"
       *ngIf="customer$ | async"
     ></app-customer-information>
     <ng-template #noCustomer> <p>There is no customer</p></ng-template>
   </div>
-  <app-purchases-list></app-purchases-list>
+  <app-purchases-list [transactions]="transactions$"></app-purchases-list>
 </div>
