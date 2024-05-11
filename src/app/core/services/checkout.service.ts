@@ -110,17 +110,19 @@ export class CheckoutService {
             );
         });
 
-        const requests = transactionIds.map((ids) =>
-          forkJoin({
+        const requests = transactionIds.map((ids) => {
+          const { quantity } = ids;
+          return forkJoin({
             product: this.getTransactionProduct(ids.product_id),
             price: this.getTransactionPrice(ids.price_id),
           }).pipe(
             map(({ product, price }) => ({
               product,
               price,
+              quantity,
             }))
-          )
-        );
+          );
+        });
 
         return forkJoin(requests);
       })
@@ -130,7 +132,6 @@ export class CheckoutService {
   getTransactionProduct(productId: string): Observable<Stripe.Product> {
     return from(this.stripe.products.retrieve(productId)).pipe(
       map((product) => {
-        console.log('product', product);
         return product as Stripe.Product;
       })
     );
@@ -139,7 +140,6 @@ export class CheckoutService {
   getTransactionPrice(priceId: string): Observable<Stripe.Price> {
     return from(this.stripe.prices.retrieve(priceId)).pipe(
       map((price) => {
-        console.log(price);
         return price as Stripe.Price;
       })
     );
