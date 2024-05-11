@@ -2,6 +2,7 @@
   class="card transaction-thumbnail"
   style="width: 20rem"
   *ngIf="transaction.charge as charge"
+  (click)="openModalWithComponent()"
 >
   <img
     src="/assets/images/icons/click.svg"
@@ -17,8 +18,8 @@
       {{ charge.created * 1000 | date : "medium" }}
     </li>
     <li class="list-group-item">
-      <span class="fw-bold">Price:</span> {{ charge.amount / 100
-      }}{{ charge.currency | uppercase }}
+      <span class="fw-bold">Price:</span>
+      {{ charge.amount / 100 | currency : "PLN" }}
     </li>
     <li class="list-group-item">
       <span class="fw-bold">Payment:</span>
