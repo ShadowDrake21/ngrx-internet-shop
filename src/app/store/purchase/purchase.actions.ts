@@ -3,6 +3,7 @@ import {
   ICheckoutInit,
   IPurchaseUpdate,
   ISupplementedCharge,
+  ISupplementedTransactions,
 } from '@app/shared/models/purchase.model';
 import { createAction, props } from '@ngrx/store';
 import { PaymentMethod } from '@stripe/stripe-js';
@@ -41,11 +42,11 @@ export const updateCustomerFailure = createAction(
 
 export const getAllTransactions = createAction(
   '[Checkout Component] GetAllTransactions',
-  props<{ customerId: string }>()
+  props<{ customerId: string; startingAfter?: string }>()
 );
 export const getAllTransactionsSuccess = createAction(
   '[Checkout Component] GetAllTransactionsSuccess',
-  props<{ transactions: ISupplementedCharge[] }>()
+  props<{ transactions: ISupplementedTransactions }>()
 );
 export const getAllTransactionsFailure = createAction(
   '[Checkout Component] GetAllTransactionsFailure',
