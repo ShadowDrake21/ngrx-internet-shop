@@ -46,7 +46,7 @@ main {
 }
 
 .full-screen__modal {
-  padding: 50px 100px;
+  padding: 0 50px;
   max-width: 100%;
   width: 100%;
 }
@@ -93,6 +93,33 @@ main {
         width: 100%;
         text-wrap: nowrap;
         text-align: center;
+      }
+    }
+  }
+}
+
+.purchase__modal-slider {
+  .carousel.slide {
+    .carousel-control {
+      top: 50%;
+      height: 40px;
+      transform: translateY(-50%);
+      .icon-next,
+      .icon-prev {
+        padding: 20px;
+        background-color: #000 !important;
+      }
+    }
+  }
+}
+
+.purchase-product__modal-slider {
+  .carousel.slide {
+    .carousel-control {
+      .icon-next,
+      .icon-prev {
+        padding: 0;
+        background-color: transparent !important;
       }
     }
   }
