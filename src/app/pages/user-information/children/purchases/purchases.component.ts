@@ -6,7 +6,7 @@ import { AppState } from '@app/store/app.state';
 import * as UserSelectors from '@store/user/user.selectors';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
-import { Observable, Subscription } from 'rxjs';
+import { map, Observable, of, Subscription } from 'rxjs';
 import Stripe from 'stripe';
 import { CommonModule } from '@angular/common';
 import { TabsModule } from 'ngx-bootstrap/tabs';
@@ -37,7 +37,6 @@ export class PurchasesComponent implements OnInit, OnDestroy {
   private store = inject(Store<AppState>);
 
   customer$!: Observable<Stripe.Customer | null>;
-  transactions$!: Observable<ISupplementedCharge[]>;
 
   private subscriptions: Subscription[] = [];
 
@@ -52,18 +51,6 @@ export class PurchasesComponent implements OnInit, OnDestroy {
     this.subscriptions.push(emailSubscription);
 
     this.customer$ = this.store.select(PurchaseSelectors.selectCustomer);
-
-    const customerSubscription = this.customer$.subscribe((customer) => {
-      if (customer) {
-        this.store.dispatch(
-          PurchaseActions.getAllTransactions({ customerId: customer?.id })
-        );
-        this.transactions$ = this.store.select(
-          PurchaseSelectors.selectTransactions
-        );
-      }
-    });
-    this.subscriptions.push(customerSubscription);
   }
 
   ngOnDestroy(): void {
