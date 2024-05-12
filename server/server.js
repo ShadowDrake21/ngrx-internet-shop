@@ -33,6 +33,7 @@ app.post("/checkout", async (req, res, next) => {
 
     if (customer.data.length > 0) {
       customer = customer.data[0];
+      console.log("customer", customer);
     } else {
       customer = await stripe.customers.create({
         email,
@@ -98,6 +99,9 @@ app.post("/checkout", async (req, res, next) => {
         },
         quantity: item.quantity,
       })),
+      phone_number_collection: {
+        enabled: true,
+      },
       mode: "payment",
       success_url:
         "http://localhost:4242/success?session_id={CHECKOUT_SESSION_ID}",
