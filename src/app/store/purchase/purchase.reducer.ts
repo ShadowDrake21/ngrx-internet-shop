@@ -2,16 +2,19 @@ import Stripe from 'stripe';
 import { createReducer, on } from '@ngrx/store';
 
 import * as PurchaseActions from '@store/purchase/purchase.actions';
-import { ISupplementedCharge } from '@app/shared/models/purchase.model';
+import {
+  ISupplementedCharge,
+  ISupplementedTransactions,
+} from '@app/shared/models/purchase.model';
 
 export interface PurchaseState {
   customer: Stripe.Customer | null;
-  transactions: ISupplementedCharge[];
+  transactions: ISupplementedTransactions | null;
   errorMessage: string | null;
 }
 export const initialPurchaseState: PurchaseState = {
   customer: null,
-  transactions: [],
+  transactions: null,
   errorMessage: null,
 };
 
@@ -24,7 +27,7 @@ export const purchaseReducer = createReducer(
   on(PurchaseActions.getCustomerFailure, (state, { errorMessage }) => ({
     ...state,
     customer: null,
-    transactions: [],
+    transactions: null,
     errorMessage,
   })),
   on(PurchaseActions.updateCustomerSuccess, (state, { customer }) => ({
