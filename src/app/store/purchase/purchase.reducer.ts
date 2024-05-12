@@ -9,12 +9,12 @@ import {
 
 export interface PurchaseState {
   customer: Stripe.Customer | null;
-  transactions: ISupplementedTransactions | null;
+  transactions: ISupplementedCharge[];
   errorMessage: string | null;
 }
 export const initialPurchaseState: PurchaseState = {
   customer: null,
-  transactions: null,
+  transactions: [],
   errorMessage: null,
 };
 
@@ -27,7 +27,7 @@ export const purchaseReducer = createReducer(
   on(PurchaseActions.getCustomerFailure, (state, { errorMessage }) => ({
     ...state,
     customer: null,
-    transactions: null,
+    transactions: [],
     errorMessage,
   })),
   on(PurchaseActions.updateCustomerSuccess, (state, { customer }) => ({

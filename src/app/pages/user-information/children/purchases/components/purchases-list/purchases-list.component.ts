@@ -15,7 +15,16 @@ import { PurchaseState } from '@app/store/purchase/purchase.reducer';
 import { Store } from '@ngrx/store';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
-import { map, Observable, of, Subscription } from 'rxjs';
+import {
+  delay,
+  finalize,
+  map,
+  Observable,
+  of,
+  Subscription,
+  take,
+  tap,
+} from 'rxjs';
 import { PurchaseThumbnailComponent } from '../purchase-thumbnail/purchase-thumbnail.component';
 import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -31,53 +40,43 @@ import Stripe from 'stripe';
   providers: [BsModalService],
 })
 export class PurchasesListComponent implements OnInit, OnChanges {
-  @Input({ required: true, alias: 'customer' })
-  customer$!: Observable<Stripe.Customer | null>;
+  @Input({ required: true, alias: 'transactions' })
+  transactions$!: Observable<ISupplementedCharge[]>;
 
-  private store = inject(Store<AppState>);
-  supplementedTransactions$!: Observable<ISupplementedTransactions>;
   visibleTransactions$!: Observable<ISupplementedCharge[]>;
 
-  private subscriptions: Subscription[] = [];
-  ngOnInit(): void {}
+  transactionsLoading: boolean = true;
+
+  ngOnInit(): void {
+    console.log('ngOnInit transactionsLoading', this.transactionsLoading);
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.customer$) {
-      const customerSubscription = this.customer$.subscribe((customer) => {
-        if (customer) {
-          this.store.dispatch(
-            PurchaseActions.getAllTransactions({ customerId: customer?.id })
-          );
-          const transactionsSubscription = this.store
-            .select(PurchaseSelectors.selectTransactions)
-            .subscribe(
-              (supplementedTransactions) =>
-                (this.supplementedTransactions$ = of(supplementedTransactions!))
-            );
-
-          this.subscriptions.push(transactionsSubscription);
-        }
-      });
-      this.subscriptions.push(customerSubscription);
-
+    if (this.transactions$) {
       this.visibleTransactions$ = this.sliceTransactions(0, 4);
+      setTimeout(() => {
+        this.transactionsLoading = false;
+      }, 2000);
     }
   }
 
   pageChanged(event: PageChangedEvent): void {
+    console.log('event', event);
     const startItem = (event.page - 1) * event.itemsPerPage;
     const endItem = event.page * event.itemsPerPage;
     this.visibleTransactions$ = this.sliceTransactions(startItem, endItem);
   }
 
-  // has_more pagination!!!
-
   sliceTransactions(
     start: number,
     end: number
   ): Observable<ISupplementedCharge[]> {
-    return this.supplementedTransactions$.pipe(
-      map(({ transactions }) => transactions.slice(start, end))
+    console.log('sliceTransactions');
+
+    return this.transactions$.pipe(
+      map((transactions) => {
+        return transactions.slice(start, end);
+      })
     );
   }
 }
