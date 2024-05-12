@@ -97,9 +97,9 @@ export class PurchaseEffects {
   getAllTransactions$ = createEffect(() =>
     this.actions$.pipe(
       ofType(PurchaseActions.getAllTransactions),
-      exhaustMap(({ customerId, startingAfter }) =>
-        this.checkoutService.getAllTransactions(customerId, startingAfter).pipe(
-          switchMap(({ charges, has_more }) =>
+      exhaustMap(({ customerId }) =>
+        this.checkoutService.getAllTransactions(customerId).pipe(
+          switchMap(({ charges }) =>
             forkJoin(
               charges.map((charge) =>
                 this.checkoutService
@@ -117,7 +117,7 @@ export class PurchaseEffects {
             ).pipe(
               map((transactions) =>
                 PurchaseActions.getAllTransactionsSuccess({
-                  transactions: { transactions, hasMore: has_more },
+                  transactions,
                 })
               ),
               catchError((error) =>

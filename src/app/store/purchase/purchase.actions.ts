@@ -42,11 +42,11 @@ export const updateCustomerFailure = createAction(
 
 export const getAllTransactions = createAction(
   '[Checkout Component] GetAllTransactions',
-  props<{ customerId: string; startingAfter?: string }>()
+  props<{ customerId: string }>()
 );
 export const getAllTransactionsSuccess = createAction(
   '[Checkout Component] GetAllTransactionsSuccess',
-  props<{ transactions: ISupplementedTransactions }>()
+  props<{ transactions: ISupplementedCharge[] }>()
 );
 export const getAllTransactionsFailure = createAction(
   '[Checkout Component] GetAllTransactionsFailure',

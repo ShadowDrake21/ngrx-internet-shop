@@ -69,24 +69,19 @@ export class CheckoutService {
   }
 
   // by default - 10 items, so I must adjust limit functionality
-  getAllTransactions(
-    customerId: string,
-    startingAfter?: string
-  ): Observable<{
+  getAllTransactions(customerId: string): Observable<{
     charges: Stripe.Charge[];
-    has_more: boolean;
   }> {
     return from(
       this.stripe.charges.list({
         customer: customerId,
-        limit: 12,
-        starting_after: startingAfter,
+        limit: 8,
       })
     ).pipe(
       mergeMap((result) => {
         console.log('result', result);
         if ('data' in result) {
-          return of({ charges: result.data, has_more: result.has_more });
+          return of({ charges: result.data });
         } else {
           return of({ charges: [], has_more: false });
         }
