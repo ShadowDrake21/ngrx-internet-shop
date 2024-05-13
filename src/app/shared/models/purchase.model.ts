@@ -33,6 +33,11 @@ export interface ISupplementedChargeProduct {
   quantity: number;
 }
 
+export interface IUserTransactionsData {
+  count: number;
+  price: number;
+}
+
 export interface ITransactionDataDB {
   payment_intent: string;
   productsIds: ITransactionIds[];

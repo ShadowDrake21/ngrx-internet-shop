@@ -21,16 +21,24 @@
           <span class="fw-bold">Auth time:</span>
           {{ user.userCredential?.tokenResult?.authTime | date : "medium" }}
         </p>
-        <p><span class="fw-bold">Number of purchases:</span> 3</p>
-        <p><span class="fw-bold">Total price of purchases:</span> 1234 zł</p>
+        <p>
+          <span class="fw-bold">Number of purchases:</span>
+          {{ (transactionsData$ | async)?.count ?? 0 }}
+        </p>
+        <p>
+          <span class="fw-bold">Total price of purchases:</span>
+          {{ (transactionsData$ | async)?.price ?? 0 }} zł
+        </p>
         <p>
           <span class="fw-bold">Number of favourites:</span>
           {{ (favorites$ | async)?.length }}
         </p>
+        <!--  -->
         <p>
           <span class="fw-bold">Last viewed product:</span> Sleek Futuristic
           Electric Bicycle
         </p>
+        <!--  -->
       </div>
     </ng-container>
   </div>

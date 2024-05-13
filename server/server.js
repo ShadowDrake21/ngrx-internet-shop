@@ -126,10 +126,11 @@ app.get("/success", async (req, res) => {
     product_id: product.price.product,
     quantity: product.quantity,
   }));
-  console.log("minimizeProducts", minimizeProducts);
+  console.log("session", session);
   const purchaseItem = {
     productsIds: minimizeProducts,
     payment_intent: session.payment_intent,
+    total_price: session.amount_total / 100,
     customer_id: customer.id,
     session_id: session_id,
   };
