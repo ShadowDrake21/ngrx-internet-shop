@@ -1,7 +1,7 @@
 <div class="card" *ngIf="!transactionsLoading; else loading">
   <div class="card-header d-flex justify-content-between align-items-center">
     <span class="fs-5">Last customer purchases</span>
-    <span>Number of purchases: {{ (transactions$ | async)?.length }}</span>
+    <span>Number of last purchases: {{ (transactions$ | async)?.length }}</span>
   </div>
   <div class="card-body">
     <div *ngIf="transactions$ | async as transactions">
@@ -26,6 +26,6 @@
 </div>
 <ng-template #loading>
   <div class="d-flex justify-content-center pt-5 pb-5">
-    <div class="loader"></div>
+    <div class="purchase-loader"></div>
   </div>
 </ng-template>

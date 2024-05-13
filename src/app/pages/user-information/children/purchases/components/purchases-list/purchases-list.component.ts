@@ -7,10 +7,7 @@ import {
   OnInit,
   SimpleChanges,
 } from '@angular/core';
-import {
-  ISupplementedCharge,
-  ISupplementedTransactions,
-} from '@app/shared/models/purchase.model';
+import { ISupplementedCharge } from '@app/shared/models/purchase.model';
 import { PurchaseState } from '@app/store/purchase/purchase.reducer';
 import { Store } from '@ngrx/store';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
@@ -49,14 +46,14 @@ export class PurchasesListComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     console.log('ngOnInit transactionsLoading', this.transactionsLoading);
+    setTimeout(() => {
+      this.transactionsLoading = false;
+    }, 2000);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.transactions$) {
       this.visibleTransactions$ = this.sliceTransactions(0, 4);
-      setTimeout(() => {
-        this.transactionsLoading = false;
-      }, 2000);
     }
   }
 

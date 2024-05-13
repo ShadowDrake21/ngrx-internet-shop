@@ -1,11 +1,17 @@
 <div class="pt-3 pb-3">
   <app-basic-card [item]="userInformationItem"></app-basic-card>
-  <div class="pb-4">
-    <app-customer-information
-      [customer]="customer$"
-      *ngIf="customer$ | async"
-    ></app-customer-information>
-    <ng-template #noCustomer> <p>There is no customer</p></ng-template>
+  <div *ngIf="customer$ | async; else noCustomer">
+    <div class="pb-4">
+      <app-customer-information
+        [customer]="customer$"
+      ></app-customer-information>
+    </div>
+    <app-purchases-list [transactions]="transactions$"></app-purchases-list>
   </div>
-  <app-purchases-list [transactions]="transactions$"></app-purchases-list>
+  <ng-template #noCustomer>
+    <div class="text-center pt-5">
+      <h4>You haven't made any purchase.</h4>
+      <h5>Make one and here will appear all neccessary information!</h5>
+    </div>
+  </ng-template>
 </div>
