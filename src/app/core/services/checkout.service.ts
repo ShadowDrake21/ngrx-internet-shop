@@ -10,6 +10,7 @@ import {
   IPurchaseUpdate,
   ISupplementedChargeProduct,
   ITransactionIds,
+  IUserTransactionsData,
 } from '@app/shared/models/purchase.model';
 import {
   Database,
@@ -86,6 +87,32 @@ export class CheckoutService {
         } else {
           return of({ charges: [] });
         }
+      })
+    );
+  }
+
+  getUserTransactionsDataFromDB(
+    customerId: string
+  ): Observable<IUserTransactionsData | null> {
+    const transactionProductsQuery = query(
+      ref(this.db, `customers/${customerId}/purchases/`)
+    );
+
+    return from(get(transactionProductsQuery)).pipe(
+      switchMap((snapshot) => {
+        if (!snapshot.exists()) {
+          return of(null);
+        }
+
+        let transactionsData: IUserTransactionsData = { count: 0, price: 0 };
+        snapshot.forEach((childSnapshot) => {
+          transactionsData = {
+            count: transactionsData.count + 1,
+            price: transactionsData.price + childSnapshot.val().total_price,
+          };
+        });
+
+        return of(transactionsData);
       })
     );
   }
