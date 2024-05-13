@@ -68,10 +68,11 @@ export class CheckoutService {
     return from(this.stripe.customers.update(customerId, updateObject));
   }
 
-  // by default - 10 items, so I must adjust limit functionality
   getAllTransactions(customerId: string): Observable<{
     charges: Stripe.Charge[];
   }> {
+    console.log('customerId', customerId);
+
     return from(
       this.stripe.charges.list({
         customer: customerId,
@@ -83,7 +84,7 @@ export class CheckoutService {
         if ('data' in result) {
           return of({ charges: result.data });
         } else {
-          return of({ charges: [], has_more: false });
+          return of({ charges: [] });
         }
       })
     );

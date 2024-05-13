@@ -10,6 +10,7 @@ import {
   Observable,
   of,
   take,
+  tap,
 } from 'rxjs';
 import { FirebaseError } from 'firebase/app';
 
@@ -23,13 +24,16 @@ import { AuthService } from '../../core/authentication/auth.service';
 
 // actions
 import * as UserActions from './user.actions';
-
+import * as PurchaseActions from '@store/purchase/purchase.actions';
 // utils
 import { minimalizeUserCredential } from '../../shared/utils/store.utils';
 import { createAuthInLS } from '@app/core/utils/auth.utils';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app.state';
 
 @Injectable()
 export class UserEffects {
+  private store = inject(Store<AppState>);
   private actions$ = inject(Actions);
   private authService = inject(AuthService);
 
@@ -333,7 +337,10 @@ export class UserEffects {
     this.actions$.pipe(
       ofType(UserActions.signOut),
       exhaustMap(() =>
-        this.authService.signOut().pipe(map(() => UserActions.signOutSuccess()))
+        this.authService.signOut().pipe(
+          tap(() => this.store.dispatch(PurchaseActions.clearPurchaseState())),
+          map(() => UserActions.signOutSuccess())
+        )
       )
     )
   );

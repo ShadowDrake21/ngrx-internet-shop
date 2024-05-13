@@ -3,7 +3,6 @@ import {
   ICheckoutInit,
   IPurchaseUpdate,
   ISupplementedCharge,
-  ISupplementedTransactions,
 } from '@app/shared/models/purchase.model';
 import { createAction, props } from '@ngrx/store';
 import { PaymentMethod } from '@stripe/stripe-js';
@@ -66,4 +65,7 @@ export const getCustomerPaymentMethodsFailure = createAction(
   props<{ customerId: string }>()
 );
 
+export const clearPurchaseState = createAction(
+  '[Checkout Component] ClearPurchaseState'
+);
 // shipping and so on

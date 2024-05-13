@@ -22,11 +22,6 @@ export interface IPurchaseUpdate {
   };
 }
 
-export interface ISupplementedTransactions {
-  transactions: ISupplementedCharge[];
-  hasMore: boolean;
-}
-
 export interface ISupplementedCharge {
   charge: Stripe.Charge;
   products: ISupplementedChargeProduct[];

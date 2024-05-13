@@ -20,7 +20,7 @@ import { AppState } from '@app/store/app.state';
 import { Store } from '@ngrx/store';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { TooltipDirective, TooltipModule } from 'ngx-bootstrap/tooltip';
-import { Observable, Subscription } from 'rxjs';
+import { delay, Observable, Subscription } from 'rxjs';
 import Stripe from 'stripe';
 
 import * as PurchaseActions from '@store/purchase/purchase.actions';
@@ -87,14 +87,20 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
     ),
   });
 
+  informationLoading: boolean = false;
+
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
-    const customerSubscription = this.customer$.subscribe((customer) => {
-      if (customer) {
-        this.fillCustomerUpdateForm(customer);
-      }
-    });
+    this.informationLoading = true;
+    const customerSubscription = this.customer$
+      .pipe(delay(2000))
+      .subscribe((customer) => {
+        if (customer) {
+          this.fillCustomerUpdateForm(customer);
+          this.informationLoading = false;
+        }
+      });
     this.subscriptions.push(customerSubscription);
 
     this.shippingValidationPreparations();

@@ -42,27 +42,33 @@ export class PurchasesComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   ngOnInit() {
-    const emailSubscription = this.store
-      .select(UserSelectors.selectEmail)
-      .subscribe((email) => {
-        this.store.dispatch(PurchaseActions.getCustomer({ email: email! }));
+    this.customer$ = this.store.select(PurchaseSelectors.selectCustomer);
 
-        this.customer$ = this.store.select(PurchaseSelectors.selectCustomer);
+    this.transactions$ = this.store.select(
+      PurchaseSelectors.selectTransactions
+    );
 
-        const customerSubscription = this.customer$.subscribe((customer) => {
-          if (customer) {
-            this.store.dispatch(
-              PurchaseActions.getAllTransactions({ customerId: customer?.id })
-            );
-            this.transactions$ = this.store.select(
-              PurchaseSelectors.selectTransactions
-            );
-          }
-        });
-        this.subscriptions.push(customerSubscription);
-      });
+    // const emailSubscription = this.store
+    //   .select(UserSelectors.selectEmail)
+    //   .subscribe((email) => {
+    //     // this.store.dispatch(PurchaseActions.getCustomer({ email: email! }));
 
-    this.subscriptions.push(emailSubscription);
+    //     // this.customer$ = this.store.select(PurchaseSelectors.selectCustomer);
+
+    //     // const customerSubscription = this.customer$.subscribe((customer) => {
+    //     //   if (customer) {
+    //     //     this.store.dispatch(
+    //     //       PurchaseActions.getAllTransactions({ customerId: customer?.id })
+    //     //     );
+
+    //     //   } else {
+    //     //     console.log('no customer');
+    //     //   }
+    //     // });
+    //     // this.subscriptions.push(customerSubscription);
+    //   });
+
+    // this.subscriptions.push(emailSubscription);
   }
 
   ngOnDestroy(): void {
