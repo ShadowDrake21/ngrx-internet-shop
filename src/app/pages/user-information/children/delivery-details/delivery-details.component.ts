@@ -10,7 +10,7 @@ import {
 } from '@angular/forms';
 import { phonePattern } from '../purchases/components/customer-information/constants/pattern.constants';
 import { DatabaseService } from '@app/core/services/database.service';
-import { map, Observable, of, Subscription, switchMap } from 'rxjs';
+import { map, Observable, of, Subscription, switchMap, tap } from 'rxjs';
 import { IShipping } from '@app/shared/models/purchase.model';
 import { Store } from '@ngrx/store';
 
@@ -22,15 +22,25 @@ import {
   IUnsplashImageResponse,
 } from '@app/shared/models/unsplash.model';
 import { shuffleArray } from '@app/shared/utils/arrayManipulations.utils';
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 @Component({
   selector: 'app-delivery-details',
   standalone: true,
-  imports: [CommonModule, BasicCardComponent, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    BasicCardComponent,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+  ],
   templateUrl: './delivery-details.component.html',
   styleUrl: './delivery-details.component.scss',
 })
 export class DeliveryDetailsComponent implements OnInit, OnDestroy {
   userInformationItem = userInformationContent[3];
+
+  editIcon = faPen;
+  deleteIcon = faTrash;
 
   private store = inject(Store<PurchaseState>);
   private databaseService = inject(DatabaseService);
@@ -67,7 +77,7 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
         if (customer) {
           this.customerId = customer.id;
           this.deliveryRecords$ = this.databaseService.getAllDeliveryRecords(
-            customer.id
+            this.customerId
           );
         }
       });
@@ -82,18 +92,20 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
           this.deliveryRecords$.pipe(
             map((record) => ({
               newDeliveryRecord,
-              recordsLength: record.length,
             }))
           )
         )
       )
-      .subscribe(({ newDeliveryRecord, recordsLength }) => {
-        const newRecordId = `delivery-record_${recordsLength + 1}`;
+      .subscribe(({ newDeliveryRecord }) => {
         this.databaseService.addDeliveryRecord(
           newDeliveryRecord,
           this.customerId,
-          newRecordId
+          newDeliveryRecord.id!
         );
+        this.deliveryRecords$ = this.databaseService.getAllDeliveryRecords(
+          this.customerId
+        );
+        this.shippingForm.reset();
       });
   }
 
@@ -124,6 +136,7 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
   ): Observable<IShipping> {
     return of({
       background: backgroundObj,
+      id: `delivery-record_${new Date().getTime()}`,
       name: this.shippingForm.value.name!,
       phone: this.shippingForm.value.phone!,
       address: {
@@ -135,6 +148,18 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
       },
     });
   }
+
+  removeDeliveryRecord(id: string) {
+    this.databaseService
+      .deleteDeliveryRecord(this.customerId, id)
+      .subscribe(() => {
+        this.deliveryRecords$ = this.databaseService.getAllDeliveryRecords(
+          this.customerId
+        );
+      });
+  }
+
+  editDeliveryRecord(id: string) {}
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
