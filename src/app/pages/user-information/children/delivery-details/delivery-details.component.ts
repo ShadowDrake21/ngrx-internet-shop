@@ -10,12 +10,18 @@ import {
 } from '@angular/forms';
 import { phonePattern } from '../purchases/components/customer-information/constants/pattern.constants';
 import { DatabaseService } from '@app/core/services/database.service';
-import { map, Observable, Subscription } from 'rxjs';
+import { map, Observable, of, Subscription, switchMap } from 'rxjs';
 import { IShipping } from '@app/shared/models/purchase.model';
 import { Store } from '@ngrx/store';
 
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import { PurchaseState } from '@app/store/purchase/purchase.reducer';
+import { UnsplashService } from '@app/core/services/unsplash.service';
+import {
+  IReducedUnsplashImage,
+  IUnsplashImageResponse,
+} from '@app/shared/models/unsplash.model';
+import { shuffleArray } from '@app/shared/utils/arrayManipulations.utils';
 @Component({
   selector: 'app-delivery-details',
   standalone: true,
@@ -28,6 +34,7 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
 
   private store = inject(Store<PurchaseState>);
   private databaseService = inject(DatabaseService);
+  private unsplashService = inject(UnsplashService);
 
   shippingForm = new FormGroup({
     name: new FormControl('', [
@@ -64,13 +71,59 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
           );
         }
       });
-
     this.subscriptions.push(customerSubscription);
   }
 
   onSubmit() {
-    console.log('form', this.shippingForm.value);
-    const newDeliveryRecond: IShipping = {
+    this.getDeliveryRecordBackground(this.shippingForm.value.address?.country!)
+      .pipe(
+        switchMap((background) => this.formDeliveryRecord(background)),
+        switchMap((newDeliveryRecord) =>
+          this.deliveryRecords$.pipe(
+            map((record) => ({
+              newDeliveryRecord,
+              recordsLength: record.length,
+            }))
+          )
+        )
+      )
+      .subscribe(({ newDeliveryRecord, recordsLength }) => {
+        const newRecordId = `delivery-record_${recordsLength + 1}`;
+        this.databaseService.addDeliveryRecord(
+          newDeliveryRecord,
+          this.customerId,
+          newRecordId
+        );
+      });
+  }
+
+  getDeliveryRecordBackground(
+    countryCode: string
+  ): Observable<IReducedUnsplashImage> {
+    const country = countryCode === 'PL' ? 'Poland' : 'Ukraine';
+
+    return this.unsplashService.getPhotoArray(country).pipe(
+      map(({ results }) => shuffleArray(results)[0]),
+      map((item) => this.formBackgroundObject(item))
+    );
+  }
+
+  formBackgroundObject(item: any): IReducedUnsplashImage {
+    return {
+      title: item.slug,
+      url: item.urls.full,
+      user: {
+        name: item.user.username,
+        link: item.user.links.html,
+      },
+    };
+  }
+
+  formDeliveryRecord(
+    backgroundObj: IReducedUnsplashImage
+  ): Observable<IShipping> {
+    return of({
+      background: backgroundObj,
       name: this.shippingForm.value.name!,
       phone: this.shippingForm.value.phone!,
       address: {
@@ -80,17 +133,7 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
         line2: this.shippingForm.value.address?.line2!,
         postal_code: this.shippingForm.value.address?.postalCode!,
       },
-    };
-
-    this.deliveryRecords$
-      .pipe(map((records) => `delivery-record_${records.length + 1}`))
-      .subscribe((recordId) => {
-        this.databaseService.addDeliveryRecord(
-          newDeliveryRecond,
-          this.customerId,
-          recordId
-        );
-      });
+    });
   }
 
   ngOnDestroy(): void {

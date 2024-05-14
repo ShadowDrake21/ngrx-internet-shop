@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { IProduct } from './product.model';
+import { IReducedUnsplashImage } from './unsplash.model';
 
 export interface ICheckoutInit {
   email: string;
@@ -13,6 +14,7 @@ export interface IPurchaseUpdate {
 }
 
 export interface IShipping {
+  background?: IReducedUnsplashImage;
   name: string;
   phone: string;
   address: {
