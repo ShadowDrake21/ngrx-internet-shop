@@ -92,6 +92,8 @@ export class DeliveryDetailsComponent
     }),
   });
 
+  // FIX EDITING AND ADDING IF IN THE visualDeliveryRecords$$ THERE ARE ALREADY 6 ELEMENTS
+
   private customerId: string = '';
 
   deliveryRecords$!: Observable<IShipping[]>;
@@ -111,15 +113,19 @@ export class DeliveryDetailsComponent
       .subscribe((customer) => {
         if (customer) {
           this.customerId = customer.id;
-          this.deliveryRecords$ = this.databaseService
-            .getAllDeliveryRecords(this.customerId)
-            .pipe(
-              tap((records) =>
-                this.visualDeliveryRecords$$.next(
-                  records.slice(0, this.itemsPerPage)
-                )
-              )
-            );
+          this.deliveryRecords$ = this.databaseService.getAllDeliveryRecords(
+            this.customerId
+          );
+
+          const deliveryRecordsSubscription = this.deliveryRecords$.subscribe(
+            (records) => {
+              this.visualDeliveryRecords$$.next(
+                records.slice(0, this.itemsPerPage)
+              );
+            }
+          );
+
+          this.subscriptions.push(deliveryRecordsSubscription);
         }
       });
 
@@ -137,9 +143,14 @@ export class DeliveryDetailsComponent
         switchMap((background) => this.formDeliveryRecord(background)),
         switchMap((newDeliveryRecord) =>
           this.deliveryRecords$.pipe(
-            map(() => ({
-              newDeliveryRecord,
-            }))
+            map((records) => {
+              const updatedRecords = [
+                ...this.visualDeliveryRecords$$.getValue(),
+                newDeliveryRecord,
+              ];
+              this.visualDeliveryRecords$$.next(updatedRecords);
+              return { records, newDeliveryRecord };
+            })
           )
         )
       )
@@ -149,12 +160,14 @@ export class DeliveryDetailsComponent
           this.customerId,
           newDeliveryRecord.id!
         );
-        this.databaseService
-          .getAllDeliveryRecords(this.customerId)
-          .subscribe((records) => {
-            this.deliveryRecords$ = of(records);
-            this.pageChanged({ itemsPerPage: this.itemsPerPage, page: 1 });
-          });
+
+        const updatedRecords = this.visualDeliveryRecords$$
+          .getValue()
+          .map((item) =>
+            item.id === newDeliveryRecord.id ? newDeliveryRecord : item
+          );
+        this.visualDeliveryRecords$$.next(updatedRecords);
+
         this.shippingForm.reset();
         this.shippingForm.controls.id.patchValue(
           `delivery-record_${new Date().getTime()}`
@@ -213,9 +226,10 @@ export class DeliveryDetailsComponent
         )
       )
       .subscribe((records) => {
-        console.log('after removal', records);
-        this.deliveryRecords$ = of(records);
-        this.pageChanged({ itemsPerPage: this.itemsPerPage, page: 1 });
+        const updatedRecords = this.visualDeliveryRecords$$
+          .getValue()
+          .filter((record) => record.id !== id);
+        this.visualDeliveryRecords$$.next(updatedRecords);
       });
 
     this.subscriptions.push(removeSubscription);
@@ -273,8 +287,6 @@ export class DeliveryDetailsComponent
     }
   }
 
-  ngAfterViewInit(): void {}
-
   pageChanged(event: PageChangedEvent): void {
     const startItem = (event.page - 1) * event.itemsPerPage;
     const endItem = event.page * event.itemsPerPage;
@@ -289,6 +301,10 @@ export class DeliveryDetailsComponent
         this.visualDeliveryRecords$$.next(visualRecords);
         this.cdr.detectChanges();
       });
+  }
+
+  ngAfterViewInit(): void {
+    this.changePagination();
   }
 
   ngOnDestroy(): void {
