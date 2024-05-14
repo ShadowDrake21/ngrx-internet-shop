@@ -5,6 +5,7 @@ import {
   DataSnapshot,
   get,
   ref,
+  remove,
   update,
 } from '@angular/fire/database';
 import { IShipping } from '@app/shared/models/purchase.model';
@@ -46,6 +47,17 @@ export class DatabaseService {
         }
         return deliveryRecords;
       })
+    );
+  }
+
+  deleteDeliveryRecord(customerId: string, recordId: string): Observable<void> {
+    return from(
+      remove(
+        ref(
+          this.database,
+          `customers/${customerId}/deliveryRecords/${recordId}`
+        )
+      )
     );
   }
 }

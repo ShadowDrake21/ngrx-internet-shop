@@ -14,6 +14,7 @@ export interface IPurchaseUpdate {
 }
 
 export interface IShipping {
+  id?: string;
   background?: IReducedUnsplashImage;
   name: string;
   phone: string;
