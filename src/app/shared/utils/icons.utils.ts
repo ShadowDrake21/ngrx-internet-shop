@@ -8,21 +8,20 @@ import {
 import {
   faAt,
   faBasketShopping,
-  faCircleInfo,
   faClose,
   faCreditCard,
   faEarthEurope,
-  faGear,
   faGlobe,
   faHeartCircleCheck,
-  faHouseMedicalCircleCheck,
   faInfo,
   faKey,
   faLocationDot,
+  faPen,
   faPerson,
   faPhone,
   faPowerOff,
   faRotate,
+  faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 
 export const signInModalIcons = { faFacebookF, faGoogle, faXTwitter, faClose };
@@ -39,4 +38,8 @@ export const userInformationSidebar = {
 export const personalInformationIcons = {
   passwordIcon: faKey,
   reauthenticateIcon: faRotate,
+};
+export const deliveryDetailsIcons = {
+  editIcon: faPen,
+  deleteIcon: faTrash,
 };

@@ -19,7 +19,11 @@
       >
     </p>
     <h3 class="text-white position-relative text-center" style="z-index: 99">
-      Add new delivery record
+      {{
+        isEditMode
+          ? "Edit an existing delivery record"
+          : "Add a new delivery record"
+      }}
     </h3>
     <form
       [formGroup]="shippingForm"
@@ -103,7 +107,7 @@
                     shippingForm.controls.address.controls.country.invalid
                   "
                 >
-                  <option selected disabled value="">Country</option>
+                  <option selected disabled value="0">Country</option>
                   <option [ngValue]="'PL'">Poland</option>
                   <option [ngValue]="'UA'">Ukraine</option>
                 </select>
@@ -215,9 +219,10 @@
               </div>
               <div class="col">
                 <button
-                  type="reset"
+                  type="button"
                   class="btn btn-danger w-100"
-                  [disabled]="!shippingForm.touched"
+                  [disabled]="!shippingForm.touched && !isEditMode"
+                  (click)="onFormReset()"
                 >
                   Reset
                 </button>
@@ -286,58 +291,74 @@
     <h3 class="text-center pb-2">All customer delivery records</h3>
     <div
       *ngIf="deliveryRecords$ | async as deliveryRecords"
-      class="d-flex flex-wrap"
+      class="d-flex flex-column align-items-center"
     >
       <div
-        class="delivery-details__list-item"
-        *ngFor="let record of deliveryRecords"
-        style="
-          background-size: cover;
-          background-repeat: no-repeat;
-          background-position: center center;
-        "
-        [style.background-image]="'url(' + record.background?.url + ')'"
+        class="d-flex flex-wrap pb-4 w-100"
+        *ngIf="visualDeliveryRecords$$ | async as visualDeliveryRecords"
       >
-        <div class="delivery-details__list-item__dimming"></div>
         <div
-          class="delivery-details__list-item__author text-white"
-          *ngIf="record.background?.user as user"
+          class="delivery-details__list-item"
+          *ngFor="let record of visualDeliveryRecords"
+          style="
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+          "
+          [style.background-image]="'url(' + record.background?.url + ')'"
         >
-          Photo by
-          <a [href]="user.link" target="_blank" class="text-white">{{
-            user.name
-          }}</a>
-        </div>
-        <div class="delivery-details__list-item__btns">
-          <button type="button" class="btn btn-success">
-            <fa-icon [icon]="editIcon" />
-          </button>
-          <button
-            type="button"
-            class="btn btn-danger"
-            (click)="removeDeliveryRecord(record.id!)"
+          <div class="delivery-details__list-item__dimming"></div>
+          <div
+            class="delivery-details__list-item__author text-white"
+            *ngIf="record.background?.user as user"
           >
-            <fa-icon [icon]="deleteIcon" />
-          </button>
-        </div>
-        <div
-          class="text-white position-relative d-flex flex-column justify-content-center"
-        >
-          <ul>
-            <h6>Delivery information:</h6>
-            <li>Name: {{ record.name }}</li>
-            <li>Phone: {{ record.phone }}</li>
-          </ul>
-          <ul *ngIf="record.address as address">
-            <h6>Address:</h6>
-            <li>Coutry: {{ address.country }}</li>
-            <li>City: {{ address.city }}</li>
-            <li>Address line 1: {{ address.line1 }}</li>
-            <li>Address line 2: {{ address.line2 }}</li>
-            <li>Postal code: {{ address.postal_code }}</li>
-          </ul>
+            Photo by
+            <a [href]="user.link" target="_blank" class="text-white">{{
+              user.name
+            }}</a>
+          </div>
+          <div class="delivery-details__list-item__btns">
+            <button
+              type="button"
+              class="btn btn-success"
+              (click)="editDeliveryRecord(record.id!)"
+            >
+              <fa-icon [icon]="icons.editIcon" />
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              (click)="removeDeliveryRecord(record.id!)"
+            >
+              <fa-icon [icon]="icons.deleteIcon" />
+            </button>
+          </div>
+          <div
+            class="text-white position-relative d-flex flex-column justify-content-center"
+          >
+            <ul>
+              <h6>Delivery information:</h6>
+              <li>Name: {{ record.name }}</li>
+              <li>Phone: {{ record.phone }}</li>
+            </ul>
+            <ul *ngIf="record.address as address">
+              <h6>Address:</h6>
+              <li>Coutry: {{ address.country }}</li>
+              <li>City: {{ address.city }}</li>
+              <li>Address line 1: {{ address.line1 }}</li>
+              <li>Address line 2: {{ address.line2 }}</li>
+              <li>Postal code: {{ address.postal_code }}</li>
+            </ul>
+          </div>
         </div>
       </div>
+      <pagination
+        #paginator
+        *ngIf="deliveryRecords.length > itemsPerPage"
+        [totalItems]="deliveryRecords.length"
+        [itemsPerPage]="itemsPerPage"
+        (pageChanged)="pageChanged($event)"
+      ></pagination>
     </div>
   </div>
 </div>

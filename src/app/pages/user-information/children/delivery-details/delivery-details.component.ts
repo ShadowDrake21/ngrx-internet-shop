@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
 import { userInformationContent } from '../../content/user-information.content';
 import {
@@ -10,20 +19,31 @@ import {
 } from '@angular/forms';
 import { phonePattern } from '../purchases/components/customer-information/constants/pattern.constants';
 import { DatabaseService } from '@app/core/services/database.service';
-import { map, Observable, of, Subscription, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  map,
+  Observable,
+  of,
+  Subscription,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { IShipping } from '@app/shared/models/purchase.model';
 import { Store } from '@ngrx/store';
 
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import { PurchaseState } from '@app/store/purchase/purchase.reducer';
 import { UnsplashService } from '@app/core/services/unsplash.service';
-import {
-  IReducedUnsplashImage,
-  IUnsplashImageResponse,
-} from '@app/shared/models/unsplash.model';
+import { IReducedUnsplashImage } from '@app/shared/models/unsplash.model';
 import { shuffleArray } from '@app/shared/utils/arrayManipulations.utils';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { deliveryDetailsIcons } from '@app/shared/utils/icons.utils';
+import {
+  PageChangedEvent,
+  PaginationComponent,
+  PaginationModule,
+} from 'ngx-bootstrap/pagination';
 @Component({
   selector: 'app-delivery-details',
   standalone: true,
@@ -32,21 +52,28 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     BasicCardComponent,
     ReactiveFormsModule,
     FontAwesomeModule,
+    PaginationModule,
   ],
   templateUrl: './delivery-details.component.html',
   styleUrl: './delivery-details.component.scss',
 })
-export class DeliveryDetailsComponent implements OnInit, OnDestroy {
+export class DeliveryDetailsComponent
+  implements OnInit, OnDestroy, AfterViewInit
+{
   userInformationItem = userInformationContent[3];
+  icons = deliveryDetailsIcons;
 
-  editIcon = faPen;
-  deleteIcon = faTrash;
+  @ViewChild('paginator') paginator!: PaginationComponent;
 
   private store = inject(Store<PurchaseState>);
+  private cdr = inject(ChangeDetectorRef);
   private databaseService = inject(DatabaseService);
   private unsplashService = inject(UnsplashService);
 
+  isEditMode: boolean = false;
+
   shippingForm = new FormGroup({
+    id: new FormControl('', [Validators.required]),
     name: new FormControl('', [
       Validators.minLength(3),
       Validators.maxLength(40),
@@ -57,7 +84,7 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
       Validators.required,
     ]),
     address: new FormGroup({
-      country: new FormControl('', [Validators.required]),
+      country: new FormControl('0', [Validators.required]),
       city: new FormControl('', Validators.required),
       line1: new FormControl('', Validators.required),
       line2: new FormControl('', Validators.required),
@@ -66,47 +93,75 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
   });
 
   private customerId: string = '';
+
   deliveryRecords$!: Observable<IShipping[]>;
+  visualDeliveryRecords$$ = new BehaviorSubject<IShipping[]>([]);
+
+  itemsPerPage: number = 6;
 
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
+    this.shippingForm.controls.id.patchValue(
+      `delivery-record_${new Date().getTime()}`
+    );
+
     const customerSubscription = this.store
       .select(PurchaseSelectors.selectCustomer)
       .subscribe((customer) => {
         if (customer) {
           this.customerId = customer.id;
-          this.deliveryRecords$ = this.databaseService.getAllDeliveryRecords(
-            this.customerId
-          );
+          this.deliveryRecords$ = this.databaseService
+            .getAllDeliveryRecords(this.customerId)
+            .pipe(
+              tap((records) =>
+                this.visualDeliveryRecords$$.next(
+                  records.slice(0, this.itemsPerPage)
+                )
+              )
+            );
         }
       });
+
     this.subscriptions.push(customerSubscription);
   }
 
   onSubmit() {
-    this.getDeliveryRecordBackground(this.shippingForm.value.address?.country!)
+    if (this.isEditMode) {
+      this.isEditMode = false;
+    }
+    const submitSubscription = this.getDeliveryRecordBackground(
+      this.shippingForm.value.address?.country!
+    )
       .pipe(
         switchMap((background) => this.formDeliveryRecord(background)),
         switchMap((newDeliveryRecord) =>
           this.deliveryRecords$.pipe(
-            map((record) => ({
+            map(() => ({
               newDeliveryRecord,
             }))
           )
         )
       )
       .subscribe(({ newDeliveryRecord }) => {
-        this.databaseService.addDeliveryRecord(
+        this.databaseService.setDeliveryRecord(
           newDeliveryRecord,
           this.customerId,
           newDeliveryRecord.id!
         );
-        this.deliveryRecords$ = this.databaseService.getAllDeliveryRecords(
-          this.customerId
-        );
+        this.databaseService
+          .getAllDeliveryRecords(this.customerId)
+          .subscribe((records) => {
+            this.deliveryRecords$ = of(records);
+            this.pageChanged({ itemsPerPage: this.itemsPerPage, page: 1 });
+          });
         this.shippingForm.reset();
+        this.shippingForm.controls.id.patchValue(
+          `delivery-record_${new Date().getTime()}`
+        );
       });
+
+    this.subscriptions.push(submitSubscription);
   }
 
   getDeliveryRecordBackground(
@@ -136,7 +191,7 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
   ): Observable<IShipping> {
     return of({
       background: backgroundObj,
-      id: `delivery-record_${new Date().getTime()}`,
+      id: this.shippingForm.value.id!,
       name: this.shippingForm.value.name!,
       phone: this.shippingForm.value.phone!,
       address: {
@@ -150,16 +205,91 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
   }
 
   removeDeliveryRecord(id: string) {
-    this.databaseService
+    const removeSubscription = this.databaseService
       .deleteDeliveryRecord(this.customerId, id)
-      .subscribe(() => {
-        this.deliveryRecords$ = this.databaseService.getAllDeliveryRecords(
-          this.customerId
-        );
+      .pipe(
+        switchMap(() =>
+          this.databaseService.getAllDeliveryRecords(this.customerId)
+        )
+      )
+      .subscribe((records) => {
+        console.log('after removal', records);
+        this.deliveryRecords$ = of(records);
+        this.pageChanged({ itemsPerPage: this.itemsPerPage, page: 1 });
       });
+
+    this.subscriptions.push(removeSubscription);
   }
 
-  editDeliveryRecord(id: string) {}
+  editDeliveryRecord(id: string) {
+    const editSubscription = this.deliveryRecords$
+      .pipe(map((records) => records.find((record) => record.id === id)))
+      .subscribe((record) => {
+        if (record) {
+          this.isEditMode = true;
+          this.patchEditRecordToForm(record);
+        }
+      });
+
+    this.subscriptions.push(editSubscription);
+  }
+
+  patchEditRecordToForm(record: IShipping) {
+    const { id, name, phone, address } = record;
+    this.shippingForm.patchValue({
+      id,
+      name,
+      phone,
+      address: {
+        country: address.country,
+        city: address.city,
+        line1: address.line1,
+        line2: address.line2,
+        postalCode: address.postal_code,
+      },
+    });
+  }
+
+  onFormReset() {
+    if (this.isEditMode) {
+      this.isEditMode = false;
+    }
+    this.shippingForm.reset();
+    this.shippingForm.controls.address.controls.country.patchValue('0');
+    this.shippingForm.controls.id.patchValue(
+      `delivery-record_${new Date().getTime()}`
+    );
+  }
+
+  changePagination() {
+    console.log('this.paginator', this.paginator);
+    if (this.paginator) {
+      const pageChanged: PageChangedEvent = {
+        page: this.paginator.page,
+        itemsPerPage: this.itemsPerPage,
+      };
+      console.log('after removal changePagination');
+      this.pageChanged(pageChanged);
+    }
+  }
+
+  ngAfterViewInit(): void {}
+
+  pageChanged(event: PageChangedEvent): void {
+    const startItem = (event.page - 1) * event.itemsPerPage;
+    const endItem = event.page * event.itemsPerPage;
+    this.deliveryRecords$
+      .pipe(
+        switchMap((records) => {
+          console.log('after removal pageChanged', startItem, endItem);
+          return of(records.slice(startItem, endItem));
+        })
+      )
+      .subscribe((visualRecords) => {
+        this.visualDeliveryRecords$$.next(visualRecords);
+        this.cdr.detectChanges();
+      });
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());

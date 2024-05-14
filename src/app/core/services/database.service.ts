@@ -9,6 +9,7 @@ import {
   update,
 } from '@angular/fire/database';
 import { IShipping } from '@app/shared/models/purchase.model';
+import { set } from 'firebase/database';
 import { from, map, Observable } from 'rxjs';
 
 @Injectable({
@@ -17,13 +18,13 @@ import { from, map, Observable } from 'rxjs';
 export class DatabaseService {
   private database = inject(Database);
 
-  addDeliveryRecord(
+  setDeliveryRecord(
     shipping: IShipping,
     customerId: string,
     recordName: string
   ): Observable<void> {
     return from(
-      update(
+      set(
         ref(
           this.database,
           `customers/${customerId}/deliveryRecords/${recordName}`
