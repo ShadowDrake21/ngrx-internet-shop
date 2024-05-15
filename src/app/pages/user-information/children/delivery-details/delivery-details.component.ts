@@ -21,12 +21,16 @@ import { phonePattern } from '../purchases/components/customer-information/const
 import { DatabaseService } from '@app/core/services/database.service';
 import {
   BehaviorSubject,
+  filter,
+  findIndex,
   map,
   Observable,
   of,
+  startWith,
   Subscription,
   switchMap,
   tap,
+  throwError,
 } from 'rxjs';
 import { IShipping } from '@app/shared/models/purchase.model';
 import { Store } from '@ngrx/store';
@@ -52,21 +56,15 @@ import {
     BasicCardComponent,
     ReactiveFormsModule,
     FontAwesomeModule,
-    PaginationModule,
   ],
   templateUrl: './delivery-details.component.html',
   styleUrl: './delivery-details.component.scss',
 })
-export class DeliveryDetailsComponent
-  implements OnInit, OnDestroy, AfterViewInit
-{
+export class DeliveryDetailsComponent implements OnInit, OnDestroy {
   userInformationItem = userInformationContent[3];
   icons = deliveryDetailsIcons;
 
-  @ViewChild('paginator') paginator!: PaginationComponent;
-
   private store = inject(Store<PurchaseState>);
-  private cdr = inject(ChangeDetectorRef);
   private databaseService = inject(DatabaseService);
   private unsplashService = inject(UnsplashService);
 
@@ -92,14 +90,11 @@ export class DeliveryDetailsComponent
     }),
   });
 
-  // FIX EDITING AND ADDING IF IN THE visualDeliveryRecords$$ THERE ARE ALREADY 6 ELEMENTS
-
   private customerId: string = '';
 
   deliveryRecords$!: Observable<IShipping[]>;
-  visualDeliveryRecords$$ = new BehaviorSubject<IShipping[]>([]);
-
-  itemsPerPage: number = 6;
+  isFormEnable: boolean = true;
+  sizeRestriction: number = 6;
 
   private subscriptions: Subscription[] = [];
 
@@ -116,16 +111,11 @@ export class DeliveryDetailsComponent
           this.deliveryRecords$ = this.databaseService.getAllDeliveryRecords(
             this.customerId
           );
-
-          const deliveryRecordsSubscription = this.deliveryRecords$.subscribe(
-            (records) => {
-              this.visualDeliveryRecords$$.next(
-                records.slice(0, this.itemsPerPage)
-              );
+          this.deliveryRecords$.subscribe((records) => {
+            if (records.length >= 6) {
+              this.shippingForm.disable();
             }
-          );
-
-          this.subscriptions.push(deliveryRecordsSubscription);
+          });
         }
       });
 
@@ -133,9 +123,6 @@ export class DeliveryDetailsComponent
   }
 
   onSubmit() {
-    if (this.isEditMode) {
-      this.isEditMode = false;
-    }
     const submitSubscription = this.getDeliveryRecordBackground(
       this.shippingForm.value.address?.country!
     )
@@ -143,14 +130,9 @@ export class DeliveryDetailsComponent
         switchMap((background) => this.formDeliveryRecord(background)),
         switchMap((newDeliveryRecord) =>
           this.deliveryRecords$.pipe(
-            map((records) => {
-              const updatedRecords = [
-                ...this.visualDeliveryRecords$$.getValue(),
-                newDeliveryRecord,
-              ];
-              this.visualDeliveryRecords$$.next(updatedRecords);
-              return { records, newDeliveryRecord };
-            })
+            map(() => ({
+              newDeliveryRecord,
+            }))
           )
         )
       )
@@ -161,17 +143,40 @@ export class DeliveryDetailsComponent
           newDeliveryRecord.id!
         );
 
-        const updatedRecords = this.visualDeliveryRecords$$
-          .getValue()
-          .map((item) =>
-            item.id === newDeliveryRecord.id ? newDeliveryRecord : item
+        if (this.isEditMode) {
+          this.deliveryRecords$ = this.deliveryRecords$.pipe(
+            switchMap((records) => {
+              const recordIndex = records.findIndex(
+                (record) => record.id === newDeliveryRecord.id
+              );
+              if (recordIndex !== -1) {
+                const updatedRecords = [...records];
+                updatedRecords[recordIndex] = newDeliveryRecord;
+                return of(updatedRecords);
+              } else {
+                return throwError(
+                  () =>
+                    new Error(
+                      `Record with id ${newDeliveryRecord.id} not found.`
+                    )
+                );
+              }
+            })
           );
-        this.visualDeliveryRecords$$.next(updatedRecords);
+        } else {
+          this.deliveryRecords$ = this.deliveryRecords$.pipe(
+            map((existingRecords) => {
+              return [...existingRecords, newDeliveryRecord];
+            }),
+            tap((newRecordsArray) => {
+              if (newRecordsArray.length === 6) {
+                this.shippingForm.disable();
+              }
+            })
+          );
+        }
 
-        this.shippingForm.reset();
-        this.shippingForm.controls.id.patchValue(
-          `delivery-record_${new Date().getTime()}`
-        );
+        this.onFormReset();
       });
 
     this.subscriptions.push(submitSubscription);
@@ -220,16 +225,15 @@ export class DeliveryDetailsComponent
   removeDeliveryRecord(id: string) {
     const removeSubscription = this.databaseService
       .deleteDeliveryRecord(this.customerId, id)
-      .pipe(
-        switchMap(() =>
-          this.databaseService.getAllDeliveryRecords(this.customerId)
-        )
-      )
-      .subscribe((records) => {
-        const updatedRecords = this.visualDeliveryRecords$$
-          .getValue()
-          .filter((record) => record.id !== id);
-        this.visualDeliveryRecords$$.next(updatedRecords);
+      .subscribe(() => {
+        this.deliveryRecords$ = this.deliveryRecords$.pipe(
+          map((records) => {
+            if (records.length === 6) {
+              this.shippingForm.enable();
+            }
+            return records.filter((record) => record.id !== id);
+          })
+        );
       });
 
     this.subscriptions.push(removeSubscription);
@@ -273,38 +277,6 @@ export class DeliveryDetailsComponent
     this.shippingForm.controls.id.patchValue(
       `delivery-record_${new Date().getTime()}`
     );
-  }
-
-  changePagination() {
-    console.log('this.paginator', this.paginator);
-    if (this.paginator) {
-      const pageChanged: PageChangedEvent = {
-        page: this.paginator.page,
-        itemsPerPage: this.itemsPerPage,
-      };
-      console.log('after removal changePagination');
-      this.pageChanged(pageChanged);
-    }
-  }
-
-  pageChanged(event: PageChangedEvent): void {
-    const startItem = (event.page - 1) * event.itemsPerPage;
-    const endItem = event.page * event.itemsPerPage;
-    this.deliveryRecords$
-      .pipe(
-        switchMap((records) => {
-          console.log('after removal pageChanged', startItem, endItem);
-          return of(records.slice(startItem, endItem));
-        })
-      )
-      .subscribe((visualRecords) => {
-        this.visualDeliveryRecords$$.next(visualRecords);
-        this.cdr.detectChanges();
-      });
-  }
-
-  ngAfterViewInit(): void {
-    this.changePagination();
   }
 
   ngOnDestroy(): void {

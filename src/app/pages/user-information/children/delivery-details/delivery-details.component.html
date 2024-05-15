@@ -212,7 +212,7 @@
                 <button
                   type="submit"
                   class="btn btn-primary w-100"
-                  [disabled]="shippingForm.invalid"
+                  [disabled]="shippingForm.invalid || shippingForm.disabled"
                 >
                   Save
                 </button>
@@ -289,17 +289,25 @@
   </div>
   <div class="pt-4 pb-4">
     <h3 class="text-center pb-2">All customer delivery records</h3>
-    <div
-      *ngIf="deliveryRecords$ | async as deliveryRecords"
-      class="d-flex flex-column align-items-center"
-    >
+    <div *ngIf="deliveryRecords$ | async as deliveryRecords" class="pb-4 w-100">
       <div
-        class="d-flex flex-wrap pb-4 w-100"
-        *ngIf="visualDeliveryRecords$$ | async as visualDeliveryRecords"
+        class="d-flex"
+        style="gap: 25px"
+        [class.text-danger]="deliveryRecords.length === sizeRestriction"
       >
+        <p>
+          Allowed number of records:
+          <span class="fw-bold">{{ sizeRestriction }}</span>
+        </p>
+        <p>
+          Your number of records:
+          <span class="fw-bold">{{ deliveryRecords.length }}</span>
+        </p>
+      </div>
+      <div class="d-flex flex-wrap">
         <div
           class="delivery-details__list-item"
-          *ngFor="let record of visualDeliveryRecords"
+          *ngFor="let record of deliveryRecords"
           style="
             background-size: cover;
             background-repeat: no-repeat;
@@ -352,13 +360,6 @@
           </div>
         </div>
       </div>
-      <pagination
-        #paginator
-        *ngIf="deliveryRecords.length > itemsPerPage"
-        [totalItems]="deliveryRecords.length"
-        [itemsPerPage]="itemsPerPage"
-        (pageChanged)="pageChanged($event)"
-      ></pagination>
     </div>
   </div>
 </div>

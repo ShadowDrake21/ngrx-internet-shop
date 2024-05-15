@@ -19,6 +19,7 @@ export class UnsplashService {
         params: new HttpParams()
           .set('query', location)
           .set('orientation', orientation)
+          .set('per_page', 30)
           .set('client_id', environment.unsplash.accessKey),
       }
     );
