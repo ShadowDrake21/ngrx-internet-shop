@@ -1,365 +1,76 @@
 <div class="pt-3 pb-3">
   <app-basic-card [item]="userInformationItem"></app-basic-card>
-  <div class="delivery-details rounded">
-    <div class="delivery-details__dimming"></div>
-    <p class="text-white position-absolute delivery-details__bg-author">
-      Photo by
-      <a
-        class="text-white"
-        href="https://unsplash.com/@alanw?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
-        target="_blank"
-        >Alan W</a
-      >
-      on
-      <a
-        class="text-white"
-        href="https://unsplash.com/photos/yellow-van-parked-on-sidewalk-during-daytime-lAqf-_-6ovM?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
-        target="_blank"
-        >Unsplash</a
-      >
-    </p>
-    <h3 class="text-white position-relative text-center" style="z-index: 99">
-      {{
-        isEditMode
-          ? "Edit an existing delivery record"
-          : "Add a new delivery record"
-      }}
-    </h3>
-    <form
-      [formGroup]="shippingForm"
-      class="d-flex justify-content-between text-white position-relative"
-      style="z-index: 99; gap: 30px"
-      (ngSubmit)="onSubmit()"
-    >
-      <div class="w-75 flex-shrink-1">
-        <div class="row pb-2">
-          <div class="form-group col">
-            <label
-              for="shippingName"
-              [style.color]="
-                shippingForm.controls.name.touched &&
-                shippingForm.controls.name.invalid
-                  ? 'red'
-                  : ''
-              "
-              >Name</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              id="shippingName"
-              placeholder="Name"
-              formControlName="name"
-              [class.error]="
-                shippingForm.controls.name.touched &&
-                shippingForm.controls.name.invalid
-              "
-            />
-          </div>
-          <div class="form-group col">
-            <label
-              for="shippingPhone"
-              [style.color]="
-                shippingForm.controls.phone.touched &&
-                shippingForm.controls.phone.invalid
-                  ? 'red'
-                  : ''
-              "
-              >Phone</label
-            >
-            <input
-              type="tel"
-              class="form-control"
-              id="shippingPhone"
-              placeholder="Phone"
-              formControlName="phone"
-              [class.error]="
-                shippingForm.controls.phone.touched &&
-                shippingForm.controls.phone.invalid
-              "
-            />
-          </div>
-        </div>
-        <div class="pt-4 pb-3">
-          <h6 class="pb-1">Address info</h6>
-          <div
-            formGroupName="address"
-            class="purchases-customer__edit-shipping"
-          >
-            <div class="row pb-2">
-              <div class="form-group col">
-                <label
-                  for="customerCountry"
-                  [style.color]="
-                    shippingForm.controls.address.controls.country.touched &&
-                    shippingForm.controls.address.controls.country.invalid
-                      ? 'red'
-                      : ''
-                  "
-                  >Country</label
-                >
-                <select
-                  class="form-select"
-                  id="customerCountry"
-                  formControlName="country"
-                  [class.error]="
-                    shippingForm.controls.address.controls.country.touched &&
-                    shippingForm.controls.address.controls.country.invalid
-                  "
-                >
-                  <option selected disabled value="0">Country</option>
-                  <option [ngValue]="'PL'">Poland</option>
-                  <option [ngValue]="'UA'">Ukraine</option>
-                </select>
-              </div>
-              <div class="form-group col">
-                <label
-                  for="customerCity"
-                  [style.color]="
-                    shippingForm.controls.address.controls.city.touched &&
-                    shippingForm.controls.address.controls.city.invalid
-                      ? 'red'
-                      : ''
-                  "
-                  >City</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="customerCity"
-                  placeholder="City"
-                  formControlName="city"
-                  [class.error]="
-                    shippingForm.controls.address.controls.city.touched &&
-                    shippingForm.controls.address.controls.city.invalid
-                  "
-                />
-              </div>
-            </div>
-            <div class="row pb-2">
-              <div class="form-group col">
-                <label
-                  for="customerLine1"
-                  [style.color]="
-                    shippingForm.controls.address.controls.line1.touched &&
-                    shippingForm.controls.address.controls.line1.invalid
-                      ? 'red'
-                      : ''
-                  "
-                  >Address line 1</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="customerLine1"
-                  placeholder="Street, PO Box, or company name"
-                  formControlName="line1"
-                  [class.error]="
-                    shippingForm.controls.address.controls.line1.touched &&
-                    shippingForm.controls.address.controls.line1.invalid
-                  "
-                />
-              </div>
-              <div class="form-group col">
-                <label
-                  for="customerLine2"
-                  [style.color]="
-                    shippingForm.controls.address.controls.line2.touched &&
-                    shippingForm.controls.address.controls.line2.invalid
-                      ? 'red'
-                      : ''
-                  "
-                  >Address line 2</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="customerLine2"
-                  placeholder="Apartment, suite, unit, or building"
-                  formControlName="line2"
-                  [class.error]="
-                    shippingForm.controls.address.controls.line2.touched &&
-                    shippingForm.controls.address.controls.line2.invalid
-                  "
-                />
-              </div>
-            </div>
-            <div class="row d-flex align-items-end">
-              <div class="form-group col">
-                <label
-                  for="customerPostalCode"
-                  [style.color]="
-                    shippingForm.controls.address.controls.postalCode.touched &&
-                    shippingForm.controls.address.controls.postalCode.invalid
-                      ? 'red'
-                      : ''
-                  "
-                  >Postal code</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="customerPostalCode"
-                  placeholder="Postal code"
-                  formControlName="postalCode"
-                  [class.error]="
-                    shippingForm.controls.address.controls.postalCode.touched &&
-                    shippingForm.controls.address.controls.postalCode.invalid
-                  "
-                />
-              </div>
-              <div class="col">
-                <button
-                  type="submit"
-                  class="btn btn-primary w-100"
-                  [disabled]="shippingForm.invalid || shippingForm.disabled"
-                >
-                  Save
-                </button>
-              </div>
-              <div class="col">
-                <button
-                  type="button"
-                  class="btn btn-danger w-100"
-                  [disabled]="!shippingForm.touched && !isEditMode"
-                  (click)="onFormReset()"
-                >
-                  Reset
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div *ngIf="customerId; else noCustomer">
+    <app-delivery-record-form
+      [customerId]="customerId"
+      [formEnableValue]="formEnableValue"
+      [recordForEditing]="recordForEditing"
+      (sendNewDeliveryRecord)="handleNewDeliveryRecord($event)"
+    ></app-delivery-record-form>
+    <div class="pt-4 pb-4">
+      <h3 class="text-center pb-2">All customer delivery records</h3>
       <div
-        class="d-flex flex-column justify-content-between w-25 flex-shrink-1"
+        *ngIf="deliveryRecords$ | async as deliveryRecords"
+        class="pb-4 w-100"
       >
-        <ul *ngIf="shippingForm.invalid" style="color: red">
-          <li
-            *ngIf="shippingForm.controls.name.errors?.['required'] && shippingForm.controls.name.touched"
-          >
-            Name field is mandatory
-          </li>
-          <li
-            *ngIf="shippingForm.controls.name.errors?.['minlength'] || shippingForm.controls.name.errors?.['maxlength']"
-          >
-            Name must be at least 3 and maximum 40 characters long
-          </li>
-          <li
-            *ngIf="shippingForm.controls.phone.errors?.['required'] && shippingForm.controls.phone.touched"
-          >
-            Phone field is mandatory
-          </li>
-          <li *ngIf="shippingForm.controls.phone.errors?.['pattern']">
-            Incorrect phone format.
-          </li>
-          <li
-            *ngIf="shippingForm.controls.address.controls.country.errors?.['required'] && shippingForm.controls.address.controls.country.touched"
-          >
-            Country field is mandatory
-          </li>
-          <li
-            *ngIf="shippingForm.controls.address.controls.country.errors?.['pattern'] "
-          >
-            Incorrect country code
-          </li>
-          <li
-            *ngIf="shippingForm.controls.address.controls.city.errors?.['required'] && shippingForm.controls.address.controls.city.touched"
-          >
-            City field is mandatory
-          </li>
-          <li
-            *ngIf="shippingForm.controls.address.controls.line1.errors?.['required'] && shippingForm.controls.address.controls.line1.touched"
-          >
-            Line1 field is mandatory
-          </li>
-          <li
-            *ngIf="shippingForm.controls.address.controls.line2.errors?.['required'] && shippingForm.controls.address.controls.line2.touched"
-          >
-            Line2 field is mandatory
-          </li>
-          <li
-            *ngIf="shippingForm.controls.address.controls.postalCode.errors?.['required'] && shippingForm.controls.address.controls.postalCode.touched"
-          >
-            Postal code field is mandatory
-          </li>
-        </ul>
-      </div>
-    </form>
-  </div>
-  <div class="pt-4 pb-4">
-    <h3 class="text-center pb-2">All customer delivery records</h3>
-    <div *ngIf="deliveryRecords$ | async as deliveryRecords" class="pb-4 w-100">
-      <div
-        class="d-flex"
-        style="gap: 25px"
-        [class.text-danger]="deliveryRecords.length === sizeRestriction"
-      >
-        <p>
-          Allowed number of records:
-          <span class="fw-bold">{{ sizeRestriction }}</span>
-        </p>
-        <p>
-          Your number of records:
-          <span class="fw-bold">{{ deliveryRecords.length }}</span>
-        </p>
-      </div>
-      <div class="d-flex flex-wrap">
-        <div
-          class="delivery-details__list-item"
-          *ngFor="let record of deliveryRecords"
-          style="
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center center;
-          "
-          [style.background-image]="'url(' + record.background?.url + ')'"
-        >
-          <div class="delivery-details__list-item__dimming"></div>
+        <ng-container *ngIf="deliveryRecords.length; else noRecords">
           <div
-            class="delivery-details__list-item__author text-white"
-            *ngIf="record.background?.user as user"
+            class="d-flex"
+            style="gap: 25px"
+            [class.text-danger]="deliveryRecords.length === sizeRestriction"
           >
-            Photo by
-            <a [href]="user.link" target="_blank" class="text-white">{{
-              user.name
-            }}</a>
+            <p>
+              Allowed number of records:
+              <span class="fw-bold">{{ sizeRestriction }}</span>
+            </p>
+            <p>
+              Your number of records:
+              <span class="fw-bold">{{ deliveryRecords.length }}</span>
+            </p>
           </div>
-          <div class="delivery-details__list-item__btns">
-            <button
-              type="button"
-              class="btn btn-success"
-              (click)="editDeliveryRecord(record.id!)"
-            >
-              <fa-icon [icon]="icons.editIcon" />
-            </button>
-            <button
-              type="button"
-              class="btn btn-danger"
-              (click)="removeDeliveryRecord(record.id!)"
-            >
-              <fa-icon [icon]="icons.deleteIcon" />
-            </button>
+          <div class="d-flex flex-wrap">
+            <app-delivery-record-item
+              *ngFor="let record of deliveryRecords"
+              [record]="record"
+              (recordEdit)="handleEditRecordRequest($event)"
+              (recordRemove)="handleRemoveRecordRequest($event)"
+              class="w-50"
+            ></app-delivery-record-item>
           </div>
-          <div
-            class="text-white position-relative d-flex flex-column justify-content-center"
-          >
-            <ul>
-              <h6>Delivery information:</h6>
-              <li>Name: {{ record.name }}</li>
-              <li>Phone: {{ record.phone }}</li>
-            </ul>
-            <ul *ngIf="record.address as address">
-              <h6>Address:</h6>
-              <li>Coutry: {{ address.country }}</li>
-              <li>City: {{ address.city }}</li>
-              <li>Address line 1: {{ address.line1 }}</li>
-              <li>Address line 2: {{ address.line2 }}</li>
-              <li>Postal code: {{ address.postal_code }}</li>
-            </ul>
+        </ng-container>
+        <ng-template #noRecords>
+          <div class="pt-3 pb-3 text-center">
+            <h4>You have not added any delivery record yet...</h4>
           </div>
-        </div>
+        </ng-template>
       </div>
     </div>
   </div>
+  <ng-template #noCustomer>
+    <div class="pt-3 pb-3 text-center" class="no-customer">
+      <div
+        class="position-relative text-white w-100 h-100 d-flex flex-column justify-content-center align-items-center"
+      >
+        <h4>
+          In order to add delivery records, make a first purchase and come back!
+        </h4>
+        <p>
+          Photo by
+          <a
+            class="text-white"
+            href="https://unsplash.com/@claybanks?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+            target="_blank"
+            >Clay Banks</a
+          >
+          on
+          <a
+            class="text-white"
+            href="https://unsplash.com/photos/person-holding-white-pos-machine-E2HgkL3LaFE?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+            target="_blank"
+            >Unsplash</a
+          >
+        </p>
+      </div>
+    </div>
+  </ng-template>
 </div>
