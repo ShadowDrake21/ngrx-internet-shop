@@ -1,62 +1,22 @@
-.delivery-details {
-  padding: 40px 50px;
-  background-image: url("/assets/images/delivery-details/joel-moysuh-ObweQkF5w30-unsplash.jpg");
-  background-position: center bottom;
-  background-size: cover;
-  background-repeat: no-repeat;
+.no-customer {
   position: relative;
-  overflow: hidden;
+  width: 100%;
+  height: 500px;
 
-  &__bg-author {
-    top: 20px;
-    right: 20px;
-  }
+  background-image: url("/assets/images/delivery-details/no-customer-img.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
 
-  &__dimming {
+  &::before {
+    content: "";
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
     top: 0;
     left: 0;
-    z-index: 0;
-  }
-
-  &__btns {
-    width: 300px;
-  }
-
-  &__list-item {
-    position: relative;
-    max-width: 50%;
-    width: 100%;
-    padding: 50px 20px;
-
-    &__dimming {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      top: 0;
-      left: 0;
-      z-index: 0;
-    }
-
-    &__author {
-      position: absolute;
-      bottom: 25px;
-      right: 25px;
-    }
-
-    &__btns {
-      position: absolute;
-      z-index: 99;
-      top: 25px;
-      right: 25px;
-
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
   }
 }

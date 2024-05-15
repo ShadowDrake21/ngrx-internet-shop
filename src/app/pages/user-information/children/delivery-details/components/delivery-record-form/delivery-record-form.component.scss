@@ -1,0 +1,28 @@
+.delivery-details {
+  padding: 40px 50px;
+  background-image: url("/assets/images/delivery-details/joel-moysuh-ObweQkF5w30-unsplash.jpg");
+  background-position: center bottom;
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
+
+  &__bg-author {
+    top: 20px;
+    right: 20px;
+  }
+
+  &__dimming {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    top: 0;
+    left: 0;
+    z-index: 0;
+  }
+
+  &__btns {
+    width: 300px;
+  }
+}

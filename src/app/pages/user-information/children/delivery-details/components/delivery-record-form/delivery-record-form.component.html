@@ -1,1 +1,282 @@
-<p>delivery-record-form works!</p>
+<div class="delivery-details rounded">
+  <div class="delivery-details__dimming"></div>
+  <p class="text-white position-absolute delivery-details__bg-author">
+    Photo by
+    <a
+      class="text-white"
+      href="https://unsplash.com/@alanw?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+      target="_blank"
+      >Alan W</a
+    >
+    on
+    <a
+      class="text-white"
+      href="https://unsplash.com/photos/yellow-van-parked-on-sidewalk-during-daytime-lAqf-_-6ovM?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+      target="_blank"
+      >Unsplash</a
+    >
+  </p>
+  <h3 class="text-white position-relative text-center" style="z-index: 99">
+    {{
+      isEditMode
+        ? "Edit an existing delivery record"
+        : "Add a new delivery record"
+    }}
+  </h3>
+  <form
+    [formGroup]="shippingForm"
+    class="d-flex justify-content-between text-white position-relative"
+    style="z-index: 99; gap: 30px"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="w-75 flex-shrink-1">
+      <div class="row pb-2">
+        <div class="form-group col">
+          <label
+            for="shippingName"
+            [style.color]="
+              shippingForm.controls.name.touched &&
+              shippingForm.controls.name.invalid
+                ? 'red'
+                : ''
+            "
+            >Name</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="shippingName"
+            placeholder="Name"
+            formControlName="name"
+            [class.error]="
+              shippingForm.controls.name.touched &&
+              shippingForm.controls.name.invalid
+            "
+          />
+        </div>
+        <div class="form-group col">
+          <label
+            for="shippingPhone"
+            [style.color]="
+              shippingForm.controls.phone.touched &&
+              shippingForm.controls.phone.invalid
+                ? 'red'
+                : ''
+            "
+            >Phone</label
+          >
+          <input
+            type="tel"
+            class="form-control"
+            id="shippingPhone"
+            placeholder="Phone"
+            formControlName="phone"
+            [class.error]="
+              shippingForm.controls.phone.touched &&
+              shippingForm.controls.phone.invalid
+            "
+          />
+        </div>
+      </div>
+      <div class="pt-4 pb-3">
+        <h6 class="pb-1">Address info</h6>
+        <div formGroupName="address" class="purchases-customer__edit-shipping">
+          <div class="row pb-2">
+            <div class="form-group col">
+              <label
+                for="customerCountry"
+                [style.color]="
+                  shippingForm.controls.address.controls.country.touched &&
+                  shippingForm.controls.address.controls.country.invalid
+                    ? 'red'
+                    : ''
+                "
+                >Country</label
+              >
+              <select
+                class="form-select"
+                id="customerCountry"
+                formControlName="country"
+                [class.error]="
+                  shippingForm.controls.address.controls.country.touched &&
+                  shippingForm.controls.address.controls.country.invalid
+                "
+              >
+                <option selected disabled value="0">Country</option>
+                <option [ngValue]="'PL'">Poland</option>
+                <option [ngValue]="'UA'">Ukraine</option>
+              </select>
+            </div>
+            <div class="form-group col">
+              <label
+                for="customerCity"
+                [style.color]="
+                  shippingForm.controls.address.controls.city.touched &&
+                  shippingForm.controls.address.controls.city.invalid
+                    ? 'red'
+                    : ''
+                "
+                >City</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="customerCity"
+                placeholder="City"
+                formControlName="city"
+                [class.error]="
+                  shippingForm.controls.address.controls.city.touched &&
+                  shippingForm.controls.address.controls.city.invalid
+                "
+              />
+            </div>
+          </div>
+          <div class="row pb-2">
+            <div class="form-group col">
+              <label
+                for="customerLine1"
+                [style.color]="
+                  shippingForm.controls.address.controls.line1.touched &&
+                  shippingForm.controls.address.controls.line1.invalid
+                    ? 'red'
+                    : ''
+                "
+                >Address line 1</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="customerLine1"
+                placeholder="Street, PO Box, or company name"
+                formControlName="line1"
+                [class.error]="
+                  shippingForm.controls.address.controls.line1.touched &&
+                  shippingForm.controls.address.controls.line1.invalid
+                "
+              />
+            </div>
+            <div class="form-group col">
+              <label
+                for="customerLine2"
+                [style.color]="
+                  shippingForm.controls.address.controls.line2.touched &&
+                  shippingForm.controls.address.controls.line2.invalid
+                    ? 'red'
+                    : ''
+                "
+                >Address line 2</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="customerLine2"
+                placeholder="Apartment, suite, unit, or building"
+                formControlName="line2"
+                [class.error]="
+                  shippingForm.controls.address.controls.line2.touched &&
+                  shippingForm.controls.address.controls.line2.invalid
+                "
+              />
+            </div>
+          </div>
+          <div class="row d-flex align-items-end">
+            <div class="form-group col">
+              <label
+                for="customerPostalCode"
+                [style.color]="
+                  shippingForm.controls.address.controls.postalCode.touched &&
+                  shippingForm.controls.address.controls.postalCode.invalid
+                    ? 'red'
+                    : ''
+                "
+                >Postal code</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="customerPostalCode"
+                placeholder="Postal code"
+                formControlName="postalCode"
+                [class.error]="
+                  shippingForm.controls.address.controls.postalCode.touched &&
+                  shippingForm.controls.address.controls.postalCode.invalid
+                "
+              />
+            </div>
+            <div class="col">
+              <button
+                type="submit"
+                class="btn btn-primary w-100"
+                [disabled]="shippingForm.invalid || shippingForm.disabled"
+              >
+                Save
+              </button>
+            </div>
+            <div class="col">
+              <button
+                type="button"
+                class="btn btn-danger w-100"
+                [disabled]="!shippingForm.touched && !isEditMode"
+                (click)="onFormReset()"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex flex-column justify-content-between w-25 flex-shrink-1">
+      <ul *ngIf="shippingForm.invalid" style="color: red">
+        <li
+          *ngIf="shippingForm.controls.name.errors?.['required'] && shippingForm.controls.name.touched"
+        >
+          Name field is mandatory
+        </li>
+        <li
+          *ngIf="shippingForm.controls.name.errors?.['minlength'] || shippingForm.controls.name.errors?.['maxlength']"
+        >
+          Name must be at least 3 and maximum 40 characters long
+        </li>
+        <li
+          *ngIf="shippingForm.controls.phone.errors?.['required'] && shippingForm.controls.phone.touched"
+        >
+          Phone field is mandatory
+        </li>
+        <li *ngIf="shippingForm.controls.phone.errors?.['pattern']">
+          Incorrect phone format.
+        </li>
+        <li
+          *ngIf="shippingForm.controls.address.controls.country.errors?.['required'] && shippingForm.controls.address.controls.country.touched"
+        >
+          Country field is mandatory
+        </li>
+        <li
+          *ngIf="shippingForm.controls.address.controls.country.errors?.['pattern'] "
+        >
+          Incorrect country code
+        </li>
+        <li
+          *ngIf="shippingForm.controls.address.controls.city.errors?.['required'] && shippingForm.controls.address.controls.city.touched"
+        >
+          City field is mandatory
+        </li>
+        <li
+          *ngIf="shippingForm.controls.address.controls.line1.errors?.['required'] && shippingForm.controls.address.controls.line1.touched"
+        >
+          Line1 field is mandatory
+        </li>
+        <li
+          *ngIf="shippingForm.controls.address.controls.line2.errors?.['required'] && shippingForm.controls.address.controls.line2.touched"
+        >
+          Line2 field is mandatory
+        </li>
+        <li
+          *ngIf="shippingForm.controls.address.controls.postalCode.errors?.['required'] && shippingForm.controls.address.controls.postalCode.touched"
+        >
+          Postal code field is mandatory
+        </li>
+      </ul>
+    </div>
+  </form>
+</div>
