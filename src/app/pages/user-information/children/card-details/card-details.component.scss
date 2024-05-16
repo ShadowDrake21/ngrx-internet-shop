@@ -4,19 +4,30 @@ $color_3: rgba(233, 245, 248, 0.85);
 $color_4: black;
 $font-family_1: "Ubuntu", sans-serif;
 
-* {
-  box-sizing: border-box;
+.card-details__add {
+  background-image: url("/assets/images/card-details/add-new-card.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  position: relative;
+  padding: 25px;
+
+  &-dimming {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
 }
-body {
-  font-family: $font-family_1;
-}
+
 input {
   font-family: $font-family_1;
 }
 select {
-  font-family: $font-family_1;
-}
-textarea {
   font-family: $font-family_1;
 }
 .credits {
@@ -35,15 +46,11 @@ textarea {
   transition: 0.5s ease-in-out;
   width: 400px;
   height: 250px;
-  margin: auto;
   z-index: 2;
-  &:hover {
-    transform: rotateY(180deg);
-  }
   .front {
     width: 400px;
     height: 250px;
-    background: linear-gradient(-45deg, #4fb0c6, #3e79be);
+    background: linear-gradient(-45deg, #0400ff, #ff009d);
     padding: 20px;
     position: absolute;
     top: 0;
@@ -56,22 +63,6 @@ textarea {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    &:after {
-      content: "";
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 400px;
-      height: 250px;
-      transition: 0.5s ease-in-out;
-      z-index: -1;
-      opacity: 0.15;
-      background-image: url("http://image.flaticon.com/icons/svg/126/126511.svg");
-      background-repeat: no-repeat;
-      background-size: 75%;
-      background-position: 150px center;
-    }
     .middle {
       .cd-number {
         p {
@@ -140,81 +131,16 @@ textarea {
       }
     }
   }
-  .back {
-    width: 400px;
-    height: 250px;
-    background: linear-gradient(-45deg, #4fb0c6, #3e79be);
-    padding: 20px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    border-radius: 10px;
-    overflow: hidden;
-    transition: 0.5s ease-in-out;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transform: rotateY(180deg);
-    &:after {
-      content: "";
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 400px;
-      height: 250px;
-      transition: 0.5s ease-in-out;
-      z-index: -1;
-      opacity: 0.15;
-      background-image: url("http://image.flaticon.com/icons/svg/126/126511.svg");
-      background-repeat: no-repeat;
-      background-size: 75%;
-      background-position: 150px center;
-    }
-    .label {
-      font-size: 12.5px;
-      font-weight: bold;
-      color: $color_3;
-      margin-right: 5px;
-    }
-    .top {
-      padding-top: 40px;
-      transition: 0.5s ease-in-out;
-      .magstripe {
-        width: 100%;
-        height: 50px;
-        background: #333;
-      }
-    }
-    .middle {
-      margin-top: -40px;
-      padding: 0 20px;
-      text-align: right;
-      .cvc {
-        width: 100%;
-        height: 40px;
-        background: white;
-        color: $color_4;
-        line-height: 40px;
-        padding: 0 10px;
-        border-radius: 10px;
-      }
-    }
-  }
 }
-.card.flip {
-  transform: rotateY(180deg);
-  &:hover {
-    transform: rotateY(0deg);
-  }
+.center {
+  padding: 30px 0;
+  gap: 25px;
 }
 .form {
   width: 450px;
-  margin: auto;
   padding: 20px;
   box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.35);
-  margin-top: -20px;
+  background-color: rgba(255, 255, 255, 0.6);
   border-radius: 10px;
   transition: 0.5s ease-in-out;
   button.submit {
@@ -222,29 +148,38 @@ textarea {
     padding: 20px 5px;
     width: 100%;
     margin-top: 20px;
-    background: #2b90d9;
+    background: linear-gradient(-5deg, #880e78, #3549ff);
     color: $color_2;
     border-radius: 5px;
     outline: 0;
     border: none;
-    transition: 0.15s ease-in-out;
     &:hover {
-      background: #2689d2;
+      background: linear-gradient(-5deg, #66135a, #001aff);
     }
+    &:disabled {
+      background: #977ca0;
+    }
+  }
+  label {
+    font-weight: 700;
   }
   input {
     padding: 10px 5px;
     border-radius: 5px;
     outline: 0;
     border: none;
-    box-shadow: 0px 0px 5px #2b90d9;
+    box-shadow: 0px 0px 9px #8400ff;
+
+    &.error {
+      box-shadow: 0px 0px 9px red;
+    }
   }
   select {
     padding: 10px 5px;
     border-radius: 5px;
     outline: 0;
     border: none;
-    box-shadow: 0px 0px 5px #2b90d9;
+    box-shadow: 0px 0px 9px #8400ff;
   }
   .cd-validate {
     display: flex;
