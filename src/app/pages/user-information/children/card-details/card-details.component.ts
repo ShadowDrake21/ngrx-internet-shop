@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
 import { userInformationContent } from '../../content/user-information.content';
 import { CommonModule } from '@angular/common';
@@ -12,6 +18,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { ICard } from '@app/shared/models/card.model';
+import { DatabaseService } from '@app/core/services/database.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '@app/store/app.state';
+import * as UserSelectors from '@store/user/user.selectors';
+import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
+import { map, Observable, Subscription, switchMap, tap } from 'rxjs';
+import { changeDetailsIcons } from '@app/shared/utils/icons.utils';
 
 @Component({
   selector: 'app-card-details',
@@ -27,7 +40,11 @@ import { ICard } from '@app/shared/models/card.model';
 })
 export class CardDetailsComponent implements OnInit {
   userInformationItem = userInformationContent[4];
+  changeIcons = changeDetailsIcons;
   cardIcon = faCreditCard;
+
+  private store = inject(Store<AppState>);
+  private databaseService = inject(DatabaseService);
 
   @ViewChild('card') card!: ElementRef;
 
@@ -35,6 +52,7 @@ export class CardDetailsComponent implements OnInit {
   years = years;
 
   cardForm = new FormGroup({
+    id: new FormControl(''),
     cardNumber: new FormGroup({
       firstPart: new FormControl('', Validators.required),
       secondPart: new FormControl('', Validators.required),
@@ -47,8 +65,27 @@ export class CardDetailsComponent implements OnInit {
     cvc: new FormControl('', Validators.required),
   });
 
+  private customerId: string = '';
+  formEnableValue: 'enable' | 'disable' = 'enable';
+
+  cards$!: Observable<ICard[]>;
+
+  private subscriptions: Subscription[] = [];
+
   ngOnInit(): void {
+    const customerSubscription = this.store
+      .select(PurchaseSelectors.selectCustomer)
+      .subscribe((customer) => {
+        if (customer) {
+          this.customerId = customer.id;
+          this.cards$ = this.databaseService.getAllCards(this.customerId);
+        }
+      });
+
+    this.cardForm.controls.id.patchValue(`card_${new Date().getTime()}`);
     this.handleCardNumberInput();
+
+    this.subscriptions.push(customerSubscription);
   }
 
   handleCardNumberInput() {
@@ -64,7 +101,6 @@ export class CardDetailsComponent implements OnInit {
           target.value = sanitizedValue;
 
           const charLength = sanitizedValue.length;
-          console.log('target', target.value);
           if (charLength === 4) {
             const nextInput = target.nextElementSibling as HTMLInputElement;
             if (nextInput) {
@@ -112,7 +148,10 @@ export class CardDetailsComponent implements OnInit {
     const target = event.target;
     const inputValue = target.value;
 
-    const sanitizedValue = inputValue.replace(/[^a-zA-Z\s]/g, '');
+    const sanitizedValue = inputValue.replace(
+      /[^a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s]/g,
+      ''
+    );
 
     target.value = sanitizedValue;
 
@@ -149,6 +188,14 @@ export class CardDetailsComponent implements OnInit {
     const cvcElement = document.querySelector('.card .cvc p');
     if (cvcElement) {
       cvcElement.textContent = cvc;
+
+      const isFlipped = this.card.nativeElement.classList.contains('flip');
+
+      if (cvc.length > 0 && cvc.length < 3 && !isFlipped) {
+        this.card.nativeElement.classList.add('flip');
+      } else if ((cvc.length === 0 || cvc.length >= 3) && isFlipped) {
+        this.card.nativeElement.classList.remove('flip');
+      }
     }
   }
 
@@ -160,6 +207,7 @@ export class CardDetailsComponent implements OnInit {
       this.cardForm.value.cardNumber?.fourthPart;
 
     const newCard: ICard = {
+      id: this.cardForm.value.id!,
       cardNumber: cardNumber,
       cardHolder: this.cardForm.value.cardHolder!,
       expirationMonth: this.cardForm.value.expirationMonth!,
@@ -167,6 +215,41 @@ export class CardDetailsComponent implements OnInit {
       cvc: this.cardForm.value.cvc!,
     };
 
-    console.log(newCard);
+    this.databaseService.setCard(newCard, this.customerId, newCard.id);
+
+    this.addNewCard(newCard);
+    this.cardForm.reset();
+    this.cardForm.controls.expirationMonth.patchValue('01');
+    this.cardForm.controls.expirationYear.patchValue('24');
+  }
+
+  addNewCard(newCard: ICard) {
+    this.cards$ = this.cards$.pipe(
+      map((existingCards) => {
+        return [...existingCards, newCard];
+      }),
+      tap((newCardsArray) => {
+        if (newCardsArray.length === 6) {
+          this.formEnableValue = 'disable';
+        }
+      })
+    );
+  }
+
+  removeCard(cardId: string) {
+    const removeSubscription = this.databaseService
+      .deleteCard(this.customerId, cardId)
+      .subscribe(() => {
+        this.cards$ = this.cards$.pipe(
+          map((cards) => {
+            if (cards.length === 6) {
+              this.formEnableValue = 'enable';
+            }
+            return cards.filter((card) => card.id !== cardId);
+          })
+        );
+      });
+
+    this.subscriptions.push(removeSubscription);
   }
 }
