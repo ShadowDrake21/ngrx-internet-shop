@@ -39,7 +39,7 @@ export const personalInformationIcons = {
   passwordIcon: faKey,
   reauthenticateIcon: faRotate,
 };
-export const deliveryDetailsIcons = {
+export const changeDetailsIcons = {
   editIcon: faPen,
   deleteIcon: faTrash,
 };

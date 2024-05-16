@@ -24,8 +24,11 @@
     </div>
     <div class="position-relative">
       <h3 class="text-center text-white">Add a new card</h3>
-      <div class="center d-flex">
-        <div class="center d-flex align-items-center">
+      <div class="d-flex" style="gap: 20px">
+        <div
+          class="center d-flex align-items-center flex-shrink-1 w-75"
+          style="max-width: 100%"
+        >
           <div class="card" #card>
             <div class="front">
               <div class="top">
@@ -53,18 +56,18 @@
                   </p>
                 </div>
               </div>
-            </div>
-            <div class="back">
-              <div class="top">
-                <div class="magstripe"></div>
-              </div>
-              <div class="middle">
-                <p class="label">CCV</p>
-                <div class="cvc">
-                  <p>123</p>
+              <div class="back">
+                <div class="top">
+                  <div class="magstripe"></div>
                 </div>
+                <div class="middle">
+                  <p class="label">CVC</p>
+                  <div class="cvc">
+                    <p>123</p>
+                  </div>
+                </div>
+                <div class="bottom"></div>
               </div>
-              <div class="bottom"></div>
             </div>
           </div>
           <div class="form">
@@ -184,7 +187,7 @@
         </div>
 
         <div
-          class="d-flex flex-column justify-content-between w-25 flex-shrink-1"
+          class="d-flex flex-column justify-content-between w-25 flex-shrink-1 card-details__add-errors"
         >
           <ul *ngIf="cardForm.invalid" style="color: red">
             <li
@@ -195,7 +198,91 @@
             >
               Cardnumber field is mandatory
             </li>
+            <li
+              *ngIf="
+                cardForm.controls.cardHolder.invalid &&
+                cardForm.controls.cardHolder.touched
+              "
+            >
+              Cardholder field is mandatory
+            </li>
+            <li
+              *ngIf="
+                cardForm.controls.cvc.invalid && cardForm.controls.cvc.touched
+              "
+            >
+              CVC field is mandatory
+            </li>
           </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-details__list">
+    {{ cards$ | async | json }}
+
+    <div
+      *ngIf="cards$ | async as cards"
+      class="d-flex flex-wrap"
+      style="gap: 25px"
+    >
+      <div *ngFor="let card of cards" class="card__details__list-item__wrapper">
+        <div class="card card__details__list-item">
+          <div class="front">
+            <div class="top">
+              <div class="chip"></div>
+            </div>
+            <div class="middle">
+              <div class="cd-number" *ngIf="card.cardNumber as cardNumber">
+                <p>
+                  <span class="num-1">{{ cardNumber.slice(0, 4) }}</span
+                  ><span class="num-2">{{ cardNumber.slice(4, 8) }}</span
+                  ><span class="num-3">{{ cardNumber.slice(8, 12) }}</span
+                  ><span class="num-4">{{ cardNumber.slice(12, 16) }}</span>
+                </p>
+              </div>
+            </div>
+            <div class="bottom">
+              <div class="cardholder">
+                <p class="label">Cardholder</p>
+                <p class="holder">{{ card.cardHolder }}</p>
+              </div>
+              <div class="expires">
+                <p class="label">Good Thru</p>
+                <p>
+                  <span class="month">{{ card.expirationMonth }}</span
+                  >/<span class="year">{{ card.expirationYear }}</span>
+                </p>
+              </div>
+            </div>
+            <div class="back">
+              <div class="top">
+                <div class="magstripe"></div>
+              </div>
+              <div class="middle">
+                <p class="label">CVC</p>
+                <div class="cvc">
+                  <p>{{ card.cvc }}</p>
+                </div>
+              </div>
+              <div class="bottom"></div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="btns d-flex flex-column"
+          style="top: 5px; right: 5px; gap: 5px"
+        >
+          <button type="button" class="btn btn-success">
+            <fa-icon [icon]="changeIcons.editIcon"></fa-icon>
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="removeCard(card.id)"
+          >
+            <fa-icon [icon]="changeIcons.deleteIcon"></fa-icon>
+          </button>
         </div>
       </div>
     </div>

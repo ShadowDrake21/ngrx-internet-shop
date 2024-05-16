@@ -8,7 +8,7 @@ import {
   Output,
 } from '@angular/core';
 import { IShipping } from '@app/shared/models/purchase.model';
-import { deliveryDetailsIcons } from '@app/shared/utils/icons.utils';
+import { changeDetailsIcons } from '@app/shared/utils/icons.utils';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
@@ -19,7 +19,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   styleUrl: './delivery-record-item.component.scss',
 })
 export class DeliveryRecordListComponent {
-  icons = deliveryDetailsIcons;
+  icons = changeDetailsIcons;
 
   @Input({ required: true }) record!: IShipping;
 
