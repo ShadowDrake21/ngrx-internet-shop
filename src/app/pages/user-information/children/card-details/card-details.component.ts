@@ -23,8 +23,18 @@ import { Store } from '@ngrx/store';
 import { AppState } from '@app/store/app.state';
 import * as UserSelectors from '@store/user/user.selectors';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
-import { map, Observable, Subscription, switchMap, tap } from 'rxjs';
+import {
+  map,
+  Observable,
+  of,
+  Subscription,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
 import { changeDetailsIcons } from '@app/shared/utils/icons.utils';
+import { CardItemComponent } from './components/card-item/card-item.component';
+import { CardFormComponent } from './components/card-form/card-form.component';
 
 @Component({
   selector: 'app-card-details',
@@ -34,6 +44,8 @@ import { changeDetailsIcons } from '@app/shared/utils/icons.utils';
     BasicCardComponent,
     FontAwesomeModule,
     ReactiveFormsModule,
+    CardFormComponent,
+    CardItemComponent,
   ],
   templateUrl: './card-details.component.html',
   styleUrl: './card-details.component.scss',
@@ -51,6 +63,16 @@ export class CardDetailsComponent implements OnInit {
   months = months;
   years = years;
 
+  cardForEditing!: ICard;
+  customerId: string = '';
+  sizeRestriction: number = 6;
+
+  formEnableValue: 'enable' | 'disable' = 'enable';
+
+  cards$!: Observable<ICard[]>;
+
+  private subscriptions: Subscription[] = [];
+
   cardForm = new FormGroup({
     id: new FormControl(''),
     cardNumber: new FormGroup({
@@ -65,13 +87,6 @@ export class CardDetailsComponent implements OnInit {
     cvc: new FormControl('', Validators.required),
   });
 
-  private customerId: string = '';
-  formEnableValue: 'enable' | 'disable' = 'enable';
-
-  cards$!: Observable<ICard[]>;
-
-  private subscriptions: Subscription[] = [];
-
   ngOnInit(): void {
     const customerSubscription = this.store
       .select(PurchaseSelectors.selectCustomer)
@@ -79,6 +94,14 @@ export class CardDetailsComponent implements OnInit {
         if (customer) {
           this.customerId = customer.id;
           this.cards$ = this.databaseService.getAllCards(this.customerId);
+
+          const cardsSubscription = this.cards$.subscribe((records) => {
+            if (records.length >= 6) {
+              this.formEnableValue = 'disable';
+            }
+          });
+
+          this.subscriptions.push(cardsSubscription);
         }
       });
 
@@ -223,6 +246,23 @@ export class CardDetailsComponent implements OnInit {
     this.cardForm.controls.expirationYear.patchValue('24');
   }
 
+  formCardObject(): Observable<ICard> {
+    const cardNumber =
+      this.cardForm.value.cardNumber?.firstPart! +
+      this.cardForm.value.cardNumber?.secondPart +
+      this.cardForm.value.cardNumber?.thirdPart +
+      this.cardForm.value.cardNumber?.fourthPart;
+
+    return of({
+      id: this.cardForm.value.id!,
+      cardNumber: cardNumber,
+      cardHolder: this.cardForm.value.cardHolder!,
+      expirationMonth: this.cardForm.value.expirationMonth!,
+      expirationYear: this.cardForm.value.expirationYear!,
+      cvc: this.cardForm.value.cvc!,
+    });
+  }
+
   addNewCard(newCard: ICard) {
     this.cards$ = this.cards$.pipe(
       map((existingCards) => {
@@ -252,4 +292,35 @@ export class CardDetailsComponent implements OnInit {
 
     this.subscriptions.push(removeSubscription);
   }
+
+  editExistingCard(editCard: ICard) {
+    this.cards$ = this.cards$.pipe(
+      switchMap((cards) => {
+        const cardIndex = cards.findIndex((card) => card.id === editCard.id);
+        if (cardIndex !== -1) {
+          const updatedCards = [...cards];
+          updatedCards[cardIndex] = editCard;
+          return of(updatedCards);
+        } else {
+          return throwError(
+            () => new Error(`Card with id ${editCard.id} not found`)
+          );
+        }
+      })
+    );
+  }
+
+  handleNewCard(object: { card: ICard; mode: 'add' | 'edit' }) {
+    const { card, mode } = object;
+
+    if (mode === 'add') {
+      this.addNewCard(card);
+    } else {
+      this.editExistingCard(card);
+    }
+  }
+
+  handleEditCardRequest(cardId: string) {}
+
+  handleRemoveCardRequest(cardUf: string) {}
 }
