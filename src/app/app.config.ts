@@ -35,6 +35,7 @@ import { environment } from '../environments/environment.development';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { purchaseReducer } from './store/purchase/purchase.reducer';
 import { PurchaseEffects } from './store/purchase/purchase.effects';
+import { FavoritesEffects } from './store/favorites/favorites.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -55,6 +56,7 @@ export const appConfig: ApplicationConfig = {
       ProductEffects,
       CategoryEffects,
       PurchaseEffects,
+      FavoritesEffects,
     ]),
     provideRouterStore(),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),

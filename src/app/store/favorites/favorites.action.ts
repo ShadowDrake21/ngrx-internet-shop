@@ -1,3 +1,4 @@
+import { IFavoriteProduct } from '@app/shared/models/favorite.model';
 import { IProduct } from '@app/shared/models/product.model';
 import { createAction, props } from '@ngrx/store';
 
@@ -6,7 +7,7 @@ export const loadAllFavorites = createAction(
 );
 export const loadAllFavoritesSuccess = createAction(
   '[Favorites Component] LoadAllFavoritesSuccess',
-  props<{ products: IProduct[] }>()
+  props<{ favorites: IProduct[] }>()
 );
 export const loadAllFavoritesFailure = createAction(
   '[Favorites Component] LoadAllFavoritesFailure',
@@ -15,11 +16,11 @@ export const loadAllFavoritesFailure = createAction(
 
 export const addToFavorites = createAction(
   '[Favorites Component] AddToFavorites',
-  props<{ favoriteId: number; recordName: string }>()
+  props<{ productId: number; recordName: string }>()
 );
 export const addToFavoritesSuccess = createAction(
   '[Favorites Component] AddToFavoritesSuccess',
-  props<{ products: IProduct[] }>()
+  props<{ favorites: IProduct[] }>()
 );
 export const addToFavoritesFailure = createAction(
   '[Favorites Component] AddToFavoritesFailure',
@@ -28,11 +29,11 @@ export const addToFavoritesFailure = createAction(
 
 export const removeFromFavorites = createAction(
   '[Favorites Component] RemoveProductFromFavorites',
-  props<{ favoriteId: number }>()
+  props<{ favoriteId: string }>()
 );
 export const removeFromFavoritesSuccess = createAction(
   '[Favorites Component] RemoveFromFavoritesSuccess',
-  props<{ products: IProduct[] }>()
+  props<{ favorites: IProduct[] }>()
 );
 export const removeFromFavoritesFailure = createAction(
   '[Favorites Component] RemoveFromFavoritesFailure',

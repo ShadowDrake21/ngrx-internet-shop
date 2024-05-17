@@ -2,41 +2,50 @@ import { createReducer, on } from '@ngrx/store';
 
 // actions
 import * as FavoritesActions from './favorites.action';
+import { IFavoriteProduct } from '@app/shared/models/favorite.model';
 import { IProduct } from '@app/shared/models/product.model';
-import { errorMessages } from '@app/pages/user-information/children/purchases/components/customer-information/constants/errors.constants';
 
 export interface FavoritesState {
-  products: IProduct[];
+  favorites: IProduct[];
   errorMessage: string | null;
 }
 
 export const initialFavoritesState: FavoritesState = {
-  products: [],
+  favorites: [],
   errorMessage: null,
 };
 
 export const favoritesReducer = createReducer(
   initialFavoritesState,
-  on(FavoritesActions.loadAllFavoritesSuccess, (state, { products }) => ({
+  on(FavoritesActions.loadAllFavoritesSuccess, (state, { favorites }) => ({
     ...state,
-    products,
+    favorites,
+    errorMessage: null,
   })),
   on(FavoritesActions.loadAllFavoritesFailure, (state, { errorMessage }) => ({
     ...state,
+    favorites: [],
     errorMessage,
-  }))
-  // on(FavoritesActions.addToFavorites, (state, { favoriteId }) => ({
-  //   ...state,
-  //   favorites: [...state.favorites, favorite],
-  // })),
-  // on(FavoritesActions.removeProductFromFavorites, (state, { favoriteId }) => {
-  //   const updatedFavorites = state.favorites.filter(
-  //     (favoriteId) => favorite !== favoriteId
-  //   );
-
-  //   return {
-  //     ...state,
-  //     favorites: updatedFavorites,
-  //   };
-  // })
+  })),
+  on(FavoritesActions.addToFavoritesSuccess, (state, { favorites }) => ({
+    ...state,
+    favorites,
+    errorMessage: null,
+  })),
+  on(FavoritesActions.addToFavoritesFailure, (state, { errorMessage }) => ({
+    ...state,
+    errorMessage,
+  })),
+  on(FavoritesActions.removeFromFavoritesSuccess, (state, { favorites }) => ({
+    ...state,
+    favorites,
+    errorMessage: null,
+  })),
+  on(
+    FavoritesActions.removeFromFavoritesFailure,
+    (state, { errorMessage }) => ({
+      ...state,
+      errorMessage,
+    })
+  )
 );
