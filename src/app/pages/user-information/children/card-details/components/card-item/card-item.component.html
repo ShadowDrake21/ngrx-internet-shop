@@ -53,6 +53,7 @@
       type="button"
       class="btn btn-danger"
       (click)="cardRemove.emit(card.id)"
+      [disabled]="removeActive"
     >
       <fa-icon [icon]="icons.deleteIcon"></fa-icon>
     </button>

@@ -38,13 +38,14 @@ export class DeliveryRecordFormComponent
   @Input({ required: true }) formEnableValue: 'enable' | 'disable' = 'enable';
   @Input() recordForEditing!: IShipping | null;
 
-  private databaseService = inject(DatabaseService);
-  private unsplashService = inject(UnsplashService);
-
   @Output() sendNewDeliveryRecord: EventEmitter<{
     record: IShipping;
     mode: 'edit' | 'add';
   }> = new EventEmitter<{ record: IShipping; mode: 'edit' | 'add' }>();
+  @Output() formReset: EventEmitter<void> = new EventEmitter<void>();
+
+  private databaseService = inject(DatabaseService);
+  private unsplashService = inject(UnsplashService);
 
   isEditMode: boolean = false;
 
@@ -178,6 +179,7 @@ export class DeliveryRecordFormComponent
     );
 
     this.formEnableValue === 'disable' && this.shippingForm.disable();
+    this.formReset.emit();
   }
 
   patchEditRecordToForm(record: IShipping) {

@@ -27,6 +27,7 @@
       type="button"
       class="btn btn-danger"
       (click)="recordRemove.emit(record.id!)"
+      [disabled]="removeActive"
     >
       <fa-icon [icon]="icons.deleteIcon" />
     </button>

@@ -1,28 +1,13 @@
-import {
-  Component,
-  ElementRef,
-  inject,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
 import { userInformationContent } from '../../content/user-information.content';
 import { CommonModule } from '@angular/common';
-import { faCreditCard } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { months, years } from './content/card-details.content';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ICard } from '@app/shared/models/card.model';
 import { DatabaseService } from '@app/core/services/database.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '@app/store/app.state';
-import * as UserSelectors from '@store/user/user.selectors';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import {
   map,
@@ -33,7 +18,6 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import { changeDetailsIcons } from '@app/shared/utils/icons.utils';
 import { CardItemComponent } from './components/card-item/card-item.component';
 import { CardFormComponent } from './components/card-form/card-form.component';
 
@@ -57,13 +41,15 @@ export class CardDetailsComponent implements OnInit, OnDestroy {
   private store = inject(Store<AppState>);
   private databaseService = inject(DatabaseService);
 
-  cardForEditing!: ICard;
+  cardForEditing: ICard | null = null;
   customerId: string = '';
   sizeRestriction: number = 6;
 
   formEnableValue: 'enable' | 'disable' = 'enable';
 
   cards$!: Observable<ICard[]>;
+
+  // loading!!!
 
   private subscriptions: Subscription[] = [];
 
@@ -156,6 +142,10 @@ export class CardDetailsComponent implements OnInit, OnDestroy {
 
   handleRemoveCardRequest(cardId: string) {
     this.removeCard(cardId);
+  }
+
+  handleFormReset() {
+    this.cardForEditing = null;
   }
 
   ngOnDestroy(): void {

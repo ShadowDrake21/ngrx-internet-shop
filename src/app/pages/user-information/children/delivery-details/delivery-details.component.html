@@ -6,6 +6,7 @@
       [formEnableValue]="formEnableValue"
       [recordForEditing]="recordForEditing"
       (sendNewDeliveryRecord)="handleNewDeliveryRecord($event)"
+      (formReset)="handleFormReset()"
     ></app-delivery-record-form>
     <div class="pt-4 pb-4">
       <h3 class="text-center pb-2">All customer delivery records</h3>
@@ -32,6 +33,7 @@
             <app-delivery-record-item
               *ngFor="let record of deliveryRecords"
               [record]="record"
+              [removeActive]="!!recordForEditing"
               (recordEdit)="handleEditRecordRequest($event)"
               (recordRemove)="handleRemoveRecordRequest($event)"
               class="w-50"

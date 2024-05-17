@@ -1,6 +1,5 @@
 // angular stuff
 import {
-  faChrome,
   faFacebookF,
   faGoogle,
   faXTwitter,
@@ -22,6 +21,7 @@ import {
   faPowerOff,
   faRotate,
   faTrash,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 
 export const signInModalIcons = { faFacebookF, faGoogle, faXTwitter, faClose };
@@ -42,4 +42,8 @@ export const personalInformationIcons = {
 export const changeDetailsIcons = {
   editIcon: faPen,
   deleteIcon: faTrash,
+};
+export const cardDetailsIcons = {
+  cardIcon: faCreditCard,
+  resetIcon: faXmark,
 };

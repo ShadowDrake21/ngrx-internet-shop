@@ -28,11 +28,7 @@
         class="center d-flex align-items-center flex-shrink-1 w-75"
         style="max-width: 100%"
       >
-        <div
-          #card
-          class="card"
-          [class.card-disabled]="formEnableValue === 'disable'"
-        >
+        <div #card class="card" [class.card-disabled]="cardForm.disabled">
           <div class="front">
             <div class="top">
               <div class="chip"></div>
@@ -142,7 +138,10 @@
                     (change)="updateExpirationMonth()"
                     formControlName="expirationMonth"
                   >
-                    <option *ngFor="let month of months" [value]="month">
+                    <option
+                      *ngFor="let month of cardMonthsAndYears.months"
+                      [value]="month"
+                    >
                       {{ month }}
                     </option>
                   </select>
@@ -154,7 +153,10 @@
                     (change)="updateExpirationYear()"
                     formControlName="expirationYear"
                   >
-                    <option *ngFor="let year of years" [value]="year">
+                    <option
+                      *ngFor="let year of cardMonthsAndYears.years"
+                      [value]="year"
+                    >
                       {{ year }}
                     </option>
                   </select>
@@ -182,7 +184,7 @@
                 type="submit"
                 [disabled]="cardForm.invalid || cardForm.disabled"
               >
-                <fa-icon [icon]="cardIcon" />
+                <fa-icon [icon]="icons.cardIcon" />
               </button>
               <button
                 class="custom-btn reset w-25"
@@ -190,7 +192,7 @@
                 (click)="onFormReset()"
                 [disabled]="!cardForm.touched && !isEditMode"
               >
-                <fa-icon [icon]="resetIcon" />
+                <fa-icon [icon]="icons.resetIcon" />
               </button>
             </div>
           </form>

@@ -15,6 +15,7 @@ export class CardItemComponent {
   icons = changeDetailsIcons;
 
   @Input({ required: true }) card!: ICard;
+  @Input({ required: true }) removeActive!: boolean;
 
   @Output() cardRemove: EventEmitter<string> = new EventEmitter<string>();
   @Output() cardEdit: EventEmitter<string> = new EventEmitter<string>();
