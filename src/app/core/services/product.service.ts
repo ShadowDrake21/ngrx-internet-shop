@@ -65,6 +65,7 @@ export class ProductService {
   }
 
   getSingleProductById(id: number): Observable<IProduct> {
+    console.log('getSingleProductById');
     return this.http
       .get<IProduct>(`${BASE_URL_API}/products/${id}`)
       .pipe(map((product) => ({ ...product, quantity: 1 })));

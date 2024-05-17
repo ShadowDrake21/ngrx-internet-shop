@@ -8,6 +8,7 @@ import {
   remove,
   set,
 } from '@angular/fire/database';
+import { IFavoriteProduct } from '@app/shared/models/favorite.model';
 import { IProduct } from '@app/shared/models/product.model';
 
 import { from, map, Observable } from 'rxjs';

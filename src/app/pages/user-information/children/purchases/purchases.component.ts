@@ -47,28 +47,6 @@ export class PurchasesComponent implements OnInit, OnDestroy {
     this.transactions$ = this.store.select(
       PurchaseSelectors.selectTransactions
     );
-
-    // const emailSubscription = this.store
-    //   .select(UserSelectors.selectEmail)
-    //   .subscribe((email) => {
-    //     // this.store.dispatch(PurchaseActions.getCustomer({ email: email! }));
-
-    //     // this.customer$ = this.store.select(PurchaseSelectors.selectCustomer);
-
-    //     // const customerSubscription = this.customer$.subscribe((customer) => {
-    //     //   if (customer) {
-    //     //     this.store.dispatch(
-    //     //       PurchaseActions.getAllTransactions({ customerId: customer?.id })
-    //     //     );
-
-    //     //   } else {
-    //     //     console.log('no customer');
-    //     //   }
-    //     // });
-    //     // this.subscriptions.push(customerSubscription);
-    //   });
-
-    // this.subscriptions.push(emailSubscription);
   }
 
   ngOnDestroy(): void {

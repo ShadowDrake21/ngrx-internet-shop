@@ -6,7 +6,11 @@ import { FavoritesState } from './favorites.reducer';
 
 export const selectFavoritesState = (state: AppState) => state.favorites;
 
-export const selectProducts = createSelector(
+export const selectFavorites = createSelector(
   selectFavoritesState,
-  (state: FavoritesState) => state.products
+  (state: FavoritesState) => state.favorites
+);
+export const selectErrorMessage = createSelector(
+  selectFavoritesState,
+  (state: FavoritesState) => state.errorMessage
 );

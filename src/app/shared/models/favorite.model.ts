@@ -1,8 +1,7 @@
 import { ICategory } from './category.model';
 
-export interface IProduct {
-  favoriteId?: string;
-  id: number;
+export interface IFavoriteProduct {
+  id: string;
   title: string;
   price: number;
   description: string;

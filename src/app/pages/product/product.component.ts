@@ -132,14 +132,36 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
 
   onToggleToFavourites(productId: number) {
-    if (this.isInFavorites) {
+    if (!this.isInFavorites) {
+      const favoriteId = `delivery-record_${new Date().getTime()}`;
       this.store.dispatch(
-        FavoritesActions.addToFavorites({ favoriteId: productId })
+        FavoritesActions.addToFavorites({
+          productId,
+          recordName: favoriteId,
+        })
       );
+
+      const errorMessageSubscription = this.store
+        .select(FavoritesSelectors.selectErrorMessage)
+        .subscribe((errorMessage) => {
+          if (!errorMessage) {
+            this.product$.pipe(
+              map((product) => (product.favoriteId = favoriteId))
+            );
+          }
+        });
+
+      this.subscriptions.push(errorMessageSubscription);
     } else {
-      this.store.dispatch(
-        FavoritesActions.removeFromFavorites({ favoriteId: productId })
-      );
+      const productSubscription = this.product$
+        .pipe(map((product) => product.favoriteId!))
+        .subscribe((favoriteId: string) => {
+          this.store.dispatch(
+            FavoritesActions.removeFromFavorites({ favoriteId })
+          );
+        });
+
+      this.subscriptions.push(productSubscription);
     }
     this.isInFavorites = !this.isInFavorites;
   }

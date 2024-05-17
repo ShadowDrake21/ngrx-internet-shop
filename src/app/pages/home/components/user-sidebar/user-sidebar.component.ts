@@ -20,6 +20,7 @@ import { AppState } from '@app/store/app.state';
 import { RouterLink } from '@angular/router';
 import { IUserTransactionsData } from '@app/shared/models/purchase.model';
 import { CheckoutService } from '@app/core/services/checkout.service';
+import { IProduct } from '@app/shared/models/product.model';
 
 @Component({
   selector: 'app-user-sidebar',
@@ -34,7 +35,7 @@ export class UserSidebarComponent implements OnInit, OnDestroy {
 
   onlineStatus: boolean = false;
   user$!: Observable<IUser | null>;
-  favorites$!: Observable<number[]>;
+  favorites$!: Observable<IProduct[]>;
   transactionsData$!: Observable<IUserTransactionsData | null>;
 
   private subscriptions: Subscription[] = [];
