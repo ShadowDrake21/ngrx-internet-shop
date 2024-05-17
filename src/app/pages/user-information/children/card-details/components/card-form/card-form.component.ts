@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -24,9 +25,9 @@ import { ICard } from '@app/shared/models/card.model';
 import { IShipping } from '@app/shared/models/purchase.model';
 import { changeDetailsIcons } from '@app/shared/utils/icons.utils';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { months, years } from '../../content/card-details.content';
-import { faCreditCard } from '@fortawesome/free-solid-svg-icons';
+import { faCreditCard, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-card-form',
@@ -35,8 +36,11 @@ import { faCreditCard } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './card-form.component.html',
   styleUrl: './card-form.component.scss',
 })
-export class CardFormComponent implements OnInit, OnChanges, OnDestroy {
+export class CardFormComponent
+  implements OnInit, AfterViewInit, OnChanges, OnDestroy
+{
   cardIcon = faCreditCard;
+  resetIcon = faXmark;
 
   @Input({ required: true }) customerId: string = '';
   @Input({ required: true }) formEnableValue: 'enable' | 'disable' = 'enable';
@@ -48,7 +52,6 @@ export class CardFormComponent implements OnInit, OnChanges, OnDestroy {
   years = years;
 
   private databaseService = inject(DatabaseService);
-  private unsplashService = inject(UnsplashService);
 
   @Output() sendNewCard: EventEmitter<{
     card: ICard;
@@ -78,18 +81,29 @@ export class CardFormComponent implements OnInit, OnChanges, OnDestroy {
     this.handleCardNumberInput();
   }
 
+  ngAfterViewInit(): void {
+    this.resetCardMiniature();
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['recordForEditing']) {
+    if (changes['cardForEditing']) {
       if (this.cardForEditing) {
         this.isEditMode = true;
-        this.patchEditRecordToForm(this.cardForEditing);
+        this.patchEditCardToForm(this.cardForEditing);
+        this.patchEditCardToCardMiniature(this.cardForEditing);
+        this.formEnableValue === 'disable' && this.cardForm.enable();
       }
     }
 
     if (changes['formEnableValue']) {
       if (this.formEnableValue === 'enable') {
+        this.cardForm.patchValue({
+          expirationMonth: '01',
+          expirationYear: '24',
+        });
         this.cardForm.enable();
       } else {
+        this.cardForm.patchValue({ expirationMonth: '', expirationYear: '' });
         this.cardForm.disable();
       }
     }
@@ -156,7 +170,7 @@ export class CardFormComponent implements OnInit, OnChanges, OnDestroy {
     const inputValue = target.value;
 
     const sanitizedValue = inputValue.replace(
-      /[^a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s]/g,
+      /[^a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s\-]/g,
       ''
     );
 
@@ -180,7 +194,7 @@ export class CardFormComponent implements OnInit, OnChanges, OnDestroy {
 
   updateExpirationYear() {
     const year = this.cardForm.get('expirationYear')?.value;
-    console.log('year', this.cardForm.value);
+
     const yearElement = this.card.nativeElement.querySelector(
       '.bottom .expires .year'
     );
@@ -192,7 +206,7 @@ export class CardFormComponent implements OnInit, OnChanges, OnDestroy {
 
   updateCVC(event: any) {
     const cvc = event.target.value;
-    const cvcElement = document.querySelector('.card .cvc p');
+    const cvcElement = this.card.nativeElement.querySelector('.card .cvc p');
     if (cvcElement) {
       cvcElement.textContent = cvc;
 
@@ -206,9 +220,39 @@ export class CardFormComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  onSubmit() {}
+  onSubmit() {
+    const submitSubscription = this.formCardObject().subscribe((newCard) => {
+      this.databaseService.setCard(newCard, this.customerId, newCard.id);
 
-  patchEditRecordToForm(card: ICard) {
+      if (this.isEditMode) {
+        this.sendNewCard.emit({ card: newCard, mode: 'edit' });
+        this.formEnableValue === 'disable' && this.cardForm.disable();
+      } else {
+        this.sendNewCard.emit({ card: newCard, mode: 'add' });
+      }
+
+      this.onFormReset();
+    });
+
+    this.subscriptions.push(submitSubscription);
+  }
+
+  onFormReset() {
+    if (this.isEditMode) {
+      this.isEditMode = false;
+    }
+    this.cardForm.reset();
+    this.cardForm.patchValue({
+      id: `card_${new Date().getTime()}`,
+      expirationMonth: '01',
+      expirationYear: '24',
+    });
+    this.resetCardMiniature();
+
+    this.formEnableValue === 'disable' && this.cardForm.disable();
+  }
+
+  patchEditCardToForm(card: ICard) {
     const { id, cardNumber, cardHolder, expirationMonth, expirationYear, cvc } =
       card;
     this.cardForm.patchValue({
@@ -226,7 +270,83 @@ export class CardFormComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  patchEditCardToCardMiniature(card: ICard) {
+    const { cardNumber, cardHolder, expirationMonth, expirationYear, cvc } =
+      card;
+
+    this.card.nativeElement.querySelector(
+      '.front .cd-number .num-1'
+    ).textContent = cardNumber.slice(0, 4);
+    this.card.nativeElement.querySelector(
+      '.front .cd-number .num-2'
+    ).textContent = cardNumber.slice(4, 8);
+
+    this.card.nativeElement.querySelector(
+      '.front .cd-number .num-3'
+    ).textContent = cardNumber.slice(8, 12);
+
+    this.card.nativeElement.querySelector(
+      '.front .cd-number .num-4'
+    ).textContent = cardNumber.slice(12, 16);
+
+    this.card.nativeElement.querySelector(
+      '.front .bottom .cardholder .holder'
+    ).textContent = cardHolder;
+
+    this.card.nativeElement.querySelector('.bottom .expires .month').innerText =
+      expirationMonth;
+
+    this.card.nativeElement.querySelector('.bottom .expires .year').innerText =
+      expirationYear;
+
+    this.card.nativeElement.querySelector('.card .cvc p').textContent = cvc;
+  }
+
+  resetCardMiniature() {
+    this.card.nativeElement.querySelector(
+      '.front .cd-number .num-1'
+    ).textContent = '1234';
+    this.card.nativeElement.querySelector(
+      '.front .cd-number .num-2'
+    ).textContent = '1234';
+    this.card.nativeElement.querySelector(
+      '.front .cd-number .num-3'
+    ).textContent = '1234';
+    this.card.nativeElement.querySelector(
+      '.front .cd-number .num-4'
+    ).textContent = '1234';
+
+    this.card.nativeElement.querySelector(
+      '.front .bottom .cardholder .holder'
+    ).textContent = 'Firstname Lastname';
+
+    this.card.nativeElement.querySelector('.bottom .expires .month').innerText =
+      '01';
+
+    this.card.nativeElement.querySelector('.bottom .expires .year').innerText =
+      '24';
+
+    this.card.nativeElement.querySelector('.card .cvc p').textContent = '123';
+  }
+
+  formCardObject(): Observable<ICard> {
+    const cardNumber =
+      this.cardForm.value.cardNumber?.firstPart! +
+      this.cardForm.value.cardNumber?.secondPart +
+      this.cardForm.value.cardNumber?.thirdPart +
+      this.cardForm.value.cardNumber?.fourthPart;
+
+    return of({
+      id: this.cardForm.value.id!,
+      cardNumber: cardNumber,
+      cardHolder: this.cardForm.value.cardHolder!,
+      expirationMonth: this.cardForm.value.expirationMonth!,
+      expirationYear: this.cardForm.value.expirationYear!,
+      cvc: this.cardForm.value.cvc!,
+    });
+  }
+
   ngOnDestroy(): void {
-    throw new Error('Method not implemented.');
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }

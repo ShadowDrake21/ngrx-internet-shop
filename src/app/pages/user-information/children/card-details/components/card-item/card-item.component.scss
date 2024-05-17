@@ -105,22 +105,7 @@ $color_4: black;
     justify-content: space-between;
     transform: rotateY(180deg);
     opacity: 0;
-    &:after {
-      content: "";
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 300px;
-      height: 175px;
-      transition: 0.5s ease-in-out;
-      z-index: -1;
-      opacity: 0.15;
-      background-image: url("http://image.flaticon.com/icons/svg/126/126511.svg");
-      background-repeat: no-repeat;
-      background-size: 75%;
-      background-position: 150px center;
-    }
+
     .label {
       font-size: 12.5px;
       font-weight: bold;
