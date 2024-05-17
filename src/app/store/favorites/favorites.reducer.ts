@@ -2,29 +2,41 @@ import { createReducer, on } from '@ngrx/store';
 
 // actions
 import * as FavoritesActions from './favorites.action';
+import { IProduct } from '@app/shared/models/product.model';
+import { errorMessages } from '@app/pages/user-information/children/purchases/components/customer-information/constants/errors.constants';
 
 export interface FavoritesState {
-  favorites: number[];
+  products: IProduct[];
+  errorMessage: string | null;
 }
 
 export const initialFavoritesState: FavoritesState = {
-  favorites: [],
+  products: [],
+  errorMessage: null,
 };
 
 export const favoritesReducer = createReducer(
   initialFavoritesState,
-  on(FavoritesActions.addToFavorites, (state, { favorite }) => ({
+  on(FavoritesActions.loadAllFavoritesSuccess, (state, { products }) => ({
     ...state,
-    favorites: [...state.favorites, favorite],
+    products,
   })),
-  on(FavoritesActions.removeProductFromFavorites, (state, { favorite }) => {
-    const updatedFavorites = state.favorites.filter(
-      (favoriteId) => favorite !== favoriteId
-    );
+  on(FavoritesActions.loadAllFavoritesFailure, (state, { errorMessage }) => ({
+    ...state,
+    errorMessage,
+  }))
+  // on(FavoritesActions.addToFavorites, (state, { favoriteId }) => ({
+  //   ...state,
+  //   favorites: [...state.favorites, favorite],
+  // })),
+  // on(FavoritesActions.removeProductFromFavorites, (state, { favoriteId }) => {
+  //   const updatedFavorites = state.favorites.filter(
+  //     (favoriteId) => favorite !== favoriteId
+  //   );
 
-    return {
-      ...state,
-      favorites: updatedFavorites,
-    };
-  })
+  //   return {
+  //     ...state,
+  //     favorites: updatedFavorites,
+  //   };
+  // })
 );
