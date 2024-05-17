@@ -5,6 +5,7 @@
     [formEnableValue]="formEnableValue"
     [cardForEditing]="cardForEditing"
     (sendNewCard)="handleNewCard($event)"
+    (formReset)="handleFormReset()"
   ></app-card-form>
   <div class="pt-4 pb-4">
     <h3 class="text-center pb-2">All customer cards</h3>
@@ -20,7 +21,7 @@
             <span class="fw-bold">{{ sizeRestriction }}</span>
           </p>
           <p>
-            Your number of records:
+            Your number of cards:
             <span class="fw-bold">{{ cards.length }}</span>
           </p>
         </div>
@@ -28,6 +29,7 @@
           <app-card-item
             *ngFor="let card of cards"
             [card]="card"
+            [removeActive]="!!cardForEditing"
             (cardEdit)="handleEditCardRequest($event)"
             (cardRemove)="handleRemoveCardRequest($event)"
           ></app-card-item>

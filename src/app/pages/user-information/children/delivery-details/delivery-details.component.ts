@@ -47,7 +47,9 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
   sizeRestriction: number = 6;
 
   formEnableValue: 'enable' | 'disable' = 'enable';
-  recordForEditing!: IShipping;
+  recordForEditing: IShipping | null = null;
+
+  // loading!!!
 
   private subscriptions: Subscription[] = [];
 
@@ -149,6 +151,10 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
 
   handleRemoveRecordRequest(recordId: string) {
     this.removeDeliveryRecord(recordId);
+  }
+
+  handleFormReset() {
+    this.recordForEditing = null;
   }
 
   ngOnDestroy(): void {
