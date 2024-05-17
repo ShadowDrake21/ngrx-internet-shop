@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { filter, map, Observable, of, Subscription } from 'rxjs';
 import {
   faCartPlus,
+  faHeartCircleMinus,
   faHeartCirclePlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute, ParamMap, RouterLink } from '@angular/router';
@@ -54,7 +55,9 @@ import { ProductManipulationsService } from '@app/core/services/product-manipula
 })
 export class ProductComponent implements OnInit, OnDestroy {
   cartAdd = faCartPlus;
+
   favoriteAdd = faHeartCirclePlus;
+  favoriteRemove = faHeartCircleMinus;
 
   private store = inject(Store<AppState>);
   private route = inject(ActivatedRoute);
@@ -100,7 +103,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           });
 
         this.checkInCart(productId);
-        this.checkInFavorites(productId);
+        // this.checkInFavorites(productId);
 
         this.similarProducts$ = this.productService.getAllProducts().pipe(
           map((products) => {
@@ -128,11 +131,17 @@ export class ProductComponent implements OnInit, OnDestroy {
     this.isInCart = true;
   }
 
-  onAddToFavourites(productId: number) {
-    this.store.dispatch(
-      FavoritesActions.addToFavorites({ favorite: productId })
-    );
-    this.isInFavorites = true;
+  onToggleToFavourites(productId: number) {
+    if (this.isInFavorites) {
+      this.store.dispatch(
+        FavoritesActions.addToFavorites({ favoriteId: productId })
+      );
+    } else {
+      this.store.dispatch(
+        FavoritesActions.removeFromFavorites({ favoriteId: productId })
+      );
+    }
+    this.isInFavorites = !this.isInFavorites;
   }
 
   checkInCart(productId: number) {
@@ -150,20 +159,20 @@ export class ProductComponent implements OnInit, OnDestroy {
     this.subscriptions.push(cartSubscription);
   }
 
-  checkInFavorites(productId: number) {
-    let favoritesProductsIds: number[] = [];
+  // checkInFavorites(productId: number) {
+  //   let favoritesProductsIds: number[] = [];
 
-    const favoritesSubscription = this.store
-      .select(FavoritesSelectors.selectFavorites)
-      .pipe(map((favorites) => favorites.map((favorite) => favorite)))
-      .subscribe((ids) => {
-        favoritesProductsIds = ids;
-      });
+  //   const favoritesSubscription = this.store
+  //     .select(FavoritesSelectors.selectFavorites)
+  //     .pipe(map((favorites) => favorites.map((favorite) => favorite)))
+  //     .subscribe((ids) => {
+  //       favoritesProductsIds = ids;
+  //     });
 
-    this.isInFavorites = favoritesProductsIds.includes(productId);
+  //   this.isInFavorites = favoritesProductsIds.includes(productId);
 
-    this.subscriptions.push(favoritesSubscription);
-  }
+  //   this.subscriptions.push(favoritesSubscription);
+  // }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());

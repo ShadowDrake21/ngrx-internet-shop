@@ -28,11 +28,14 @@
           <fa-icon [icon]="cartAdd"></fa-icon></button
         ><button
           class="btn btn-danger text-light"
-          (click)="onAddToFavourites(product.id)"
-          [disabled]="isInFavorites"
+          (click)="onToggleToFavourites(product.id)"
+          [class.inFavorites]="isInFavorites"
         >
-          {{ isInFavorites ? "Added to favorites" : "Add to favorites"
-          }}<fa-icon [icon]="favoriteAdd"></fa-icon>
+          @if (isInFavorites) { Remove from favorites
+          <fa-icon [icon]="favoriteAdd"></fa-icon>
+          } @else { Add to favorites
+          <fa-icon [icon]="favoriteRemove"></fa-icon>
+          }
         </button>
       </div>
     </div>
