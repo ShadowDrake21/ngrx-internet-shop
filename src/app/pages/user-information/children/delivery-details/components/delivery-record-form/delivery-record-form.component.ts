@@ -81,6 +81,7 @@ export class DeliveryRecordFormComponent
       if (this.recordForEditing) {
         this.isEditMode = true;
         this.patchEditRecordToForm(this.recordForEditing);
+        this.formEnableValue === 'disable' && this.shippingForm.enable();
       }
     }
 
@@ -113,6 +114,7 @@ export class DeliveryRecordFormComponent
             record: newDeliveryRecord,
             mode: 'edit',
           });
+          this.formEnableValue === 'disable' && this.shippingForm.disable();
         } else {
           this.sendNewDeliveryRecord.emit({
             record: newDeliveryRecord,
@@ -174,6 +176,8 @@ export class DeliveryRecordFormComponent
     this.shippingForm.controls.id.patchValue(
       `delivery-record_${new Date().getTime()}`
     );
+
+    this.formEnableValue === 'disable' && this.shippingForm.disable();
   }
 
   patchEditRecordToForm(record: IShipping) {
