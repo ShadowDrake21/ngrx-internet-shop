@@ -112,6 +112,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           });
 
         this.checkInCart(productId);
+        this.checkIfInFavorites();
         // this.checkInFavorites(productId);
 
         this.similarProducts$ = this.productService.getAllProducts().pipe(
@@ -128,6 +129,41 @@ export class ProductComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(productSubscription);
+  }
+
+  // finish!
+  checkIfInFavorites() {
+    const favoritesSubscription = this.store
+      .select(FavoritesSelectors.selectFavorites)
+      .pipe(
+        switchMap((favorites: IProduct[]) =>
+          this.product$.pipe(
+            map((product) => ({ favorites, product })),
+            map(({ favorites, product }) => {
+              let findFavorite: IProduct | undefined = undefined;
+              findFavorite = favorites.find(
+                (favorite) => favorite.id === product.id
+              );
+              return {
+                id: findFavorite?.favoriteId,
+                isInFavorites: !!findFavorite,
+              };
+            })
+          )
+        )
+      )
+      .subscribe(({ id, isInFavorites }) => {
+        if (isInFavorites) {
+          this.product$
+            .pipe(map((product) => (product.favoriteId = id)))
+            .subscribe();
+          console.log('Product is in favorites');
+        } else {
+          console.log('Product is NOT in favorites');
+        }
+      });
+
+    this.subscriptions.push(favoritesSubscription);
   }
 
   onAddToCart(product: IProduct) {
