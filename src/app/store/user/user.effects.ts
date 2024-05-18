@@ -4,7 +4,9 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import {
   catchError,
   exhaustMap,
+  filter,
   firstValueFrom,
+  from,
   map,
   mergeMap,
   Observable,
@@ -24,6 +26,7 @@ import { AuthService } from '../../core/authentication/auth.service';
 
 // actions
 import * as UserActions from './user.actions';
+import * as FavoritesActions from '@store/favorites/favorites.action';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 // utils
 import { minimalizeUserCredential } from '../../shared/utils/store.utils';
@@ -81,11 +84,15 @@ export class UserEffects {
               ],
             };
 
-            return UserActions.signInManuallySuccess({
-              email: userCredential.user.email!,
-              userCredential: updatedUserCredential,
-            });
+            return [
+              UserActions.signInManuallySuccess({
+                email: userCredential.user.email!,
+                userCredential: updatedUserCredential,
+              }),
+              FavoritesActions.loadAllFavorites(),
+            ];
           }),
+          mergeMap((actions) => from(actions)),
           catchError((error: FirebaseError) =>
             of(
               UserActions.signInManuallyFailure({
@@ -113,6 +120,11 @@ export class UserEffects {
               userCredential: await minimalizeUserCredential(data),
             });
           }),
+          mergeMap((action) =>
+            action.type === UserActions.signInWithFacebookSuccess.type
+              ? of(action, FavoritesActions.loadAllFavorites())
+              : of(action)
+          ),
           catchError((error) =>
             of(
               UserActions.signInWithFacebookFailure({
@@ -140,6 +152,11 @@ export class UserEffects {
               userCredential: await minimalizeUserCredential(data),
             });
           }),
+          mergeMap((action) =>
+            action.type === UserActions.signInWithTwitterSuccess.type
+              ? of(action, FavoritesActions.loadAllFavorites())
+              : of(action)
+          ),
           catchError((error) =>
             of(
               UserActions.signInWithTwitterFailure({
@@ -162,15 +179,20 @@ export class UserEffects {
                 email: data,
               });
             }
-            return UserActions.signInWithTwitterSuccess({
+            return UserActions.signInWithGoogleSuccess({
               email: data.user.email!,
               userCredential: await minimalizeUserCredential(data),
             });
           }),
+          mergeMap((action) =>
+            action.type === UserActions.signInWithGoogleSuccess.type
+              ? of(action, FavoritesActions.loadAllFavorites())
+              : of(action)
+          ),
           catchError((error) =>
             of(
               UserActions.signInWithGoogleFailure({
-                errorMessage: 'Error during signing up with Twitter!',
+                errorMessage: 'Error during signing up with Google!',
               })
             )
           )

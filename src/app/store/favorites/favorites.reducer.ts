@@ -6,12 +6,12 @@ import { IFavoriteProduct } from '@app/shared/models/favorite.model';
 import { IProduct } from '@app/shared/models/product.model';
 
 export interface FavoritesState {
-  favorites: IProduct[];
+  products: IProduct[];
   errorMessage: string | null;
 }
 
 export const initialFavoritesState: FavoritesState = {
-  favorites: [],
+  products: [],
   errorMessage: null,
 };
 
@@ -19,17 +19,17 @@ export const favoritesReducer = createReducer(
   initialFavoritesState,
   on(FavoritesActions.loadAllFavoritesSuccess, (state, { favorites }) => ({
     ...state,
-    favorites,
+    products: favorites,
     errorMessage: null,
   })),
   on(FavoritesActions.loadAllFavoritesFailure, (state, { errorMessage }) => ({
     ...state,
-    favorites: [],
+    products: [],
     errorMessage,
   })),
   on(FavoritesActions.addToFavoritesSuccess, (state, { favorites }) => ({
     ...state,
-    favorites,
+    products: favorites,
     errorMessage: null,
   })),
   on(FavoritesActions.addToFavoritesFailure, (state, { errorMessage }) => ({
@@ -38,7 +38,7 @@ export const favoritesReducer = createReducer(
   })),
   on(FavoritesActions.removeFromFavoritesSuccess, (state, { favorites }) => ({
     ...state,
-    favorites,
+    products: favorites,
     errorMessage: null,
   })),
   on(

@@ -49,88 +49,121 @@ export class FavoritesEffects {
     )
   );
 
-  // rewrite with less number of switchMap
-
-  // addToFavorites$ = createEffect(() =>
-  //   this.actions$.pipe(
-  //     ofType(FavoritesActions.addToFavorites),
-  //     switchMap(({ productId, recordName }) =>
-  //       this.productsService.getSingleProductById(productId).pipe(
-  //         map((newProduct) => {
-  //           const favoriteItem: IProduct = {
-  //             ...newProduct,
-  //             favoriteId: recordName,
-  //           };
-  //           console.log('favoriteItem', favoriteItem);
-  //           return favoriteItem;
-  //         }),
-  //         map((newFavorite) => ({ recordName, newFavorite }))
-  //       )
-  //     ),
-  //     switchMap(({ newFavorite, recordName }) =>
-  //       this.store.select(UserSelectors.selectEmail).pipe(
-  //         take(1),
-  //         map((email) => ({ email, newFavorite, recordName }))
-  //       )
-  //     ),
-  //     switchMap(({ email, newFavorite, recordName }) =>
-  //       this.favoritesService
-  //         .setFavoriteProduct(newFavorite, email!, recordName)
-  //         .pipe(
-  //           switchMap(() =>
-  //             this.store
-  //               .select(FavoritesSelectors.selectFavorites)
-  //               .pipe(map((favorites) => [...favorites, newFavorite]))
-  //           ),
-  //           map((favorites) =>
-  //             FavoritesActions.addToFavoritesSuccess({ favorites })
-  //           ),
-  //           catchError((error) =>
-  //             of(
-  //               FavoritesActions.addToFavoritesFailure({
-  //                 errorMessage: error.message,
-  //               })
-  //             )
-  //           )
-  //         )
-  //     )
-  //   )
-  // );
-
-  removeFromFavorites$ = createEffect(() =>
+  addToFavorites$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(FavoritesActions.removeFromFavorites),
-      switchMap(({ favoriteId }) =>
-        this.store.select(UserSelectors.selectEmail).pipe(
-          take(1),
-          map((email) => ({ email, favoriteId }))
-        )
-      ),
-      switchMap(({ email, favoriteId }) =>
-        this.favoritesService.deleteFavoriteProduct(email!, favoriteId).pipe(
-          switchMap(() =>
-            this.store
-              .select(FavoritesSelectors.selectFavorites)
-              .pipe(
-                map((favorites) =>
-                  favorites.filter(
-                    (favorite) => favorite.favoriteId !== favoriteId
+      ofType(FavoritesActions.addToFavorites),
+      concatMap(({ productId, recordName }) =>
+        this.productsService.getSingleProductById(productId).pipe(
+          map((product) => ({ ...product, favoriteId: recordName })),
+          concatMap((favoriteItem) =>
+            this.store.select(UserSelectors.selectEmail).pipe(
+              take(1),
+              concatMap((email) =>
+                this.favoritesService
+                  .setFavoriteProduct(favoriteItem, email!, recordName)
+                  .pipe(
+                    switchMap(() =>
+                      this.store
+                        .select(FavoritesSelectors.selectFavorites)
+                        .pipe(
+                          take(1),
+                          map((favorites) => [...favorites, favoriteItem]),
+                          map((completeFavorites) =>
+                            FavoritesActions.addToFavoritesSuccess({
+                              favorites: completeFavorites,
+                            })
+                          )
+                        )
+                    ),
+                    catchError((error) =>
+                      of(
+                        FavoritesActions.addToFavoritesFailure({
+                          errorMessage: error.message,
+                        })
+                      )
+                    )
                   )
-                )
               )
-          ),
-          map((favorites) =>
-            FavoritesActions.addToFavoritesSuccess({ favorites })
-          ),
-          catchError((error) =>
-            of(
-              FavoritesActions.addToFavoritesFailure({
-                errorMessage: error.message,
-              })
             )
           )
         )
       )
     )
   );
+
+  removeFromFavorite$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(FavoritesActions.removeFromFavorites),
+      concatMap(({ favoriteId }) => {
+        return this.store.select(UserSelectors.selectEmail).pipe(
+          take(1),
+          concatMap((email) =>
+            this.favoritesService
+              .deleteFavoriteProduct(email!, favoriteId)
+              .pipe(
+                switchMap(() =>
+                  this.store.select(FavoritesSelectors.selectFavorites).pipe(
+                    take(1),
+                    map((favorites) => {
+                      return favorites.filter(
+                        (favorite) => favorite.favoriteId !== favoriteId
+                      );
+                    }),
+                    map((completeFavorites) =>
+                      FavoritesActions.removeFromFavoritesSuccess({
+                        favorites: completeFavorites,
+                      })
+                    )
+                  )
+                ),
+                catchError((error) =>
+                  of(
+                    FavoritesActions.removeFromFavoritesFailure({
+                      errorMessage: error.message,
+                    })
+                  )
+                )
+              )
+          )
+        );
+      })
+    )
+  );
+
+  // removeFromFavorites$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(FavoritesActions.removeFromFavorites),
+  //     switchMap(({ favoriteId }) =>
+  //       this.store.select(UserSelectors.selectEmail).pipe(
+  //         take(1),
+  //         map((email) => ({ email, favoriteId }))
+  //       )
+  //     ),
+  //     switchMap(({ email, favoriteId }) =>
+  //       this.favoritesService.deleteFavoriteProduct(email!, favoriteId).pipe(
+  //         switchMap(() =>
+  //           this.store
+  //             .select(FavoritesSelectors.selectFavorites)
+  //             .pipe(
+  //               map((favorites) =>
+  //                 favorites.filter(
+  //                   (favorite) => favorite.favoriteId !== favoriteId
+  //                 )
+  //               )
+  //             )
+  //         ),
+  //         map((favorites) =>
+  //           FavoritesActions.addToFavoritesSuccess({ favorites })
+  //         ),
+  //         catchError((error) =>
+  //           of(
+  //             FavoritesActions.addToFavoritesFailure({
+  //               errorMessage: error.message,
+  //             })
+  //           )
+  //         )
+  //       )
+  //     )
+  //   )
+  // );
 }
