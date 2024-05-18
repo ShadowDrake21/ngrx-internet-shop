@@ -58,7 +58,6 @@ export class UserSidebarComponent implements OnInit, OnDestroy {
       .select(PurchaseSelectors.selectCustomer)
       .subscribe((customer) => {
         if (customer?.id) {
-          console.log('customer?.id', customer?.id);
           this.transactionsData$ =
             this.checkoutService.getUserTransactionsDataFromDB(customer.id);
         }

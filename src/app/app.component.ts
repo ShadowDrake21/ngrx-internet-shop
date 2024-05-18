@@ -15,7 +15,8 @@ import { ExpirationModalComponent } from './shared/components/expiration-modal/e
 
 // created ngrx stuff
 import { AppState } from './store/app.state';
-import * as UserActions from './store/user/user.actions';
+import * as UserActions from '@store/user/user.actions';
+import * as FavoritesActions from '@store/favorites/favorites.action';
 
 // constants
 import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
@@ -55,6 +56,8 @@ export class AppComponent implements OnInit {
         }
       }
     });
+
+    this.store.dispatch(FavoritesActions.loadAllFavorites());
 
     this.checkExpirationTime();
   }

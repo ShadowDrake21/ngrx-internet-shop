@@ -2,7 +2,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { filter, map, Observable, of, Subscription } from 'rxjs';
+import {
+  filter,
+  map,
+  Observable,
+  of,
+  Subscription,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs';
 import {
   faCartPlus,
   faHeartCircleMinus,
@@ -133,7 +142,7 @@ export class ProductComponent implements OnInit, OnDestroy {
 
   onToggleToFavourites(productId: number) {
     if (!this.isInFavorites) {
-      const favoriteId = `delivery-record_${new Date().getTime()}`;
+      const favoriteId = `favorite-product_${new Date().getTime()}`;
       this.store.dispatch(
         FavoritesActions.addToFavorites({
           productId,
@@ -143,23 +152,35 @@ export class ProductComponent implements OnInit, OnDestroy {
 
       const errorMessageSubscription = this.store
         .select(FavoritesSelectors.selectErrorMessage)
-        .subscribe((errorMessage) => {
-          if (!errorMessage) {
-            this.product$.pipe(
-              map((product) => (product.favoriteId = favoriteId))
-            );
-          }
-        });
+        .pipe(
+          filter((errorMessage) => !errorMessage),
+          switchMap(() => this.product$),
+          tap((product) => {
+            const extendedProduct: IProduct = { ...product, favoriteId };
+            product = extendedProduct;
+          })
+        )
+        .subscribe();
 
       this.subscriptions.push(errorMessageSubscription);
     } else {
       const productSubscription = this.product$
-        .pipe(map((product) => product.favoriteId!))
-        .subscribe((favoriteId: string) => {
-          this.store.dispatch(
-            FavoritesActions.removeFromFavorites({ favoriteId })
-          );
-        });
+        .pipe(
+          take(1),
+          switchMap((product) => {
+            const favoriteId = product.favoriteId!;
+            this.store.dispatch(
+              FavoritesActions.removeFromFavorites({ favoriteId })
+            );
+
+            return this.product$.pipe(
+              tap((product) => {
+                product.favoriteId = '';
+              })
+            );
+          })
+        )
+        .subscribe();
 
       this.subscriptions.push(productSubscription);
     }
