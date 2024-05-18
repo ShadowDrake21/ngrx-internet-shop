@@ -93,7 +93,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           ProductActions.loadSingleProductById({ productId })
         );
 
-        this.store
+        const selectProductSubscription = this.store
           .select(ProductSelectors.selectProducts)
           .pipe(
             map((products) => products[0]),
@@ -109,11 +109,13 @@ export class ProductComponent implements OnInit, OnDestroy {
           )
           .subscribe((product) => {
             this.product$ = of(product);
+            this.checkIfInFavorites();
           });
 
         this.checkInCart(productId);
-        this.checkIfInFavorites();
+
         // this.checkInFavorites(productId);
+        this.subscriptions.push(selectProductSubscription);
 
         this.similarProducts$ = this.productService.getAllProducts().pipe(
           map((products) => {
@@ -140,6 +142,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           this.product$.pipe(
             map((product) => ({ favorites, product })),
             map(({ favorites, product }) => {
+              console.log('favorites', favorites);
               let findFavorite: IProduct | undefined = undefined;
               findFavorite = favorites.find(
                 (favorite) => favorite.id === product.id
@@ -154,12 +157,15 @@ export class ProductComponent implements OnInit, OnDestroy {
       )
       .subscribe(({ id, isInFavorites }) => {
         if (isInFavorites) {
-          this.product$
+          const productSubscription = this.product$
             .pipe(map((product) => (product.favoriteId = id)))
             .subscribe();
-          console.log('Product is in favorites');
+
+          this.isInFavorites = true;
+          this.subscriptions.push(productSubscription);
         } else {
           console.log('Product is NOT in favorites');
+          this.isInFavorites = false;
         }
       });
 

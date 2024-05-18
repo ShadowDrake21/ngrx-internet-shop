@@ -40,7 +40,7 @@ export class FavoritesEffects {
           catchError((error) =>
             of(
               FavoritesActions.loadAllFavoritesFailure({
-                errorMessage: error.message,
+                errorMessage: `Error during favorite products loading: ${error.message}`,
               })
             )
           )
