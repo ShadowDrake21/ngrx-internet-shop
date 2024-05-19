@@ -33,6 +33,9 @@
         >
           @if (isInFavorites) { Remove from favorites
           <fa-icon [icon]="favoriteRemove"></fa-icon>
+          } @else if ((source$ | async) === 'database' && isInFavorites ===
+          null) { Deleted from favorites
+          <fa-icon [icon]="favoriteAdd"></fa-icon>
           } @else { Add to favorites
           <fa-icon [icon]="favoriteAdd"></fa-icon>
           }

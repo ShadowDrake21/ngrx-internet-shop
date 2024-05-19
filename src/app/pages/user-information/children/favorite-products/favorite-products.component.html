@@ -48,7 +48,8 @@
                     </p>
                     <a
                       class="btn btn-success"
-                      [routerLink]="['/product', product.id]"
+                      [routerLink]="['/product', product.favoriteId]"
+                      [queryParams]="{ source: 'database' }"
                       >{{ "Go to page" | uppercase }}</a
                     >
                   </div>

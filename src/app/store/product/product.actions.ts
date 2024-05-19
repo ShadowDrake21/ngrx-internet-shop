@@ -13,6 +13,12 @@ export const loadProductsFailure = createAction(
   '[Products Component] LoadProductsFailure',
   props<{ errorMessage: string }>()
 );
+
+export const setSingleProduct = createAction(
+  '[Product Component] SetSingleProduct',
+  props<{ product: IProduct }>()
+);
+
 export const filterProducts = createAction(
   '[Products Component] FilterProducts',
   props<{ filterData: IFilterFormObj }>()
