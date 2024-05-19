@@ -13,6 +13,7 @@ import { RouterLink } from '@angular/router';
 import { ClearURLPipe } from '@app/shared/pipes/clear-url.pipe';
 import { SafeHTMLPipe } from '@app/shared/pipes/safe-html.pipe';
 import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
+import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
 
 @Component({
   selector: 'app-favorite-products',
@@ -25,6 +26,7 @@ import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
     ClearURLPipe,
     SafeHTMLPipe,
     TruncateTextPipe,
+    PaginationModule,
   ],
   templateUrl: './favorite-products.component.html',
   styleUrl: './favorite-products.component.scss',
@@ -36,8 +38,10 @@ export class FavoriteProductsComponent implements OnInit {
 
   favorites$!: Observable<IProduct[]>;
 
-  categories: { [categoryName: string]: IProduct[] } = {};
   private COMMON_CATEGORY = 'Common Category';
+  itemsPerPage: number = 3;
+  categories: { [categoryName: string]: IProduct[] } = {};
+  visibleCategories: { [categoryName: string]: IProduct[] } = {};
 
   private subscriptions: Subscription[] = [];
 
@@ -53,6 +57,7 @@ export class FavoriteProductsComponent implements OnInit {
             this.setFavoriteProductInCategory(favorite)
           );
           this.reorganizeCategories();
+          this.setVisibleCategories(0, this.itemsPerPage);
         })
       )
       .subscribe(() => console.log('this.categories', this.categories));
@@ -93,5 +98,22 @@ export class FavoriteProductsComponent implements OnInit {
     }
     console.log('Reorganized categories:', newCategories);
     this.categories = newCategories;
+  }
+
+  pageChanged(event: PageChangedEvent): void {
+    const startItem = (event.page - 1) * event.itemsPerPage;
+    const endItem = event.page * event.itemsPerPage;
+    this.setVisibleCategories(startItem, endItem);
+  }
+
+  setVisibleCategories(startItem: number, endItem: number) {
+    if (Object.entries(this.visibleCategories).length) {
+      this.visibleCategories = {};
+    }
+    for (const [categoryName, products] of Object.entries(
+      this.categories
+    ).slice(startItem, endItem)) {
+      this.visibleCategories[categoryName] = products;
+    }
   }
 }

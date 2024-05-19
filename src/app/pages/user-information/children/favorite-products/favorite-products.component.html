@@ -3,19 +3,24 @@
 
   <div class="pt-4 pb-4" *ngIf="categories">
     <h3 class="text-center pb-2">Favorite products</h3>
-    <ng-container *ngFor="let category of categories | keyvalue">
+    <ng-container *ngFor="let category of visibleCategories | keyvalue">
       <h4 class="text-center">{{ category.key }}</h4>
       <carousel
         [itemsPerSlide]="3"
         [singleSlideOffset]="true"
         [startFromIndex]="0"
         [interval]="0"
+        data-slider="favorites-slider"
       >
         <slide *ngFor="let product of category.value" class="w-100">
-          <div class="card mb-3 p-3" style="max-width: 800px">
+          <div
+            class="card p-3"
+            [class.m-auto]="category.value.length"
+            style="max-width: 800px"
+          >
             <div class="row g-0 d-flex align-items-center">
               <div class="col-md-4">
-                <carousel class="favorites-carousel">
+                <carousel data-slider="product-photo-slider">
                   <slide *ngFor="let image of product.images">
                     <img
                       [src]="image | clearURL | safeHTML"
@@ -54,5 +59,12 @@
         </slide>
       </carousel>
     </ng-container>
+    <pagination
+      class="d-flex justify-content-center"
+      *ngIf="(categories | keyvalue).length > itemsPerPage"
+      [itemsPerPage]="itemsPerPage"
+      [totalItems]="(categories | keyvalue).length"
+      (pageChanged)="pageChanged($event)"
+    ></pagination>
   </div>
 </div>

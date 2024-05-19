@@ -69,6 +69,48 @@ main {
   }
 }
 
+[data-slider="favorites-slider"] {
+  display: block;
+  padding-bottom: 20px;
+  .carousel {
+    padding-bottom: 40px;
+    & .carousel-indicators {
+      button {
+        background-color: #000;
+      }
+      bottom: 8px;
+      margin-bottom: 0;
+    }
+    & .carousel-control {
+      height: 32px;
+      width: 32px;
+      transform: translateY(-100%);
+      top: 50%;
+      & .carousel-control-next-icon,
+      & .carousel-control-prev-icon {
+        background-color: #000;
+      }
+    }
+    .carousel-inner {
+      padding: 0 40px;
+    }
+  }
+}
+
+[data-slider="product-photo-slider"] {
+  .carousel {
+    & .carousel-indicators {
+      display: none;
+    }
+    & .carousel-control {
+      display: none;
+    }
+    .carousel-inner {
+      padding: 0;
+    }
+  }
+}
+
 .error {
   color: red !important;
   border-color: red !important;
