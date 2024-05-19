@@ -93,21 +93,26 @@
               </li>
             </ul>
             <hr />
-            <div class="dropdown">
+            <div class="dropdown" *ngIf="user$ | async as user">
               <a
                 class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
                 id="dropdownUser2"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
+                style="cursor: pointer"
               >
                 <img
-                  src="https://avatars.githubusercontent.com/u/122775021?v=4"
+                  [src]="user.userCredential!.providerData[0].photoURL"
                   alt=""
-                  width="32"
-                  height="32"
+                  width="50"
+                  height="50"
                   class="rounded-circle me-2"
+                  style="object-fit: cover; object-position: center center"
                 />
-                <strong>mdo</strong>
+                <strong>{{
+                  user.userCredential!.providerData[0].displayName
+                    | truncateText : 15
+                }}</strong>
               </a>
               <ul
                 class="dropdown-menu text-small shadow"
@@ -115,7 +120,15 @@
               >
                 <li><a class="dropdown-item" href="#">Profile</a></li>
                 <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="#">Sign out</a></li>
+                <li>
+                  <button
+                    type="button"
+                    class="dropdown-item"
+                    (click)="onSignOut()"
+                  >
+                    Sign out
+                  </button>
+                </li>
               </ul>
             </div>
           </div>

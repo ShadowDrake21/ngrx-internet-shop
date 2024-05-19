@@ -93,6 +93,11 @@ main {
     }
     .carousel-inner {
       padding: 0 40px;
+      .carousel-item {
+        .item {
+          height: 100%;
+        }
+      }
     }
   }
 }

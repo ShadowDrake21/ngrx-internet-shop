@@ -1,0 +1,38 @@
+<div class="card p-3 h-100" [class.m-auto]="inCenter" style="max-width: 800px">
+  <div class="row g-0 d-flex align-items-center">
+    <div class="col-md-4">
+      <carousel data-slider="product-photo-slider">
+        <slide *ngFor="let image of product.images">
+          <img
+            [src]="image | clearURL | safeHTML"
+            class="img-fluid rounded-start"
+            alt="product-image"
+          /> </slide
+      ></carousel>
+    </div>
+    <div class="col-md-8 d-flex flex-column align-items-center">
+      <div class="card-body flex-shrink-0 favorite-product__item-content">
+        <h5 class="card-title">
+          {{ product.title | truncateText : 20 }}
+        </h5>
+        <h6 class="card-title">
+          Category: {{ product.category.name | truncateText : 20 }}
+        </h6>
+
+        <div class="d-flex flex-column" style="max-width: 300px; width: 100%">
+          <p class="card-text">
+            <small class="text-muted"
+              >Price: {{ product.price | currency : "PLN" }}</small
+            >
+          </p>
+          <a
+            class="btn btn-success"
+            [routerLink]="['/product', product.favoriteId]"
+            [queryParams]="{ source: 'database' }"
+            >{{ "Go to page" | uppercase }}</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

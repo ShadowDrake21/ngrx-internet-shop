@@ -221,11 +221,13 @@ export class ProductComponent implements OnInit, OnDestroy {
         if (isInFavorites) {
           const productSubscription = this.product$
             .pipe(
-              map(
-                (product) =>
-                  // problem!!! after add to cart
-                  (product!.favoriteId = id)
-              )
+              take(1),
+              map((product) => {
+                if (product) {
+                  const updateProduct = { ...product, favoriteId: id };
+                  this.product$ = of(updateProduct);
+                }
+              })
             )
             .subscribe();
 
@@ -235,7 +237,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           console.log('Product is NOT in favorites');
           const sourceSubscription = this.source$.subscribe((source) => {
             if (source === 'database') {
-              if (this.isInFavorites) {
+              if (!this.isInFavorites) {
                 this.router.navigate(['/user-information/favorite-products']);
                 this.isInFavorites = false;
               }
@@ -287,18 +289,22 @@ export class ProductComponent implements OnInit, OnDestroy {
         .pipe(
           take(1),
           switchMap((product) => {
-            console.log('onToggleToFavourites', product);
-            const favoriteId = product!.favoriteId!;
-            this.store.dispatch(
-              FavoritesActions.removeFromFavorites({ favoriteId })
-            );
+            if (product) {
+              console.log('onToggleToFavourites', product);
+              const favoriteId = product!.favoriteId!;
+              this.store.dispatch(
+                FavoritesActions.removeFromFavorites({ favoriteId })
+              );
 
-            return this.product$.pipe(
-              tap((product) => ({
-                ...product!,
-                favoriteId: '',
-              }))
-            );
+              const updatedProduct: IProduct = { ...product, favoriteId: '' };
+              return of(updatedProduct);
+            }
+            return of(null);
+          }),
+          tap((product) => {
+            if (product) {
+              this.product$ = of(product);
+            }
           })
         )
         .subscribe();

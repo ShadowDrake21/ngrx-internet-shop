@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
 import { userInformationContent } from '../../content/user-information.content';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
@@ -14,6 +14,7 @@ import { ClearURLPipe } from '@app/shared/pipes/clear-url.pipe';
 import { SafeHTMLPipe } from '@app/shared/pipes/safe-html.pipe';
 import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
 import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
+import { FavoriteProductsItemComponent } from './components/favorite-products-item/favorite-products-item.component';
 
 @Component({
   selector: 'app-favorite-products',
@@ -27,11 +28,12 @@ import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
     SafeHTMLPipe,
     TruncateTextPipe,
     PaginationModule,
+    FavoriteProductsItemComponent,
   ],
   templateUrl: './favorite-products.component.html',
   styleUrl: './favorite-products.component.scss',
 })
-export class FavoriteProductsComponent implements OnInit {
+export class FavoriteProductsComponent implements OnInit, OnDestroy {
   userInformationItem = userInformationContent[5];
 
   private store = inject(Store<FavoritesState>);
@@ -51,7 +53,6 @@ export class FavoriteProductsComponent implements OnInit {
     const favoritesSubscription = this.favorites$
       .pipe(
         map((favorites) => {
-          console.log('favoritesSubscription', favorites);
           this.categories = {};
           favorites.map((favorite) =>
             this.setFavoriteProductInCategory(favorite)
@@ -60,7 +61,7 @@ export class FavoriteProductsComponent implements OnInit {
           this.setVisibleCategories(0, this.itemsPerPage);
         })
       )
-      .subscribe(() => console.log('this.categories', this.categories));
+      .subscribe();
 
     this.subscriptions.push(favoritesSubscription);
   }
@@ -79,24 +80,16 @@ export class FavoriteProductsComponent implements OnInit {
     const newCategories: { [categoryName: string]: IProduct[] } = {};
 
     for (const [categoryName, products] of Object.entries(this.categories)) {
-      console.log(
-        'Processing category:',
-        categoryName,
-        'with products:',
-        products
-      );
       if (products.length === 1) {
         if (!newCategories[this.COMMON_CATEGORY]) {
           newCategories[this.COMMON_CATEGORY] = [];
         }
         newCategories[this.COMMON_CATEGORY].push(...products);
-        console.log('Moved to Common Category:', products);
       } else {
         newCategories[categoryName] = products;
-        console.log('Retained category:', categoryName, products);
       }
     }
-    console.log('Reorganized categories:', newCategories);
+
     this.categories = newCategories;
   }
 
@@ -115,5 +108,9 @@ export class FavoriteProductsComponent implements OnInit {
     ).slice(startItem, endItem)) {
       this.visibleCategories[categoryName] = products;
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }
