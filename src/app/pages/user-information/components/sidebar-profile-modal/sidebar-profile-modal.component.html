@@ -1,0 +1,56 @@
+<!-- <div class="d-flex" style="gap: 25px">
+  <div class="flex-shrink-0" style="width: 225px">
+    <img [src]="userCredential.photoURL" alt="user img" style="width: 100%" />
+  </div>
+  <div class="w-100">
+    <div class="d-flex align-items-center" style="gap: 50px">
+      <h3 class="fst-italic fw-lighter fs-4 pb-2">
+        {{ userCredential.email | truncateText : 60 }}
+      </h3>
+      <p>
+        <span class="fw-bold"> Email verified: </span>
+        {{ user.userCredential?.tokenResult?.claims?.['email_verified'] }}
+      </p>
+    </div>
+    <p class="fw-bold">
+      {{ userCredential.displayName }}
+    </p>
+    <hr />
+    <p>
+      <span class="fw-bold"> Auth time: </span>
+      {{ user.userCredential?.tokenResult?.authTime | date : "medium" }}
+    </p>
+    <p>
+      <span class="fw-bold"> Auth expiration time: </span>
+      {{ user.userCredential?.tokenResult?.expirationTime | date : "medium" }}
+    </p>
+    <p>
+      <span class="fw-bold"> Sign in provider: </span>
+      {{ user.userCredential?.tokenResult?.signInProvider }}
+    </p>
+    <div>
+      <p>
+        <span class="fw-bold">Auth time:</span>
+        {{ user.userCredential?.tokenResult?.authTime | date : "medium" }}
+      </p>
+      <p>
+        <span class="fw-bold">Number of purchases:</span>
+        {{ (transactionsData$ | async)?.count ?? 0 }}
+      </p>
+      <p>
+        <span class="fw-bold">Total price of purchases:</span>
+        {{ (transactionsData$ | async)?.price ?? 0 }} zł
+      </p>
+      <p>
+        <span class="fw-bold">Number of favourites:</span>
+        {{ (favorites$ | async)?.length }}
+      </p>
+
+      <p>
+        <span class="fw-bold">Last viewed product:</span> Sleek Futuristic
+        Electric Bicycle
+      </p>
+
+    </div>
+  </div>
+</div> -->
