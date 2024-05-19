@@ -129,41 +129,4 @@ export class FavoritesEffects {
       })
     )
   );
-
-  // removeFromFavorites$ = createEffect(() =>
-  //   this.actions$.pipe(
-  //     ofType(FavoritesActions.removeFromFavorites),
-  //     switchMap(({ favoriteId }) =>
-  //       this.store.select(UserSelectors.selectEmail).pipe(
-  //         take(1),
-  //         map((email) => ({ email, favoriteId }))
-  //       )
-  //     ),
-  //     switchMap(({ email, favoriteId }) =>
-  //       this.favoritesService.deleteFavoriteProduct(email!, favoriteId).pipe(
-  //         switchMap(() =>
-  //           this.store
-  //             .select(FavoritesSelectors.selectFavorites)
-  //             .pipe(
-  //               map((favorites) =>
-  //                 favorites.filter(
-  //                   (favorite) => favorite.favoriteId !== favoriteId
-  //                 )
-  //               )
-  //             )
-  //         ),
-  //         map((favorites) =>
-  //           FavoritesActions.addToFavoritesSuccess({ favorites })
-  //         ),
-  //         catchError((error) =>
-  //           of(
-  //             FavoritesActions.addToFavoritesFailure({
-  //               errorMessage: error.message,
-  //             })
-  //           )
-  //         )
-  //       )
-  //     )
-  //   )
-  // );
 }
