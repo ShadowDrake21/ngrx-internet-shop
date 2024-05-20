@@ -4,7 +4,15 @@ import { IUser } from '@app/shared/models/user.model';
 import { Store } from '@ngrx/store';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { TabsModule } from 'ngx-bootstrap/tabs';
-import { map, Observable } from 'rxjs';
+import {
+  catchError,
+  combineLatest,
+  delay,
+  forkJoin,
+  map,
+  Observable,
+  of,
+} from 'rxjs';
 
 import * as UserSelectors from '@store/user/user.selectors';
 import * as CartSelectors from '@store/cart/cart.selectors';
@@ -49,13 +57,37 @@ export class GeneralComponent implements OnInit {
 
   user$!: Observable<IUser | null>;
   cartState$!: Observable<CartState>;
-  latestTransaction$!: Observable<ISupplementedCharge>;
+  latestTransaction$!: Observable<ISupplementedCharge | null>;
+
+  latestTransactionError$!: Observable<string | null>;
+
+  loading: boolean = false;
 
   ngOnInit(): void {
+    this.loading = true;
+
     this.user$ = this.store.select(UserSelectors.selectUser);
     this.cartState$ = this.store.select(CartSelectors.selectCartState);
     this.latestTransaction$ = this.store
       .select(PurchaseSelectors.selectTransactions)
       .pipe(map((transactions) => transactions[0]));
+
+    this.latestTransactionError$ = this.store.select(
+      PurchaseSelectors.selectErrorMessage
+    );
+
+    combineLatest([this.user$, this.cartState$, this.latestTransaction$])
+      .pipe(delay(2000))
+      .subscribe({
+        next: ([user, cartState, latestTransaction]) => {
+          if (
+            user !== null &&
+            cartState !== null &&
+            latestTransaction !== null
+          ) {
+            this.loading = false;
+          }
+        },
+      });
   }
 }

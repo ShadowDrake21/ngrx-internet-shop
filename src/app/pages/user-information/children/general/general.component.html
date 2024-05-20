@@ -30,6 +30,7 @@
     <accordion-group heading="{{ 'last purchese' | titlecase }}">
       <app-latest-purchase
         [latestTransaction]="latestTransaction$"
+        [error]="latestTransactionError$"
       ></app-latest-purchase>
     </accordion-group>
     <accordion-group heading="{{ 'faq' | uppercase }}">
