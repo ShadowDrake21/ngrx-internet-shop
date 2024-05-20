@@ -74,7 +74,6 @@ export class PurchaseEffects {
       ofType(PurchaseActions.updateCustomer),
       exhaustMap(({ customerId, updateObject }) => {
         {
-          console.log('updateCustomer effect');
           return this.checkoutService
             .updateCustomer(customerId, updateObject)
             .pipe(
@@ -84,7 +83,7 @@ export class PurchaseEffects {
               catchError((error) =>
                 of(
                   PurchaseActions.updateCustomerFailure({
-                    errorMessage: error.message,
+                    errorMessage: 'Error during user update!',
                   })
                 )
               )
@@ -123,7 +122,7 @@ export class PurchaseEffects {
               catchError((error) =>
                 of(
                   PurchaseActions.getAllTransactionsFailure({
-                    errorMessage: error.message,
+                    errorMessage: 'Error during all transactions loading!',
                   })
                 )
               )

@@ -62,7 +62,6 @@ export class SignInService {
     userCredential: IStoreUserCredential,
     isLongTerm: boolean
   ) {
-    console.log('userCredential signInService', userCredential);
     const now = new Date();
     const updatedUserCredential = {
       ...userCredential,
@@ -73,7 +72,7 @@ export class SignInService {
           : userCredential.tokenResult.expirationTime,
       },
     };
-    console.log('updatedUserCredential', updatedUserCredential);
+
     createAuthInLS(updatedUserCredential);
   }
 

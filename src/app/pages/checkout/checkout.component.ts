@@ -1,9 +1,9 @@
 // angular stuff
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { loadStripe } from '@stripe/stripe-js';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 // interfaces
 import { IProduct } from '../../shared/models/product.model';
@@ -20,20 +20,24 @@ import { environment } from '../../../environments/environment.development';
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss',
 })
-export class CheckoutComponent implements OnInit {
+export class CheckoutComponent implements OnInit, OnDestroy {
   private store = inject(Store<CartState>);
   private http = inject(HttpClient);
 
   cartProducts$!: Observable<IProduct[]>;
   cartProductsArr: IProduct[] = [];
 
+  private subscriptions: Subscription[] = [];
+
   ngOnInit(): void {
     this.cartProducts$ = this.store.select(CartSelectors.selectCartProducts);
-    this.cartProducts$.subscribe((products) => {
-      this.cartProductsArr = products;
-    });
+    const cartProductsSubscription = this.cartProducts$.subscribe(
+      (products) => {
+        this.cartProductsArr = products;
+      }
+    );
 
-    this.http
+    const checkoutPostSubscription = this.http
       .post('http://localhost:4242/checkout', {
         items: this.cartProductsArr,
       })
@@ -44,6 +48,12 @@ export class CheckoutComponent implements OnInit {
           sessionId: res.id,
         });
       });
+
+    this.subscriptions.push(cartProductsSubscription, checkoutPostSubscription);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }
 

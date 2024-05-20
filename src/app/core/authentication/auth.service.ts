@@ -157,7 +157,6 @@ export class AuthService {
   }
 
   sendEmailVerification() {
-    console.log(this.auth.currentUser);
     return from(sendEmailVerification(this.auth.currentUser!));
   }
 

@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  OnDestroy,
+  Output,
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -11,7 +17,7 @@ import { SignInService } from '@app/core/services/signIn.service';
 import { minimalizeUserCredential } from '@app/shared/utils/store.utils';
 import { User, UserCredential } from 'firebase/auth';
 import { BsModalRef } from 'ngx-bootstrap/modal';
-import { concatMap, of } from 'rxjs';
+import { concatMap, of, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-reauthenticate-modal',
@@ -21,7 +27,7 @@ import { concatMap, of } from 'rxjs';
   styleUrl: './reauthenticate-modal.component.scss',
   providers: [SignInService],
 })
-export class ReauthenticateModalComponent {
+export class ReauthenticateModalComponent implements OnDestroy {
   private authService = inject(AuthService);
   public bsModalRef = inject(BsModalRef);
   private signInService = inject(SignInService);
@@ -44,8 +50,10 @@ export class ReauthenticateModalComponent {
     rememberMe: new FormControl(true),
   });
 
+  private reauthenticationSubscription!: Subscription;
+
   onReauthenticationSubmit() {
-    this.authService
+    this.reauthenticationSubscription = this.authService
       .reauthenticateUser(
         this.email!,
         this.reauthenticationForm.value.password!
@@ -91,5 +99,9 @@ export class ReauthenticateModalComponent {
           this.occuredError.emit(error.message);
         },
       });
+  }
+
+  ngOnDestroy(): void {
+    this.reauthenticationSubscription.unsubscribe();
   }
 }

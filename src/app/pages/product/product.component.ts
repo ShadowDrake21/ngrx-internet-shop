@@ -96,7 +96,6 @@ export class ProductComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.source$ = this.route.queryParams.pipe(
       map((queries: Params) => {
-        console.log('source', queries['source']);
         return queries['source'];
       })
     );
@@ -107,7 +106,6 @@ export class ProductComponent implements OnInit, OnDestroy {
 
     const sourceSubscription = this.source$.subscribe((source) => {
       if (source) {
-        console.log('source');
         if (source === 'api') {
           const productSubscription: Subscription = this.productId$.subscribe(
             (productId) => {
@@ -204,7 +202,6 @@ export class ProductComponent implements OnInit, OnDestroy {
           this.product$.pipe(
             map((product) => ({ favorites, product })),
             map(({ favorites, product }) => {
-              console.log('favorites', favorites);
               let findFavorite: IProduct | undefined = undefined;
               findFavorite = favorites.find(
                 (favorite) => favorite.id === product!.id
@@ -234,7 +231,6 @@ export class ProductComponent implements OnInit, OnDestroy {
           this.isInFavorites = true;
           this.subscriptions.push(productSubscription);
         } else {
-          console.log('Product is NOT in favorites');
           const sourceSubscription = this.source$.subscribe((source) => {
             if (source === 'database') {
               if (!this.isInFavorites) {
@@ -252,7 +248,6 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
 
   onAddToCart(product: IProduct) {
-    console.log('onAddToCart', product);
     this.store.dispatch(
       CartActions.addToCart({
         product,
@@ -290,7 +285,6 @@ export class ProductComponent implements OnInit, OnDestroy {
           take(1),
           switchMap((product) => {
             if (product) {
-              console.log('onToggleToFavourites', product);
               const favoriteId = product!.favoriteId!;
               this.store.dispatch(
                 FavoritesActions.removeFromFavorites({ favoriteId })

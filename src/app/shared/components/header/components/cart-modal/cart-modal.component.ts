@@ -73,8 +73,6 @@ export class CartModalComponent implements OnInit {
       this.cartProductsArr = products;
     });
 
-    console.log('products', this.cartProductsArr);
-
     this.user$.subscribe((user) => {
       this.store.dispatch(
         PurchaseActions.initializeCheckout({
@@ -85,23 +83,5 @@ export class CartModalComponent implements OnInit {
         })
       );
     });
-
-    // this.checkoutService
-    //   .checkoutInit(this.cartProductsArr)
-    //   .pipe(
-    //     switchMap((res: any) => {
-    //       const stripe = loadStripe(
-    //         'pk_test_51OSDbAAGBN9qzN7Z82crr3YkNTsqfwb2wsrBREzDKe0qDVRYSyS9hzEPxv4ZE9aeqtfZyKvT8CVzqVGV0SkpwYAO004zou70Ro'
-    //       );
-
-    //       return stripe.then((stripeInit) => {
-    //         return stripeInit?.redirectToCheckout({
-    //           sessionId: res.id,
-    //         });
-    //       });
-    //     })
-    //   )
-    //   .subscribe();
   }
-  // does not retrive a changes during the purchase
 }

@@ -45,7 +45,6 @@ export class PurchasesListComponent implements OnInit, OnChanges {
   transactionsLoading: boolean = true;
 
   ngOnInit(): void {
-    console.log('ngOnInit transactionsLoading', this.transactionsLoading);
     setTimeout(() => {
       this.transactionsLoading = false;
     }, 2000);
@@ -58,7 +57,6 @@ export class PurchasesListComponent implements OnInit, OnChanges {
   }
 
   pageChanged(event: PageChangedEvent): void {
-    console.log('event', event);
     const startItem = (event.page - 1) * event.itemsPerPage;
     const endItem = event.page * event.itemsPerPage;
     this.visibleTransactions$ = this.sliceTransactions(startItem, endItem);
@@ -68,8 +66,6 @@ export class PurchasesListComponent implements OnInit, OnChanges {
     start: number,
     end: number
   ): Observable<ISupplementedCharge[]> {
-    console.log('sliceTransactions');
-
     return this.transactions$.pipe(
       map((transactions) => {
         return transactions.slice(start, end);

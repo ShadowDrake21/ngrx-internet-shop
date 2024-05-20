@@ -167,7 +167,7 @@ export class PersonalInformationComponent
         switchMap((user) => {
           if (this.updatedUserPhotoFile) {
             const mediaFolderPath = `${MEDIA_STORAGE_PATH}/profilePhotos/${user?.userCredential?.providerData[0].uid}/`;
-            console.log('mediaFolderPath', mediaFolderPath);
+
             return this.storageService.updateFileAndGetDownloadURL(
               mediaFolderPath,
               this.updatedUserPhotoFile!
@@ -254,23 +254,27 @@ export class PersonalInformationComponent
 
   onSaveNewPassword() {
     this.alerts = [];
-    this.store
+    const emailSubscription = this.store
       .select(UserSelectors.selectEmail)
       .pipe(take(1))
       .subscribe((email) => {
         this.openModalWithComponent(email!, 'changePassword');
         this.isPasswordChangeMode = false;
       });
+
+    this.subscriptions.push(emailSubscription);
   }
 
   onReauthenticateUser() {
     this.alerts = [];
-    this.store
+    const emailSubscription = this.store
       .select(UserSelectors.selectEmail)
       .pipe(take(1))
       .subscribe((email) =>
         this.openModalWithComponent(email!, 'reauthentication')
       );
+
+    this.subscriptions.push(emailSubscription);
   }
 
   openModalWithComponent(

@@ -29,6 +29,8 @@ import { IUserTransactionsData } from '@app/shared/models/purchase.model';
 import { CheckoutService } from '@app/core/services/checkout.service';
 import { ISidebarModal } from './models/sidebar-modal.model';
 import { SidebarProfileModalComponent } from './components/sidebar-profile-modal/sidebar-profile-modal.component';
+import { AlertType } from '@app/shared/models/alerts.model';
+import { AlertComponent } from '@app/shared/components/alert/alert.component';
 
 @Component({
   selector: 'app-user-information',
@@ -42,6 +44,7 @@ import { SidebarProfileModalComponent } from './components/sidebar-profile-modal
     RouterLinkActive,
     TruncateTextPipe,
     SidebarProfileModalComponent,
+    AlertComponent,
   ],
   templateUrl: './user-information.component.html',
   styleUrl: './user-information.component.scss',
@@ -62,8 +65,8 @@ export class UserInformationComponent implements OnInit, OnDestroy {
 
   previousRoute!: string;
 
+  alerts: AlertType[] = [];
   private subscriptions: Subscription[] = [];
-
   private modalClasses = 'modal-dialog modal-dialog-centered';
 
   ngOnInit(): void {
@@ -86,6 +89,7 @@ export class UserInformationComponent implements OnInit, OnDestroy {
         this.subscriptions.push(customerSubscription);
       });
 
+    this.checkStripeFailure();
     this.subscriptions.push(emailSubscription);
   }
 
@@ -149,6 +153,30 @@ export class UserInformationComponent implements OnInit, OnDestroy {
         } as ISidebarModal;
       })
     );
+  }
+
+  checkStripeFailure() {
+    this.alerts = [];
+    const checkStripeFailureSubscription = this.store
+      .select(PurchaseSelectors.selectErrorMessage)
+      .pipe(
+        switchMap((errorMessage) =>
+          this.store
+            .select(PurchaseSelectors.selectCustomer)
+            .pipe(map((customer) => ({ customer, errorMessage })))
+        )
+      )
+      .subscribe(({ customer, errorMessage }) => {
+        if (errorMessage && customer) {
+          this.alerts.push({
+            msg: errorMessage!,
+            timeout: 5000,
+            type: 'danger',
+          });
+        }
+      });
+
+    this.subscriptions.push(checkStripeFailureSubscription);
   }
 
   onSignOut() {
