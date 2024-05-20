@@ -360,6 +360,7 @@ export class UserEffects {
       ofType(UserActions.signOut),
       exhaustMap(() =>
         this.authService.signOut().pipe(
+          tap(() => sessionStorage.removeItem('transactions')),
           tap(() => this.store.dispatch(PurchaseActions.clearPurchaseState())),
           map(() => UserActions.signOutSuccess())
         )
