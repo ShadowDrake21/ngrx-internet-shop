@@ -112,19 +112,6 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
         this.validateCustomerUpdateForm();
       })
     );
-
-    // const shippingGroup = this.customerUpdateForm.get('shipping') as FormGroup;
-
-    // const shippingControls = Object.values(shippingGroup.controls);
-    // shippingControls.forEach((control) => {
-    //   if (control instanceof FormControl) {
-    //     this.subscriptions.push(
-    //       control.valueChanges.subscribe(() => {
-    //         this.validateCustomerUpdateForm();
-    //       })
-    //     );
-    //   }
-    // });
   }
 
   validateCustomerUpdateForm() {
