@@ -87,20 +87,14 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
     ),
   });
 
-  informationLoading: boolean = false;
-
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
-    this.informationLoading = true;
-    const customerSubscription = this.customer$
-      .pipe(delay(2000))
-      .subscribe((customer) => {
-        if (customer) {
-          this.fillCustomerUpdateForm(customer);
-          this.informationLoading = false;
-        }
-      });
+    const customerSubscription = this.customer$.subscribe((customer) => {
+      if (customer) {
+        this.fillCustomerUpdateForm(customer);
+      }
+    });
     this.subscriptions.push(customerSubscription);
 
     this.shippingValidationPreparations();

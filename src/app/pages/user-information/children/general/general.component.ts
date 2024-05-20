@@ -7,11 +7,13 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import {
   catchError,
   combineLatest,
+  debounceTime,
   delay,
   forkJoin,
   map,
   Observable,
   of,
+  tap,
 } from 'rxjs';
 
 import * as UserSelectors from '@store/user/user.selectors';
@@ -61,32 +63,31 @@ export class GeneralComponent implements OnInit {
 
   latestTransactionError$!: Observable<string | null>;
 
-  loading: boolean = false;
+  generalLoading: boolean = false;
 
   ngOnInit(): void {
-    this.loading = true;
-
-    this.user$ = this.store.select(UserSelectors.selectUser);
-    this.cartState$ = this.store.select(CartSelectors.selectCartState);
-    this.latestTransaction$ = this.store
-      .select(PurchaseSelectors.selectTransactions)
-      .pipe(map((transactions) => transactions[0]));
+    this.generalLoading = true;
 
     this.latestTransactionError$ = this.store.select(
       PurchaseSelectors.selectErrorMessage
     );
 
-    combineLatest([this.user$, this.cartState$, this.latestTransaction$])
-      .pipe(delay(2000))
+    combineLatest([
+      this.store.select(UserSelectors.selectUser),
+      this.store.select(CartSelectors.selectCartState),
+      this.store
+        .select(PurchaseSelectors.selectTransactions)
+        .pipe(map((transactions) => transactions[0])),
+    ])
+      .pipe(
+        debounceTime(2000),
+        tap(() => (this.generalLoading = false))
+      )
       .subscribe({
         next: ([user, cartState, latestTransaction]) => {
-          if (
-            user !== null &&
-            cartState !== null &&
-            latestTransaction !== null
-          ) {
-            this.loading = false;
-          }
+          this.user$ = of(user);
+          this.cartState$ = of(cartState);
+          this.latestTransaction$ = of(latestTransaction);
         },
       });
   }

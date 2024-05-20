@@ -1,7 +1,7 @@
 <div class="pt-3 pb-3">
   <app-basic-card [item]="userInformationItem"></app-basic-card>
 
-  <div class="pt-4 pb-4" *ngIf="categories">
+  <div class="pt-4 pb-4" *ngIf="!favoritesLoading; else loading">
     <h3 class="text-center pb-2">Favorite products</h3>
     <ng-container *ngFor="let category of visibleCategories | keyvalue">
       <h4 class="text-center pb-2">{{ category.key }}</h4>
@@ -28,4 +28,9 @@
       (pageChanged)="pageChanged($event)"
     ></pagination>
   </div>
+  <ng-template #loading>
+    <div class="d-flex justify-content-center pt-5 pb-5">
+      <div class="user-information-loading"></div>
+    </div>
+  </ng-template>
 </div>

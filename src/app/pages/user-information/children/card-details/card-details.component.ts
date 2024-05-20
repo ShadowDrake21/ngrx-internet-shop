@@ -10,6 +10,7 @@ import { Store } from '@ngrx/store';
 import { AppState } from '@app/store/app.state';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import {
+  debounceTime,
   map,
   Observable,
   of,
@@ -49,13 +50,18 @@ export class CardDetailsComponent implements OnInit, OnDestroy {
 
   cards$!: Observable<ICard[]>;
 
-  // loading!!!
+  cardDetailsLoading: boolean = false;
 
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
+    this.cardDetailsLoading = true;
     const customerSubscription = this.store
       .select(PurchaseSelectors.selectCustomer)
+      .pipe(
+        debounceTime(2000),
+        tap(() => (this.cardDetailsLoading = false))
+      )
       .subscribe((customer) => {
         if (customer) {
           this.customerId = customer.id;

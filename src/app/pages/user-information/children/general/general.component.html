@@ -1,6 +1,6 @@
 <div class="pt-3 pb-3">
   <app-basic-card [item]="userInformationItem"></app-basic-card>
-  <accordion [closeOthers]="true">
+  <accordion [closeOthers]="true" *ngIf="!generalLoading; else loading">
     <accordion-group
       heading="{{ 'main user info' | titlecase }}"
       *ngIf="user$ | async"
@@ -37,4 +37,9 @@
       <app-faq-tabs></app-faq-tabs>
     </accordion-group>
   </accordion>
+  <ng-template #loading>
+    <div class="d-flex justify-content-center pt-5 pb-5">
+      <div class="user-information-loading"></div>
+    </div>
+  </ng-template>
 </div>
