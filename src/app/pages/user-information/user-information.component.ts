@@ -69,28 +69,93 @@ export class UserInformationComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private modalClasses = 'modal-dialog modal-dialog-centered';
 
+  // private initializePreviousRoute(): void {
+  //   this.previousRoute = this.routingService.getPreviousUrl() ?? '/';
+  // }
+
+  // private initializeCustomerData(): void {
+  //   const customerSubscription = this.store
+  //     .select(PurchaseSelectors.selectCustomer)
+  //     .subscribe((customer) => {
+  //       if (customer) {
+  //         this.fetchCustomerData();
+  //       }
+  //     });
+
+  //   this.subscriptions.push(customerSubscription);
+  // }
+
+  // private fetchCustomerData() {
+  //   const emailSubscription = this.store
+  //     .select(UserSelectors.selectEmail)
+  //     .pipe(
+  //       switchMap((email) => {
+  //         this.store.dispatch(PurchaseActions.getCustomer({ email: email! }));
+  //         return this.store.select(UserSelectors.selectUser);
+  //       }),
+  //       tap((user) => (this.user$ = of(user))),
+  //       switchMap((user) =>
+  //         this.store.select(PurchaseSelectors.selectCustomer)
+  //       ),
+  //       switchMap((customer) =>
+  //         this.store
+  //           .select(PurchaseSelectors.selectTransactions)
+  //           .pipe(map((transactions) => ({ customer, transactions })))
+  //       ),
+  //       tap(({ customer, transactions }) => {
+  //         if (customer && !transactions.length) {
+  //           this.store.dispatch(
+  //             PurchaseActions.getAllTransactions({
+  //               customerId: customer?.id,
+  //             })
+  //           );
+  //         }
+  //       })
+  //     )
+  //     .subscribe();
+
+  //   this.subscriptions.push(emailSubscription);
+  // }
+
+  // dopisać
   ngOnInit(): void {
     this.previousRoute = this.routingService.getPreviousUrl() ?? '/';
-    const emailSubscription = this.store
-      .select(UserSelectors.selectEmail)
-      .subscribe((email) => {
-        this.store.dispatch(PurchaseActions.getCustomer({ email: email! }));
-        this.user$ = this.store.select(UserSelectors.selectUser);
-
-        const customerSubscription = this.store
-          .select(PurchaseSelectors.selectCustomer)
-          .subscribe((customer) => {
-            if (customer) {
+    const customerSubscription = this.store
+      .select(PurchaseSelectors.selectCustomer)
+      .subscribe((customer) => {
+        if (!customer) {
+          const emailSubscription = this.store
+            .select(UserSelectors.selectEmail)
+            .subscribe((email) => {
               this.store.dispatch(
-                PurchaseActions.getAllTransactions({ customerId: customer?.id })
+                PurchaseActions.getCustomer({ email: email! })
               );
-            }
-          });
-        this.subscriptions.push(customerSubscription);
-      });
+              this.user$ = this.store.select(UserSelectors.selectUser);
 
-    this.checkStripeFailure();
-    this.subscriptions.push(emailSubscription);
+              const customerSubscription = this.store
+                .select(PurchaseSelectors.selectCustomer)
+                .pipe(
+                  switchMap((customer) =>
+                    this.store
+                      .select(PurchaseSelectors.selectTransactions)
+                      .pipe(map((transactions) => ({ customer, transactions })))
+                  )
+                )
+                .subscribe(({ customer, transactions }) => {
+                  if (customer && !transactions.length) {
+                    this.store.dispatch(
+                      PurchaseActions.getAllTransactions({
+                        customerId: customer?.id,
+                      })
+                    );
+                  }
+                });
+              this.subscriptions.push(customerSubscription);
+              this.checkStripeFailure();
+              this.subscriptions.push(emailSubscription);
+            });
+        }
+      });
   }
 
   onProfileOpen() {
