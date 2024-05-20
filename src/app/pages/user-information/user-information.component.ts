@@ -18,7 +18,7 @@ import * as UserSelectors from '@store/user/user.selectors';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
-import { Observable, Subscription, tap } from 'rxjs';
+import { map, Observable, Subscription, switchMap, tap } from 'rxjs';
 import { IUser } from '@app/shared/models/user.model';
 import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
 import * as UserActions from '@store/user/user.actions';
@@ -27,6 +27,8 @@ import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { IProduct } from '@app/shared/models/product.model';
 import { IUserTransactionsData } from '@app/shared/models/purchase.model';
 import { CheckoutService } from '@app/core/services/checkout.service';
+import { ISidebarModal } from './models/sidebar-modal.model';
+import { SidebarProfileModalComponent } from './components/sidebar-profile-modal/sidebar-profile-modal.component';
 
 @Component({
   selector: 'app-user-information',
@@ -39,6 +41,7 @@ import { CheckoutService } from '@app/core/services/checkout.service';
     RouterLink,
     RouterLinkActive,
     TruncateTextPipe,
+    SidebarProfileModalComponent,
   ],
   templateUrl: './user-information.component.html',
   styleUrl: './user-information.component.scss',
@@ -53,16 +56,15 @@ export class UserInformationComponent implements OnInit, OnDestroy {
   private modalService = inject(BsModalService);
   private checkoutService = inject(CheckoutService);
 
-  onlineStatus: boolean = false;
   user$!: Observable<IUser | null>;
-  favorites$!: Observable<IProduct[]>;
-  transactionsData$!: Observable<IUserTransactionsData | null>;
 
   bsModalRef?: BsModalRef;
 
   previousRoute!: string;
 
   private subscriptions: Subscription[] = [];
+
+  private modalClasses = 'modal-dialog modal-dialog-centered';
 
   ngOnInit(): void {
     this.previousRoute = this.routingService.getPreviousUrl() ?? '/';
@@ -90,45 +92,63 @@ export class UserInformationComponent implements OnInit, OnDestroy {
   onProfileOpen() {
     const initialState: ModalOptions = {
       initialState: {
-        // data
+        profileData: this.formProfileModalData(),
       },
     };
+    this.bsModalRef = this.modalService.show(
+      SidebarProfileModalComponent,
+      initialState
+    );
+    this.bsModalRef?.setClass(this.modalClasses);
   }
 
   // make!!!
-  formProfileModalData() {
-    this.user$ = this.store.select(UserSelectors.selectUser).pipe(
-      tap((user) => (this.onlineStatus = user?.online!)),
-      tap((user) =>
-        this.store.dispatch(
-          PurchaseActions.getCustomer({
-            email: user?.userCredential?.providerData[0].email!,
-          })
+  formProfileModalData(): Observable<ISidebarModal> {
+    return this.user$.pipe(
+      switchMap((user) =>
+        this.store.select(PurchaseSelectors.selectCustomer).pipe(
+          switchMap((customer) =>
+            this.checkoutService
+              .getUserTransactionsDataFromDB(customer?.id!)
+              .pipe(
+                map((statisticsData) => ({ statisticsData, user })),
+                switchMap(({ user, statisticsData }) =>
+                  this.store.select(FavoritesSelectors.selectFavorites).pipe(
+                    map((products) => products.length),
+                    map((favoriteCount) => ({
+                      user,
+                      statisticsData,
+                      favoriteCount,
+                    }))
+                  )
+                )
+              )
+          )
         )
-      )
+      ),
+      map(({ statisticsData, user, favoriteCount }) => {
+        const providerData = user?.userCredential?.providerData[0];
+        const tokenResult = user?.userCredential?.tokenResult;
+
+        return {
+          user: {
+            email: providerData?.email!,
+            displayName: providerData?.displayName!,
+            photoUrl: providerData?.photoURL!,
+            authTime: tokenResult?.authTime!,
+            authExpirationTime: tokenResult?.expirationTime!,
+            provider: tokenResult?.signInProvider!,
+            emailVerified: user?.userCredential?.emailVerified!,
+            onlineStatus: user?.online!,
+          },
+          favoritesCount: favoriteCount,
+          transactions: {
+            transactionsCount: statisticsData?.count || 0,
+            transactionsPrice: statisticsData?.price || 0,
+          },
+        } as ISidebarModal;
+      })
     );
-
-    const userSubscription = this.user$.subscribe();
-
-    const customerSubscription = this.store
-      .select(PurchaseSelectors.selectCustomer)
-      .subscribe((customer) => {
-        if (customer?.id) {
-          this.transactionsData$ =
-            this.checkoutService.getUserTransactionsDataFromDB(customer.id);
-        }
-      });
-
-    this.favorites$ = this.store.select(FavoritesSelectors.selectFavorites);
-
-    this.subscriptions.push(userSubscription, customerSubscription);
-
-    let userPart: any = {};
-    this.user$.subscribe((user) => {
-      userPart = { user };
-    });
-
-    // const profileData =
   }
 
   onSignOut() {
