@@ -6,7 +6,15 @@ import { AppState } from '@app/store/app.state';
 import * as UserSelectors from '@store/user/user.selectors';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
-import { debounceTime, delay, map, Observable, of, Subscription } from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  delay,
+  map,
+  Observable,
+  of,
+  Subscription,
+} from 'rxjs';
 import Stripe from 'stripe';
 import { CommonModule } from '@angular/common';
 import { TabsModule } from 'ngx-bootstrap/tabs';
@@ -39,14 +47,22 @@ export class PurchasesComponent implements OnInit, OnDestroy {
   customer$!: Observable<Stripe.Customer | null>;
   transactions$!: Observable<ISupplementedCharge[]>;
 
+  purchasesLoading: boolean = false;
+
   private subscriptions: Subscription[] = [];
 
   ngOnInit() {
-    this.customer$ = this.store.select(PurchaseSelectors.selectCustomer);
-
-    this.transactions$ = this.store.select(
-      PurchaseSelectors.selectTransactions
-    );
+    this.purchasesLoading = true;
+    combineLatest([
+      this.store.select(PurchaseSelectors.selectCustomer),
+      this.store.select(PurchaseSelectors.selectTransactions),
+    ])
+      .pipe(debounceTime(2000))
+      .subscribe(([customer, transactions]) => {
+        this.customer$ = of(customer);
+        this.transactions$ = of(transactions);
+        this.purchasesLoading = false;
+      });
   }
 
   ngOnDestroy(): void {

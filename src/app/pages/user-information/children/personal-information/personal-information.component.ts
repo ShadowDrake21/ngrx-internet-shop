@@ -5,6 +5,7 @@ import {
   inject,
   OnDestroy,
   OnInit,
+  Renderer2,
   ViewChild,
 } from '@angular/core';
 import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
@@ -12,7 +13,17 @@ import { userInformationContent } from '../../content/user-information.content';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { UserState } from '@app/store/user/user.reducer';
-import { Observable, of, Subscription, switchMap, take } from 'rxjs';
+import {
+  debounceTime,
+  delay,
+  Observable,
+  of,
+  Subscription,
+  switchMap,
+  take,
+  tap,
+  timer,
+} from 'rxjs';
 import { IStoreUserCredential, IUser } from '@app/shared/models/user.model';
 
 import * as UserSelectors from '@store/user/user.selectors';
@@ -68,8 +79,9 @@ export class PersonalInformationComponent
   private store = inject(Store<UserState>);
   private authService = inject(AuthService);
   private storageService = inject(StorageService);
-  private fb = inject(FormBuilder);
   private modalService = inject(BsModalService);
+  private renderer = inject(Renderer2);
+  private fb = inject(FormBuilder);
 
   bsModalRef?: BsModalRef;
 
@@ -95,9 +107,12 @@ export class PersonalInformationComponent
 
   changePasswordForm!: FormGroup;
 
+  personalInformationLoading: boolean = false;
+
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
+    this.personalInformationLoading = true;
     this.changePasswordForm = this.fb.group({
       password: [
         '',
@@ -110,10 +125,12 @@ export class PersonalInformationComponent
     });
 
     this.user$ = this.store.select(UserSelectors.selectUser);
+
     const userSubscription = this.user$.subscribe((user) => {
       this.userPhotoURL = user?.userCredential?.providerData[0].photoURL!;
     });
 
+    timer(2000).subscribe(() => (this.personalInformationLoading = false));
     this.subscriptions.push(userSubscription);
   }
 

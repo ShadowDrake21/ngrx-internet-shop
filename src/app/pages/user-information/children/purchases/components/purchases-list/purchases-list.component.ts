@@ -36,19 +36,11 @@ import Stripe from 'stripe';
   styleUrl: './purchases-list.component.scss',
   providers: [BsModalService],
 })
-export class PurchasesListComponent implements OnInit, OnChanges {
+export class PurchasesListComponent implements OnChanges {
   @Input({ required: true, alias: 'transactions' })
   transactions$!: Observable<ISupplementedCharge[]>;
 
   visibleTransactions$!: Observable<ISupplementedCharge[]>;
-
-  transactionsLoading: boolean = true;
-
-  ngOnInit(): void {
-    setTimeout(() => {
-      this.transactionsLoading = false;
-    }, 2000);
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.transactions$) {

@@ -1,74 +1,116 @@
 <div class="pt-3 pb-3">
   <app-basic-card [item]="userInformationItem"></app-basic-card>
-  <div *ngIf="customerId; else noCustomer">
-    <app-delivery-record-form
-      [customerId]="customerId"
-      [formEnableValue]="formEnableValue"
-      [recordForEditing]="recordForEditing"
-      (sendNewDeliveryRecord)="handleNewDeliveryRecord($event)"
-      (formReset)="handleFormReset()"
-    ></app-delivery-record-form>
-    <div class="pt-4 pb-4">
-      <h3 class="text-center pb-2">All customer delivery records</h3>
+  <div *ngIf="!deliveryDetailsLoading; else loading">
+    <ng-container *ngIf="customerId; else noCustomer">
+      <app-delivery-record-form
+        [customerId]="customerId"
+        [formEnableValue]="formEnableValue"
+        [recordForEditing]="recordForEditing"
+        (sendNewDeliveryRecord)="handleNewDeliveryRecord($event)"
+        (formReset)="handleFormReset()"
+      ></app-delivery-record-form>
+      <div class="pt-4 pb-4">
+        <h3 class="text-center pb-2">All customer delivery records</h3>
+        <div
+          *ngIf="deliveryRecords$ | async as deliveryRecords"
+          class="pb-4 w-100"
+        >
+          <ng-container *ngIf="deliveryRecords.length; else noRecords">
+            <div
+              class="d-flex"
+              style="gap: 25px"
+              [class.text-danger]="deliveryRecords.length === sizeRestriction"
+            >
+              <p>
+                Allowed number of records:
+                <span class="fw-bold">{{ sizeRestriction }}</span>
+              </p>
+              <p>
+                Your number of records:
+                <span class="fw-bold">{{ deliveryRecords.length }}</span>
+              </p>
+            </div>
+            <div class="d-flex flex-wrap">
+              <app-delivery-record-item
+                *ngFor="let record of deliveryRecords"
+                [record]="record"
+                [removeActive]="!!recordForEditing"
+                (recordEdit)="handleEditRecordRequest($event)"
+                (recordRemove)="handleRemoveRecordRequest($event)"
+                class="w-50"
+              ></app-delivery-record-item>
+            </div>
+          </ng-container>
+          <ng-template #noRecords>
+            <div class="pt-3 pb-3 text-center">
+              <h4>You have not added any delivery record yet...</h4>
+            </div>
+          </ng-template>
+        </div>
+      </div></ng-container
+    >
+    <ng-template #noCustomer>
       <div
-        *ngIf="deliveryRecords$ | async as deliveryRecords"
-        class="pb-4 w-100"
+        class="pt-3 pb-3 text-center"
+        class="photos-details"
+        style="
+          background-image: url('/assets/images/delivery-details/no-customer-img.jpg');
+        "
       >
-        <ng-container *ngIf="deliveryRecords.length; else noRecords">
-          <div
-            class="d-flex"
-            style="gap: 25px"
-            [class.text-danger]="deliveryRecords.length === sizeRestriction"
-          >
-            <p>
-              Allowed number of records:
-              <span class="fw-bold">{{ sizeRestriction }}</span>
-            </p>
-            <p>
-              Your number of records:
-              <span class="fw-bold">{{ deliveryRecords.length }}</span>
-            </p>
-          </div>
-          <div class="d-flex flex-wrap">
-            <app-delivery-record-item
-              *ngFor="let record of deliveryRecords"
-              [record]="record"
-              [removeActive]="!!recordForEditing"
-              (recordEdit)="handleEditRecordRequest($event)"
-              (recordRemove)="handleRemoveRecordRequest($event)"
-              class="w-50"
-            ></app-delivery-record-item>
-          </div>
-        </ng-container>
-        <ng-template #noRecords>
-          <div class="pt-3 pb-3 text-center">
-            <h4>You have not added any delivery record yet...</h4>
-          </div>
-        </ng-template>
+        <div
+          class="position-relative text-white w-100 h-100 d-flex flex-column justify-content-center align-items-center"
+        >
+          <h4>
+            In order to add delivery records, make a first purchase and come
+            back!
+          </h4>
+          <p>
+            Photo by
+            <a
+              class="text-white"
+              href="https://unsplash.com/@claybanks?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+              target="_blank"
+              >Clay Banks</a
+            >
+            on
+            <a
+              class="text-white"
+              href="https://unsplash.com/photos/person-holding-white-pos-machine-E2HgkL3LaFE?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+              target="_blank"
+              >Unsplash</a
+            >
+          </p>
+        </div>
       </div>
-    </div>
+    </ng-template>
   </div>
-  <ng-template #noCustomer>
-    <div class="pt-3 pb-3 text-center" class="no-customer">
+  <ng-template #loading>
+    <div
+      class="pt-3 pb-3 text-center"
+      class="photos-details"
+      style="
+        background-image: url('/assets/images/delivery-details/loading.jpg');
+      "
+    >
       <div
         class="position-relative text-white w-100 h-100 d-flex flex-column justify-content-center align-items-center"
       >
-        <h4>
-          In order to add delivery records, make a first purchase and come back!
-        </h4>
-        <p>
+        <div class="d-flex justify-content-center pt-5 pb-5">
+          <div class="user-information-loading" style="background: white"></div>
+        </div>
+        <p class="position-absolute" style="bottom: 15px">
           Photo by
           <a
             class="text-white"
-            href="https://unsplash.com/@claybanks?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
             target="_blank"
-            >Clay Banks</a
+            href="https://unsplash.com/@bipinsaxena?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+            >BIPIN SAXENA</a
           >
           on
           <a
             class="text-white"
-            href="https://unsplash.com/photos/person-holding-white-pos-machine-E2HgkL3LaFE?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
             target="_blank"
+            href="https://unsplash.com/photos/woman-in-yellow-dress-shirt-PE_nl_9msOE?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
             >Unsplash</a
           >
         </p>

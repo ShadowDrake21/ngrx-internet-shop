@@ -2,7 +2,15 @@
   <app-alert [alerts]="alerts"></app-alert>
   <app-basic-card [item]="userInformationItem"></app-basic-card>
 
-  <div class="border w-100 h-100 p-5" *ngIf="user$ | async as user">
+  <div
+    class="border w-100 h-100 p-5 position-relative"
+    *ngIf="user$ | async as user"
+  >
+    <div class="personal-info__loading" *ngIf="personalInformationLoading">
+      <div class="d-flex justify-content-center">
+        <div class="user-information-loading"></div>
+      </div>
+    </div>
     <div *ngIf="user.userCredential as userCredential">
       <div class="d-flex" style="gap: 50px">
         <div class="personal-info__image-change" #changeImageEl>

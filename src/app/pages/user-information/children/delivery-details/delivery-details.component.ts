@@ -5,6 +5,7 @@ import { userInformationContent } from '../../content/user-information.content';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DatabaseService } from '@app/core/services/database.service';
 import {
+  debounceTime,
   map,
   Observable,
   of,
@@ -49,13 +50,18 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
   formEnableValue: 'enable' | 'disable' = 'enable';
   recordForEditing: IShipping | null = null;
 
-  // loading!!!
+  deliveryDetailsLoading: boolean = false;
 
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
+    this.deliveryDetailsLoading = true;
     const customerSubscription = this.store
       .select(PurchaseSelectors.selectCustomer)
+      .pipe(
+        debounceTime(2000),
+        tap(() => (this.deliveryDetailsLoading = false))
+      )
       .subscribe((customer) => {
         if (customer) {
           this.customerId = customer.id;

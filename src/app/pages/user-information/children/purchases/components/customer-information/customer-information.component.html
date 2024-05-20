@@ -1,4 +1,4 @@
-<div class="card" *ngIf="!informationLoading; else loading">
+<div class="card">
   <ng-container *ngIf="customer$ | async as customer">
     <div class="card-header fs-5">Information about customer</div>
     <div class="card-body">
@@ -342,6 +342,6 @@
 </div>
 <ng-template #loading>
   <div class="d-flex justify-content-center pt-5 pb-5">
-    <div class="purchase-loader"></div>
+    <div class="user-information-loading"></div>
   </div>
 </ng-template>

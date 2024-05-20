@@ -4,7 +4,7 @@ import { userInformationContent } from '../../content/user-information.content';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { Store } from '@ngrx/store';
 import { FavoritesState } from '@app/store/favorites/favorites.reducer';
-import { map, Observable, Subscription } from 'rxjs';
+import { debounceTime, map, Observable, Subscription, tap } from 'rxjs';
 import { IProduct } from '@app/shared/models/product.model';
 
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
@@ -45,13 +45,18 @@ export class FavoriteProductsComponent implements OnInit, OnDestroy {
   categories: { [categoryName: string]: IProduct[] } = {};
   visibleCategories: { [categoryName: string]: IProduct[] } = {};
 
+  favoritesLoading: boolean = false;
+
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
+    this.favoritesLoading = true;
     this.favorites$ = this.store.select(FavoritesSelectors.selectFavorites);
 
     const favoritesSubscription = this.favorites$
       .pipe(
+        debounceTime(2000),
+        tap(() => (this.favoritesLoading = false)),
         map((favorites) => {
           this.categories = {};
           favorites.map((favorite) =>
