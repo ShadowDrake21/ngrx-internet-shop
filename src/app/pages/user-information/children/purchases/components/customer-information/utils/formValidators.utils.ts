@@ -23,7 +23,6 @@ export function shippingFieldsValidator(): ValidatorFn {
       const areAllFieldsFilled = allFieldsFilled(shippingGroup);
 
       if (!areAllFieldsFilled) {
-        console.log('areAllFieldsFilled');
         return { shippingIncomplete: true };
       }
     }
@@ -33,7 +32,6 @@ export function shippingFieldsValidator(): ValidatorFn {
 
 function anyNestedFieldFilled(formGroup: FormGroup): boolean {
   return Object.values(formGroup.controls).some((control) => {
-    console.log('anyNestedFieldFilled');
     if (control instanceof FormGroup) {
       return anyNestedFieldFilled(control);
     } else {

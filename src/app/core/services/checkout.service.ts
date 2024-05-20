@@ -72,8 +72,6 @@ export class CheckoutService {
   getAllTransactions(customerId: string): Observable<{
     charges: Stripe.Charge[];
   }> {
-    console.log('customerId', customerId);
-
     return from(
       this.stripe.charges.list({
         customer: customerId,
@@ -81,7 +79,6 @@ export class CheckoutService {
       })
     ).pipe(
       mergeMap((result) => {
-        console.log('result', result);
         if ('data' in result) {
           return of({ charges: result.data });
         } else {

@@ -129,7 +129,6 @@ export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
 
   private handleDataManupulationsInSignInWithSocials(): Subscription {
     return this.store.select(UserSelectors.selectUser).subscribe((user) => {
-      console.log('UserSelectors.selectUser', user);
       if (user !== null && user.userCredential) {
         createAuthInLS(user?.userCredential!);
 

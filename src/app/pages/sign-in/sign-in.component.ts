@@ -77,7 +77,7 @@ export class SignInComponent implements OnInit, OnDestroy {
   isLogging: boolean = false;
 
   private userStateSubscription!: Subscription | undefined;
-  private subcriptions: Subscription[] = [];
+  private subscriptions: Subscription[] = [];
 
   private modalsClasses = 'sign-in__modals modal-dialog-centered';
 
@@ -115,12 +115,12 @@ export class SignInComponent implements OnInit, OnDestroy {
                 this.signInForm.controls.rememberMe.setValue(true);
               }
             });
-          this.subcriptions.push(errorSubscription);
+          this.subscriptions.push(errorSubscription);
         }
         this.isLogging = false;
       });
 
-    this.subcriptions.push(userSubscription);
+    this.subscriptions.push(userSubscription);
   }
 
   openResetPasswordModal() {
@@ -173,7 +173,7 @@ export class SignInComponent implements OnInit, OnDestroy {
             this.userStateSubscription.unsubscribe();
           }
         } else if (userState.email && !userState.user?.userCredential) {
-          this.authService
+          const signInWithAnotherMethodsSubscription = this.authService
             .signInWithAnotherMethods(userState.email)
             .subscribe((providers) => {
               this.openAvailableProvidersModal(providers);
@@ -182,6 +182,8 @@ export class SignInComponent implements OnInit, OnDestroy {
                 this.userStateSubscription.unsubscribe();
               }
             });
+
+          this.subscriptions.push(signInWithAnotherMethodsSubscription);
         }
       });
   }
@@ -196,8 +198,8 @@ export class SignInComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.subcriptions) {
-      this.subcriptions.forEach((subscribtion) => subscribtion.unsubscribe());
+    if (this.subscriptions) {
+      this.subscriptions.forEach((subscribtion) => subscribtion.unsubscribe());
     }
   }
 }
