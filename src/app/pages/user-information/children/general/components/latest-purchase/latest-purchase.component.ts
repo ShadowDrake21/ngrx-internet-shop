@@ -13,5 +13,7 @@ import { Observable } from 'rxjs';
 })
 export class LatestPurchaseComponent {
   @Input({ alias: 'latestTransaction', required: true })
-  latestTransaction$!: Observable<ISupplementedCharge>;
+  latestTransaction$!: Observable<ISupplementedCharge | null>;
+
+  @Input({ alias: 'error', required: true }) error$!: Observable<string | null>;
 }

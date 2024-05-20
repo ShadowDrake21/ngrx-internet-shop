@@ -114,11 +114,15 @@ export class PurchaseEffects {
                   )
               )
             ).pipe(
-              map((transactions) =>
-                PurchaseActions.getAllTransactionsSuccess({
+              map((transactions) => {
+                sessionStorage.setItem(
+                  'transactions',
+                  JSON.stringify(transactions)
+                );
+                return PurchaseActions.getAllTransactionsSuccess({
                   transactions,
-                })
-              ),
+                });
+              }),
               catchError((error) =>
                 of(
                   PurchaseActions.getAllTransactionsFailure({

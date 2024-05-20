@@ -1,4 +1,7 @@
-<div *ngIf="latestTransaction$ | async as latestTransaction" class="d-flex">
+<div
+  *ngIf="latestTransaction$ | async as latestTransaction; else error"
+  class="d-flex"
+>
   <ng-container *ngIf="latestTransaction?.products as products">
     <div
       *ngIf="latestTransaction?.charge as charge"
@@ -148,3 +151,8 @@
     </carousel>
   </ng-container>
 </div>
+<ng-template #error>
+  <div *ngIf="error$ | async as error">
+    <p>{{ error }}</p>
+  </div>
+</ng-template>
