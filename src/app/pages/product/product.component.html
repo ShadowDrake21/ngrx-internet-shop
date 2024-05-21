@@ -23,14 +23,16 @@
           *ngIf="(source$ | async) === 'api'"
           class="btn btn-primary"
           (click)="onAddToCart(product)"
-          [disabled]="isInCart"
+          [disabled]="isInCart || !isAuthorizedGuest"
         >
           {{ isInCart ? "Added to cart" : "Add to cart" }}
-          <fa-icon [icon]="cartAdd"></fa-icon></button
-        ><button
+          <fa-icon [icon]="cartAdd"></fa-icon>
+        </button>
+        <button
           class="btn btn-danger text-light"
           (click)="onToggleToFavourites(product.id)"
           [class.inFavorites]="isInFavorites"
+          [disabled]="!isAuthorizedGuest"
         >
           @if (isInFavorites) { Remove from favorites
           <fa-icon [icon]="favoriteRemove"></fa-icon>

@@ -3,18 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { IUser } from '@app/shared/models/user.model';
 import { Store } from '@ngrx/store';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
-import { TabsModule } from 'ngx-bootstrap/tabs';
-import {
-  catchError,
-  combineLatest,
-  debounceTime,
-  delay,
-  forkJoin,
-  map,
-  Observable,
-  of,
-  tap,
-} from 'rxjs';
+import { combineLatest, debounceTime, map, Observable, of, tap } from 'rxjs';
 
 import * as UserSelectors from '@store/user/user.selectors';
 import * as CartSelectors from '@store/cart/cart.selectors';
@@ -29,7 +18,6 @@ import { SafeHTMLPipe } from '@app/shared/pipes/safe-html.pipe';
 import { ReadonlyCartItemComponent } from './components/readonly-cart-item/readonly-cart-item.component';
 import { userInformationContent } from '../../content/user-information.content';
 import { ISupplementedCharge } from '@app/shared/models/purchase.model';
-import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { FaqTabsComponent } from './components/faq-tabs/faq-tabs.component';
 import { LatestPurchaseComponent } from './components/latest-purchase/latest-purchase.component';
 import { UserInfoComponent } from './components/user-info/user-info.component';

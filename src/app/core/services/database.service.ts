@@ -106,7 +106,7 @@ export class DatabaseService {
           this.database,
           `basic-info/${email.replace(/[.$#[\]/]/g, '_')}/lastViewedProduct`
         ),
-        { lastViewedProduct: productName }
+        { product: productName }
       )
     );
   }
@@ -123,7 +123,7 @@ export class DatabaseService {
       map((snapshot: DataSnapshot) => {
         let productName = '';
         if (snapshot.exists()) {
-          productName = snapshot.val() as string;
+          productName = snapshot.val().product as string;
         }
         return productName;
       })
