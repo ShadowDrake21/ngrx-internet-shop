@@ -47,5 +47,9 @@ export const favoritesReducer = createReducer(
       ...state,
       errorMessage,
     })
-  )
+  ),
+  on(FavoritesActions.clearFavoritesState, (state) => ({
+    products: [],
+    errorMessage: null,
+  }))
 );

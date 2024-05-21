@@ -24,7 +24,7 @@ export class FavoritesService {
       get(
         child(
           ref(this.database),
-          `favorites/${email.replace(/[.$#[\]/]/g, '_')}/`
+          `basic-info/${email.replace(/[.$#[\]/]/g, '_')}/favorites/`
         )
       )
     ).pipe(
@@ -50,7 +50,10 @@ export class FavoritesService {
       set(
         ref(
           this.database,
-          `favorites/${email.replace(/[.$#[\]/]/g, '_')}/${recordName}`
+          `basic-info/${email.replace(
+            /[.$#[\]/]/g,
+            '_'
+          )}/favorites/${recordName}`
         ),
         product
       )
@@ -59,7 +62,10 @@ export class FavoritesService {
 
   searchFavoriteProduct(email: string, id: string) {
     const favoriteProductQuery = query(
-      ref(this.database, `favorites/${email.replace(/[.$#[\]/]/g, '_')}/${id}`)
+      ref(
+        this.database,
+        `basic-info/${email.replace(/[.$#[\]/]/g, '_')}/favorites/${id}`
+      )
     );
 
     return from(
@@ -78,7 +84,10 @@ export class FavoritesService {
       remove(
         ref(
           this.database,
-          `favorites/${email.replace(/[.$#[\]/]/g, '_')}/${favoriteId}`
+          `basic-info/${email.replace(
+            /[.$#[\]/]/g,
+            '_'
+          )}/favorites/${favoriteId}`
         )
       )
     );

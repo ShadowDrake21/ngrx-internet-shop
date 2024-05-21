@@ -362,6 +362,9 @@ export class UserEffects {
         this.authService.signOut().pipe(
           tap(() => sessionStorage.removeItem('transactions')),
           tap(() => this.store.dispatch(PurchaseActions.clearPurchaseState())),
+          tap(() =>
+            this.store.dispatch(FavoritesActions.clearFavoritesState())
+          ),
           map(() => UserActions.signOutSuccess())
         )
       )

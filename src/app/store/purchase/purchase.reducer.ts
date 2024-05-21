@@ -64,8 +64,8 @@ export const purchaseReducer = createReducer(
     };
   }),
   on(PurchaseActions.clearPurchaseState, (state) => ({
-    ...state,
     customer: null,
     transactions: [],
+    errorMessage: null,
   }))
 );

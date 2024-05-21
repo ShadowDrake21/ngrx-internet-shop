@@ -98,4 +98,35 @@ export class DatabaseService {
       remove(ref(this.database, `customers/${customerId}/cards/${cardId}`))
     );
   }
+
+  setLastViewedProduct(email: string, productName: string) {
+    return from(
+      set(
+        ref(
+          this.database,
+          `basic-info/${email.replace(/[.$#[\]/]/g, '_')}/lastViewedProduct`
+        ),
+        { lastViewedProduct: productName }
+      )
+    );
+  }
+
+  getLastViewedProduct(email: string) {
+    return from(
+      get(
+        child(
+          ref(this.database),
+          `basic-info/${email.replace(/[.$#[\]/]/g, '_')}/lastViewedProduct`
+        )
+      )
+    ).pipe(
+      map((snapshot: DataSnapshot) => {
+        let productName = '';
+        if (snapshot.exists()) {
+          productName = snapshot.val() as string;
+        }
+        return productName;
+      })
+    );
+  }
 }
