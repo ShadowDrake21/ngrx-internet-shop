@@ -53,6 +53,7 @@ import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ProductManipulationsService } from '@app/core/services/product-manipulations.service';
 import { FavoritesService } from '@app/core/services/favorites.service';
+import { DatabaseService } from '@app/core/services/database.service';
 
 @Component({
   selector: 'app-product',
@@ -81,6 +82,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private productService = inject(ProductService);
   private productManipulationsService = inject(ProductManipulationsService);
+  private databaseService = inject(DatabaseService);
   private favoritesService = inject(FavoritesService);
 
   source$!: Observable<'database' | 'api'>;
@@ -89,7 +91,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
 
   isInCart!: boolean;
-  isInFavorites: boolean | null = null;
+  isInFavorites: boolean = false;
 
   similarProducts$!: Observable<IProduct[]>;
 
@@ -142,13 +144,22 @@ export class ProductComponent implements OnInit, OnDestroy {
         }
       }
     });
-    const productInitializationSubscription = this.productId$.subscribe(
-      (productId) => {
-        if (productId) {
+
+    const productInitializationSubscription = this.productId$
+      .pipe(
+        switchMap((productId) =>
+          this.store
+            .select(ProductSelectors.selectProducts)
+            .pipe(
+              map((products) => ({ productId, productsCount: products.length }))
+            )
+        )
+      )
+      .subscribe(({ productId, productsCount }) => {
+        if (productId && productsCount === 1) {
           this.productInitialization(productId);
         }
-      }
-    );
+      });
     this.subscriptions.push(
       sourceSubscription,
       productInitializationSubscription
@@ -168,11 +179,18 @@ export class ProductComponent implements OnInit, OnDestroy {
           );
 
           return updatedProduct;
-        })
+        }),
+        switchMap((product) =>
+          this.store
+            .select(UserSelectors.selectEmail)
+            .pipe(map((email) => ({ product, email })))
+        )
       )
-      .subscribe((product) => {
+      .subscribe(({ product, email }) => {
         this.product$ = of(product);
         this.checkIfInFavorites();
+
+        this.databaseService.setLastViewedProduct(email!, product.title);
       });
 
     if (typeof productId === 'number') {
@@ -206,6 +224,7 @@ export class ProductComponent implements OnInit, OnDestroy {
               findFavorite = favorites.find(
                 (favorite) => favorite.id === product!.id
               );
+
               return {
                 id: findFavorite?.favoriteId,
                 isInFavorites: !!findFavorite,

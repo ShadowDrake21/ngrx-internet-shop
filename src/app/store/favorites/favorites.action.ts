@@ -39,3 +39,6 @@ export const removeFromFavoritesFailure = createAction(
   '[Favorites Component] RemoveFromFavoritesFailure',
   props<{ errorMessage: string }>()
 );
+export const clearFavoritesState = createAction(
+  '[Favorites Component] ClearFavoritesState'
+);

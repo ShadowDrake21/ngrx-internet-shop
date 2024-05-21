@@ -10,7 +10,7 @@ import {
 import { IUser } from '@app/shared/models/user.model';
 import { UserState } from '@app/store/user/user.reducer';
 import { Store } from '@ngrx/store';
-import { Observable, Subscription, tap } from 'rxjs';
+import { filter, Observable, Subscription, take, tap } from 'rxjs';
 import * as UserSelectors from '@store/user/user.selectors';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
@@ -42,16 +42,27 @@ export class UserSidebarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.user$ = this.store.select(UserSelectors.selectUser).pipe(
-      tap((user) => (this.onlineStatus = user?.online!))
-      // tap((user) =>
-      //   this.store.dispatch(
-      //     PurchaseActions.getCustomer({
-      //       email: user?.userCredential?.providerData[0].email!,
-      //     })
-      //   )
-      // )
-    );
+      filter((user) => !!user),
+      tap((user) => (this.onlineStatus = user?.online!)),
+      tap((user) => {
+        const customerSubscription = this.store
+          .select(PurchaseSelectors.selectCustomer)
+          .pipe(
+            filter((customer) => !customer),
+            tap(() => {
+              this.store.dispatch(
+                PurchaseActions.getCustomer({
+                  email: user?.userCredential?.providerData[0].email!,
+                })
+              );
+            })
+          )
+          .subscribe();
 
+        this.subscriptions.push(customerSubscription);
+      })
+    );
+    // getCustomer problems!!!
     const userSubscription = this.user$.subscribe();
 
     const customerSubscription = this.store
