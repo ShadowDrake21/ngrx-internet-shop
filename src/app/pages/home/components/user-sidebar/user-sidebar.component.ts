@@ -42,14 +42,14 @@ export class UserSidebarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.user$ = this.store.select(UserSelectors.selectUser).pipe(
-      tap((user) => (this.onlineStatus = user?.online!)),
-      tap((user) =>
-        this.store.dispatch(
-          PurchaseActions.getCustomer({
-            email: user?.userCredential?.providerData[0].email!,
-          })
-        )
-      )
+      tap((user) => (this.onlineStatus = user?.online!))
+      // tap((user) =>
+      //   this.store.dispatch(
+      //     PurchaseActions.getCustomer({
+      //       email: user?.userCredential?.providerData[0].email!,
+      //     })
+      //   )
+      // )
     );
 
     const userSubscription = this.user$.subscribe();

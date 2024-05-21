@@ -18,7 +18,16 @@ import * as UserSelectors from '@store/user/user.selectors';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
-import { map, Observable, Subscription, switchMap, tap } from 'rxjs';
+import {
+  combineLatest,
+  map,
+  Observable,
+  of,
+  Subscription,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs';
 import { IUser } from '@app/shared/models/user.model';
 import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
 import * as UserActions from '@store/user/user.actions';
@@ -69,93 +78,62 @@ export class UserInformationComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private modalClasses = 'modal-dialog modal-dialog-centered';
 
-  // private initializePreviousRoute(): void {
-  //   this.previousRoute = this.routingService.getPreviousUrl() ?? '/';
-  // }
-
-  // private initializeCustomerData(): void {
-  //   const customerSubscription = this.store
-  //     .select(PurchaseSelectors.selectCustomer)
-  //     .subscribe((customer) => {
-  //       if (customer) {
-  //         this.fetchCustomerData();
-  //       }
-  //     });
-
-  //   this.subscriptions.push(customerSubscription);
-  // }
-
-  // private fetchCustomerData() {
-  //   const emailSubscription = this.store
-  //     .select(UserSelectors.selectEmail)
-  //     .pipe(
-  //       switchMap((email) => {
-  //         this.store.dispatch(PurchaseActions.getCustomer({ email: email! }));
-  //         return this.store.select(UserSelectors.selectUser);
-  //       }),
-  //       tap((user) => (this.user$ = of(user))),
-  //       switchMap((user) =>
-  //         this.store.select(PurchaseSelectors.selectCustomer)
-  //       ),
-  //       switchMap((customer) =>
-  //         this.store
-  //           .select(PurchaseSelectors.selectTransactions)
-  //           .pipe(map((transactions) => ({ customer, transactions })))
-  //       ),
-  //       tap(({ customer, transactions }) => {
-  //         if (customer && !transactions.length) {
-  //           this.store.dispatch(
-  //             PurchaseActions.getAllTransactions({
-  //               customerId: customer?.id,
-  //             })
-  //           );
-  //         }
-  //       })
-  //     )
-  //     .subscribe();
-
-  //   this.subscriptions.push(emailSubscription);
-  // }
-
-  // dopisać
-  ngOnInit(): void {
+  private initializePreviousRoute(): void {
     this.previousRoute = this.routingService.getPreviousUrl() ?? '/';
+  }
+
+  private initializeCustomerData(): void {
     const customerSubscription = this.store
       .select(PurchaseSelectors.selectCustomer)
-      .subscribe((customer) => {
-        if (!customer) {
-          const emailSubscription = this.store
-            .select(UserSelectors.selectEmail)
-            .subscribe((email) => {
-              this.store.dispatch(
-                PurchaseActions.getCustomer({ email: email! })
-              );
-              this.user$ = this.store.select(UserSelectors.selectUser);
-
-              const customerSubscription = this.store
-                .select(PurchaseSelectors.selectCustomer)
-                .pipe(
-                  switchMap((customer) =>
-                    this.store
-                      .select(PurchaseSelectors.selectTransactions)
-                      .pipe(map((transactions) => ({ customer, transactions })))
-                  )
-                )
-                .subscribe(({ customer, transactions }) => {
-                  if (customer && !transactions.length) {
-                    this.store.dispatch(
-                      PurchaseActions.getAllTransactions({
-                        customerId: customer?.id,
-                      })
-                    );
+      .pipe(
+        tap((customer) => {
+          if (!customer) {
+            this.store
+              .select(UserSelectors.selectEmail)
+              .pipe(
+                tap((email) => {
+                  if (email) {
+                    this.store.dispatch(PurchaseActions.getCustomer({ email }));
                   }
-                });
-              this.subscriptions.push(customerSubscription);
-              this.checkStripeFailure();
-              this.subscriptions.push(emailSubscription);
-            });
+                }),
+                take(1)
+              )
+              .subscribe();
+          }
+        }),
+        switchMap(() => this.fetchCustomerData())
+      )
+      .subscribe();
+
+    this.subscriptions.push(customerSubscription);
+  }
+
+  private fetchCustomerData(): Observable<void> {
+    return this.store.select(UserSelectors.selectUser).pipe(
+      tap((user) => {
+        this.user$ = of(user);
+      }),
+      switchMap(() =>
+        combineLatest([
+          this.store.select(PurchaseSelectors.selectCustomer),
+          this.store.select(PurchaseSelectors.selectTransactions),
+        ])
+      ),
+      tap(([customer, transactions]) => {
+        if (customer && transactions.length === 0) {
+          this.store.dispatch(
+            PurchaseActions.getAllTransactions({ customerId: customer.id })
+          );
         }
-      });
+      }),
+      map(() => void 0)
+    );
+  }
+
+  ngOnInit(): void {
+    this.initializePreviousRoute();
+    this.initializeCustomerData();
+    this.checkStripeFailure();
   }
 
   onProfileOpen() {
@@ -171,7 +149,6 @@ export class UserInformationComponent implements OnInit, OnDestroy {
     this.bsModalRef?.setClass(this.modalClasses);
   }
 
-  // make!!!
   formProfileModalData(): Observable<ISidebarModal> {
     return this.user$.pipe(
       switchMap((user) =>
