@@ -10,8 +10,9 @@ import {
 import { IUser } from '@app/shared/models/user.model';
 import { UserState } from '@app/store/user/user.reducer';
 import { Store } from '@ngrx/store';
-import { filter, Observable, Subscription, take, tap } from 'rxjs';
+import { filter, Observable, of, Subscription, take, tap } from 'rxjs';
 import * as UserSelectors from '@store/user/user.selectors';
+import * as UserActions from '@store/user/user.actions';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
@@ -41,29 +42,39 @@ export class UserSidebarComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
-    this.user$ = this.store.select(UserSelectors.selectUser).pipe(
-      filter((user) => !!user),
-      tap((user) => (this.onlineStatus = user?.online!)),
-      tap((user) => {
-        const customerSubscription = this.store
-          .select(PurchaseSelectors.selectCustomer)
-          .pipe(
-            filter((customer) => !customer),
-            tap(() => {
-              this.store.dispatch(
-                PurchaseActions.getCustomer({
-                  email: user?.userCredential?.providerData[0].email!,
-                })
-              );
-            })
-          )
-          .subscribe();
+    const onlineStatusSubscription = this.store
+      .select(UserSelectors.selectUser)
+      .subscribe((user) => {
+        this.onlineStatus = user?.online!;
+      });
 
-        this.subscriptions.push(customerSubscription);
-      })
-    );
+    const userSubscription = this.store
+      .select(UserSelectors.selectUser)
+      .pipe(take(1))
+      .subscribe((user) => {
+        this.user$ = of(user);
+
+        if (user) {
+          const customerSubscription = this.store
+            .select(PurchaseSelectors.selectCustomer)
+            .pipe(take(1))
+            .subscribe((customer) => {
+              if (!customer) {
+                console.log('!customer', user);
+                this.store.dispatch(
+                  PurchaseActions.getCustomer({
+                    email: user.userCredential?.providerData[0].email!,
+                  })
+                );
+              }
+            });
+
+          this.subscriptions.push(customerSubscription);
+        }
+      });
+
     // getCustomer problems!!!
-    const userSubscription = this.user$.subscribe();
+    // const userSubscription = this.user$.subscribe();
 
     const customerSubscription = this.store
       .select(PurchaseSelectors.selectCustomer)
@@ -76,7 +87,11 @@ export class UserSidebarComponent implements OnInit, OnDestroy {
 
     this.favorites$ = this.store.select(FavoritesSelectors.selectFavorites);
 
-    this.subscriptions.push(userSubscription, customerSubscription);
+    this.subscriptions.push(
+      onlineStatusSubscription,
+      userSubscription,
+      customerSubscription
+    );
   }
 
   ngOnDestroy(): void {
