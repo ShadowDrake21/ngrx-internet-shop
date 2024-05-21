@@ -67,6 +67,7 @@ export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.signInForm = this.signInService.getSignInForm();
   }
+
   onFormSubmit() {
     this.isLogging = true;
 
@@ -78,7 +79,8 @@ export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
       .subscribe((user) => {
         if (user?.userCredential && this.isLogging) {
           this.signInService.signInManuallyFormReducedUserCredential(
-            user.userCredential
+            user.userCredential,
+            this.signInForm.value.rememberMe!
           );
 
           this.routingService.goToPreviousPage(this.previousRoute);
@@ -127,7 +129,6 @@ export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
 
   private handleDataManupulationsInSignInWithSocials(): Subscription {
     return this.store.select(UserSelectors.selectUser).subscribe((user) => {
-      console.log('UserSelectors.selectUser', user);
       if (user !== null && user.userCredential) {
         createAuthInLS(user?.userCredential!);
 

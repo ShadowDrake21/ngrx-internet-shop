@@ -21,9 +21,12 @@
               >Price: {{ product.price | currency : "PLN" }}</small
             >
           </p>
-          <a class="btn btn-success" [routerLink]="['/product', product.id]">{{
-            "Go to page" | uppercase
-          }}</a>
+          <a
+            class="btn btn-success"
+            [routerLink]="['/product', product.id]"
+            [queryParams]="{ source: 'api' }"
+            >{{ "Go to page" | uppercase }}</a
+          >
         </div>
       </div>
     </div>

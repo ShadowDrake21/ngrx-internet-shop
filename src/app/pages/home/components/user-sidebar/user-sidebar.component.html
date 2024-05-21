@@ -6,19 +6,13 @@
           {{ user.userCredential!.providerData[0].email | truncateText : 24 }}
         </h5>
         <h3>
-          {{
-            user.userCredential!.providerData[0].displayName ?? "No name user"
-              | truncateText : 24
-          }}
+          {{ user.userCredential!.providerData[0].displayName }}
         </h3>
       </div>
       <div class="w-100 pb-3">
         <img
           class="w-100 object-fit-cover"
-          [src]="
-            user.userCredential!.providerData[0].photoURL ??
-            '/assets/images/profile-image-placeholder.jpg'
-          "
+          [src]="user.userCredential!.providerData[0].photoURL"
           alt="user-sidebar-img"
         />
       </div>
@@ -27,16 +21,24 @@
           <span class="fw-bold">Auth time:</span>
           {{ user.userCredential?.tokenResult?.authTime | date : "medium" }}
         </p>
-        <p><span class="fw-bold">Number of purchases:</span> 3</p>
-        <p><span class="fw-bold">Total price of purchases:</span> 1234 zł</p>
+        <p>
+          <span class="fw-bold">Number of purchases:</span>
+          {{ (transactionsData$ | async)?.count ?? 0 }}
+        </p>
+        <p>
+          <span class="fw-bold">Total price of purchases:</span>
+          {{ (transactionsData$ | async)?.price ?? 0 }} zł
+        </p>
         <p>
           <span class="fw-bold">Number of favourites:</span>
           {{ (favorites$ | async)?.length }}
         </p>
+        <!--  -->
         <p>
           <span class="fw-bold">Last viewed product:</span> Sleek Futuristic
           Electric Bicycle
         </p>
+        <!--  -->
       </div>
     </ng-container>
   </div>

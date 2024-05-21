@@ -1,8 +1,8 @@
 // angular stuff
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { RouterLink } from '@angular/router';
 
 // interfaces
@@ -27,7 +27,7 @@ import { handleImageUnavailable } from '../../shared/utils/errorHandlers.utils';
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.scss',
 })
-export class CategoriesComponent implements OnInit {
+export class CategoriesComponent implements OnInit, OnDestroy {
   private store = inject(Store<CategoryState>);
 
   categories$!: Observable<ICategory[]>;
@@ -38,6 +38,8 @@ export class CategoriesComponent implements OnInit {
 
   secondaryCategories$!: Observable<ICategory[]>;
   secondaryCategoryId: number | null = null;
+
+  private categoriesSubscription!: Subscription;
 
   handleImageError = handleImageUnavailable;
 
@@ -50,7 +52,7 @@ export class CategoriesComponent implements OnInit {
   }
 
   handleCategories() {
-    this.categories$.subscribe((categories) => {
+    this.categoriesSubscription = this.categories$.subscribe((categories) => {
       this.mainCategories$ = of(categories.slice(0, this.basicCategoryCount));
       if (categories.length <= this.basicCategoryCount) {
         return;
@@ -65,5 +67,9 @@ export class CategoriesComponent implements OnInit {
   selectChange(event: Event): void {
     const el = event.target as HTMLSelectElement;
     this.secondaryCategoryId = parseInt(el.value);
+  }
+
+  ngOnDestroy(): void {
+    this.categoriesSubscription.unsubscribe();
   }
 }

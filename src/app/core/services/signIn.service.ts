@@ -13,6 +13,7 @@ import * as UserActions from '../../store/user/user.actions';
 
 // utils
 import { createAuthInLS } from '../utils/auth.utils';
+import { IdTokenResult } from 'firebase/auth';
 
 @Injectable()
 export class SignInService {
@@ -58,18 +59,20 @@ export class SignInService {
   }
 
   signInManuallyFormReducedUserCredential(
-    userCredential: IStoreUserCredential
+    userCredential: IStoreUserCredential,
+    isLongTerm: boolean
   ) {
     const now = new Date();
     const updatedUserCredential = {
       ...userCredential,
       tokenResult: {
         ...userCredential.tokenResult,
-        expirationTime: this.signInForm.value.rememberMe
+        expirationTime: isLongTerm
           ? new Date(now.setMonth(now.getMonth() + 3)).toUTCString()
           : userCredential.tokenResult.expirationTime,
       },
     };
+
     createAuthInLS(updatedUserCredential);
   }
 

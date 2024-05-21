@@ -29,26 +29,23 @@ export class ProductService {
     let requestParams = new HttpParams();
 
     if (filteredData.categoryId && filteredData.maxPriceLimit) {
-      console.log('filteredData.categoryId && filteredData.maxPriceLimit');
       requestParams = requestParams
         .append('price_min', 1)
         .append('price_max', filteredData.maxPriceLimit)
         .append('categoryId', filteredData.categoryId);
     }
     if (filteredData.categoryId && !filteredData.maxPriceLimit) {
-      console.log('filteredData.categoryId && !filteredData.maxPriceLimit');
       requestParams = requestParams.append(
         'categoryId',
         filteredData.categoryId
       );
     }
     if (!filteredData.categoryId && filteredData.maxPriceLimit) {
-      console.log('!filteredData.categoryId && filteredData.maxPriceLimit');
       requestParams = requestParams
         .append('price_min', 1)
         .append('price_max', filteredData.maxPriceLimit as number);
     }
-    console.log(requestParams);
+
     return this.http
       .get<IProduct[]>(`${BASE_URL_API}/products/`, {
         params: requestParams,

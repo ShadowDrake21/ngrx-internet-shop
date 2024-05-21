@@ -2,6 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import {
+  FormBuilder,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
@@ -9,13 +10,17 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, of, Subscription, take } from 'rxjs';
 import { faRefresh } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 // interfaces
-import { IUserSignUpData } from '../../shared/models/user.model';
+import {
+  IStoreUserCredential,
+  IUserSignUpData,
+  ProviderData,
+} from '../../shared/models/user.model';
 
 // created ngrx stuff
 import { UserState } from '../../store/user/user.reducer';
@@ -28,6 +33,7 @@ import { createAuthInLS } from '../../core/utils/auth.utils';
 // components
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
 import { EmailVerificationModalComponent } from './components/email-verification-modal/email-verification-modal.component';
+import { IdTokenResult } from 'firebase/auth';
 
 @Component({
   selector: 'app-sign-up',
@@ -55,20 +61,13 @@ export class SignUpComponent {
 
   error$!: Observable<string | null>;
 
-  usernamePattern =
-    '^(?=.{6,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$';
   signUpForm = new FormGroup({
-    username: new FormControl('', [
+    displayName: new FormControl('', [
       Validators.required,
-      Validators.minLength(6),
+      Validators.minLength(3),
       Validators.maxLength(20),
-      Validators.pattern(this.usernamePattern),
     ]),
-    email: new FormControl('', [
-      Validators.email,
-      Validators.required,
-      Validators.minLength(6),
-    ]),
+    email: new FormControl('', [Validators.email, Validators.required]),
     password: new FormControl('', [
       Validators.required,
       Validators.minLength(6),
@@ -92,7 +91,7 @@ export class SignUpComponent {
     const signUpData: IUserSignUpData = {
       email: this.signUpForm.value.email!,
       password: this.signUpForm.value.password!,
-      username: this.signUpForm.value.username!,
+      displayName: this.signUpForm.value.displayName!,
     };
 
     this.store.dispatch(UserActions.signUp({ data: signUpData }));
@@ -104,7 +103,6 @@ export class SignUpComponent {
           this.isLogging = false;
           this.router.navigate(['/']);
 
-          this.store.dispatch(UserActions.sendEmailVerification());
           this.bsModalRef = this.modalService.show(
             EmailVerificationModalComponent
           );
@@ -114,6 +112,21 @@ export class SignUpComponent {
           this.userSubcription.unsubscribe();
         }
       });
+
+    this.error$ = this.store.select(UserSelectors.selectErrorMessage);
+    this.errorSubcription = this.error$.subscribe((error) => {
+      if (error) {
+        setTimeout(() => {
+          this.error$ = of(null);
+        }, 5000);
+        this.isLogging = false;
+        this.signUpForm.reset();
+      }
+
+      if (this.errorSubcription) {
+        this.errorSubcription.unsubscribe();
+      }
+    });
 
     this.error$ = this.store.select(UserSelectors.selectErrorMessage);
     this.errorSubcription = this.error$.subscribe((error) => {

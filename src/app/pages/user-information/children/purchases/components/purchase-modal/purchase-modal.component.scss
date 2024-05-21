@@ -1,0 +1,12 @@
+.purchase-product__modal-slider {
+  &__wrapper {
+    width: 100%;
+  }
+
+  &__img {
+    height: 500px;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+}

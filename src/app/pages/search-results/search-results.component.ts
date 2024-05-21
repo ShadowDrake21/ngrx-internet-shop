@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ActivatedRoute, ParamMap, RouterLink } from '@angular/router';
-import { map, Observable } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
 
 // components
@@ -34,7 +34,7 @@ import { calcPageNum } from '../../shared/utils/pagination.utils';
   templateUrl: './search-results.component.html',
   styleUrl: './search-results.component.scss',
 })
-export class SearchResultsComponent implements OnInit {
+export class SearchResultsComponent implements OnInit, OnDestroy {
   private store = inject(Store<ProductState>);
   private route = inject(ActivatedRoute);
 
@@ -51,12 +51,14 @@ export class SearchResultsComponent implements OnInit {
     current: 'Search Results',
   };
 
+  private searchTermSubscription!: Subscription;
+
   ngOnInit(): void {
     this.searchTerm$ = this.route.queryParamMap.pipe(
       map((params: ParamMap) => params.get('query'))
     ) as Observable<string>;
 
-    this.searchTerm$.subscribe((searchTerm) => {
+    this.searchTermSubscription = this.searchTerm$.subscribe((searchTerm) => {
       this.store.dispatch(
         ProductActions.searchProducts({
           searchTerm,
@@ -78,5 +80,9 @@ export class SearchResultsComponent implements OnInit {
     this.visibleProducts$ = this.searchedProducts$.pipe(
       map((products) => products.slice(startItem, endItem))
     );
+  }
+
+  ngOnDestroy(): void {
+    this.searchTermSubscription.unsubscribe();
   }
 }

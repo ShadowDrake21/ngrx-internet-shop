@@ -1,8 +1,8 @@
 // angular stuff
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, RouterLink } from '@angular/router';
-import { map, Observable } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -37,7 +37,7 @@ import { ProductsListComponent } from '../../shared/components/products-list/pro
   templateUrl: './category.component.html',
   styleUrl: './category.component.scss',
 })
-export class CategoryComponent implements OnInit {
+export class CategoryComponent implements OnInit, OnDestroy {
   private store = inject(Store<AppState>);
   private route = inject(ActivatedRoute);
 
@@ -50,12 +50,14 @@ export class CategoryComponent implements OnInit {
 
   categoryError$!: Observable<string | null>;
 
+  private categoryIdSubscription!: Subscription;
+
   ngOnInit(): void {
     this.categoryId$ = this.route.queryParamMap.pipe(
       map((params: ParamMap) => +params.get('id')!)
     );
 
-    this.categoryId$.subscribe((categoryId) => {
+    this.categoryIdSubscription = this.categoryId$.subscribe((categoryId) => {
       this.store.dispatch(CategoryActions.loadCategoryById({ categoryId }));
       this.category$ = this.store
         .select(CategorySelectors.selectCategories)
@@ -71,5 +73,9 @@ export class CategoryComponent implements OnInit {
         ProductSelectors.selectProducts
       );
     });
+  }
+
+  ngOnDestroy(): void {
+    this.categoryIdSubscription.unsubscribe();
   }
 }

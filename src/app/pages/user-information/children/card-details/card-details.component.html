@@ -1,0 +1,78 @@
+<div class="pt-3 pb-3">
+  <app-basic-card [item]="userInformationItem"></app-basic-card>
+  <div *ngIf="!cardDetailsLoading; else loading">
+    <app-card-form
+      [customerId]="customerId"
+      [formEnableValue]="formEnableValue"
+      [cardForEditing]="cardForEditing"
+      (sendNewCard)="handleNewCard($event)"
+      (formReset)="handleFormReset()"
+    ></app-card-form>
+    <div class="pt-4 pb-4">
+      <h3 class="text-center pb-2">All customer cards</h3>
+      <div *ngIf="cards$ | async as cards">
+        <ng-container *ngIf="cards.length; else noCards">
+          <div
+            class="d-flex"
+            style="gap: 25px"
+            [class.text-danger]="cards.length === sizeRestriction"
+          >
+            <p>
+              Allowed number of cards:
+              <span class="fw-bold">{{ sizeRestriction }}</span>
+            </p>
+            <p>
+              Your number of cards:
+              <span class="fw-bold">{{ cards.length }}</span>
+            </p>
+          </div>
+          <div class="d-flex flex-wrap" style="gap: 40px; padding: 0 10px">
+            <app-card-item
+              *ngFor="let card of cards"
+              [card]="card"
+              [removeActive]="!!cardForEditing"
+              (cardEdit)="handleEditCardRequest($event)"
+              (cardRemove)="handleRemoveCardRequest($event)"
+            ></app-card-item>
+          </div>
+        </ng-container>
+        <ng-template #noCards>
+          <div class="pt-3 pb-3 text-center">
+            <h4>You have not added any card yet...</h4>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <ng-template #loading>
+    <div
+      class="pt-3 pb-3 text-center"
+      class="photos-details"
+      style="background-image: url('/assets/images/card-details/loading.jpg')"
+    >
+      <div
+        class="position-relative text-white w-100 h-100 d-flex flex-column justify-content-center align-items-center"
+      >
+        <div class="d-flex justify-content-center pt-5 pb-5">
+          <div class="user-information-loading" style="background: white"></div>
+        </div>
+        <p class="position-absolute" style="bottom: 15px">
+          Photo by
+          <a
+            class="text-white"
+            target="_blank"
+            href="https://unsplash.com/@omidarmin?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+            >Omid Armin</a
+          >
+          on
+          <a
+            class="text-white"
+            target="_blank"
+            href="https://unsplash.com/photos/100-us-dollar-bill-H5KlqK2BrpY?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+            >Unsplash</a
+          >
+        </p>
+      </div>
+    </div>
+  </ng-template>
+</div>

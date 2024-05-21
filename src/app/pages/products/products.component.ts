@@ -59,9 +59,11 @@ export class ProductsComponent implements OnInit {
 
   handleFilterData(filterData: IFilterFormObj) {
     this.store.dispatch(ProductActions.filterProducts({ filterData }));
+    this.products$ = this.store.select(ProductSelectors.selectProducts);
   }
 
   onRestoreProducts() {
     this.store.dispatch(ProductActions.loadProducts());
+    this.products$ = this.store.select(ProductSelectors.selectProducts);
   }
 }

@@ -1,0 +1,162 @@
+<div class="user-information">
+  <app-alert [alerts]="alerts"></app-alert>
+  <div class="d-flex user-information__inner">
+    <div
+      class="d-flex flex-column flex-shrink-0 bg-light position-relative"
+      style="max-width: 280px; width: 100%"
+    >
+      <div class="p-3 h-100" style="position: fixed; width: 280px">
+        <div class="w-100 h-100 d-flex flex-column justify-content-between">
+          <div>
+            <a
+              [routerLink]="['/user-information']"
+              class="d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none"
+            >
+              <span class="fs-4">NgRxShop User mode</span>
+            </a>
+            <hr />
+
+            <ul class="nav nav-pills flex-column mb-auto">
+              <li class="nav-item">
+                <a
+                  class="nav-link link-dark"
+                  [routerLink]="['general']"
+                  [routerLinkActive]="['active']"
+                >
+                  <fa-icon [icon]="sidebarIcons.faInfo" class="me-3"></fa-icon>
+                  General
+                </a>
+              </li>
+              <li>
+                <a
+                  class="nav-link link-dark"
+                  [routerLink]="['personal-information']"
+                  [routerLinkActive]="['active']"
+                >
+                  <fa-icon
+                    [icon]="sidebarIcons.faPerson"
+                    class="me-3"
+                  ></fa-icon>
+                  Personal information
+                </a>
+              </li>
+              <li>
+                <a
+                  class="nav-link link-dark"
+                  [routerLink]="['purchases']"
+                  [routerLinkActive]="['active']"
+                >
+                  <fa-icon
+                    [icon]="sidebarIcons.faBasketShopping"
+                    class="me-3"
+                  ></fa-icon>
+                  Purcheses
+                </a>
+              </li>
+              <li>
+                <a
+                  class="nav-link link-dark"
+                  [routerLink]="['delivery-details']"
+                  [routerLinkActive]="['active']"
+                >
+                  <fa-icon
+                    [icon]="sidebarIcons.faEarthEurope"
+                    class="me-3"
+                  ></fa-icon>
+                  Delivery details
+                </a>
+              </li>
+              <li>
+                <a
+                  class="nav-link link-dark"
+                  [routerLink]="['card-details']"
+                  [routerLinkActive]="['active']"
+                >
+                  <fa-icon
+                    [icon]="sidebarIcons.faCreditCard"
+                    class="me-3"
+                  ></fa-icon>
+                  Card details
+                </a>
+              </li>
+              <li>
+                <a
+                  class="nav-link link-dark"
+                  [routerLink]="['favorite-products']"
+                  [routerLinkActive]="['active']"
+                >
+                  <fa-icon
+                    [icon]="sidebarIcons.faHeartCircleCheck"
+                    class="me-3"
+                  ></fa-icon>
+                  Favorite products
+                </a>
+              </li>
+            </ul>
+            <hr />
+            <div class="dropdown" *ngIf="user$ | async as user">
+              <a
+                class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
+                id="dropdownUser2"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                style="cursor: pointer"
+              >
+                <img
+                  [src]="user.userCredential!.providerData[0].photoURL"
+                  alt=""
+                  width="50"
+                  height="50"
+                  class="rounded-circle me-2"
+                  style="object-fit: cover; object-position: center center"
+                />
+                <strong>{{
+                  user.userCredential!.providerData[0].displayName
+                    | truncateText : 15
+                }}</strong>
+              </a>
+              <ul
+                class="dropdown-menu text-small shadow"
+                aria-labelledby="dropdownUser2"
+              >
+                <li>
+                  <a class="dropdown-item" (click)="onProfileOpen()">Profile</a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <button
+                    type="button"
+                    class="dropdown-item"
+                    (click)="onSignOut()"
+                  >
+                    Sign out
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="text-dark">
+              <a
+                class="footer-link text-dark text-decoration-none"
+                target="_blank"
+                href="https://github.com/ShadowDrake21"
+              >
+                © 2024 Dmytro (Dmitrii) Krapyvianskiy a.k.a Drake21 | All rights
+                reserved</a
+              >
+            </div>
+            <hr />
+            <a class="nav-link link-dark" [routerLink]="[previousRoute]">
+              <fa-icon [icon]="sidebarIcons.faPowerOff" class="me-3"></fa-icon>
+              Exit user mode
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="user-container">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

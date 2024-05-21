@@ -28,6 +28,11 @@ export const productReducer = createReducer(
     products: [],
     errorMessage,
   })),
+  on(ProductActions.setSingleProduct, (state, { product }) => ({
+    ...state,
+    products: [product],
+    errorMessage: null,
+  })),
   on(ProductActions.filterProductsSuccess, (state, { products }) => ({
     ...state,
     products,

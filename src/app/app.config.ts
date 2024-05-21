@@ -32,6 +32,10 @@ import { UserEffects } from './store/user/user.effects';
 
 // environment
 import { environment } from '../environments/environment.development';
+import { getStorage, provideStorage } from '@angular/fire/storage';
+import { purchaseReducer } from './store/purchase/purchase.reducer';
+import { PurchaseEffects } from './store/purchase/purchase.effects';
+import { FavoritesEffects } from './store/favorites/favorites.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -39,20 +43,28 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(),
     provideStore({
+      user: userReducer,
       product: productReducer,
       cart: cartReducer,
       category: categoryReducer,
       favorites: favoritesReducer,
-      user: userReducer,
+      purchase: purchaseReducer,
       router: routerReducer,
     }),
-    provideEffects([ProductEffects, CategoryEffects, UserEffects]),
+    provideEffects([
+      UserEffects,
+      ProductEffects,
+      CategoryEffects,
+      PurchaseEffects,
+      FavoritesEffects,
+    ]),
     provideRouterStore(),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     importProvidersFrom([
       provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
       provideAuth(() => getAuth()),
       provideDatabase(() => getDatabase()),
+      provideStorage(() => getStorage()),
     ]),
   ],
 };
