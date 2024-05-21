@@ -34,16 +34,6 @@ export class ProductsCategorySliderComponent implements OnInit {
   singleSlideOffset = true;
 
   ngOnInit(): void {
-    // this.category$ = this.categoryService.getCategoryByName(this.categoryName);
-    // this.category$.subscribe((category) => {
-    //   this.products$ = this.productService
-    //     .getProductsByCategory(category?.id!, { offset: 0, limit: 15 })
-    //     .pipe(
-    //       tap((products) =>
-    //         console.log('products and category', products, category)
-    //       )
-    //     );
-    // });
     this.products$ = this.productService.getProductsByCategory(
       parseInt(this.categoryIdStr),
       {

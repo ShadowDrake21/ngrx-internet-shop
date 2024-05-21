@@ -1,0 +1,42 @@
+<div *ngIf="user$ | async as user">
+  <ng-container *ngIf="user.userCredential!.providerData[0] as userCredential">
+    <div class="d-flex" style="gap: 25px">
+      <div class="flex-shrink-0" style="width: 225px">
+        <img
+          [src]="userCredential.photoURL"
+          alt="user img"
+          style="width: 100%"
+        />
+      </div>
+      <div class="w-100">
+        <div class="d-flex align-items-center" style="gap: 50px">
+          <h3 class="fst-italic fw-lighter fs-4 pb-2">
+            {{ userCredential.email | truncateText : 60 }}
+          </h3>
+          <p>
+            <span class="fw-bold"> Email verified: </span>
+            {{ user.userCredential?.tokenResult?.claims?.['email_verified'] }}
+          </p>
+        </div>
+        <p class="fw-bold">
+          {{ userCredential.displayName }}
+        </p>
+        <hr />
+        <p>
+          <span class="fw-bold"> Auth time: </span>
+          {{ user.userCredential?.tokenResult?.authTime | date : "medium" }}
+        </p>
+        <p>
+          <span class="fw-bold"> Auth expiration time: </span>
+          {{
+            user.userCredential?.tokenResult?.expirationTime | date : "medium"
+          }}
+        </p>
+        <p>
+          <span class="fw-bold"> Sign in provider: </span>
+          {{ user.userCredential?.tokenResult?.signInProvider }}
+        </p>
+      </div>
+    </div>
+  </ng-container>
+</div>

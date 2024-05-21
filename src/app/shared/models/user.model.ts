@@ -1,14 +1,14 @@
 import { IdTokenResult } from 'firebase/auth';
 
 export interface IUserSignUpData {
-  username: string;
+  displayName: string;
   email: string;
   password: string;
 }
 
 export interface IUserUpdate {
-  displayName?: string;
-  photoURL?: string;
+  displayName: string;
+  photoURL: string;
 }
 
 export interface IUser {
@@ -16,6 +16,7 @@ export interface IUser {
   online: boolean;
 }
 export interface IStoreUserCredential {
+  emailVerified: boolean;
   tokenResult: IdTokenResult;
   providerData: ProviderData[];
 }
@@ -23,8 +24,8 @@ export interface IStoreUserCredential {
 export interface ProviderData {
   providerId: string;
   uid: string;
-  displayName: any;
+  displayName: string;
   email: string;
-  phoneNumber: any;
-  photoURL: any;
+  phoneNumber: string;
+  photoURL: string;
 }

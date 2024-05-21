@@ -23,9 +23,12 @@
       }}</span>
     </p>
     <div>
-      <a class="btn btn-danger w-100" [routerLink]="['/product', product.id]">{{
-        "Go to page" | uppercase
-      }}</a>
+      <a
+        class="btn btn-danger w-100"
+        [routerLink]="['/product', product.id]"
+        [queryParams]="{ source: 'api' }"
+        >{{ "Go to page" | uppercase }}</a
+      >
     </div>
   </div>
 </a>

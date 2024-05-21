@@ -1,0 +1,158 @@
+<div
+  *ngIf="latestTransaction$ | async as latestTransaction; else error"
+  class="d-flex"
+>
+  <ng-container *ngIf="latestTransaction?.products as products">
+    <div
+      *ngIf="latestTransaction?.charge as charge"
+      class="flex-shrink-0 border p-3 latest-purchase-info"
+    >
+      <h5 class="pb-2">Purchase info</h5>
+      <p class="fw-bold">
+        Made on {{ charge.created * 1000 | date : "medium" }}
+      </p>
+      <p>
+        <span class="fw-bold">Total price:</span>
+        {{ charge.amount / 100 | currency : "PLN" }}
+      </p>
+      <p>
+        <span class="fw-bold">Payment status:</span>
+        {{ charge.paid ? "paid" : "not paid" }}
+      </p>
+      <p>
+        <span class="fw-bold">Payment method:</span>
+        {{ charge.payment_method_details?.type }}
+      </p>
+      <p>
+        <span class="fw-bold">Purchase status:</span>
+        {{ charge.status }}
+      </p>
+      <div>
+        <h6>Builing details</h6>
+        <ul *ngIf="charge.billing_details as billing_details">
+          <li>
+            <span class="fw-bold">Country:</span>
+            {{ billing_details.address?.country }}
+          </li>
+          <li>
+            <span class="fw-bold">City:</span>
+            {{ billing_details.address?.city }}
+          </li>
+          <li>
+            <span class="fw-bold">Address 1:</span>
+            {{ billing_details.address?.line1 }}
+          </li>
+          <li>
+            <span class="fw-bold">Address 2:</span>
+            {{ billing_details.address?.line2 }}
+          </li>
+          <li>
+            <span class="fw-bold">Postal code:</span>
+            {{ billing_details.address?.postal_code }}
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h6>Shipping details</h6>
+        <ul *ngIf="charge.shipping as shipping">
+          <li>
+            <span class="fw-bold">Receiver name:</span>
+            {{ shipping.name }}
+          </li>
+          <li>
+            <span class="fw-bold">Receiver phone:</span>
+            {{ shipping.phone ?? "unknown" }}
+          </li>
+          <li>
+            <span class="fw-bold">Country:</span>
+            {{ shipping.address?.country }}
+          </li>
+          <li>
+            <span class="fw-bold">City:</span>
+            {{ shipping.address?.city }}
+          </li>
+          <li>
+            <span class="fw-bold">Address 1:</span>
+            {{ shipping.address?.line1 }}
+          </li>
+          <li>
+            <span class="fw-bold">Address 2:</span>
+            {{ shipping.address?.line2 }}
+          </li>
+          <li>
+            <span class="fw-bold">Postal code:</span>
+            {{ shipping.address?.postal_code }}
+          </li>
+        </ul>
+      </div>
+
+      <p class="fw-bold">
+        Provided by
+        {{ charge.calculated_statement_descriptor }}
+      </p>
+    </div>
+    <carousel
+      [interval]="0"
+      class="d-block w-100 purchase__modal-slider"
+      [showIndicators]="false"
+    >
+      <slide *ngFor="let product of products; let i = index">
+        <div class="d-flex flex-column" style="padding: 0 10%">
+          <div class="d-flex w-100 justify-content-between fw-light">
+            <p>{{ product.product.id }}</p>
+            <p>
+              Add to the store:
+              {{ product.product.created * 1000 | date : "medium" }}
+            </p>
+            <p>Product #{{ i + 1 }} in a cart</p>
+          </div>
+          <div class="d-flex flex-column justify-content-center">
+            <div>
+              <h5 class="text-center pb-2">
+                {{ product.product.name }}
+              </h5>
+              <div class="purchase-product__modal-slider__wrapper">
+                <carousel class="purchase-product__modal-slider">
+                  <slide *ngFor="let image of product.product.images">
+                    <img
+                      [src]="image"
+                      alt="product image"
+                      class="purchase-product__modal-slider__img"
+                    />
+                  </slide>
+                </carousel>
+              </div>
+            </div>
+            <div
+              class="d-flex mt-4"
+              style="height: 80px; flex-direction: column; flex-wrap: wrap"
+            >
+              <p class="fw-light">{{ product.price.id }}</p>
+              <p>
+                <span class="fw-bold">Bulling type:</span>
+                {{ product.price.billing_scheme }}
+              </p>
+              <p>
+                <span class="fw-bold">Unit price:</span>
+                {{ product.price.unit_amount! / 100 | currency : "PLN" }}
+              </p>
+              <p>
+                <span class="fw-bold">Quantity:</span>
+                {{ product.quantity }}
+              </p>
+              <p>
+                <span class="fw-bold">Price type:</span>
+                {{ product.price.type }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </slide>
+    </carousel>
+  </ng-container>
+</div>
+<ng-template #error>
+  <div *ngIf="error$ | async as error">
+    <p>{{ error }}</p>
+  </div>
+</ng-template>

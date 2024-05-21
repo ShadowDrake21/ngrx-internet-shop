@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '@app/core/authentication/auth.service';
 import { ProductService } from '@app/core/services/product.service';
 import { ProductsItemComponent } from '@app/shared/components/products-item/products-item.component';
 import { IProduct } from '@app/shared/models/product.model';
-import { Observable, tap } from 'rxjs';
+import { Observable, Subscription, tap } from 'rxjs';
 
 @Component({
   selector: 'app-products-promotions',
@@ -13,7 +13,7 @@ import { Observable, tap } from 'rxjs';
   templateUrl: './products-promotions.component.html',
   styleUrl: './products-promotions.component.scss',
 })
-export class ProductsPromotionsComponent implements OnInit {
+export class ProductsPromotionsComponent implements OnInit, OnDestroy {
   private productService = inject(ProductService);
 
   allProducts$!: Observable<IProduct[]>;
@@ -21,6 +21,8 @@ export class ProductsPromotionsComponent implements OnInit {
   canBeInterestingProduct!: IProduct;
   productOfTheDay!: IProduct;
   theMostExpensiveProduct!: IProduct;
+
+  private allProductsSubscription!: Subscription;
 
   ngOnInit(): void {
     this.allProducts$ = this.productService.getAllProducts().pipe(
@@ -36,7 +38,7 @@ export class ProductsPromotionsComponent implements OnInit {
       tap((products) => this.productOfTheDayManipulations(products))
     );
 
-    this.allProducts$.subscribe();
+    this.allProductsSubscription = this.allProducts$.subscribe();
   }
 
   productOfTheDayManipulations(products: IProduct[]) {
@@ -86,5 +88,9 @@ export class ProductsPromotionsComponent implements OnInit {
     );
 
     return productsDesc[0];
+  }
+
+  ngOnDestroy(): void {
+    this.allProductsSubscription.unsubscribe();
   }
 }

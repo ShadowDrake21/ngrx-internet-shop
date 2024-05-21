@@ -1,5 +1,5 @@
 // angular stuff
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
@@ -15,10 +15,15 @@ import { ExpirationModalComponent } from './shared/components/expiration-modal/e
 
 // created ngrx stuff
 import { AppState } from './store/app.state';
-import * as UserActions from './store/user/user.actions';
+import * as UserActions from '@store/user/user.actions';
+import * as FavoritesActions from '@store/favorites/favorites.action';
+import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 
 // constants
-import { LS_AUTH_ITEM_NAME } from './core/constants/auth.constants';
+import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
+import { AlertComponent } from './shared/components/alert/alert.component';
+import { AlertType } from './shared/models/alerts.model';
+import { map, Subject, Subscription, switchMap, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +33,7 @@ import { LS_AUTH_ITEM_NAME } from './core/constants/auth.constants';
   styleUrl: './app.component.scss',
   providers: [BsModalService],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   private store = inject(Store<AppState>);
   private router = inject(Router);
   private modalService = inject(BsModalService);
@@ -37,18 +42,28 @@ export class AppComponent implements OnInit {
 
   bsModalRef?: BsModalRef;
 
+  private destroy$$: Subject<void> = new Subject<void>();
+
   ngOnInit(): void {
     this.getUserFromLS();
 
-    this.router.events.subscribe((event: any) => {
-      if (event instanceof NavigationEnd) {
-        if (this.router.url === '/sign-in' || this.router.url === '/sign-up') {
-          this.headerFooterAvailable = false;
-        } else {
-          this.headerFooterAvailable = true;
+    this.router.events
+      .pipe(takeUntil(this.destroy$$))
+      .subscribe((event: any) => {
+        if (event instanceof NavigationEnd) {
+          if (
+            this.router.url === '/sign-in' ||
+            this.router.url === '/sign-up' ||
+            this.router.url.includes('/user-information')
+          ) {
+            this.headerFooterAvailable = false;
+          } else {
+            this.headerFooterAvailable = true;
+          }
         }
-      }
-    });
+      });
+
+    this.store.dispatch(FavoritesActions.loadAllFavorites());
 
     this.checkExpirationTime();
   }
@@ -84,5 +99,10 @@ export class AppComponent implements OnInit {
 
   openModal() {
     this.bsModalRef = this.modalService.show(ExpirationModalComponent);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$$.next();
+    this.destroy$$.complete();
   }
 }

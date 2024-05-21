@@ -1,0 +1,16 @@
+.purchase-product__modal-slider {
+  &__wrapper {
+    width: 100%;
+  }
+
+  &__img {
+    height: 300px;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+.latest-purchase-info {
+  max-height: 500px;
+  overflow-y: auto;
+}

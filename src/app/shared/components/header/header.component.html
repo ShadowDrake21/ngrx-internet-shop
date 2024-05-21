@@ -83,6 +83,7 @@
           ><button
             class="btn btn-link text-dark"
             [class]="{ 'd-none': !(user$ | async)?.online }"
+            [routerLink]="['/user-information']"
           >
             <fa-icon [icon]="profile"></fa-icon></button
           ><button

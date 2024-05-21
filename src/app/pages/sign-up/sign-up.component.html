@@ -18,14 +18,14 @@
         <div class="form-wrapper">
           <input
             type="text"
-            placeholder="Username"
+            placeholder="User name"
             class="form-control"
-            formControlName="username"
+            formControlName="displayName"
             [class.error]="
-              (signUpForm.controls.username.touched &&
-                signUpForm.controls.username.invalid) ||
-              (signUpForm.controls.username.dirty &&
-                signUpForm.controls.username.invalid)
+              (signUpForm.controls.displayName.touched &&
+                signUpForm.controls.displayName.invalid) ||
+              (signUpForm.controls.displayName.dirty &&
+                signUpForm.controls.displayName.invalid)
             "
           />
         </div>
@@ -74,7 +74,10 @@
           />
         </div>
         <div class="d-flex justify-content-center align-items-center btns">
-          <a [routerLink]="['/']" class="btn btn-link">Go to home</a>
+          <div class="text-center">
+            <a [routerLink]="['/']" class="btn btn-link">Go to home</a>
+            <a [routerLink]="['/sign-in']" class="btn btn-link">Sign in</a>
+          </div>
           <button
             class="btn btn-dark p-3"
             type="submit"
@@ -104,20 +107,17 @@
           style="color: red"
         >
           <li
-            *ngIf="signUpForm.controls.username.errors?.['required'] && signUpForm.controls.username.touched"
+            *ngIf="signUpForm.controls.displayName.errors?.['required'] && signUpForm.controls.displayName.touched"
           >
-            The username field is mandatory
+            The user name field is mandatory
           </li>
-          <li *ngIf="signUpForm.controls.username.errors?.['pattern']">
-            Username has unsupported symbols
+          <li *ngIf="signUpForm.controls.displayName.errors?.['minlength']">
+            User name should be at least 3 characters long. Now it is
+            {{ signUpForm.value.displayName?.length }}
           </li>
-          <li *ngIf="signUpForm.controls.username.errors?.['minlength']">
-            Username should be at least 6 characters long. Now it is
-            {{ signUpForm.value.username?.length }}
-          </li>
-          <li *ngIf="signUpForm.controls.username.errors?.['maxlength']">
-            Username should be maximum 20 characters long. Now it is
-            {{ signUpForm.value.username?.length }}
+          <li *ngIf="signUpForm.controls.displayName.errors?.['maxlength']">
+            User name should be maximum 20 characters long. Now it is
+            {{ signUpForm.value.displayName?.length }}
           </li>
           <li
             *ngIf="signUpForm.controls.email.errors?.['required'] && signUpForm.controls.email.touched"

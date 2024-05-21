@@ -1,0 +1,131 @@
+$color_1: #b3b3b3;
+$color_2: #888;
+$color_3: #fff;
+$font-family_1: "Roboto", sans-serif;
+$font-family_2: "icomoon";
+$background-color_1: #fff;
+$background-color_2: #7e0cf5;
+$border-color_1: #7b7b7b;
+
+.control {
+  display: block;
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  font-size: 14px;
+  .caption {
+    position: relative;
+    top: 0.2rem;
+    color: $color_2;
+  }
+  input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    &:focus {
+      ~ {
+        .control__indicator {
+          background: #ccc;
+        }
+      }
+    }
+    &:checked {
+      ~ {
+        .control__indicator {
+          background: #007bff;
+          &:after {
+            display: block;
+            color: $color_3;
+          }
+        }
+      }
+      &:focus {
+        ~ {
+          .control__indicator {
+            background: #1a88ff;
+          }
+        }
+      }
+    }
+    &:disabled {
+      ~ {
+        .control__indicator {
+          background: #e6e6e6;
+          opacity: 0.9;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+  &:hover {
+    input {
+      ~ {
+        .control__indicator {
+          background: #ccc;
+        }
+      }
+      &:not([disabled]) {
+        &:checked {
+          ~ {
+            .control__indicator {
+              background: #1a88ff;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.control__indicator {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background: #e6e6e6;
+  border-radius: 4px;
+  &:after {
+    font-family: $font-family_2;
+    content: "\2713";
+    position: absolute;
+    display: none;
+    font-size: 16px;
+    -webkit-transition: 0.3s all ease;
+    -o-transition: 0.3s all ease;
+    transition: 0.3s all ease;
+  }
+}
+
+.control--checkbox {
+  .control__indicator {
+    &:after {
+      top: 50%;
+      left: 50%;
+      margin-top: -1px;
+      -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+  }
+  input {
+    &:disabled {
+      ~ {
+        .control__indicator {
+          &:after {
+            border-color: $border-color_1;
+          }
+        }
+      }
+      &:checked {
+        ~ {
+          .control__indicator {
+            background-color: $background-color_2;
+            opacity: 0.2;
+          }
+        }
+      }
+    }
+  }
+}

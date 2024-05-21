@@ -1,0 +1,45 @@
+<div class="pt-3 pb-3">
+  <app-basic-card [item]="userInformationItem"></app-basic-card>
+  <accordion [closeOthers]="true" *ngIf="!generalLoading; else loading">
+    <accordion-group
+      heading="{{ 'main user info' | titlecase }}"
+      *ngIf="user$ | async"
+    >
+      <app-user-info [user]="user$"></app-user-info>
+    </accordion-group>
+    <accordion-group
+      heading="{{ 'shopping cart content' | titlecase }}"
+      *ngIf="cartState$ | async as cartState"
+    >
+      <div *ngIf="cartState.products as products">
+        <ng-container *ngIf="products.length; else noProductsInCart">
+          <div class="cart-product__list">
+            @for (product of products; track $index) {
+            <app-readonly-cart-item [product]="product" />
+            }
+          </div>
+          <h3 class="text-end pt-4 pb-4">
+            Total price: {{ cartState.totalPrice | currency : "PLN" }}
+          </h3>
+        </ng-container>
+        <ng-template #noProductsInCart>
+          <h3 class="text-center">No products in cart</h3>
+        </ng-template>
+      </div>
+    </accordion-group>
+    <accordion-group heading="{{ 'last purchese' | titlecase }}">
+      <app-latest-purchase
+        [latestTransaction]="latestTransaction$"
+        [error]="latestTransactionError$"
+      ></app-latest-purchase>
+    </accordion-group>
+    <accordion-group heading="{{ 'faq' | uppercase }}">
+      <app-faq-tabs></app-faq-tabs>
+    </accordion-group>
+  </accordion>
+  <ng-template #loading>
+    <div class="d-flex justify-content-center pt-5 pb-5">
+      <div class="user-information-loading"></div>
+    </div>
+  </ng-template>
+</div>
