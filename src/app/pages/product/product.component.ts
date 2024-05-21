@@ -50,7 +50,6 @@ import * as ProductSelectors from '@store/product/product.selectors';
 import * as CartSelectors from '@store/cart/cart.selectors';
 import * as FavoritesActions from '@store/favorites/favorites.action';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ProductManipulationsService } from '@app/core/services/product-manipulations.service';
 import { FavoritesService } from '@app/core/services/favorites.service';
 import { DatabaseService } from '@app/core/services/database.service';
@@ -90,8 +89,10 @@ export class ProductComponent implements OnInit, OnDestroy {
   product$!: Observable<IProduct | null>;
   subscriptions: Subscription[] = [];
 
-  isInCart!: boolean;
+  isInCart: boolean = false;
   isInFavorites: boolean = false;
+
+  isAuthorizedGuest: boolean = true;
 
   similarProducts$!: Observable<IProduct[]>;
 
@@ -160,6 +161,8 @@ export class ProductComponent implements OnInit, OnDestroy {
           this.productInitialization(productId);
         }
       });
+
+    this.checkInCart();
     this.subscriptions.push(
       sourceSubscription,
       productInitializationSubscription
@@ -188,14 +191,12 @@ export class ProductComponent implements OnInit, OnDestroy {
       )
       .subscribe(({ product, email }) => {
         this.product$ = of(product);
-        this.checkIfInFavorites();
-
-        this.databaseService.setLastViewedProduct(email!, product.title);
+        this.isAuthorizedGuest = !!email;
+        if (email) {
+          this.checkIfInFavorites();
+          this.databaseService.setLastViewedProduct(email!, product.title);
+        }
       });
-
-    if (typeof productId === 'number') {
-      this.checkInCart(productId);
-    }
 
     this.subscriptions.push(selectProductSubscription);
 
@@ -211,7 +212,6 @@ export class ProductComponent implements OnInit, OnDestroy {
     );
   }
 
-  // finish!
   checkIfInFavorites() {
     const favoritesSubscription = this.store
       .select(FavoritesSelectors.selectFavorites)
@@ -325,18 +325,21 @@ export class ProductComponent implements OnInit, OnDestroy {
       this.subscriptions.push(productSubscription);
     }
   }
-
-  checkInCart(productId: number) {
-    let cartProductsIds: number[] = [];
-
-    const cartSubscription = this.store
-      .select(CartSelectors.selectCartProducts)
-      .pipe(map((products) => products.map((product) => product.id)))
-      .subscribe((ids) => {
-        cartProductsIds = ids;
+  checkInCart() {
+    const cartSubscription = this.productId$
+      .pipe(
+        switchMap((productId) =>
+          this.store.select(CartSelectors.selectCartProducts).pipe(
+            map((products) => products.map((product) => product.id)),
+            map((cartProductsIds) =>
+              cartProductsIds.includes(Number(productId))
+            )
+          )
+        )
+      )
+      .subscribe((isInCart) => {
+        this.isInCart = isInCart;
       });
-
-    this.isInCart = cartProductsIds.includes(productId);
 
     this.subscriptions.push(cartSubscription);
   }

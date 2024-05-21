@@ -16,6 +16,7 @@ import { ExpirationModalComponent } from './shared/components/expiration-modal/e
 // created ngrx stuff
 import { AppState } from './store/app.state';
 import * as UserActions from '@store/user/user.actions';
+import * as UserSelectors from '@store/user/user.selectors';
 import * as FavoritesActions from '@store/favorites/favorites.action';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 
@@ -23,7 +24,15 @@ import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
 import { AlertComponent } from './shared/components/alert/alert.component';
 import { AlertType } from './shared/models/alerts.model';
-import { map, Subject, Subscription, switchMap, takeUntil } from 'rxjs';
+import {
+  filter,
+  map,
+  Subject,
+  Subscription,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -44,6 +53,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private destroy$$: Subject<void> = new Subject<void>();
 
+  private loadAllFavorites!: Subscription;
+
   ngOnInit(): void {
     this.getUserFromLS();
 
@@ -62,10 +73,16 @@ export class AppComponent implements OnInit, OnDestroy {
           }
         }
       });
-
     this.store.dispatch(FavoritesActions.loadAllFavorites());
+    // this.loadAllFavorites = this.store
+    //   .select(UserSelectors.selectUser)
+    //   .pipe(
+    //     filter((user) => !!user),
+    //     tap(() =>)
+    //   )
+    //   .subscribe();
 
-    this.checkExpirationTime();
+    // this.checkExpirationTime();
   }
 
   getUserFromLS() {
@@ -102,6 +119,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.loadAllFavorites.unsubscribe();
     this.destroy$$.next();
     this.destroy$$.complete();
   }

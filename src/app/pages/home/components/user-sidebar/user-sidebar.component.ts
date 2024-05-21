@@ -1,18 +1,9 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  inject,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { IUser } from '@app/shared/models/user.model';
-import { UserState } from '@app/store/user/user.reducer';
 import { Store } from '@ngrx/store';
-import { filter, Observable, of, Subscription, take, tap } from 'rxjs';
+import { Observable, of, Subscription, take } from 'rxjs';
 import * as UserSelectors from '@store/user/user.selectors';
-import * as UserActions from '@store/user/user.actions';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
@@ -22,6 +13,7 @@ import { RouterLink } from '@angular/router';
 import { IUserTransactionsData } from '@app/shared/models/purchase.model';
 import { CheckoutService } from '@app/core/services/checkout.service';
 import { IProduct } from '@app/shared/models/product.model';
+import { DatabaseService } from '@app/core/services/database.service';
 
 @Component({
   selector: 'app-user-sidebar',
@@ -33,11 +25,13 @@ import { IProduct } from '@app/shared/models/product.model';
 export class UserSidebarComponent implements OnInit, OnDestroy {
   private store = inject(Store<AppState>);
   private checkoutService = inject(CheckoutService);
+  private databaseService = inject(DatabaseService);
 
   onlineStatus: boolean = false;
   user$!: Observable<IUser | null>;
   favorites$!: Observable<IProduct[]>;
   transactionsData$!: Observable<IUserTransactionsData | null>;
+  lastViewedProduct$!: Observable<string>;
 
   private subscriptions: Subscription[] = [];
 
@@ -53,6 +47,9 @@ export class UserSidebarComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe((user) => {
         this.user$ = of(user);
+        this.lastViewedProduct$ = this.databaseService.getLastViewedProduct(
+          user?.userCredential?.providerData[0].email!
+        );
 
         if (user) {
           const customerSubscription = this.store
@@ -72,9 +69,6 @@ export class UserSidebarComponent implements OnInit, OnDestroy {
           this.subscriptions.push(customerSubscription);
         }
       });
-
-    // getCustomer problems!!!
-    // const userSubscription = this.user$.subscribe();
 
     const customerSubscription = this.store
       .select(PurchaseSelectors.selectCustomer)

@@ -13,6 +13,7 @@ import {
   catchError,
   concatMap,
   exhaustMap,
+  filter,
   map,
   of,
   switchMap,
@@ -32,6 +33,7 @@ export class FavoritesEffects {
     this.actions$.pipe(
       ofType(FavoritesActions.loadAllFavorites),
       switchMap(() => this.store.select(UserSelectors.selectEmail)),
+      filter((email) => !!email),
       exhaustMap((email) =>
         this.favoritesService.getAllFavoritesProducts(email!).pipe(
           map((favorites) =>

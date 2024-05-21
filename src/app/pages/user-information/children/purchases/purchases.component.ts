@@ -3,14 +3,10 @@ import { BasicCardComponent } from '../../components/basic-card/basic-card.compo
 import { userInformationContent } from '../../content/user-information.content';
 import { Store } from '@ngrx/store';
 import { AppState } from '@app/store/app.state';
-import * as UserSelectors from '@store/user/user.selectors';
-import * as PurchaseActions from '@store/purchase/purchase.actions';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import {
   combineLatest,
   debounceTime,
-  delay,
-  map,
   Observable,
   of,
   Subscription,

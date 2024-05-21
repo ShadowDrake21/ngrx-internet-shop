@@ -13,17 +13,7 @@ import { userInformationContent } from '../../content/user-information.content';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { UserState } from '@app/store/user/user.reducer';
-import {
-  debounceTime,
-  delay,
-  Observable,
-  of,
-  Subscription,
-  switchMap,
-  take,
-  tap,
-  timer,
-} from 'rxjs';
+import { Observable, of, Subscription, switchMap, take, timer } from 'rxjs';
 import { IStoreUserCredential, IUser } from '@app/shared/models/user.model';
 
 import * as UserSelectors from '@store/user/user.selectors';
