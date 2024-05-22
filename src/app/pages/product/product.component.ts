@@ -85,7 +85,6 @@ export class ProductComponent implements OnInit, OnDestroy {
   private favoritesService = inject(FavoritesService);
 
   source$!: Observable<'database' | 'api'>;
-  type$!: Observable<string | null>;
   productId$!: Observable<number | string>;
   product$!: Observable<IProduct | null>;
   similarProducts$!: Observable<IProduct[]>;
@@ -103,12 +102,6 @@ export class ProductComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.type$ = this.route.queryParams.pipe(
-      map((queries: Params) => {
-        return queries['type'];
-      })
-    );
-
     this.productId$ = this.route.paramMap.pipe(
       map((params: ParamMap) => params.get('id')!)
     );
@@ -117,25 +110,32 @@ export class ProductComponent implements OnInit, OnDestroy {
   loadAPIProductById() {
     const productSubscription: Subscription = this.productId$.subscribe(
       (productId) => {
-        console.log('loadAPIProductById', productId);
-        this.store.dispatch(
-          ProductActions.loadSingleProductById({
-            productId: productId as number,
-          })
-        );
+        const productOfTheDay: IProduct | null = this.loadProductOfTheDay();
+        if (Number(productId) !== this.loadProductOfTheDay()?.id) {
+          this.store.dispatch(
+            ProductActions.loadSingleProductById({
+              productId: productId as number,
+            })
+          );
+        } else {
+          if (productOfTheDay) {
+            this.store.dispatch(
+              ProductActions.setSingleProduct({ product: productOfTheDay })
+            );
+          }
+        }
       }
     );
     this.subscriptions.push(productSubscription);
   }
 
-  loadProductOfTheDay() {
+  loadProductOfTheDay(): IProduct | null {
     const productStr = localStorage.getItem('productOfTheDay');
     const product: IProduct | null = productStr
       ? (JSON.parse(productStr) as IProduct)
       : null;
 
-    product &&
-      this.store.dispatch(ProductActions.setSingleProduct({ product }));
+    return product;
   }
 
   loadDatabaseProductById() {
@@ -162,26 +162,15 @@ export class ProductComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getUrlParts();
 
-    const sourceSubscription = this.source$
-      .pipe(
-        switchMap((source) =>
-          this.type$.pipe(map((type) => ({ source, type })))
-        )
-      )
-      .subscribe(({ source, type }) => {
-        if (source) {
-          if (source === 'api') {
-            if (!type) {
-              console.log('!type');
-              this.loadAPIProductById();
-            } else if (type === 'product-of-the-day') {
-              this.loadProductOfTheDay();
-            }
-          } else if (source === 'database') {
-            this.loadDatabaseProductById();
-          }
+    const sourceSubscription = this.source$.subscribe((source) => {
+      if (source) {
+        if (source === 'api') {
+          this.loadAPIProductById();
+        } else if (source === 'database') {
+          this.loadDatabaseProductById();
         }
-      });
+      }
+    });
 
     const productInitializationSubscription = this.productId$
       .pipe(
@@ -207,7 +196,6 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
 
   productInitialization(productId: string | number) {
-    console.log('productId', productId);
     const selectProductSubscription = this.store
       .select(ProductSelectors.selectProducts)
       .pipe(

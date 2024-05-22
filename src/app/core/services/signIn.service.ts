@@ -13,7 +13,6 @@ import * as UserActions from '../../store/user/user.actions';
 
 // utils
 import { createAuthInLS } from '../utils/auth.utils';
-import { IdTokenResult } from 'firebase/auth';
 
 @Injectable()
 export class SignInService {
