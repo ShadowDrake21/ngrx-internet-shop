@@ -20,7 +20,6 @@ import { IProduct } from '../../models/product.model';
 import { SafeHTMLPipe } from '../../pipes/safe-html.pipe';
 import { ClearURLPipe } from '../../pipes/clear-url.pipe';
 import { TruncateTextPipe } from '../../pipes/truncate-text.pipe';
-import { DomSanitizer } from '@angular/platform-browser';
 import { ProductManipulationsService } from '@app/core/services/product-manipulations.service';
 import { Store } from '@ngrx/store';
 import { UserState } from '@app/store/user/user.reducer';
@@ -47,7 +46,6 @@ export class ProductsItemComponent implements OnInit, OnChanges, OnDestroy {
   @Input({ required: true, alias: 'item' }) product!: IProduct;
   @Input({ alias: 'isInCart' }) isAlreadyInCart: boolean = false;
   @Input() showAddBtn: boolean = true;
-  @Input() specialType!: 'product-of-the-day';
   @Input() innerTitle!: string;
 
   @Output('onAddToCart') onAdd: EventEmitter<IProduct> =

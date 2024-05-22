@@ -34,7 +34,6 @@ import { AvailableProvidersModalComponent } from './components/available-provide
 // utils
 import { createAuthInLS } from '../../core/utils/auth.utils';
 import { signInModalIcons } from '../../shared/utils/icons.utils';
-import { IdTokenResult } from 'firebase/auth';
 
 @Component({
   selector: 'app-sign-in',
