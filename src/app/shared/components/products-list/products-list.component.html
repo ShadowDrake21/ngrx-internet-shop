@@ -35,10 +35,12 @@
     "
   >
     <pagination
+      #paginationComponent
       [totalItems]="(listProducts$ | async)!.length"
       (pageChanged)="pageChanged($event)"
       [itemsPerPage]="itemsPerPage"
       [maxSize]="maxSize"
+      [(ngModel)]="currentPage"
     ></pagination>
   </div>
   @if (productError$ | async) {
