@@ -45,8 +45,9 @@ export class ProductsItemComponent implements OnInit, OnChanges, OnDestroy {
   private productManipulationsService = inject(ProductManipulationsService);
 
   @Input({ required: true, alias: 'item' }) product!: IProduct;
-  @Input({ alias: 'isInCart' }) isAlreadyInCart: boolean = false; // change to store manipulation
+  @Input({ alias: 'isInCart' }) isAlreadyInCart: boolean = false;
   @Input() showAddBtn: boolean = true;
+  @Input() specialType!: 'product-of-the-day';
   @Input() innerTitle!: string;
 
   @Output('onAddToCart') onAdd: EventEmitter<IProduct> =
@@ -58,7 +59,7 @@ export class ProductsItemComponent implements OnInit, OnChanges, OnDestroy {
     this.userSubscription = this.store
       .select(UserSelectors.selectUser)
       .subscribe((user) => {
-        if (!user) {
+        if (!user?.userCredential) {
           this.showAddBtn = false;
         }
       });

@@ -17,7 +17,7 @@ import { ExpirationModalComponent } from './shared/components/expiration-modal/e
 import { AppState } from './store/app.state';
 import * as UserActions from '@store/user/user.actions';
 import * as UserSelectors from '@store/user/user.selectors';
-import * as FavoritesActions from '@store/favorites/favorites.action';
+import * as FavoritesActions from '@app/store/favorites/favorites.actions';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 
 // constants

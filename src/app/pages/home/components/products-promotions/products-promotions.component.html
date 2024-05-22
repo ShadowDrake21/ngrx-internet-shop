@@ -3,12 +3,13 @@
     *ngIf="canBeInterestingProduct"
     [item]="canBeInterestingProduct"
     [showAddBtn]="false"
-    innerTitle="Can be interesting for you"
+    innerTitle="Could be interesting for you"
   ></app-single-product>
   <app-single-product
     *ngIf="productOfTheDay"
     [item]="productOfTheDay"
     [showAddBtn]="false"
+    [specialType]="'product-of-the-day'"
     innerTitle="Product of the day"
   ></app-single-product>
   <app-single-product

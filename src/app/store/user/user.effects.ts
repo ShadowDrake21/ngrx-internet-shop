@@ -26,7 +26,8 @@ import { AuthService } from '../../core/authentication/auth.service';
 
 // actions
 import * as UserActions from './user.actions';
-import * as FavoritesActions from '@store/favorites/favorites.action';
+import * as FavoritesActions from '@store/favorites/favorites.actions';
+import * as CartActions from '@store/cart/cart.actions';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 // utils
 import { minimalizeUserCredential } from '../../shared/utils/store.utils';
@@ -365,6 +366,7 @@ export class UserEffects {
           tap(() =>
             this.store.dispatch(FavoritesActions.clearFavoritesState())
           ),
+          tap(() => this.store.dispatch(CartActions.clearCartState())),
           map(() => UserActions.signOutSuccess())
         )
       )

@@ -48,7 +48,7 @@ import * as ProductActions from '@store/product/product.actions';
 import * as CartActions from '@store/cart/cart.actions';
 import * as ProductSelectors from '@store/product/product.selectors';
 import * as CartSelectors from '@store/cart/cart.selectors';
-import * as FavoritesActions from '@store/favorites/favorites.action';
+import * as FavoritesActions from '@app/store/favorites/favorites.actions';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
 import { ProductManipulationsService } from '@app/core/services/product-manipulations.service';
 import { FavoritesService } from '@app/core/services/favorites.service';
@@ -85,66 +85,103 @@ export class ProductComponent implements OnInit, OnDestroy {
   private favoritesService = inject(FavoritesService);
 
   source$!: Observable<'database' | 'api'>;
+  type$!: Observable<string | null>;
   productId$!: Observable<number | string>;
   product$!: Observable<IProduct | null>;
-  subscriptions: Subscription[] = [];
+  similarProducts$!: Observable<IProduct[]>;
 
   isInCart: boolean = false;
   isInFavorites: boolean = false;
-
   isAuthorizedGuest: boolean = true;
 
-  similarProducts$!: Observable<IProduct[]>;
+  subscriptions: Subscription[] = [];
 
-  ngOnInit(): void {
+  getUrlParts() {
     this.source$ = this.route.queryParams.pipe(
       map((queries: Params) => {
         return queries['source'];
       })
     );
 
+    this.type$ = this.route.queryParams.pipe(
+      map((queries: Params) => {
+        return queries['type'];
+      })
+    );
+
     this.productId$ = this.route.paramMap.pipe(
       map((params: ParamMap) => params.get('id')!)
     );
+  }
 
-    const sourceSubscription = this.source$.subscribe((source) => {
-      if (source) {
-        if (source === 'api') {
-          const productSubscription: Subscription = this.productId$.subscribe(
-            (productId) => {
-              this.store.dispatch(
-                ProductActions.loadSingleProductById({
-                  productId: productId as number,
-                })
-              );
-            }
-          );
-          this.subscriptions.push(productSubscription);
-        } else if (source === 'database') {
-          const databaseSubscription = this.store
-            .select(UserSelectors.selectEmail)
-            .pipe(
-              switchMap((email) =>
-                this.productId$.pipe(map((id) => ({ email, id })))
-              ),
-              switchMap(({ email, id }) =>
-                this.favoritesService.searchFavoriteProduct(
-                  email!,
-                  id as string
-                )
-              )
-            )
-            .subscribe((product) => {
-              if (product) {
-                this.store.dispatch(
-                  ProductActions.setSingleProduct({ product: product! })
-                );
-              }
-            });
-          this.subscriptions.push(databaseSubscription);
-        }
+  loadAPIProductById() {
+    const productSubscription: Subscription = this.productId$.subscribe(
+      (productId) => {
+        console.log('loadAPIProductById', productId);
+        this.store.dispatch(
+          ProductActions.loadSingleProductById({
+            productId: productId as number,
+          })
+        );
       }
-    });
+    );
+    this.subscriptions.push(productSubscription);
+  }
+
+  loadProductOfTheDay() {
+    const productStr = localStorage.getItem('productOfTheDay');
+    const product: IProduct | null = productStr
+      ? (JSON.parse(productStr) as IProduct)
+      : null;
+
+    product &&
+      this.store.dispatch(ProductActions.setSingleProduct({ product }));
+  }
+
+  loadDatabaseProductById() {
+    const databaseSubscription = this.store
+      .select(UserSelectors.selectEmail)
+      .pipe(
+        switchMap((email) =>
+          this.productId$.pipe(map((id) => ({ email, id })))
+        ),
+        switchMap(({ email, id }) =>
+          this.favoritesService.searchFavoriteProduct(email!, id as string)
+        )
+      )
+      .subscribe((product) => {
+        if (product) {
+          this.store.dispatch(
+            ProductActions.setSingleProduct({ product: product! })
+          );
+        }
+      });
+    this.subscriptions.push(databaseSubscription);
+  }
+
+  ngOnInit(): void {
+    this.getUrlParts();
+
+    const sourceSubscription = this.source$
+      .pipe(
+        switchMap((source) =>
+          this.type$.pipe(map((type) => ({ source, type })))
+        )
+      )
+      .subscribe(({ source, type }) => {
+        if (source) {
+          if (source === 'api') {
+            if (!type) {
+              console.log('!type');
+              this.loadAPIProductById();
+            } else if (type === 'product-of-the-day') {
+              this.loadProductOfTheDay();
+            }
+          } else if (source === 'database') {
+            this.loadDatabaseProductById();
+          }
+        }
+      });
 
     const productInitializationSubscription = this.productId$
       .pipe(
@@ -170,6 +207,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
 
   productInitialization(productId: string | number) {
+    console.log('productId', productId);
     const selectProductSubscription = this.store
       .select(ProductSelectors.selectProducts)
       .pipe(
@@ -225,6 +263,11 @@ export class ProductComponent implements OnInit, OnDestroy {
                 (favorite) => favorite.id === product!.id
               );
 
+              console.log({
+                id: findFavorite?.favoriteId,
+                isInFavorites: !!findFavorite,
+              });
+
               return {
                 id: findFavorite?.favoriteId,
                 isInFavorites: !!findFavorite,
@@ -254,9 +297,9 @@ export class ProductComponent implements OnInit, OnDestroy {
             if (source === 'database') {
               if (!this.isInFavorites) {
                 this.router.navigate(['/user-information/favorite-products']);
-                this.isInFavorites = false;
               }
             }
+            this.isInFavorites = false;
           });
 
           this.subscriptions.push(sourceSubscription);
