@@ -25,6 +25,8 @@ import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
 import { FavoriteProductsItemComponent } from './components/favorite-products-item/favorite-products-item.component';
 import { AppState } from '@app/store/app.state';
 
+// MAKE CLEAR CART AFTER SIGN OUT + CHOOSING OF ADDRESSES AND CARDS BEFORE CHECKOUT
+
 @Component({
   selector: 'app-favorite-products',
   standalone: true,

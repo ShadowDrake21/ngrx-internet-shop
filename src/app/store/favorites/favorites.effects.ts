@@ -5,7 +5,7 @@ import { AppState } from '../app.state';
 import { FavoritesService } from '@app/core/services/favorites.service';
 import { ProductService } from '@app/core/services/product.service';
 
-import * as FavoritesActions from '../favorites/favorites.action';
+import * as FavoritesActions from './favorites.actions';
 import * as FavoritesSelectors from '../favorites/favorites.selectors';
 import * as UserSelectors from '../user/user.selectors';
 

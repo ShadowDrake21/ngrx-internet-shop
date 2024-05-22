@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 
 // actions
-import * as FavoritesActions from './favorites.action';
+import * as FavoritesActions from './favorites.actions';
 import { IFavoriteProduct } from '@app/shared/models/favorite.model';
 import { IProduct } from '@app/shared/models/product.model';
 

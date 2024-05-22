@@ -45,7 +45,7 @@
         <a
           class="btn btn-danger"
           [routerLink]="['/product', product.id]"
-          [queryParams]="{ source: 'api' }"
+          [queryParams]="{ source: 'api', type: specialType }"
           [class.w-100]="!showAddBtn"
           >{{ "Go to page" | uppercase }}</a
         >

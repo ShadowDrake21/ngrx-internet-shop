@@ -33,7 +33,6 @@
               aria-current="page"
               [routerLink]="['/products']"
               [routerLinkActive]="['active-link']"
-              [routerLinkActiveOptions]="{ exact: true }"
               >Products</a
             >
           </li>
@@ -76,7 +75,7 @@
             class="btn btn-link text-dark position-relative"
             (click)="openModalWithComponent()"
           >
-            <div class="cart-count">
+            <div class="cart-count" *ngIf="(user$ | async)?.online">
               {{ (cartProducts$ | async)?.length ?? 0 }}
             </div>
             <fa-icon [icon]="cart"></fa-icon></button
