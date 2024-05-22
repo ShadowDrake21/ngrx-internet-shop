@@ -2,6 +2,7 @@
 <app-products-list colsStyle="row-cols-md-3" [items]="products$">
   <app-filter-sidebar
     class="flex-shrink-1"
+    [categoryId]="categoryId$"
     (filterData)="handleFilterData($event)"
     (restoreSignal)="onRestoreProducts()"
   ></app-filter-sidebar>

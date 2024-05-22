@@ -12,6 +12,7 @@
   <img
     [src]="product.images[0] | clearURL | safeHTML"
     class="card-img-top"
+    style="height: 286px"
     alt="product"
   />
   <div class="card-body card-display">
@@ -26,27 +27,29 @@
       >
     </h6>
     <p class="card-text">{{ product.description | truncateText : 100 }}</p>
-    <p class="fs-3 text-center">
-      Price:<span class="fw-bolder ms-1">{{
-        product.price | currency : "PLN"
-      }}</span>
-    </p>
-    <div class="d-flex card-btns">
-      <button
-        class="btn btn-primary"
-        [class.d-none]="!showAddBtn"
-        (click)="onAddToCart()"
-        [disabled]="isAlreadyInCart"
-      >
-        {{ (isAlreadyInCart ? "In cart" : "Add to cart") | uppercase }}
-      </button>
-      <a
-        class="btn btn-danger"
-        [routerLink]="['/product', product.id]"
-        [queryParams]="{ source: 'api' }"
-        [class.w-100]="!showAddBtn"
-        >{{ "Go to page" | uppercase }}</a
-      >
+    <div>
+      <p class="fs-3 text-center">
+        Price:<span class="fw-bolder ms-1">{{
+          product.price | currency : "PLN"
+        }}</span>
+      </p>
+      <div class="d-flex card-btns">
+        <button
+          class="btn btn-primary"
+          [class.d-none]="!showAddBtn"
+          (click)="onAddToCart()"
+          [disabled]="isAlreadyInCart"
+        >
+          {{ (isAlreadyInCart ? "In cart" : "Add to cart") | uppercase }}
+        </button>
+        <a
+          class="btn btn-danger"
+          [routerLink]="['/product', product.id]"
+          [queryParams]="{ source: 'api' }"
+          [class.w-100]="!showAddBtn"
+          >{{ "Go to page" | uppercase }}</a
+        >
+      </div>
     </div>
   </div>
 </a>
