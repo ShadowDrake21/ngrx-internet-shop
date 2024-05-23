@@ -1,12 +1,11 @@
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item" *ngFor="let link of breadcrumbs.links">
-      <a [routerLink]="['/' + link]" class="text-secondary">{{
-        link | titlecase
+<nav class="container pb-2">
+  <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
+    <ng-container *ngIf="!last">
+      <a [routerLink]="breadcrumb.url" class="breadcrumbs-item text-dark">{{
+        breadcrumb.label
       }}</a>
-    </li>
-    <li class="breadcrumb-item active" aria-current="page">
-      {{ breadcrumbs.current | titlecase }}
-    </li>
-  </ol>
+      &gt;
+    </ng-container>
+    <ng-container *ngIf="last"> {{ breadcrumb.label }} &gt; </ng-container>
+  </ng-container>
 </nav>

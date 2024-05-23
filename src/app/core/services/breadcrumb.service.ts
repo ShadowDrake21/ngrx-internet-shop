@@ -1,26 +1,29 @@
 import { inject, Injectable, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs';
+import { BehaviorSubject, filter } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class BreadcrumbService implements OnInit {
+export class BreadcrumbService {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
-  breadcrumbs: Array<{ label: string; url: string }> = [];
+  private breadcrumbs$$ = new BehaviorSubject<
+    Array<{ label: string; url: string }>
+  >([]);
+  breadcrumbs$ = this.breadcrumbs$$.asObservable();
 
-  ngOnInit(): void {
+  constructor() {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(
-        () =>
-          (this.breadcrumbs = this.createBreadcrumbs(this.activatedRoute.root))
-      );
+      .subscribe(() => {
+        const breadcrumbs = this.createBreadcrumbs(this.activatedRoute.root);
+        this.breadcrumbs$$.next(breadcrumbs);
+      });
   }
 
-  // breadcrumbs (with ngrx?) + choosing of addresses and cards!
+  // try to do the same by ngrx
 
   private createBreadcrumbs(
     route: ActivatedRoute,
@@ -42,10 +45,36 @@ export class BreadcrumbService implements OnInit {
         url += `/${routeURL}`;
       }
 
-      breadcrumbs.push({ label: child.snapshot.data['breadcrumb'], url: url });
+      const breadcrumb = this.getBreadcrumb(child);
+
+      if (breadcrumb) {
+        breadcrumbs.push({
+          label: breadcrumb,
+          url: url,
+        });
+      }
+
       return this.createBreadcrumbs(child, url, breadcrumbs);
     }
 
     return breadcrumbs;
+  }
+
+  private getBreadcrumb(route: ActivatedRoute): string {
+    const breadcrumb = route.snapshot.data['breadcrumb'];
+    if (!breadcrumb) {
+      return '';
+    }
+
+    const paramKeys = Object.keys(route.snapshot.params);
+    let dynamicBreadcrumb = breadcrumb;
+    paramKeys.forEach((key) => {
+      dynamicBreadcrumb = dynamicBreadcrumb.replace(
+        `:${key}`,
+        route.snapshot.params[key]
+      );
+    });
+
+    return dynamicBreadcrumb;
   }
 }

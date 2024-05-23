@@ -29,7 +29,6 @@ import { calcPageNum } from '../../shared/utils/pagination.utils';
     SingleSearchResultComponent,
     PaginationModule,
     RouterLink,
-    BreadcrumbsComponent,
   ],
   templateUrl: './search-results.component.html',
   styleUrl: './search-results.component.scss',
@@ -45,11 +44,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
   itemsPerPage: number = 5;
   calcPageNum = calcPageNum;
-
-  breadcrumbs: IBreadcrumbs = {
-    links: ['home'],
-    current: 'Search Results',
-  };
 
   private searchTermSubscription!: Subscription;
 
