@@ -87,51 +87,107 @@
   </div>
   }
   <div class="modal-footer d-flex flex-column align-items-end">
-    <div class="d-flex justify-content-end" *ngIf="(products$ | async)?.length">
+    <div
+      class="d-flex justify-content-between w-100"
+      *ngIf="(products$ | async)?.length"
+    >
       <h4 class="me-4">
         Total price: {{ totalPrice$ | async | currency : "PLN" }}
       </h4>
-      <button type="button" class="btn btn-success" (click)="onGoToCheckout()">
-        Go to checkout
-      </button>
+      <div class="d-flex" style="gap: 20px">
+        <button
+          type="button"
+          class="btn btn-link"
+          (click)="onOpenSelectModal(selectModal)"
+          [class.d-none]="!isShippingDataExist"
+        >
+          Select checkout data
+        </button>
+        <button
+          type="button"
+          class="btn btn-success"
+          (click)="onGoToCheckout()"
+        >
+          Go to checkout
+        </button>
+      </div>
     </div>
     <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">
       {{ closeBtnName }}
     </button>
   </div>
 
-  <div
-    *ngIf="isAutoModalShown"
-    [config]="{ show: true }"
-    (onHidden)="onHidden()"
-    bsModal
-    #autoShownModal="bs-modal"
-    class="modal fade"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="dialog-auto-name"
-  >
-    <div class="modal-dialog modal-sm">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 id="dialog-auto-name" class="modal-title pull-left">
-            Auto shown modal
-          </h4>
-          <button
-            type="button"
-            class="btn-close close pull-right"
-            aria-label="Close"
-            (click)="hideAutoModal()"
-          >
-            <span aria-hidden="true" class="visually-hidden">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>I am a modal that is shown right after initialization!</p>
-          <p>I wasn't present in DOM until you clicked the button</p>
-          <p>When you close me, I'll be removed from the DOM</p>
-        </div>
-      </div>
+  <ng-template #selectModal>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Select your definded shipping data</h4>
+      <button
+        type="button"
+        class="btn-close close pull-right"
+        aria-label="Close"
+        (click)="onHideSelectModal()"
+      >
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
     </div>
-  </div>
+    <div class="modal-body">
+      <form
+        [formGroup]="selectShippingDataForm"
+        (ngSubmit)="onSelectFormSubmit()"
+      >
+        <div
+          class="form-group"
+          *ngIf="userDeliveryAddresses$ | async as deliveryAddresses"
+        >
+          <label for="deliveryAddress">Country</label>
+          <select
+            class="form-select"
+            id="deliveryAddress"
+            formControlName="deliveryAddress"
+          >
+            <option selected disabled value="0">Delivery Address</option>
+            <option
+              *ngFor="let deliveryAddress of deliveryAddresses"
+              [value]="deliveryAddress"
+            >
+              {{
+                deliveryAddress.address.country +
+                  ", " +
+                  deliveryAddress.address.city +
+                  ", " +
+                  deliveryAddress.address.line1 +
+                  ", " +
+                  deliveryAddress.address.line2 +
+                  ", " +
+                  deliveryAddress.address.postal_code
+              }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group" *ngIf="userCreditCards$ | async as cards">
+          <label for="deliveryAddress">Card</label>
+          <select class="form-select" id="card" formControlName="card">
+            <option selected disabled value="0">Card</option>
+            <option *ngFor="let card of cards" [value]="card">
+              {{
+                "····" +
+                  card.cardNumber.slice(
+                    card.cardNumber.length - 4,
+                    card.cardNumber.length
+                  ) +
+                  ", " +
+                  card.cardHolder +
+                  ", " +
+                  card.expirationMonth +
+                  "/" +
+                  card.expirationYear +
+                  ", " +
+                  "··" +
+                  card.cvc.slice(card.cvc.length - 1, card.cvc.length)
+              }}
+            </option>
+          </select>
+        </div>
+      </form>
+    </div>
+  </ng-template>
 </div>
