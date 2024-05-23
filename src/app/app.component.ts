@@ -33,11 +33,18 @@ import {
   takeUntil,
   tap,
 } from 'rxjs';
+import { BreadcrumbsComponent } from './shared/components/breadcrumbs/breadcrumbs.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, HeaderComponent, FooterComponent],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    HeaderComponent,
+    FooterComponent,
+    BreadcrumbsComponent,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: [BsModalService],

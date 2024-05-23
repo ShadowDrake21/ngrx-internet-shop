@@ -16,7 +16,6 @@ import { ContactUsComponent } from './components/contact-us/contact-us.component
   standalone: true,
   imports: [
     CommonModule,
-    BreadcrumbsComponent,
     ProductSliderComponent,
     SponsorsComponent,
     UserSidebarComponent,
@@ -29,9 +28,4 @@ import { ContactUsComponent } from './components/contact-us/contact-us.component
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent {
-  breadcrumbs: IBreadcrumbs = {
-    links: [],
-    current: 'Home',
-  };
-}
+export class HomeComponent {}

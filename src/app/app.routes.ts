@@ -26,6 +26,7 @@ export const routes: Routes = [
     path: 'home',
     loadComponent: () =>
       import('./pages/home/home.component').then((c) => c.HomeComponent),
+    data: { breadcrumb: 'Home' },
   },
   {
     path: 'products',
@@ -33,6 +34,7 @@ export const routes: Routes = [
       import('./pages/products/products.component').then(
         (c) => c.ProductsComponent
       ),
+    data: { breadcrumb: 'Products' },
   },
   {
     path: 'product/:id',
@@ -40,6 +42,7 @@ export const routes: Routes = [
       import('./pages/product/product.component').then(
         (c) => c.ProductComponent
       ),
+    data: { breadcrumb: 'Product/:id' },
   },
   {
     path: 'categories',
@@ -47,6 +50,7 @@ export const routes: Routes = [
       import('./pages/categories/categories.component').then(
         (c) => c.CategoriesComponent
       ),
+    data: { breadcrumb: 'Categories' },
   },
   {
     path: 'category',
@@ -54,6 +58,7 @@ export const routes: Routes = [
       import('./pages/category/category.component').then(
         (c) => c.CategoryComponent
       ),
+    data: { breadcrumb: 'Category' },
   },
   {
     path: 'search-results',
@@ -61,6 +66,7 @@ export const routes: Routes = [
       import('./pages/search-results/search-results.component').then(
         (c) => c.SearchResultsComponent
       ),
+    data: { breadcrumb: 'Search result' },
   },
   {
     path: 'user-information',
@@ -68,14 +74,33 @@ export const routes: Routes = [
       import('./pages/user-information/user-information.component').then(
         (c) => c.UserInformationComponent
       ),
+
     children: [
       { path: '', redirectTo: 'general', pathMatch: 'full' },
-      { path: 'general', component: GeneralComponent },
-      { path: 'personal-information', component: PersonalInformationComponent },
-      { path: 'purchases', component: PurchasesComponent },
-      { path: 'delivery-details', component: DeliveryDetailsComponent },
-      { path: 'card-details', component: CardDetailsComponent },
-      { path: 'favorite-products', component: FavoriteProductsComponent },
+      {
+        path: 'general',
+        component: GeneralComponent,
+      },
+      {
+        path: 'personal-information',
+        component: PersonalInformationComponent,
+      },
+      {
+        path: 'purchases',
+        component: PurchasesComponent,
+      },
+      {
+        path: 'delivery-details',
+        component: DeliveryDetailsComponent,
+      },
+      {
+        path: 'card-details',
+        component: CardDetailsComponent,
+      },
+      {
+        path: 'favorite-products',
+        component: FavoriteProductsComponent,
+      },
     ],
   },
 ];
