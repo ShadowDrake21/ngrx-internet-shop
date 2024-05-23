@@ -251,11 +251,6 @@ export class ProductComponent implements OnInit, OnDestroy {
                 (favorite) => favorite.id === product!.id
               );
 
-              console.log({
-                id: findFavorite?.favoriteId,
-                isInFavorites: !!findFavorite,
-              });
-
               return {
                 id: findFavorite?.favoriteId,
                 isInFavorites: !!findFavorite,

@@ -79,8 +79,9 @@
   <ng-template #emptyCart>
     <div class="modal-body">
       <h5>Your cart is a bit empty right here...</h5>
-    </div> </ng-template
-  >} @else {
+    </div>
+  </ng-template>
+  } @else {
   <div class="modal-body">
     <h5>To use a cart, you need to sign in.</h5>
   </div>
@@ -97,5 +98,40 @@
     <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">
       {{ closeBtnName }}
     </button>
+  </div>
+
+  <div
+    *ngIf="isAutoModalShown"
+    [config]="{ show: true }"
+    (onHidden)="onHidden()"
+    bsModal
+    #autoShownModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="dialog-auto-name"
+  >
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 id="dialog-auto-name" class="modal-title pull-left">
+            Auto shown modal
+          </h4>
+          <button
+            type="button"
+            class="btn-close close pull-right"
+            aria-label="Close"
+            (click)="hideAutoModal()"
+          >
+            <span aria-hidden="true" class="visually-hidden">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>I am a modal that is shown right after initialization!</p>
+          <p>I wasn't present in DOM until you clicked the button</p>
+          <p>When you close me, I'll be removed from the DOM</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
