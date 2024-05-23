@@ -5,6 +5,7 @@ import { PurchasesComponent } from './pages/user-information/children/purchases/
 import { DeliveryDetailsComponent } from './pages/user-information/children/delivery-details/delivery-details.component';
 import { CardDetailsComponent } from './pages/user-information/children/card-details/card-details.component';
 import { FavoriteProductsComponent } from './pages/user-information/children/favorite-products/favorite-products.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/home' },
@@ -102,5 +103,12 @@ export const routes: Routes = [
         component: FavoriteProductsComponent,
       },
     ],
+  },
+  {
+    path: '**',
+    loadComponent: () =>
+      import('@pages/not-found/not-found.component').then(
+        (m) => m.NotFoundComponent
+      ),
   },
 ];

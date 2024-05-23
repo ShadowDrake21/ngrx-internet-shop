@@ -47,28 +47,11 @@ export class UserSidebarComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe((user) => {
         this.user$ = of(user);
-        if (user?.online) {
-        }
 
         if (user) {
           this.lastViewedProduct$ = this.databaseService.getLastViewedProduct(
             user?.userCredential?.providerData[0].email!
           );
-          const customerSubscription = this.store
-            .select(PurchaseSelectors.selectCustomer)
-            .pipe(take(1))
-            .subscribe((customer) => {
-              if (!customer) {
-                console.log('!customer', user);
-                this.store.dispatch(
-                  PurchaseActions.getCustomer({
-                    email: user.userCredential?.providerData[0].email!,
-                  })
-                );
-              }
-            });
-
-          this.subscriptions.push(customerSubscription);
         }
       });
 

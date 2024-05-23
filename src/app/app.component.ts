@@ -19,6 +19,7 @@ import * as UserActions from '@store/user/user.actions';
 import * as UserSelectors from '@store/user/user.selectors';
 import * as FavoritesActions from '@app/store/favorites/favorites.actions';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
+import * as PurchaseActions from '@store/purchase/purchase.actions';
 
 // constants
 import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
@@ -27,9 +28,11 @@ import { AlertType } from './shared/models/alerts.model';
 import {
   filter,
   map,
+  of,
   Subject,
   Subscription,
   switchMap,
+  take,
   takeUntil,
   tap,
 } from 'rxjs';
@@ -60,7 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private destroy$$: Subject<void> = new Subject<void>();
 
-  private loadAllFavorites!: Subscription;
+  private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     this.getUserFromLS();
@@ -81,15 +84,35 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
     this.store.dispatch(FavoritesActions.loadAllFavorites());
-    // this.loadAllFavorites = this.store
-    //   .select(UserSelectors.selectUser)
-    //   .pipe(
-    //     filter((user) => !!user),
-    //     tap(() =>)
-    //   )
-    //   .subscribe();
+    this.loadCustomer();
+    this.checkExpirationTime();
+  }
 
-    // this.checkExpirationTime();
+  loadCustomer() {
+    const userSubscription = this.store
+      .select(UserSelectors.selectUser)
+      .pipe(take(1))
+      .subscribe((user) => {
+        if (user) {
+          const customerSubscription = this.store
+            .select(PurchaseSelectors.selectCustomer)
+            .pipe(take(1))
+            .subscribe((customer) => {
+              if (!customer) {
+                console.log('!customer', user);
+                this.store.dispatch(
+                  PurchaseActions.getCustomer({
+                    email: user.userCredential?.providerData[0].email!,
+                  })
+                );
+              }
+            });
+
+          this.subscriptions.push(customerSubscription);
+        }
+      });
+
+    this.subscriptions.push(userSubscription);
   }
 
   getUserFromLS() {
@@ -126,7 +149,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.loadAllFavorites.unsubscribe();
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     this.destroy$$.next();
     this.destroy$$.complete();
   }
