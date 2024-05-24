@@ -13,6 +13,7 @@ export interface ICheckoutInit {
 export interface IPurchaseUpdate {
   name?: string;
   description?: string;
+  address?: IAddress;
   shipping?: IShipping;
 }
 
@@ -21,13 +22,15 @@ export interface IShipping {
   background?: IReducedUnsplashImage;
   name: string;
   phone: string;
-  address: {
-    country: string;
-    city: string;
-    line1: string;
-    line2: string;
-    postal_code: string;
-  };
+  address: IAddress;
+}
+
+export interface IAddress {
+  country: string;
+  city: string;
+  line1: string;
+  line2: string;
+  postal_code: string;
 }
 
 export interface ISupplementedCharge {
