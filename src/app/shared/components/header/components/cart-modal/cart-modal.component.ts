@@ -43,7 +43,16 @@ import { DatabaseService } from '@app/core/services/database.service';
 import Stripe from 'stripe';
 import { IShipping } from '@app/shared/models/purchase.model';
 import { ICard } from '@app/shared/models/card.model';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import {
+  phonePattern,
+  countryCodePattern,
+} from '@app/pages/user-information/children/purchases/components/customer-information/constants/pattern.constants';
 
 @Component({
   selector: 'app-cart-modal',
@@ -86,9 +95,12 @@ export class CartModalComponent implements OnInit, OnDestroy {
   isShippingDataExist: boolean = false;
 
   selectShippingDataForm = new FormGroup({
-    deliveryAddress: new FormControl('0'),
-    card: new FormControl('0'),
+    deliveryAddressId: new FormControl('0'),
+    cardId: new FormControl('0'),
   });
+
+  private choosenDeliveryAddress: IShipping | null = null;
+  private choosenCard: ICard | null = null;
 
   private userShippingDataSubscription!: Subscription;
 
@@ -172,7 +184,58 @@ export class CartModalComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  onSelectFormSubmit() {}
+  onSelectFormSubmit() {
+    this.onHideSelectModal();
+    const formValue = this.selectShippingDataForm.value;
+
+    if (formValue.deliveryAddressId !== '0') {
+      this.userDeliveryAddresses$
+        .pipe(
+          map((addresses) =>
+            addresses.find(
+              (address) =>
+                address.id ===
+                this.selectShippingDataForm.value.deliveryAddressId
+            )
+          ),
+
+          tap((choosenAddress) => {
+            if (choosenAddress) {
+              this.choosenDeliveryAddress = choosenAddress;
+              console.log(
+                'this.choosenDeliveryAddress',
+                this.choosenDeliveryAddress
+              );
+            }
+          })
+        )
+        .subscribe();
+    }
+    if (formValue.cardId !== '0') {
+      this.userCreditCards$
+        .pipe(
+          map((cards) =>
+            cards.find(
+              (cards) => cards.id === this.selectShippingDataForm.value.cardId
+            )
+          ),
+          tap((choosenCard) => {
+            if (choosenCard) {
+              this.choosenCard = choosenCard;
+              console.log('this.choosenCard', this.choosenCard);
+            }
+          })
+        )
+        .subscribe();
+    }
+  }
+
+  onResetSelectForm() {
+    this.onHideSelectModal();
+    this.choosenDeliveryAddress = null;
+    this.choosenCard = null;
+    this.selectShippingDataForm.reset({ deliveryAddressId: '0', cardId: '0' });
+  }
 
   ngOnDestroy(): void {
     this.userShippingDataSubscription.unsubscribe();
