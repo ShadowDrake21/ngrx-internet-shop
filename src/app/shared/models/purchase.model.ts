@@ -1,10 +1,13 @@
 import Stripe from 'stripe';
 import { IProduct } from './product.model';
 import { IReducedUnsplashImage } from './unsplash.model';
+import { ICard } from './card.model';
 
 export interface ICheckoutInit {
   email: string;
   products: IProduct[];
+  deliveryAddress?: IShipping;
+  paymentMethodId?: string;
 }
 
 export interface IPurchaseUpdate {

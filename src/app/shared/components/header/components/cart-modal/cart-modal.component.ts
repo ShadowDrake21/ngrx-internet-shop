@@ -99,8 +99,8 @@ export class CartModalComponent implements OnInit, OnDestroy {
     cardId: new FormControl('0'),
   });
 
-  private choosenDeliveryAddress: IShipping | null = null;
-  private choosenCard: ICard | null = null;
+  private choosenDeliveryAddress: IShipping | undefined = undefined;
+  private choosenCard: ICard | undefined = undefined;
 
   private userShippingDataSubscription!: Subscription;
 
@@ -202,10 +202,6 @@ export class CartModalComponent implements OnInit, OnDestroy {
           tap((choosenAddress) => {
             if (choosenAddress) {
               this.choosenDeliveryAddress = choosenAddress;
-              console.log(
-                'this.choosenDeliveryAddress',
-                this.choosenDeliveryAddress
-              );
             }
           })
         )
@@ -222,7 +218,6 @@ export class CartModalComponent implements OnInit, OnDestroy {
           tap((choosenCard) => {
             if (choosenCard) {
               this.choosenCard = choosenCard;
-              console.log('this.choosenCard', this.choosenCard);
             }
           })
         )
@@ -232,8 +227,8 @@ export class CartModalComponent implements OnInit, OnDestroy {
 
   onResetSelectForm() {
     this.onHideSelectModal();
-    this.choosenDeliveryAddress = null;
-    this.choosenCard = null;
+    this.choosenDeliveryAddress = undefined;
+    this.choosenCard = undefined;
     this.selectShippingDataForm.reset({ deliveryAddressId: '0', cardId: '0' });
   }
 

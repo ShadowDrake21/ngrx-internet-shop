@@ -1,7 +1,16 @@
 // angular stuff
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { forkJoin, from, map, mergeMap, Observable, of, switchMap } from 'rxjs';
+import {
+  catchError,
+  forkJoin,
+  from,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  switchMap,
+} from 'rxjs';
 
 // interfaces
 import Stripe from 'stripe';
@@ -21,6 +30,7 @@ import {
   ref,
 } from '@angular/fire/database';
 import { equalTo } from 'firebase/database';
+import { ICard } from '@app/shared/models/card.model';
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
@@ -41,6 +51,8 @@ export class CheckoutService {
     return this.http.post('http://localhost:4242/checkout', {
       items: data.products,
       email: data.email,
+      deliveryAddress: data.deliveryAddress,
+      paymentMethodId: data.paymentMethodId,
     });
   }
 
@@ -179,6 +191,47 @@ export class CheckoutService {
     return from(this.stripe.prices.retrieve(priceId)).pipe(
       map((price) => {
         return price as Stripe.Price;
+      })
+    );
+  }
+
+  createPaymentMethod(cardObj: ICard): Observable<string> {
+    return from(
+      this.stripe.tokens.create({
+        card: {
+          name: cardObj.cardHolder,
+          number: cardObj.cardNumber,
+          exp_month: cardObj.expirationMonth,
+          exp_year: cardObj.expirationYear,
+          cvc: cardObj.cvc,
+        },
+      })
+    ).pipe(
+      switchMap((tokenResult) => {
+        if (tokenResult.lastResponse.statusCode !== 200) {
+          throw new Error(
+            'Error creating token: ' + tokenResult.lastResponse.statusCode
+          );
+        }
+        return from(
+          this.stripe.paymentMethods.create({
+            type: 'card',
+            card: { token: tokenResult.id },
+            billing_details: { name: tokenResult.card?.name },
+          })
+        );
+      }),
+      map((paymentMethodResult) => {
+        if (paymentMethodResult.lastResponse.statusCode !== 200) {
+          throw new Error(
+            'Error creating payment method: ' +
+              paymentMethodResult.lastResponse.statusCode
+          );
+        }
+        return paymentMethodResult.id;
+      }),
+      catchError((error) => {
+        throw new Error(error.message);
       })
     );
   }
