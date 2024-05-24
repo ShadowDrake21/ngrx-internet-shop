@@ -13,6 +13,19 @@ export const initializeCheckout = createAction(
   props<{ data: ICheckoutInit }>()
 );
 
+export const createCustomer = createAction(
+  '[Checkout Component] CreateCustomer',
+  props<{ email: string }>()
+);
+export const createCustomerSuccess = createAction(
+  '[Checkout Component] CreateCustomerSuccess',
+  props<{ customer: Stripe.Customer }>()
+);
+export const createCustomerFailure = createAction(
+  '[Checkout Component] CreateCustomerFailure',
+  props<{ errorMessage: string }>()
+);
+
 export const getCustomer = createAction(
   '[Checkout Component] GetCustomer',
   props<{ email: string }>()
@@ -65,7 +78,10 @@ export const getCustomerPaymentMethodsFailure = createAction(
   props<{ customerId: string }>()
 );
 
+export const browserReload = createAction(
+  '[Checkout Component] BrowserReload',
+  props<{ customer: Stripe.Customer }>()
+);
 export const clearPurchaseState = createAction(
   '[Checkout Component] ClearPurchaseState'
 );
-// shipping and so on

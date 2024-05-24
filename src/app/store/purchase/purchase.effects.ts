@@ -43,6 +43,27 @@ export class PurchaseEffects {
     { dispatch: false }
   );
 
+  createCustomer$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PurchaseActions.createCustomer),
+      exhaustMap(({ email }) =>
+        this.checkoutService.createCustomer(email).pipe(
+          map((customer) => {
+            sessionStorage.setItem('customer', JSON.stringify(customer));
+            return PurchaseActions.createCustomerSuccess({ customer });
+          }),
+          catchError((error) =>
+            of(
+              PurchaseActions.createCustomerFailure({
+                errorMessage: error.message,
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
   getCurrentCustomer$ = createEffect(() =>
     this.actions$.pipe(
       ofType(PurchaseActions.getCustomer),
@@ -50,6 +71,7 @@ export class PurchaseEffects {
         this.checkoutService.getCustomer(email).pipe(
           map((customer) => {
             if (customer) {
+              sessionStorage.setItem('customer', JSON.stringify(customer));
               return PurchaseActions.getCustomerSuccess({ customer });
             } else {
               return PurchaseActions.getCustomerFailure({

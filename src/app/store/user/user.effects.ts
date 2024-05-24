@@ -11,6 +11,7 @@ import {
   mergeMap,
   Observable,
   of,
+  switchMap,
   take,
   tap,
 } from 'rxjs';
@@ -46,12 +47,19 @@ export class UserEffects {
       ofType(UserActions.signUp),
       exhaustMap(({ data }) =>
         this.authService.signUp(data).pipe(
-          mergeMap(async (userCredential) => {
-            return UserActions.signUpSuccess({
-              email: userCredential.user.email!,
-              userCredential: await minimalizeUserCredential(userCredential),
-            });
-          }),
+          switchMap((userCredential) =>
+            from(minimalizeUserCredential(userCredential)).pipe(
+              mergeMap((minimalizedUserCredential) => [
+                PurchaseActions.createCustomer({
+                  email: minimalizedUserCredential.providerData[0].email,
+                }),
+                UserActions.signUpSuccess({
+                  email: minimalizedUserCredential.providerData[0].email,
+                  userCredential: minimalizedUserCredential,
+                }),
+              ])
+            )
+          ),
           catchError((error: FirebaseError) =>
             of(
               UserActions.signInManuallyFailure({
@@ -86,6 +94,9 @@ export class UserEffects {
             };
 
             return [
+              PurchaseActions.getCustomer({
+                email: userCredential.user.email!,
+              }),
               UserActions.signInManuallySuccess({
                 email: userCredential.user.email!,
                 userCredential: updatedUserCredential,
@@ -361,12 +372,17 @@ export class UserEffects {
       ofType(UserActions.signOut),
       exhaustMap(() =>
         this.authService.signOut().pipe(
-          tap(() => sessionStorage.removeItem('transactions')),
-          tap(() => this.store.dispatch(PurchaseActions.clearPurchaseState())),
-          tap(() =>
-            this.store.dispatch(FavoritesActions.clearFavoritesState())
-          ),
-          tap(() => this.store.dispatch(CartActions.clearCartState())),
+          tap(() => {
+            sessionStorage.removeItem('customer');
+            sessionStorage.removeItem('transactions');
+          }),
+          tap(() => {
+            return [
+              this.store.dispatch(PurchaseActions.clearPurchaseState()),
+              this.store.dispatch(FavoritesActions.clearFavoritesState()),
+              this.store.dispatch(CartActions.clearCartState()),
+            ];
+          }),
           map(() => UserActions.signOutSuccess())
         )
       )
