@@ -99,9 +99,10 @@ export class PurchaseEffects {
           return this.checkoutService
             .updateCustomer(customerId, updateObject)
             .pipe(
-              map((customer) =>
-                PurchaseActions.updateCustomerSuccess({ customer })
-              ),
+              map((customer) => {
+                sessionStorage.setItem('customer', JSON.stringify(customer));
+                return PurchaseActions.updateCustomerSuccess({ customer });
+              }),
               catchError((error) =>
                 of(
                   PurchaseActions.updateCustomerFailure({
