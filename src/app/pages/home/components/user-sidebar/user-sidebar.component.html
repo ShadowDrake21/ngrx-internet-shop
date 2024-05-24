@@ -37,9 +37,8 @@
         <!--  -->
         <p>
           <span class="fw-bold">Last viewed product: </span>
-          {{ lastViewedProduct$ | async }}
+          {{ (lastViewedProduct$ | async) || "none" }}
         </p>
-        <!--  -->
       </div>
     </ng-container>
   </div>

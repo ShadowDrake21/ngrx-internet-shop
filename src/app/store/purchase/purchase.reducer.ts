@@ -18,10 +18,24 @@ export const initialPurchaseState: PurchaseState = {
 
 export const purchaseReducer = createReducer(
   initialPurchaseState,
-  on(PurchaseActions.getCustomerSuccess, (state, { customer }) => ({
+  on(PurchaseActions.createCustomerSuccess, (state, { customer }) => ({
     ...state,
     customer,
+    transactions: [],
+    errorMessage: null,
   })),
+  on(PurchaseActions.createCustomerFailure, (state, { errorMessage }) => ({
+    ...state,
+    customer: null,
+    transactions: [],
+    errorMessage,
+  })),
+  on(PurchaseActions.getCustomerSuccess, (state, { customer }) => {
+    console.log('state before changings', state);
+    const newState = { ...state, customer };
+    console.log('state after changings', state);
+    return newState;
+  }),
   on(PurchaseActions.getCustomerFailure, (state, { errorMessage }) => ({
     ...state,
     customer: null,
@@ -39,23 +53,18 @@ export const purchaseReducer = createReducer(
     transactions,
   })),
 
-  on(
-    PurchaseActions.updateCustomerFailure,
-
-    (state, { errorMessage }) => ({
-      ...state,
-      customer: state.customer,
-      transactions: state.transactions,
-      errorMessage,
-    })
-  ),
+  on(PurchaseActions.updateCustomerFailure, (state, { errorMessage }) => ({
+    ...state,
+    customer: state.customer,
+    transactions: state.transactions,
+    errorMessage,
+  })),
   on(PurchaseActions.getAllTransactionsFailure, (state, { errorMessage }) => {
     const transactionsStr = sessionStorage.getItem('transactions');
     let transactions: ISupplementedCharge[] = [];
     if (transactionsStr) {
       transactions = JSON.parse(transactionsStr);
     }
-
     return {
       ...state,
       customer: state.customer,
@@ -63,6 +72,12 @@ export const purchaseReducer = createReducer(
       errorMessage,
     };
   }),
+  on(PurchaseActions.browserReload, (state, { customer }) => ({
+    ...state,
+    customer,
+    transactions: [],
+    errorMessage: null,
+  })),
   on(PurchaseActions.clearPurchaseState, (state) => ({
     customer: null,
     transactions: [],

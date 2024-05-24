@@ -44,6 +44,15 @@ export class CheckoutService {
     });
   }
 
+  createCustomer(email: string): Observable<Stripe.Customer> {
+    return from(this.stripe.customers.create({ email })).pipe(
+      map((customer) => {
+        const { lastResponse, ...clearCustomer } = customer;
+        return clearCustomer as Stripe.Customer;
+      })
+    );
+  }
+
   getCustomer(email: string): Observable<Stripe.Customer | null> {
     return from(
       this.stripe.customers.list({

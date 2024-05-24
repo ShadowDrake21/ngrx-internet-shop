@@ -18,8 +18,8 @@ import { AppState } from './store/app.state';
 import * as UserActions from '@store/user/user.actions';
 import * as UserSelectors from '@store/user/user.selectors';
 import * as FavoritesActions from '@app/store/favorites/favorites.actions';
-import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
+import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 
 // constants
 import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
@@ -37,6 +37,7 @@ import {
   tap,
 } from 'rxjs';
 import { BreadcrumbsComponent } from './shared/components/breadcrumbs/breadcrumbs.component';
+import Stripe from 'stripe';
 
 @Component({
   selector: 'app-root',
@@ -66,7 +67,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
-    this.getUserFromLS();
+    this.getDataFromStorages();
 
     this.router.events
       .pipe(takeUntil(this.destroy$$))
@@ -84,40 +85,15 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
     this.store.dispatch(FavoritesActions.loadAllFavorites());
-    this.loadCustomer();
     this.checkExpirationTime();
   }
 
-  loadCustomer() {
-    const userSubscription = this.store
-      .select(UserSelectors.selectUser)
-      .pipe(take(1))
-      .subscribe((user) => {
-        if (user) {
-          const customerSubscription = this.store
-            .select(PurchaseSelectors.selectCustomer)
-            .pipe(take(1))
-            .subscribe((customer) => {
-              if (!customer) {
-                console.log('!customer', user);
-                this.store.dispatch(
-                  PurchaseActions.getCustomer({
-                    email: user.userCredential?.providerData[0].email!,
-                  })
-                );
-              }
-            });
-
-          this.subscriptions.push(customerSubscription);
-        }
-      });
-
-    this.subscriptions.push(userSubscription);
-  }
-
-  getUserFromLS() {
+  getDataFromStorages() {
     const userCredential: IStoreUserCredential | null = JSON.parse(
       localStorage.getItem(LS_AUTH_ITEM_NAME)!
+    );
+    const customer: Stripe.Customer | null = JSON.parse(
+      sessionStorage.getItem('customer')!
     );
 
     if (userCredential) {
@@ -128,6 +104,27 @@ export class AppComponent implements OnInit, OnDestroy {
         })
       );
     }
+    if (customer) {
+      this.store.dispatch(PurchaseActions.browserReload({ customer }));
+    } else {
+      this.loadCustomer();
+    }
+  }
+
+  loadCustomer() {
+    const userSubscription = this.store
+      .select(UserSelectors.selectUser)
+      .subscribe((user) => {
+        if (user) {
+          this.store.dispatch(
+            PurchaseActions.getCustomer({
+              email: user.userCredential?.providerData[0].email!,
+            })
+          );
+        }
+      });
+
+    this.subscriptions.push(userSubscription);
   }
 
   checkExpirationTime() {
