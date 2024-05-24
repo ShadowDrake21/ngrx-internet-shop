@@ -42,6 +42,7 @@ app.post("/checkout", async (req, res, next) => {
 
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
+      payment_method_types: ["card"],
       shipping_address_collection: {
         allowed_countries: ["UA", "PL"],
       },
@@ -87,7 +88,6 @@ app.post("/checkout", async (req, res, next) => {
           },
         },
       ],
-
       line_items: req.body.items.map((item) => ({
         price_data: {
           currency: "PLN",
