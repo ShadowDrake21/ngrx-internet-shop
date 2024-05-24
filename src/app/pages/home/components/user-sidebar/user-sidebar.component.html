@@ -34,7 +34,6 @@
           <span class="fw-bold">Number of favourites:</span>
           {{ (favorites$ | async)?.length }}
         </p>
-        <!--  -->
         <p>
           <span class="fw-bold">Last viewed product: </span>
           {{ (lastViewedProduct$ | async) || "none" }}
