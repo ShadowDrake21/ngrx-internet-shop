@@ -47,7 +47,7 @@ export class GeneralComponent implements OnInit {
 
   user$!: Observable<IUser | null>;
   cartState$!: Observable<CartState>;
-  latestTransaction$!: Observable<ISupplementedCharge | null>;
+  latestTransaction$!: Observable<ISupplementedCharge | undefined>;
 
   latestTransactionError$!: Observable<string | null>;
 

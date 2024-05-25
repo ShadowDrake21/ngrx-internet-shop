@@ -150,11 +150,20 @@ export class PurchaseEffects {
                 of(
                   PurchaseActions.getAllTransactionsFailure({
                     errorMessage:
-                      error.message! ??
+                      `Error: ${error.message!}` ??
                       'Error during all transactions loading!',
                   })
                 )
               )
+            )
+          ),
+          catchError((error: StripeError) =>
+            of(
+              PurchaseActions.getAllTransactionsFailure({
+                errorMessage:
+                  `Error: ${error.message!}` ??
+                  'Error during all transactions loading!',
+              })
             )
           )
         )
