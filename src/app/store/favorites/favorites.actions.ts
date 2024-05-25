@@ -28,7 +28,7 @@ export const addToFavoritesFailure = createAction(
 );
 
 export const removeFromFavorites = createAction(
-  '[Favorites Component] RemoveProductFromFavorites',
+  '[Favorites Component] RemoveFromFavorites',
   props<{ favoriteId: string }>()
 );
 export const removeFromFavoritesSuccess = createAction(

@@ -51,7 +51,6 @@ import * as CartSelectors from '@store/cart/cart.selectors';
 import * as FavoritesActions from '@app/store/favorites/favorites.actions';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
 import { ProductManipulationsService } from '@app/core/services/product-manipulations.service';
-import { FavoritesService } from '@app/core/services/favorites.service';
 import { DatabaseService } from '@app/core/services/database.service';
 
 @Component({
@@ -82,7 +81,6 @@ export class ProductComponent implements OnInit, OnDestroy {
   private productService = inject(ProductService);
   private productManipulationsService = inject(ProductManipulationsService);
   private databaseService = inject(DatabaseService);
-  private favoritesService = inject(FavoritesService);
 
   source$!: Observable<'database' | 'api'>;
   productId$!: Observable<number | string>;
@@ -146,7 +144,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           this.productId$.pipe(map((id) => ({ email, id })))
         ),
         switchMap(({ email, id }) =>
-          this.favoritesService.searchFavoriteProduct(email!, id as string)
+          this.databaseService.searchFavoriteProduct(email!, id as string)
         )
       )
       .subscribe((product) => {
@@ -174,13 +172,13 @@ export class ProductComponent implements OnInit, OnDestroy {
 
     const productInitializationSubscription = this.productId$
       .pipe(
-        switchMap((productId) =>
-          this.store
+        switchMap((productId) => {
+          return this.store
             .select(ProductSelectors.selectProducts)
             .pipe(
               map((products) => ({ productId, productsCount: products.length }))
-            )
-        )
+            );
+        })
       )
       .subscribe(({ productId, productsCount }) => {
         if (productId && productsCount === 1) {
@@ -206,7 +204,6 @@ export class ProductComponent implements OnInit, OnDestroy {
           updatedProduct.images = updatedProduct.images.map((image) =>
             this.productManipulationsService.normalizeImage(image)
           );
-
           return updatedProduct;
         }),
         switchMap((product) =>
@@ -246,8 +243,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           this.product$.pipe(
             map((product) => ({ favorites, product })),
             map(({ favorites, product }) => {
-              let findFavorite: IProduct | undefined = undefined;
-              findFavorite = favorites.find(
+              let findFavorite: IProduct | undefined = favorites.find(
                 (favorite) => favorite.id === product!.id
               );
 
@@ -279,6 +275,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           const sourceSubscription = this.source$.subscribe((source) => {
             if (source === 'database') {
               if (!this.isInFavorites) {
+                this.product$ = of(null);
                 this.router.navigate(['/user-information/favorite-products']);
               }
             }
@@ -371,6 +368,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.store.dispatch(ProductActions.clearProductState());
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }

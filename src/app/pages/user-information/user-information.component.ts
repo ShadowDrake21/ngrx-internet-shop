@@ -6,7 +6,6 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
-import { RoutingService } from '@app/core/services/routing.service';
 
 import { userInformationSidebar } from '@app/shared/utils/icons.utils';
 import { AppState } from '@app/store/app.state';
@@ -64,7 +63,6 @@ export class UserInformationComponent implements OnInit, OnDestroy {
 
   private store = inject(Store<AppState>);
   private router = inject(Router);
-  private routingService = inject(RoutingService);
   private modalService = inject(BsModalService);
   private checkoutService = inject(CheckoutService);
 
@@ -77,10 +75,6 @@ export class UserInformationComponent implements OnInit, OnDestroy {
   alerts: AlertType[] = [];
   private subscriptions: Subscription[] = [];
   private modalClasses = 'modal-dialog modal-dialog-centered';
-
-  private initializePreviousRoute(): void {
-    this.previousRoute = this.routingService.getPreviousUrl() ?? '/';
-  }
 
   private initializeCustomerData(): void {
     const customerSubscription = this.store
@@ -131,7 +125,6 @@ export class UserInformationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.initializePreviousRoute();
     this.initializeCustomerData();
     this.checkStripeFailure();
   }
