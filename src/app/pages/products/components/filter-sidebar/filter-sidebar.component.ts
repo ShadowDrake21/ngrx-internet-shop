@@ -90,8 +90,4 @@ export class FilterSidebarComponent implements OnInit, OnChanges {
     this.restoreSignal.emit();
     this.cdr.detectChanges();
   }
-
-  // getCategoryById(categoryId: number): TFilterCategory | undefined {
-  //   return this.filterCategories.find((category) => category.id === categoryId);
-  // }
 }

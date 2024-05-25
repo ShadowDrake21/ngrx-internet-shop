@@ -18,11 +18,7 @@ import * as UserSelectors from '../../store/user/user.selectors';
 
 // interfaces and types
 import { AlertType } from '../../shared/models/alerts.model';
-import {
-  IStoreUserCredential,
-  IUser,
-  ProviderData,
-} from '../../shared/models/user.model';
+import { IUser } from '../../shared/models/user.model';
 
 // components
 import { AlertComponent } from '../../shared/components/alert/alert.component';

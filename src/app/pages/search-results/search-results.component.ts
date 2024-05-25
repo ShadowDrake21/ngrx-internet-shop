@@ -16,7 +16,6 @@ import * as ProductSelectors from '../../store/product/product.selectors';
 
 // interfaces
 import { IProduct } from '../../shared/models/product.model';
-import { IBreadcrumbs } from '../../shared/models/breadcrumbs.model';
 
 // utils
 import { calcPageNum } from '../../shared/utils/pagination.utils';

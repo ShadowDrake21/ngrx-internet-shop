@@ -22,7 +22,7 @@ import {
 import { DatabaseService } from '@app/core/services/database.service';
 import { ICard } from '@app/shared/models/card.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { map, of, Subscription, switchMap } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import {
   cardCVCSelector,
   cardExpirationMonthSelector,
@@ -34,7 +34,6 @@ import {
 } from '../../content/card-details.content';
 import { cardDetailsIcons } from '@app/shared/utils/icons.utils';
 import { formCardObject } from '../../utils/card-details.utils';
-import { CheckoutService } from '@app/core/services/checkout.service';
 
 @Component({
   selector: 'app-card-form',
@@ -61,7 +60,6 @@ export class CardFormComponent
   @ViewChild('card') card!: ElementRef;
 
   private databaseService = inject(DatabaseService);
-  private checkoutService = inject(CheckoutService);
 
   cardMonthsAndYears: { months: string[]; years: string[] } =
     cardMonthsAndYears;

@@ -19,23 +19,10 @@ import * as UserActions from '@store/user/user.actions';
 import * as UserSelectors from '@store/user/user.selectors';
 import * as FavoritesActions from '@app/store/favorites/favorites.actions';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
-import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 
 // constants
 import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
-import { AlertComponent } from './shared/components/alert/alert.component';
-import { AlertType } from './shared/models/alerts.model';
-import {
-  filter,
-  map,
-  of,
-  Subject,
-  Subscription,
-  switchMap,
-  take,
-  takeUntil,
-  tap,
-} from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { BreadcrumbsComponent } from './shared/components/breadcrumbs/breadcrumbs.component';
 import Stripe from 'stripe';
 

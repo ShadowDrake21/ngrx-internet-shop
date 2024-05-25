@@ -63,7 +63,7 @@ export class UserEffects {
           catchError((error: FirebaseError) =>
             of(
               UserActions.signInManuallyFailure({
-                errorMessage: error.code,
+                errorMessage: error.message,
               })
             )
           )
@@ -137,10 +137,10 @@ export class UserEffects {
               ? of(action, FavoritesActions.loadAllFavorites())
               : of(action)
           ),
-          catchError((error) =>
+          catchError((error: FirebaseError) =>
             of(
               UserActions.signInWithFacebookFailure({
-                errorMessage: 'Error during signing up with Facebook!',
+                errorMessage: error.message,
               })
             )
           )
@@ -169,10 +169,10 @@ export class UserEffects {
               ? of(action, FavoritesActions.loadAllFavorites())
               : of(action)
           ),
-          catchError((error) =>
+          catchError((error: FirebaseError) =>
             of(
               UserActions.signInWithTwitterFailure({
-                errorMessage: 'Error during signing up with Twitter!',
+                errorMessage: error.message,
               })
             )
           )
@@ -201,10 +201,10 @@ export class UserEffects {
               ? of(action, FavoritesActions.loadAllFavorites())
               : of(action)
           ),
-          catchError((error) =>
+          catchError((error: FirebaseError) =>
             of(
               UserActions.signInWithGoogleFailure({
-                errorMessage: 'Error during signing up with Google!',
+                errorMessage: error.message,
               })
             )
           )
@@ -271,7 +271,8 @@ export class UserEffects {
           catchError((error: FirebaseError) =>
             of(
               UserActions.getUserFailure({
-                errorMessage: error.code,
+                // errorMessage: error.code,
+                errorMessage: error.message,
               })
             )
           )

@@ -19,6 +19,7 @@ import {
   take,
 } from 'rxjs';
 import { DatabaseService } from '@app/core/services/database.service';
+import { FirebaseError } from 'firebase/app';
 
 @Injectable()
 export class FavoritesEffects {
@@ -37,10 +38,10 @@ export class FavoritesEffects {
           map((favorites) =>
             FavoritesActions.loadAllFavoritesSuccess({ favorites })
           ),
-          catchError((error) =>
+          catchError((error: FirebaseError) =>
             of(
               FavoritesActions.loadAllFavoritesFailure({
-                errorMessage: `Error during favorite products loading: ${error.message}`,
+                errorMessage: error.message,
               })
             )
           )
@@ -75,7 +76,7 @@ export class FavoritesEffects {
                           )
                         )
                     ),
-                    catchError((error) =>
+                    catchError((error: FirebaseError) =>
                       of(
                         FavoritesActions.addToFavoritesFailure({
                           errorMessage: error.message,
@@ -114,7 +115,7 @@ export class FavoritesEffects {
                   )
                 )
               ),
-              catchError((error) =>
+              catchError((error: FirebaseError) =>
                 of(
                   FavoritesActions.removeFromFavoritesFailure({
                     errorMessage: error.message,

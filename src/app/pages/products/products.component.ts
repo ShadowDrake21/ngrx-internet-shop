@@ -1,6 +1,6 @@
 // angular stuff
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { map, Observable, of, switchMap } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +13,6 @@ import { BreadcrumbsComponent } from '@shared/components/breadcrumbs/breadcrumbs
 
 // interfaces
 import { IFilterFormObj } from '@shared/models/forms.model';
-import { IBreadcrumbs } from '@shared/models/breadcrumbs.model';
 import { IProduct } from '@shared/models/product.model';
 
 // created ngrx stuff
@@ -35,7 +34,6 @@ import { CategoryService } from '@app/core/services/category.service';
     FormsModule,
     PaginationModule,
     FilterSidebarComponent,
-    BreadcrumbsComponent,
     ProductsListComponent,
   ],
   templateUrl: './products.component.html',
@@ -52,11 +50,6 @@ export class ProductsComponent implements OnInit {
 
   filteredProducts$!: Observable<IProduct[]>;
   filteredProductsError$!: Observable<string>;
-
-  breadcrumbs: IBreadcrumbs = {
-    links: ['home'],
-    current: 'Products',
-  };
 
   ngOnInit(): void {
     this.categoryId$ = this.activatedRoute.queryParams.pipe(

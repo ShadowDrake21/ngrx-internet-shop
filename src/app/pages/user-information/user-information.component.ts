@@ -32,8 +32,6 @@ import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
 import * as UserActions from '@store/user/user.actions';
 import { LS_AUTH_ITEM_NAME } from '@app/core/constants/auth.constants';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
-import { IProduct } from '@app/shared/models/product.model';
-import { IUserTransactionsData } from '@app/shared/models/purchase.model';
 import { CheckoutService } from '@app/core/services/checkout.service';
 import { ISidebarModal } from './models/sidebar-modal.model';
 import { SidebarProfileModalComponent } from './components/sidebar-profile-modal/sidebar-profile-modal.component';

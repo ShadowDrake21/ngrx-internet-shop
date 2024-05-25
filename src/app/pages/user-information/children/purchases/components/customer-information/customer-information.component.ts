@@ -8,28 +8,22 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  AbstractControl,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { AppState } from '@app/store/app.state';
 import { Store } from '@ngrx/store';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { TooltipDirective, TooltipModule } from 'ngx-bootstrap/tooltip';
-import { delay, Observable, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import Stripe from 'stripe';
 
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import { IPurchaseUpdate } from '@app/shared/models/purchase.model';
 import { errorMessages } from './constants/errors.constants';
-import {
-  allFieldsFilled,
-  shippingFieldsValidator,
-} from './utils/formValidators.utils';
+import { shippingFieldsValidator } from './utils/formValidators.utils';
 import {
   countryCodePattern,
   phonePattern,
@@ -71,7 +65,7 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
     ]),
     billing: new FormGroup(
       {
-        country: new FormControl('', Validators.pattern(countryCodePattern)),
+        country: new FormControl('0'),
         city: new FormControl(''),
         line1: new FormControl(''),
         line2: new FormControl(''),
@@ -85,9 +79,9 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
           Validators.minLength(3),
           Validators.maxLength(40),
         ]),
-        phone: new FormControl('', [Validators.pattern(phonePattern)]),
+        phone: new FormControl('', Validators.pattern(phonePattern)),
         address: new FormGroup({
-          country: new FormControl('', Validators.pattern(countryCodePattern)),
+          country: new FormControl('0'),
           city: new FormControl(''),
           line1: new FormControl(''),
           line2: new FormControl(''),
@@ -169,16 +163,6 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
       errorMessages[3],
       'pattern'
     );
-
-    const shippingCountryControl =
-      this.customerUpdateForm.controls.shipping.controls.address.controls
-        .country;
-    this.validateCustomerUpdateFormControl(
-      shippingCountryControl,
-      this.shippingCountryTooltip,
-      errorMessages[4],
-      'pattern'
-    );
   }
 
   validateCustomerUpdateFormControl(
@@ -237,7 +221,7 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
       name: customer.name,
       description: customer.description,
       billing: {
-        country: customer.address?.country,
+        country: customer.address?.country || '0',
         city: customer.address?.city,
         line1: customer.address?.line1,
         line2: customer.address?.line2,
@@ -247,7 +231,7 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
         name: customer.shipping?.name,
         phone: customer.shipping?.phone,
         address: {
-          country: customer.shipping?.address!.country,
+          country: customer.shipping?.address!.country || '0',
           city: customer.shipping?.address!.city,
           line1: customer.shipping?.address!.line1,
           line2: customer.shipping?.address!.line2,

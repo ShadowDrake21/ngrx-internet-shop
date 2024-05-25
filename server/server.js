@@ -1,12 +1,11 @@
-// const express = require("express");
-// const cors = require("cors");
-// const bodyparser = require("body-parser");
-
 import express from "express";
 import cors from "cors";
 import bodyparser from "body-parser";
 import Stripe from "stripe";
 import createPurchase from "./controllers/purchaseControllers.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 app.use(express.static("public"));
@@ -15,9 +14,9 @@ app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(cors({ origin: true, credentials: true }));
 
-const stripe = new Stripe(
-  "sk_test_51OSDbAAGBN9qzN7ZebHv8tsmZYaQwHC0xDtAaZ3GAJJTJbO8DJpTGvLtaIMcJAsgCrW69d2W8Vx5E356Mw04dAqM00EkfSFmu1"
-);
+const { PORT, STRIPE_API_KEY } = process.env;
+
+const stripe = new Stripe(STRIPE_API_KEY);
 
 app.post("/checkout", async (req, res, next) => {
   try {
@@ -178,4 +177,4 @@ app.get("/success", async (req, res) => {
   );
 });
 
-app.listen(4242, () => console.log("App is running on 4242..."));
+app.listen(PORT, () => console.log("App is running on 4242..."));
