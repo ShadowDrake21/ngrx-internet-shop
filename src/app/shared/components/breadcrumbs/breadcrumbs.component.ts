@@ -1,17 +1,9 @@
 // angular stuff
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  inject,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 // interfaces
-import { IBreadcrumbs } from '../../models/breadcrumbs.model';
 import { BreadcrumbService } from '@app/core/services/breadcrumb.service';
 
 @Component({

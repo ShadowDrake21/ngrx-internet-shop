@@ -3,18 +3,9 @@ import { BasicCardComponent } from '../../components/basic-card/basic-card.compo
 import { userInformationContent } from '../../content/user-information.content';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { Store } from '@ngrx/store';
-import {
-  debounceTime,
-  filter,
-  map,
-  Observable,
-  Subscription,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { debounceTime, map, Observable, Subscription, tap } from 'rxjs';
 import { IProduct } from '@app/shared/models/product.model';
 
-import * as UserSelectors from '@store/user/user.selectors';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';

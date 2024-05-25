@@ -1,4 +1,3 @@
-import { IProduct } from '@app/shared/models/product.model';
 import {
   ICheckoutInit,
   IPurchaseUpdate,

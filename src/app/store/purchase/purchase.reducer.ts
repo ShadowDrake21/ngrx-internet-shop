@@ -3,7 +3,6 @@ import { createReducer, on } from '@ngrx/store';
 
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import { ISupplementedCharge } from '@app/shared/models/purchase.model';
-import { IProduct } from '@app/shared/models/product.model';
 
 export interface PurchaseState {
   customer: Stripe.Customer | null;
@@ -30,12 +29,10 @@ export const purchaseReducer = createReducer(
     transactions: [],
     errorMessage,
   })),
-  on(PurchaseActions.getCustomerSuccess, (state, { customer }) => {
-    console.log('state before changings', state);
-    const newState = { ...state, customer };
-    console.log('state after changings', state);
-    return newState;
-  }),
+  on(PurchaseActions.getCustomerSuccess, (state, { customer }) => ({
+    ...state,
+    customer,
+  })),
   on(PurchaseActions.getCustomerFailure, (state, { errorMessage }) => ({
     ...state,
     customer: null,
@@ -79,6 +76,7 @@ export const purchaseReducer = createReducer(
     errorMessage: null,
   })),
   on(PurchaseActions.clearPurchaseState, (state) => ({
+    ...state,
     customer: null,
     transactions: [],
     errorMessage: null,

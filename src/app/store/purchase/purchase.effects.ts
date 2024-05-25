@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { CheckoutService } from '@app/core/services/checkout.service';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe, StripeError } from '@stripe/stripe-js';
 import {
   catchError,
   exhaustMap,
@@ -103,10 +103,10 @@ export class PurchaseEffects {
                 sessionStorage.setItem('customer', JSON.stringify(customer));
                 return PurchaseActions.updateCustomerSuccess({ customer });
               }),
-              catchError((error) =>
+              catchError((error: StripeError) =>
                 of(
                   PurchaseActions.updateCustomerFailure({
-                    errorMessage: 'Error during user update!',
+                    errorMessage: error.message! ?? 'Error during user update!',
                   })
                 )
               )
@@ -146,10 +146,12 @@ export class PurchaseEffects {
                   transactions,
                 });
               }),
-              catchError((error) =>
+              catchError((error: StripeError) =>
                 of(
                   PurchaseActions.getAllTransactionsFailure({
-                    errorMessage: 'Error during all transactions loading!',
+                    errorMessage:
+                      error.message! ??
+                      'Error during all transactions loading!',
                   })
                 )
               )

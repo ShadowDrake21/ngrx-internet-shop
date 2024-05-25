@@ -76,7 +76,7 @@ export class CheckoutService {
         if ('data' in result) {
           return result.data.length > 0 ? of(result.data[0]) : of(null);
         } else {
-          return of(result); //????
+          return of(result);
         }
       })
     );

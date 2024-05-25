@@ -1,4 +1,3 @@
-import { IFavoriteProduct } from '@app/shared/models/favorite.model';
 import { IProduct } from '@app/shared/models/product.model';
 import { createAction, props } from '@ngrx/store';
 

@@ -2,7 +2,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import {
-  FormBuilder,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
@@ -10,17 +9,13 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, of, Subscription, take } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { faRefresh } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 // interfaces
-import {
-  IStoreUserCredential,
-  IUserSignUpData,
-  ProviderData,
-} from '../../shared/models/user.model';
+import { IUserSignUpData } from '../../shared/models/user.model';
 
 // created ngrx stuff
 import { UserState } from '../../store/user/user.reducer';
@@ -33,7 +28,6 @@ import { createAuthInLS } from '../../core/utils/auth.utils';
 // components
 import { LoaderComponent } from '../../shared/components/loader/loader.component';
 import { EmailVerificationModalComponent } from './components/email-verification-modal/email-verification-modal.component';
-import { IdTokenResult } from 'firebase/auth';
 
 @Component({
   selector: 'app-sign-up',

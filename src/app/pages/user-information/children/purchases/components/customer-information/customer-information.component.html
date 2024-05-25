@@ -84,7 +84,7 @@
             </div>
           </div>
         </tab>
-        <tab heading="Edit shipping info">
+        <tab heading="Edit info">
           <div class="pt-3 pb-3">
             <form
               [formGroup]="customerUpdateForm"
@@ -154,19 +154,18 @@
                       "
                       >Country (PL/UA)</label
                     >
-                    <input
-                      type="text"
-                      class="form-control"
+                    <select
+                      class="form-select"
                       id="customerCountry"
-                      placeholder="Country"
                       formControlName="country"
                       [class.error]="
                         customerUpdateForm.controls.billing.invalid
                       "
-                      tooltip=""
-                      triggers=""
-                      #shippingCountryTooltip="bs-tooltip"
-                    />
+                    >
+                      <option selected disabled value="0">Country</option>
+                      <option [ngValue]="'PL'">Poland</option>
+                      <option [ngValue]="'UA'">Ukraine</option>
+                    </select>
                   </div>
                   <div class="form-group">
                     <label
@@ -320,19 +319,18 @@
                           "
                           >Country (PL/UA)</label
                         >
-                        <input
-                          type="text"
-                          class="form-control"
+                        <select
+                          class="form-select"
                           id="customerCountry"
-                          placeholder="Country"
                           formControlName="country"
                           [class.error]="
                             customerUpdateForm.controls.shipping.invalid
                           "
-                          tooltip=""
-                          triggers=""
-                          #shippingCountryTooltip="bs-tooltip"
-                        />
+                        >
+                          <option selected disabled value="0">Country</option>
+                          <option [ngValue]="'PL'">Poland</option>
+                          <option [ngValue]="'UA'">Ukraine</option>
+                        </select>
                       </div>
                       <div class="form-group">
                         <label

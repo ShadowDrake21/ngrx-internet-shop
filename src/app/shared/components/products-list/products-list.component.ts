@@ -1,9 +1,7 @@
 import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
   ChangeDetectorRef,
   Component,
-  ElementRef,
   inject,
   Input,
   OnChanges,
@@ -19,7 +17,7 @@ import {
 import { ProductsItemComponent } from '../products-item/products-item.component';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../store/app.state';
-import { map, Observable, tap } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { IProduct } from '../../models/product.model';
 import { calcPageNum } from '../../utils/pagination.utils';
 import * as CartActions from '../../../store/cart/cart.actions';
