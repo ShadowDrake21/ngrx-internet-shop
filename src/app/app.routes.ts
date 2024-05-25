@@ -6,6 +6,7 @@ import { DeliveryDetailsComponent } from './pages/user-information/children/deli
 import { CardDetailsComponent } from './pages/user-information/children/card-details/card-details.component';
 import { FavoriteProductsComponent } from './pages/user-information/children/favorite-products/favorite-products.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/home' },
@@ -75,6 +76,7 @@ export const routes: Routes = [
       import('./pages/user-information/user-information.component').then(
         (c) => c.UserInformationComponent
       ),
+    canActivate: [authGuard],
 
     children: [
       { path: '', redirectTo: 'general', pathMatch: 'full' },

@@ -11,7 +11,6 @@ import { Store } from '@ngrx/store';
 import { IUser } from '../../../../shared/models/user.model';
 
 // services
-import { RoutingService } from '../../../../core/services/routing.service';
 import { SignInService } from '../../../../core/services/signIn.service';
 
 // created ngrx stuff
@@ -25,6 +24,7 @@ import { AlertComponent } from '../../../../shared/components/alert/alert.compon
 // utils
 import { createAuthInLS } from '../../../../core/utils/auth.utils';
 import { signInModalIcons } from '../../../../shared/utils/icons.utils';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-available-providers-modal',
@@ -44,8 +44,8 @@ export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
   icons = signInModalIcons;
 
   private store = inject(Store<UserState>);
-  private routingService = inject(RoutingService);
   private signInService = inject(SignInService);
+  private router = inject(Router);
   public bsModalRef = inject(BsModalRef);
 
   availableProviders: string[] = [];
@@ -83,7 +83,7 @@ export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
             this.signInForm.value.rememberMe!
           );
 
-          this.routingService.goToPreviousPage(this.previousRoute);
+          this.router.navigate(['/']);
           this.bsModalRef.hide();
         } else {
           this.errorMessage = 'Incorrect user credential!';
@@ -132,7 +132,7 @@ export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
       if (user !== null && user.userCredential) {
         createAuthInLS(user?.userCredential!);
 
-        this.routingService.goToPreviousPage(this.previousRoute);
+        this.router.navigate(['/']);
         this.bsModalRef.hide();
         this.isLogging = false;
       }

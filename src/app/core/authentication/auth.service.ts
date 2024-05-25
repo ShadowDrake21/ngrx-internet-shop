@@ -2,9 +2,7 @@
 import { inject, Injectable } from '@angular/core';
 import {
   Auth,
-  AuthCredential,
   createUserWithEmailAndPassword,
-  EmailAuthCredential,
   EmailAuthProvider,
   FacebookAuthProvider,
   fetchSignInMethodsForEmail,
@@ -33,7 +31,6 @@ import {
 } from 'rxjs';
 
 import * as UserActions from '@store/user/user.actions';
-import * as UserSelectors from '@store/user/user.selectors';
 
 // interfaces
 import { IUserSignUpData, IUserUpdate } from '../../shared/models/user.model';
@@ -43,7 +40,6 @@ import {
   DataSnapshot,
   get,
   ref,
-  set,
   update,
 } from '@angular/fire/database';
 import { SIGN_IN_PHOTO_URL } from '../constants/auth.constants';
@@ -115,7 +111,9 @@ export class AuthService {
   }
 
   signInManually(email: string, password: string): Observable<UserCredential> {
-    return from(signInWithEmailAndPassword(this.auth, email, password));
+    return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
+      tap(() => console.log('this.auth', this.auth))
+    );
   }
 
   sendPasswordReset(email: string): Observable<void> {

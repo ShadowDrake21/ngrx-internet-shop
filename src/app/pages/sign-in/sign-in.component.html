@@ -13,9 +13,9 @@
       <div class="row align-items-center justify-content-center">
         <div class="col-md-7" *ngIf="!isLogging; else loading">
           <div class="d-flex justify-content-end mb3">
-            <button class="btn btn-danger d-block" (click)="goToPrevious()">
+            <a class="btn btn-danger d-flex align-items-center" routerLink="/">
               <fa-icon [icon]="icons.faClose"></fa-icon>
-            </button>
+            </a>
           </div>
           <div class="mb-4">
             <h3 class="text-center">Sign In</h3>

@@ -86,8 +86,12 @@ export class CheckoutService {
     customerId: string,
     updateObject: IPurchaseUpdate
   ): Observable<Stripe.Customer> {
-    // lastResponse???
-    return from(this.stripe.customers.update(customerId, updateObject));
+    return from(this.stripe.customers.update(customerId, updateObject)).pipe(
+      map((updatedCustomer) => {
+        const { lastResponse, ...clearUpdatedCustomer } = updatedCustomer;
+        return clearUpdatedCustomer as Stripe.Customer;
+      })
+    );
   }
 
   getAllTransactions(customerId: string): Observable<{
