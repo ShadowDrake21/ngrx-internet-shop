@@ -4,23 +4,30 @@
     <span>Number of last purchases: {{ (transactions$ | async)?.length }}</span>
   </div>
   <div class="card-body">
-    <div *ngIf="transactions$ | async as transactions">
-      <div
-        class="d-flex flex-wrap pb-4"
-        style="gap: 25px"
-        *ngIf="visibleTransactions$ | async as visibleTransactions"
-      >
-        <app-purchase-thumbnail
-          *ngFor="let transaction of visibleTransactions"
-          [transaction]="transaction"
-        ></app-purchase-thumbnail>
-      </div>
-      <pagination
-        class="d-flex justify-content-center"
-        [itemsPerPage]="4"
-        [totalItems]="transactions.length"
-        (pageChanged)="pageChanged($event)"
-      ></pagination>
+    <div *ngIf="(transactions$ | async)?.length; else noTransactions">
+      <ng-container *ngIf="transactions$ | async as transactions">
+        <div
+          class="d-flex flex-wrap pb-4"
+          style="gap: 25px"
+          *ngIf="visibleTransactions$ | async as visibleTransactions"
+        >
+          <app-purchase-thumbnail
+            *ngFor="let transaction of visibleTransactions"
+            [transaction]="transaction"
+          ></app-purchase-thumbnail>
+        </div>
+        <pagination
+          class="d-flex justify-content-center"
+          [itemsPerPage]="4"
+          [totalItems]="transactions.length"
+          (pageChanged)="pageChanged($event)"
+        ></pagination>
+      </ng-container>
     </div>
+    <ng-template #noTransactions>
+      <div class="pt-3 pb-3">
+        <h4 class="text-center">You have not made any purchase yet...</h4>
+      </div>
+    </ng-template>
   </div>
 </div>

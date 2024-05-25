@@ -1,21 +1,12 @@
 <div class="pt-3 pb-3">
   <app-basic-card [item]="userInformationItem"></app-basic-card>
   <div *ngIf="!purchasesLoading; else loading">
-    <ng-container *ngIf="customer$ | async; else noCustomer">
-      <div class="pb-4">
-        <app-customer-information
-          [customer]="customer$"
-        ></app-customer-information>
-      </div>
-      <app-purchases-list
-        [transactions]="transactions$"
-      ></app-purchases-list></ng-container
-    ><ng-template #noCustomer>
-      <div class="text-center pt-5">
-        <h4>You haven't made any purchase.</h4>
-        <h5>Make one and here will appear all neccessary information!</h5>
-      </div>
-    </ng-template>
+    <div class="pb-4">
+      <app-customer-information
+        [customer]="customer$"
+      ></app-customer-information>
+    </div>
+    <app-purchases-list [transactions]="transactions$"></app-purchases-list>
   </div>
   <ng-template #loading>
     <div class="d-flex justify-content-center align-items-center pt-5 pb-5">
