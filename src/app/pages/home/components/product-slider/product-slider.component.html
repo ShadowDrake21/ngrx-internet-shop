@@ -1,5 +1,5 @@
-<div class="product-slider">
-  <carousel [noPause]="false">
+<div class="product-slider__wrapper">
+  <carousel [noPause]="false" data-slider="product-slider">
     <slide
       *ngFor="let item of sliderItems; index as idx"
       class="position-relative product-slider__slide"

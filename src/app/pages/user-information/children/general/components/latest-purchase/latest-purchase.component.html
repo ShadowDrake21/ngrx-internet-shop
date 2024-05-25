@@ -93,8 +93,9 @@
     </div>
     <carousel
       [interval]="0"
-      class="d-block w-100 purchase__modal-slider"
+      class="d-block w-100"
       [showIndicators]="false"
+      data-slider="purchase-slider"
     >
       <slide *ngFor="let product of products; let i = index">
         <div class="d-flex flex-column" style="padding: 0 10%">
@@ -112,7 +113,7 @@
                 {{ product.product.name }}
               </h5>
               <div class="purchase-product__modal-slider__wrapper">
-                <carousel class="purchase-product__modal-slider">
+                <carousel data-slider="purchase-product-slider">
                   <slide *ngFor="let image of product.product.images">
                     <img
                       [src]="image"

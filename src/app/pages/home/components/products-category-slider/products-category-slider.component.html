@@ -7,11 +7,10 @@
         [singleSlideOffset]="singleSlideOffset"
         [interval]="0"
         [noWrap]="true"
-        data-slider="custom-slider"
+        data-slider="product-category-slider"
         class="d-flex justify-content-center"
       >
         <slide *ngFor="let product of products">
-          <!-- change showAddBtn to true -->
           <app-products-category-slider-item
             [item]="product"
           ></app-products-category-slider-item>
