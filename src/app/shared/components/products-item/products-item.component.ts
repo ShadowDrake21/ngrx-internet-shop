@@ -6,6 +6,7 @@ import {
   inject,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,
@@ -19,8 +20,11 @@ import { IProduct } from '../../models/product.model';
 import { SafeHTMLPipe } from '../../pipes/safe-html.pipe';
 import { ClearURLPipe } from '../../pipes/clear-url.pipe';
 import { TruncateTextPipe } from '../../pipes/truncate-text.pipe';
-import { DomSanitizer } from '@angular/platform-browser';
 import { ProductManipulationsService } from '@app/core/services/product-manipulations.service';
+import { Store } from '@ngrx/store';
+import { UserState } from '@app/store/user/user.reducer';
+import * as UserSelectors from '@store/user/user.selectors';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-single-product',
@@ -35,16 +39,29 @@ import { ProductManipulationsService } from '@app/core/services/product-manipula
   templateUrl: './products-item.component.html',
   styleUrl: './products-item.component.scss',
 })
-export class ProductsItemComponent implements OnChanges {
+export class ProductsItemComponent implements OnInit, OnChanges, OnDestroy {
+  private store = inject(Store<UserState>);
   private productManipulationsService = inject(ProductManipulationsService);
 
   @Input({ required: true, alias: 'item' }) product!: IProduct;
-  @Input({ alias: 'isInCart' }) isAlreadyInCart: boolean = false; // change to store manipulation
+  @Input({ alias: 'isInCart' }) isAlreadyInCart: boolean = false;
   @Input() showAddBtn: boolean = true;
   @Input() innerTitle!: string;
 
   @Output('onAddToCart') onAdd: EventEmitter<IProduct> =
     new EventEmitter<IProduct>();
+
+  private userSubscription!: Subscription;
+
+  ngOnInit(): void {
+    this.userSubscription = this.store
+      .select(UserSelectors.selectUser)
+      .subscribe((user) => {
+        if (!user?.userCredential) {
+          this.showAddBtn = false;
+        }
+      });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['product']) {
@@ -63,5 +80,9 @@ export class ProductsItemComponent implements OnChanges {
 
   onAddToCart() {
     this.onAdd.emit(this.product);
+  }
+
+  ngOnDestroy(): void {
+    this.userSubscription.unsubscribe();
   }
 }

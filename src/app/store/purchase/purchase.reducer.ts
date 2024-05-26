@@ -3,7 +3,6 @@ import { createReducer, on } from '@ngrx/store';
 
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import { ISupplementedCharge } from '@app/shared/models/purchase.model';
-import { IProduct } from '@app/shared/models/product.model';
 
 export interface PurchaseState {
   customer: Stripe.Customer | null;
@@ -18,6 +17,18 @@ export const initialPurchaseState: PurchaseState = {
 
 export const purchaseReducer = createReducer(
   initialPurchaseState,
+  on(PurchaseActions.createCustomerSuccess, (state, { customer }) => ({
+    ...state,
+    customer,
+    transactions: [],
+    errorMessage: null,
+  })),
+  on(PurchaseActions.createCustomerFailure, (state, { errorMessage }) => ({
+    ...state,
+    customer: null,
+    transactions: [],
+    errorMessage,
+  })),
   on(PurchaseActions.getCustomerSuccess, (state, { customer }) => ({
     ...state,
     customer,
@@ -39,23 +50,18 @@ export const purchaseReducer = createReducer(
     transactions,
   })),
 
-  on(
-    PurchaseActions.updateCustomerFailure,
-
-    (state, { errorMessage }) => ({
-      ...state,
-      customer: state.customer,
-      transactions: state.transactions,
-      errorMessage,
-    })
-  ),
+  on(PurchaseActions.updateCustomerFailure, (state, { errorMessage }) => ({
+    ...state,
+    customer: state.customer,
+    transactions: state.transactions,
+    errorMessage,
+  })),
   on(PurchaseActions.getAllTransactionsFailure, (state, { errorMessage }) => {
     const transactionsStr = sessionStorage.getItem('transactions');
     let transactions: ISupplementedCharge[] = [];
     if (transactionsStr) {
       transactions = JSON.parse(transactionsStr);
     }
-
     return {
       ...state,
       customer: state.customer,
@@ -63,9 +69,16 @@ export const purchaseReducer = createReducer(
       errorMessage,
     };
   }),
+  on(PurchaseActions.browserReload, (state, { customer }) => ({
+    ...state,
+    customer,
+    transactions: [],
+    errorMessage: null,
+  })),
   on(PurchaseActions.clearPurchaseState, (state) => ({
     ...state,
     customer: null,
     transactions: [],
+    errorMessage: null,
   }))
 );

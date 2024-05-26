@@ -1,14 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
-import { userInformationContent } from '../../content/user-information.content';
-import { CommonModule } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ReactiveFormsModule } from '@angular/forms';
-import { ICard } from '@app/shared/models/card.model';
-import { DatabaseService } from '@app/core/services/database.service';
-import { Store } from '@ngrx/store';
-import { AppState } from '@app/store/app.state';
-import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
+// angular stuff
 import {
   debounceTime,
   map,
@@ -19,6 +9,27 @@ import {
   tap,
   throwError,
 } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+// services
+import { DatabaseService } from '@app/core/services/database.service';
+
+// interfaces and types
+import { ICard } from '@app/shared/models/card.model';
+
+// content
+import { userInformationContent } from '../../content/user-information.content';
+
+// created ngrx stuff
+import { AppState } from '@app/store/app.state';
+import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
+
+// components
+import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
 import { CardItemComponent } from './components/card-item/card-item.component';
 import { CardFormComponent } from './components/card-form/card-form.component';
 

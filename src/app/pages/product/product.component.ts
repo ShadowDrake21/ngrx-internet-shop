@@ -48,11 +48,10 @@ import * as ProductActions from '@store/product/product.actions';
 import * as CartActions from '@store/cart/cart.actions';
 import * as ProductSelectors from '@store/product/product.selectors';
 import * as CartSelectors from '@store/cart/cart.selectors';
-import * as FavoritesActions from '@store/favorites/favorites.action';
+import * as FavoritesActions from '@app/store/favorites/favorites.actions';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ProductManipulationsService } from '@app/core/services/product-manipulations.service';
-import { FavoritesService } from '@app/core/services/favorites.service';
+import { DatabaseService } from '@app/core/services/database.service';
 
 @Component({
   selector: 'app-product',
@@ -81,19 +80,20 @@ export class ProductComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private productService = inject(ProductService);
   private productManipulationsService = inject(ProductManipulationsService);
-  private favoritesService = inject(FavoritesService);
+  private databaseService = inject(DatabaseService);
 
   source$!: Observable<'database' | 'api'>;
   productId$!: Observable<number | string>;
   product$!: Observable<IProduct | null>;
-  subscriptions: Subscription[] = [];
-
-  isInCart!: boolean;
-  isInFavorites: boolean | null = null;
-
   similarProducts$!: Observable<IProduct[]>;
 
-  ngOnInit(): void {
+  isInCart: boolean = false;
+  isInFavorites: boolean = false;
+  isAuthorizedGuest: boolean = true;
+
+  subscriptions: Subscription[] = [];
+
+  getUrlParts() {
     this.source$ = this.route.queryParams.pipe(
       map((queries: Params) => {
         return queries['source'];
@@ -103,52 +103,90 @@ export class ProductComponent implements OnInit, OnDestroy {
     this.productId$ = this.route.paramMap.pipe(
       map((params: ParamMap) => params.get('id')!)
     );
+  }
+
+  loadAPIProductById() {
+    const productSubscription: Subscription = this.productId$.subscribe(
+      (productId) => {
+        const productOfTheDay: IProduct | null = this.loadProductOfTheDay();
+        if (Number(productId) !== this.loadProductOfTheDay()?.id) {
+          this.store.dispatch(
+            ProductActions.loadSingleProductById({
+              productId: productId as number,
+            })
+          );
+        } else {
+          if (productOfTheDay) {
+            this.store.dispatch(
+              ProductActions.setSingleProduct({ product: productOfTheDay })
+            );
+          }
+        }
+      }
+    );
+    this.subscriptions.push(productSubscription);
+  }
+
+  loadProductOfTheDay(): IProduct | null {
+    const productStr = localStorage.getItem('productOfTheDay');
+    const product: IProduct | null = productStr
+      ? (JSON.parse(productStr) as IProduct)
+      : null;
+
+    return product;
+  }
+
+  loadDatabaseProductById() {
+    const databaseSubscription = this.store
+      .select(UserSelectors.selectEmail)
+      .pipe(
+        switchMap((email) =>
+          this.productId$.pipe(map((id) => ({ email, id })))
+        ),
+        switchMap(({ email, id }) =>
+          this.databaseService.searchFavoriteProduct(email!, id as string)
+        )
+      )
+      .subscribe((product) => {
+        if (product) {
+          this.store.dispatch(
+            ProductActions.setSingleProduct({ product: product! })
+          );
+        }
+      });
+    this.subscriptions.push(databaseSubscription);
+  }
+
+  ngOnInit(): void {
+    this.getUrlParts();
 
     const sourceSubscription = this.source$.subscribe((source) => {
       if (source) {
         if (source === 'api') {
-          const productSubscription: Subscription = this.productId$.subscribe(
-            (productId) => {
-              this.store.dispatch(
-                ProductActions.loadSingleProductById({
-                  productId: productId as number,
-                })
-              );
-            }
-          );
-          this.subscriptions.push(productSubscription);
+          this.loadAPIProductById();
         } else if (source === 'database') {
-          const databaseSubscription = this.store
-            .select(UserSelectors.selectEmail)
-            .pipe(
-              switchMap((email) =>
-                this.productId$.pipe(map((id) => ({ email, id })))
-              ),
-              switchMap(({ email, id }) =>
-                this.favoritesService.searchFavoriteProduct(
-                  email!,
-                  id as string
-                )
-              )
-            )
-            .subscribe((product) => {
-              if (product) {
-                this.store.dispatch(
-                  ProductActions.setSingleProduct({ product: product! })
-                );
-              }
-            });
-          this.subscriptions.push(databaseSubscription);
+          this.loadDatabaseProductById();
         }
       }
     });
-    const productInitializationSubscription = this.productId$.subscribe(
-      (productId) => {
-        if (productId) {
+
+    const productInitializationSubscription = this.productId$
+      .pipe(
+        switchMap((productId) => {
+          return this.store
+            .select(ProductSelectors.selectProducts)
+            .pipe(
+              map((products) => ({ productId, productsCount: products.length }))
+            );
+        })
+      )
+      .subscribe(({ productId, productsCount }) => {
+        if (productId && productsCount === 1) {
           this.productInitialization(productId);
         }
-      }
-    );
+      });
+
+    this.checkInCart();
     this.subscriptions.push(
       sourceSubscription,
       productInitializationSubscription
@@ -166,18 +204,22 @@ export class ProductComponent implements OnInit, OnDestroy {
           updatedProduct.images = updatedProduct.images.map((image) =>
             this.productManipulationsService.normalizeImage(image)
           );
-
           return updatedProduct;
-        })
+        }),
+        switchMap((product) =>
+          this.store
+            .select(UserSelectors.selectEmail)
+            .pipe(map((email) => ({ product, email })))
+        )
       )
-      .subscribe((product) => {
+      .subscribe(({ product, email }) => {
         this.product$ = of(product);
-        this.checkIfInFavorites();
+        this.isAuthorizedGuest = !!email;
+        if (email) {
+          this.checkIfInFavorites();
+          this.databaseService.setLastViewedProduct(email!, product.title);
+        }
       });
-
-    if (typeof productId === 'number') {
-      this.checkInCart(productId);
-    }
 
     this.subscriptions.push(selectProductSubscription);
 
@@ -193,7 +235,6 @@ export class ProductComponent implements OnInit, OnDestroy {
     );
   }
 
-  // finish!
   checkIfInFavorites() {
     const favoritesSubscription = this.store
       .select(FavoritesSelectors.selectFavorites)
@@ -202,10 +243,10 @@ export class ProductComponent implements OnInit, OnDestroy {
           this.product$.pipe(
             map((product) => ({ favorites, product })),
             map(({ favorites, product }) => {
-              let findFavorite: IProduct | undefined = undefined;
-              findFavorite = favorites.find(
+              let findFavorite: IProduct | undefined = favorites.find(
                 (favorite) => favorite.id === product!.id
               );
+
               return {
                 id: findFavorite?.favoriteId,
                 isInFavorites: !!findFavorite,
@@ -234,10 +275,11 @@ export class ProductComponent implements OnInit, OnDestroy {
           const sourceSubscription = this.source$.subscribe((source) => {
             if (source === 'database') {
               if (!this.isInFavorites) {
+                this.product$ = of(null);
                 this.router.navigate(['/user-information/favorite-products']);
-                this.isInFavorites = false;
               }
             }
+            this.isInFavorites = false;
           });
 
           this.subscriptions.push(sourceSubscription);
@@ -306,23 +348,27 @@ export class ProductComponent implements OnInit, OnDestroy {
       this.subscriptions.push(productSubscription);
     }
   }
-
-  checkInCart(productId: number) {
-    let cartProductsIds: number[] = [];
-
-    const cartSubscription = this.store
-      .select(CartSelectors.selectCartProducts)
-      .pipe(map((products) => products.map((product) => product.id)))
-      .subscribe((ids) => {
-        cartProductsIds = ids;
+  checkInCart() {
+    const cartSubscription = this.productId$
+      .pipe(
+        switchMap((productId) =>
+          this.store.select(CartSelectors.selectCartProducts).pipe(
+            map((products) => products.map((product) => product.id)),
+            map((cartProductsIds) =>
+              cartProductsIds.includes(Number(productId))
+            )
+          )
+        )
+      )
+      .subscribe((isInCart) => {
+        this.isInCart = isInCart;
       });
-
-    this.isInCart = cartProductsIds.includes(productId);
 
     this.subscriptions.push(cartSubscription);
   }
 
   ngOnDestroy(): void {
+    this.store.dispatch(ProductActions.clearProductState());
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }

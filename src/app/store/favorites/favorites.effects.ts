@@ -2,10 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { AppState } from '../app.state';
-import { FavoritesService } from '@app/core/services/favorites.service';
 import { ProductService } from '@app/core/services/product.service';
 
-import * as FavoritesActions from '../favorites/favorites.action';
+import * as FavoritesActions from './favorites.actions';
 import * as FavoritesSelectors from '../favorites/favorites.selectors';
 import * as UserSelectors from '../user/user.selectors';
 
@@ -13,34 +12,36 @@ import {
   catchError,
   concatMap,
   exhaustMap,
+  filter,
   map,
   of,
   switchMap,
   take,
 } from 'rxjs';
-import { IFavoriteProduct } from '@app/shared/models/favorite.model';
-import { IProduct } from '@app/shared/models/product.model';
+import { DatabaseService } from '@app/core/services/database.service';
+import { FirebaseError } from 'firebase/app';
 
 @Injectable()
 export class FavoritesEffects {
   private actions$ = inject(Actions);
   private store = inject(Store<AppState>);
-  private favoritesService = inject(FavoritesService);
+  private databaseService = inject(DatabaseService);
   private productsService = inject(ProductService);
 
   loadAllFavorites$ = createEffect(() =>
     this.actions$.pipe(
       ofType(FavoritesActions.loadAllFavorites),
       switchMap(() => this.store.select(UserSelectors.selectEmail)),
+      filter((email) => !!email),
       exhaustMap((email) =>
-        this.favoritesService.getAllFavoritesProducts(email!).pipe(
+        this.databaseService.getAllFavoritesProducts(email!).pipe(
           map((favorites) =>
             FavoritesActions.loadAllFavoritesSuccess({ favorites })
           ),
-          catchError((error) =>
+          catchError((error: FirebaseError) =>
             of(
               FavoritesActions.loadAllFavoritesFailure({
-                errorMessage: `Error during favorite products loading: ${error.message}`,
+                errorMessage: error.message,
               })
             )
           )
@@ -59,7 +60,7 @@ export class FavoritesEffects {
             this.store.select(UserSelectors.selectEmail).pipe(
               take(1),
               concatMap((email) =>
-                this.favoritesService
+                this.databaseService
                   .setFavoriteProduct(favoriteItem, email!, recordName)
                   .pipe(
                     switchMap(() =>
@@ -75,7 +76,7 @@ export class FavoritesEffects {
                           )
                         )
                     ),
-                    catchError((error) =>
+                    catchError((error: FirebaseError) =>
                       of(
                         FavoritesActions.addToFavoritesFailure({
                           errorMessage: error.message,
@@ -98,32 +99,30 @@ export class FavoritesEffects {
         return this.store.select(UserSelectors.selectEmail).pipe(
           take(1),
           concatMap((email) =>
-            this.favoritesService
-              .deleteFavoriteProduct(email!, favoriteId)
-              .pipe(
-                switchMap(() =>
-                  this.store.select(FavoritesSelectors.selectFavorites).pipe(
-                    take(1),
-                    map((favorites) => {
-                      return favorites.filter(
-                        (favorite) => favorite.favoriteId !== favoriteId
-                      );
-                    }),
-                    map((completeFavorites) =>
-                      FavoritesActions.removeFromFavoritesSuccess({
-                        favorites: completeFavorites,
-                      })
-                    )
-                  )
-                ),
-                catchError((error) =>
-                  of(
-                    FavoritesActions.removeFromFavoritesFailure({
-                      errorMessage: error.message,
+            this.databaseService.deleteFavoriteProduct(email!, favoriteId).pipe(
+              switchMap(() =>
+                this.store.select(FavoritesSelectors.selectFavorites).pipe(
+                  take(1),
+                  map((favorites) => {
+                    return favorites.filter(
+                      (favorite) => favorite.favoriteId !== favoriteId
+                    );
+                  }),
+                  map((completeFavorites) =>
+                    FavoritesActions.removeFromFavoritesSuccess({
+                      favorites: completeFavorites,
                     })
                   )
                 )
+              ),
+              catchError((error: FirebaseError) =>
+                of(
+                  FavoritesActions.removeFromFavoritesFailure({
+                    errorMessage: error.message,
+                  })
+                )
               )
+            )
           )
         );
       })

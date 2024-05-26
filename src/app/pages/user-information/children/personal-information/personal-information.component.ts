@@ -5,7 +5,6 @@ import {
   inject,
   OnDestroy,
   OnInit,
-  Renderer2,
   ViewChild,
 } from '@angular/core';
 import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
@@ -13,17 +12,7 @@ import { userInformationContent } from '../../content/user-information.content';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { UserState } from '@app/store/user/user.reducer';
-import {
-  debounceTime,
-  delay,
-  Observable,
-  of,
-  Subscription,
-  switchMap,
-  take,
-  tap,
-  timer,
-} from 'rxjs';
+import { Observable, of, Subscription, switchMap, take, timer } from 'rxjs';
 import { IStoreUserCredential, IUser } from '@app/shared/models/user.model';
 
 import * as UserSelectors from '@store/user/user.selectors';
@@ -80,7 +69,6 @@ export class PersonalInformationComponent
   private authService = inject(AuthService);
   private storageService = inject(StorageService);
   private modalService = inject(BsModalService);
-  private renderer = inject(Renderer2);
   private fb = inject(FormBuilder);
 
   bsModalRef?: BsModalRef;
@@ -130,8 +118,10 @@ export class PersonalInformationComponent
       this.userPhotoURL = user?.userCredential?.providerData[0].photoURL!;
     });
 
-    timer(2000).subscribe(() => (this.personalInformationLoading = false));
-    this.subscriptions.push(userSubscription);
+    const timerSubscription = timer(2000).subscribe(
+      () => (this.personalInformationLoading = false)
+    );
+    this.subscriptions.push(userSubscription, timerSubscription);
   }
 
   ngAfterViewInit(): void {
@@ -202,18 +192,10 @@ export class PersonalInformationComponent
           this.store.dispatch(UserActions.getUser());
           this.buttonCancelEffects();
           this.updateLocalStorageData();
-          this.pushNewAlert({
-            type: 'success',
-            timeout: 5000,
-            msg: 'Image was successfully changed!',
-          });
+          this.pushNewAlert('Image was successfully changed!');
         },
         error: (error) => {
-          this.pushNewAlert({
-            type: 'danger',
-            timeout: 5000,
-            msg: error.message,
-          });
+          this.pushNewAlert(error.message);
         },
       });
 
@@ -319,34 +301,21 @@ export class PersonalInformationComponent
           this.authService
             .updatePassword(this.changePasswordForm.value.password)
             .then((value: string) => {
-              this.pushNewAlert({
-                type: 'success',
-                timeout: 5000,
-                msg: value,
-              });
+              this.pushNewAlert(value);
               this.passwordControl.reset();
             });
         } else {
-          this.pushNewAlert({
-            type: 'success',
-            timeout: 5000,
-            msg: 'User reauthenticated',
-          });
+          this.pushNewAlert('User reauthenticated');
           this.wasUserReauthenticated = true;
         }
       } else {
         if (this.reauthModal.isSuccessReauthentication === null) {
-          this.pushNewAlert({
-            type: 'danger',
-            timeout: 5000,
-            msg: "You've closed the modal window.",
-          });
+          this.pushNewAlert("You've closed the modal window.", 'danger');
         } else if (this.reauthModal.isSuccessReauthentication === false) {
-          this.pushNewAlert({
-            type: 'danger',
-            timeout: 5000,
-            msg: 'Incorrect user credential. Try one more time.',
-          });
+          this.pushNewAlert(
+            'Incorrect user credential. Try one more time.',
+            'danger'
+          );
         }
 
         this.passwordControl.reset();
@@ -363,18 +332,16 @@ export class PersonalInformationComponent
     this.alerts = [];
     this.wasEmailVerificationSent = true;
     this.store.dispatch(UserActions.sendEmailVerification());
-    this.pushNewAlert({
-      type: 'info',
-      timeout: 5000,
-      msg: 'Email verification was sent to your email. Please check it.',
-    });
+    this.pushNewAlert(
+      'Email verification was sent to your email. Please check it.',
+      'info'
+    );
   }
 
-  pushNewAlert(alert: AlertType) {
-    this.alerts.push(alert);
+  pushNewAlert(msg: string, type: 'success' | 'danger' | 'info' = 'success') {
+    this.alerts.push({ timeout: 5000, type, msg });
   }
 
-  // password form
   get passwordControl() {
     return this.changePasswordForm.get('password') as FormControl;
   }
@@ -409,7 +376,6 @@ export class PersonalInformationComponent
     this.isPasswordChangeMode = false;
     this.changePasswordForm.reset();
   }
-  // password form
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());

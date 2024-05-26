@@ -1,3 +1,4 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
@@ -6,18 +7,6 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
-import { RoutingService } from '@app/core/services/routing.service';
-
-import { userInformationSidebar } from '@app/shared/utils/icons.utils';
-import { AppState } from '@app/store/app.state';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { Store } from '@ngrx/store';
-import { TabsModule } from 'ngx-bootstrap/tabs';
-
-import * as UserSelectors from '@store/user/user.selectors';
-import * as PurchaseActions from '@store/purchase/purchase.actions';
-import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
-import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import {
   combineLatest,
   map,
@@ -28,18 +17,37 @@ import {
   take,
   tap,
 } from 'rxjs';
-import { IUser } from '@app/shared/models/user.model';
-import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
-import * as UserActions from '@store/user/user.actions';
-import { LS_AUTH_ITEM_NAME } from '@app/core/constants/auth.constants';
+import { Store } from '@ngrx/store';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
-import { IProduct } from '@app/shared/models/product.model';
-import { IUserTransactionsData } from '@app/shared/models/purchase.model';
-import { CheckoutService } from '@app/core/services/checkout.service';
-import { ISidebarModal } from './models/sidebar-modal.model';
-import { SidebarProfileModalComponent } from './components/sidebar-profile-modal/sidebar-profile-modal.component';
-import { AlertType } from '@app/shared/models/alerts.model';
+
+// components
 import { AlertComponent } from '@app/shared/components/alert/alert.component';
+import { userInformationSidebar } from '@app/shared/utils/icons.utils';
+import { SidebarProfileModalComponent } from './components/sidebar-profile-modal/sidebar-profile-modal.component';
+
+// created ngrx stuff
+import { AppState } from '@app/store/app.state';
+import * as UserSelectors from '@store/user/user.selectors';
+import * as PurchaseActions from '@store/purchase/purchase.actions';
+import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
+import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
+import * as UserActions from '@store/user/user.actions';
+
+// interfaces and types
+import { IUser } from '@app/shared/models/user.model';
+import { AlertType } from '@app/shared/models/alerts.model';
+import { ISidebarModal } from './models/sidebar-modal.model';
+
+// pipes
+import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
+
+// services
+import { CheckoutService } from '@app/core/services/checkout.service';
+
+// constants
+import { LS_AUTH_ITEM_NAME } from '@app/core/constants/auth.constants';
 
 @Component({
   selector: 'app-user-information',
@@ -64,7 +72,6 @@ export class UserInformationComponent implements OnInit, OnDestroy {
 
   private store = inject(Store<AppState>);
   private router = inject(Router);
-  private routingService = inject(RoutingService);
   private modalService = inject(BsModalService);
   private checkoutService = inject(CheckoutService);
 
@@ -77,10 +84,6 @@ export class UserInformationComponent implements OnInit, OnDestroy {
   alerts: AlertType[] = [];
   private subscriptions: Subscription[] = [];
   private modalClasses = 'modal-dialog modal-dialog-centered';
-
-  private initializePreviousRoute(): void {
-    this.previousRoute = this.routingService.getPreviousUrl() ?? '/';
-  }
 
   private initializeCustomerData(): void {
     const customerSubscription = this.store
@@ -131,7 +134,6 @@ export class UserInformationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.initializePreviousRoute();
     this.initializeCustomerData();
     this.checkStripeFailure();
   }

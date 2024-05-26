@@ -78,5 +78,9 @@ export const productReducer = createReducer(
       products: [],
       errorMessage,
     })
-  )
+  ),
+  on(ProductActions.clearProductState, () => ({
+    products: [],
+    errorMessage: null,
+  }))
 );

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, TemplateRef } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { ISupplementedCharge } from '@app/shared/models/purchase.model';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { PurchaseModalComponent } from '../purchase-modal/purchase-modal.component';

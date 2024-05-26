@@ -11,6 +11,7 @@ import {
   mergeMap,
   Observable,
   of,
+  switchMap,
   take,
   tap,
 } from 'rxjs';
@@ -26,7 +27,8 @@ import { AuthService } from '../../core/authentication/auth.service';
 
 // actions
 import * as UserActions from './user.actions';
-import * as FavoritesActions from '@store/favorites/favorites.action';
+import * as FavoritesActions from '@store/favorites/favorites.actions';
+import * as CartActions from '@store/cart/cart.actions';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 // utils
 import { minimalizeUserCredential } from '../../shared/utils/store.utils';
@@ -45,16 +47,23 @@ export class UserEffects {
       ofType(UserActions.signUp),
       exhaustMap(({ data }) =>
         this.authService.signUp(data).pipe(
-          mergeMap(async (userCredential) => {
-            return UserActions.signUpSuccess({
-              email: userCredential.user.email!,
-              userCredential: await minimalizeUserCredential(userCredential),
-            });
-          }),
+          switchMap((userCredential) =>
+            from(minimalizeUserCredential(userCredential)).pipe(
+              mergeMap((minimalizedUserCredential) => [
+                PurchaseActions.createCustomer({
+                  email: minimalizedUserCredential.providerData[0].email,
+                }),
+                UserActions.signUpSuccess({
+                  email: minimalizedUserCredential.providerData[0].email,
+                  userCredential: minimalizedUserCredential,
+                }),
+              ])
+            )
+          ),
           catchError((error: FirebaseError) =>
             of(
               UserActions.signInManuallyFailure({
-                errorMessage: error.code,
+                errorMessage: error.message,
               })
             )
           )
@@ -85,6 +94,9 @@ export class UserEffects {
             };
 
             return [
+              PurchaseActions.getCustomer({
+                email: userCredential.user.email!,
+              }),
               UserActions.signInManuallySuccess({
                 email: userCredential.user.email!,
                 userCredential: updatedUserCredential,
@@ -125,10 +137,10 @@ export class UserEffects {
               ? of(action, FavoritesActions.loadAllFavorites())
               : of(action)
           ),
-          catchError((error) =>
+          catchError((error: FirebaseError) =>
             of(
               UserActions.signInWithFacebookFailure({
-                errorMessage: 'Error during signing up with Facebook!',
+                errorMessage: error.message,
               })
             )
           )
@@ -157,10 +169,10 @@ export class UserEffects {
               ? of(action, FavoritesActions.loadAllFavorites())
               : of(action)
           ),
-          catchError((error) =>
+          catchError((error: FirebaseError) =>
             of(
               UserActions.signInWithTwitterFailure({
-                errorMessage: 'Error during signing up with Twitter!',
+                errorMessage: error.message,
               })
             )
           )
@@ -189,10 +201,10 @@ export class UserEffects {
               ? of(action, FavoritesActions.loadAllFavorites())
               : of(action)
           ),
-          catchError((error) =>
+          catchError((error: FirebaseError) =>
             of(
               UserActions.signInWithGoogleFailure({
-                errorMessage: 'Error during signing up with Google!',
+                errorMessage: error.message,
               })
             )
           )
@@ -259,7 +271,8 @@ export class UserEffects {
           catchError((error: FirebaseError) =>
             of(
               UserActions.getUserFailure({
-                errorMessage: error.code,
+                // errorMessage: error.code,
+                errorMessage: error.message,
               })
             )
           )
@@ -360,8 +373,17 @@ export class UserEffects {
       ofType(UserActions.signOut),
       exhaustMap(() =>
         this.authService.signOut().pipe(
-          tap(() => sessionStorage.removeItem('transactions')),
-          tap(() => this.store.dispatch(PurchaseActions.clearPurchaseState())),
+          tap(() => {
+            sessionStorage.removeItem('customer');
+            sessionStorage.removeItem('transactions');
+          }),
+          tap(() => {
+            return [
+              this.store.dispatch(PurchaseActions.clearPurchaseState()),
+              this.store.dispatch(FavoritesActions.clearFavoritesState()),
+              this.store.dispatch(CartActions.clearCartState()),
+            ];
+          }),
           map(() => UserActions.signOutSuccess())
         )
       )

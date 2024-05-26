@@ -1,5 +1,5 @@
 <div
-  *ngIf="latestTransaction$ | async as latestTransaction; else error"
+  *ngIf="latestTransaction$ | async as latestTransaction; else errors"
   class="d-flex"
 >
   <ng-container *ngIf="latestTransaction?.products as products">
@@ -93,8 +93,9 @@
     </div>
     <carousel
       [interval]="0"
-      class="d-block w-100 purchase__modal-slider"
+      class="d-block w-100"
       [showIndicators]="false"
+      data-slider="purchase-slider"
     >
       <slide *ngFor="let product of products; let i = index">
         <div class="d-flex flex-column" style="padding: 0 10%">
@@ -112,7 +113,7 @@
                 {{ product.product.name }}
               </h5>
               <div class="purchase-product__modal-slider__wrapper">
-                <carousel class="purchase-product__modal-slider">
+                <carousel data-slider="purchase-product-slider">
                   <slide *ngFor="let image of product.product.images">
                     <img
                       [src]="image"
@@ -151,8 +152,13 @@
     </carousel>
   </ng-container>
 </div>
-<ng-template #error>
-  <div *ngIf="error$ | async as error">
-    <p>{{ error }}</p>
-  </div>
-</ng-template>
+<ng-template #errors>
+  <ng-container *ngIf="!(latestTransaction$ | async) && !(error$ | async)">
+    <h4 class="text-center">You have not made any purchase yet</h4>
+  </ng-container>
+  <ng-container *ngIf="error$ | async">
+    <div>
+      <h4 class="text-center">{{ error$ | async }}</h4>
+    </div>
+  </ng-container></ng-template
+>

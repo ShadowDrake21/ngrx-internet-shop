@@ -20,7 +20,7 @@
               </div>
               <div class="d-flex justify-content-between">
                 <div class="purchases-customer__view-shipping">
-                  <span class="fw-bold">Builling address:</span>
+                  <span class="fw-bold">Billing address:</span>
                   <ul>
                     <li>
                       <span class="fw-bold">Country:</span>
@@ -84,7 +84,7 @@
             </div>
           </div>
         </tab>
-        <tab heading="Edit shipping info">
+        <tab heading="Edit info">
           <div class="pt-3 pb-3">
             <form
               [formGroup]="customerUpdateForm"
@@ -135,6 +135,114 @@
                       customerUpdateForm.controls.description.invalid
                     "
                   />
+                </div>
+              </div>
+              <div class="pt-4 pb-3">
+                <h5 class="pb-1">Billing info</h5>
+                <div
+                  formGroupName="billing"
+                  tooltip=""
+                  triggers=""
+                  #billingTooltip="bs-tooltip"
+                  class="purchases-customer__edit-addresses"
+                >
+                  <div class="form-group">
+                    <label
+                      for="customerCountry"
+                      [style.color]="
+                        customerUpdateForm.controls.billing.invalid ? 'red' : ''
+                      "
+                      >Country (PL/UA)</label
+                    >
+                    <select
+                      class="form-select"
+                      id="customerCountry"
+                      formControlName="country"
+                      [class.error]="
+                        customerUpdateForm.controls.billing.invalid
+                      "
+                    >
+                      <option selected disabled value="0">Country</option>
+                      <option [ngValue]="'PL'">Poland</option>
+                      <option [ngValue]="'UA'">Ukraine</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label
+                      for="customerCity"
+                      [style.color]="
+                        customerUpdateForm.controls.billing.invalid ? 'red' : ''
+                      "
+                      >City</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="customerCity"
+                      placeholder="City"
+                      formControlName="city"
+                      [class.error]="
+                        customerUpdateForm.controls.billing.invalid
+                      "
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label
+                      for="customerLine1"
+                      [style.color]="
+                        customerUpdateForm.controls.billing.invalid ? 'red' : ''
+                      "
+                      >Address line 1</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="customerLine1"
+                      placeholder="Street, PO Box, or company name"
+                      formControlName="line1"
+                      [class.error]="
+                        customerUpdateForm.controls.billing.invalid
+                      "
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label
+                      for="customerLine2"
+                      [style.color]="
+                        customerUpdateForm.controls.billing.invalid ? 'red' : ''
+                      "
+                      >Address line 2</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="customerLine2"
+                      placeholder="Apartment, suite, unit, or building"
+                      formControlName="line2"
+                      [class.error]="
+                        customerUpdateForm.controls.billing.invalid
+                      "
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label
+                      for="customerPostalCode"
+                      [style.color]="
+                        customerUpdateForm.controls.billing.invalid ? 'red' : ''
+                      "
+                      >Postal code</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="customerPostalCode"
+                      placeholder="Postal code"
+                      formControlName="postalCode"
+                      [class.error]="
+                        customerUpdateForm.controls.billing.invalid
+                      "
+                    />
+                  </div>
                 </div>
               </div>
               <div class="pt-4 pb-3">
@@ -199,7 +307,7 @@
                     <h6 class="pb-1">Address info</h6>
                     <div
                       formGroupName="address"
-                      class="purchases-customer__edit-shipping"
+                      class="purchases-customer__edit-addresses"
                     >
                       <div class="form-group">
                         <label
@@ -211,19 +319,18 @@
                           "
                           >Country (PL/UA)</label
                         >
-                        <input
-                          type="text"
-                          class="form-control"
+                        <select
+                          class="form-select"
                           id="customerCountry"
-                          placeholder="Country"
                           formControlName="country"
                           [class.error]="
                             customerUpdateForm.controls.shipping.invalid
                           "
-                          tooltip=""
-                          triggers=""
-                          #shippingCountryTooltip="bs-tooltip"
-                        />
+                        >
+                          <option selected disabled value="0">Country</option>
+                          <option [ngValue]="'PL'">Poland</option>
+                          <option [ngValue]="'UA'">Ukraine</option>
+                        </select>
                       </div>
                       <div class="form-group">
                         <label
@@ -337,8 +444,8 @@
           </div>
         </tab>
       </tabset>
-    </div></ng-container
-  >
+    </div>
+  </ng-container>
 </div>
 <ng-template #loading>
   <div class="d-flex justify-content-center pt-5 pb-5">

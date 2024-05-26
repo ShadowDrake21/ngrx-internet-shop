@@ -1,4 +1,3 @@
-import { IFavoriteProduct } from '@app/shared/models/favorite.model';
 import { IProduct } from '@app/shared/models/product.model';
 import { createAction, props } from '@ngrx/store';
 
@@ -28,7 +27,7 @@ export const addToFavoritesFailure = createAction(
 );
 
 export const removeFromFavorites = createAction(
-  '[Favorites Component] RemoveProductFromFavorites',
+  '[Favorites Component] RemoveFromFavorites',
   props<{ favoriteId: string }>()
 );
 export const removeFromFavoritesSuccess = createAction(
@@ -38,4 +37,7 @@ export const removeFromFavoritesSuccess = createAction(
 export const removeFromFavoritesFailure = createAction(
   '[Favorites Component] RemoveFromFavoritesFailure',
   props<{ errorMessage: string }>()
+);
+export const clearFavoritesState = createAction(
+  '[Favorites Component] ClearFavoritesState'
 );

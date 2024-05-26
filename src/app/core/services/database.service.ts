@@ -9,8 +9,9 @@ import {
   update,
 } from '@angular/fire/database';
 import { ICard } from '@app/shared/models/card.model';
+import { IProduct } from '@app/shared/models/product.model';
 import { IShipping } from '@app/shared/models/purchase.model';
-import { set } from 'firebase/database';
+import { query, set } from 'firebase/database';
 import { from, map, Observable } from 'rxjs';
 
 @Injectable({
@@ -96,6 +97,111 @@ export class DatabaseService {
   deleteCard(customerId: string, cardId: string): Observable<void> {
     return from(
       remove(ref(this.database, `customers/${customerId}/cards/${cardId}`))
+    );
+  }
+
+  setLastViewedProduct(email: string, productName: string) {
+    return from(
+      set(
+        ref(
+          this.database,
+          `basic-info/${email.replace(/[.$#[\]/]/g, '_')}/lastViewedProduct`
+        ),
+        { product: productName }
+      )
+    );
+  }
+
+  getLastViewedProduct(email: string) {
+    return from(
+      get(
+        child(
+          ref(this.database),
+          `basic-info/${email.replace(/[.$#[\]/]/g, '_')}/lastViewedProduct`
+        )
+      )
+    ).pipe(
+      map((snapshot: DataSnapshot) => {
+        let productName = '';
+        if (snapshot.exists()) {
+          productName = snapshot.val().product as string;
+        }
+        return productName;
+      })
+    );
+  }
+
+  getAllFavoritesProducts(email: string): Observable<IProduct[]> {
+    return from(
+      get(
+        child(
+          ref(this.database),
+          `basic-info/${email.replace(/[.$#[\]/]/g, '_')}/favorites/`
+        )
+      )
+    ).pipe(
+      map((snapshot: DataSnapshot) => {
+        let favorites: IProduct[] = [];
+        if (snapshot.exists()) {
+          snapshot.forEach((childSnapshot) => {
+            const favoriteData = childSnapshot.val() as IProduct;
+            favorites.push(favoriteData);
+          });
+        }
+        return favorites;
+      })
+    );
+  }
+
+  setFavoriteProduct(
+    product: IProduct,
+    email: string,
+    recordName: string
+  ): Observable<void> {
+    return from(
+      set(
+        ref(
+          this.database,
+          `basic-info/${email.replace(
+            /[.$#[\]/]/g,
+            '_'
+          )}/favorites/${recordName}`
+        ),
+        product
+      )
+    );
+  }
+
+  searchFavoriteProduct(email: string, id: string) {
+    const favoriteProductQuery = query(
+      ref(
+        this.database,
+        `basic-info/${email.replace(/[.$#[\]/]/g, '_')}/favorites/${id}`
+      )
+    );
+
+    return from(
+      get(favoriteProductQuery).then((snapshot) => {
+        if (!snapshot.exists()) {
+          return null;
+        } else {
+          return snapshot.val() as IProduct;
+        }
+      })
+    );
+  }
+
+  deleteFavoriteProduct(email: string, favoriteId: string): Observable<void> {
+    return from(
+      remove(
+        ref(
+          this.database,
+          `basic-info/${email.replace(
+            /[.$#[\]/]/g,
+            '_'
+          )}/favorites/${favoriteId}`
+        )
+      )
     );
   }
 }

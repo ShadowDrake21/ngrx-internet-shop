@@ -3,7 +3,6 @@ import { BasicCardComponent } from '../../components/basic-card/basic-card.compo
 import { userInformationContent } from '../../content/user-information.content';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { Store } from '@ngrx/store';
-import { FavoritesState } from '@app/store/favorites/favorites.reducer';
 import { debounceTime, map, Observable, Subscription, tap } from 'rxjs';
 import { IProduct } from '@app/shared/models/product.model';
 
@@ -15,6 +14,7 @@ import { SafeHTMLPipe } from '@app/shared/pipes/safe-html.pipe';
 import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
 import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
 import { FavoriteProductsItemComponent } from './components/favorite-products-item/favorite-products-item.component';
+import { AppState } from '@app/store/app.state';
 
 @Component({
   selector: 'app-favorite-products',
@@ -36,7 +36,7 @@ import { FavoriteProductsItemComponent } from './components/favorite-products-it
 export class FavoriteProductsComponent implements OnInit, OnDestroy {
   userInformationItem = userInformationContent[5];
 
-  private store = inject(Store<FavoritesState>);
+  private store = inject(Store<AppState>);
 
   favorites$!: Observable<IProduct[]>;
 
@@ -45,12 +45,14 @@ export class FavoriteProductsComponent implements OnInit, OnDestroy {
   categories: { [categoryName: string]: IProduct[] } = {};
   visibleCategories: { [categoryName: string]: IProduct[] } = {};
 
+  isUserAuthenticate: boolean = false;
   favoritesLoading: boolean = false;
 
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     this.favoritesLoading = true;
+
     this.favorites$ = this.store.select(FavoritesSelectors.selectFavorites);
 
     const favoritesSubscription = this.favorites$

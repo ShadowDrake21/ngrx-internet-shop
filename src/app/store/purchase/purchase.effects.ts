@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { CheckoutService } from '@app/core/services/checkout.service';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe, StripeError } from '@stripe/stripe-js';
 import {
   catchError,
   exhaustMap,
@@ -43,6 +43,27 @@ export class PurchaseEffects {
     { dispatch: false }
   );
 
+  createCustomer$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PurchaseActions.createCustomer),
+      exhaustMap(({ email }) =>
+        this.checkoutService.createCustomer(email).pipe(
+          map((customer) => {
+            sessionStorage.setItem('customer', JSON.stringify(customer));
+            return PurchaseActions.createCustomerSuccess({ customer });
+          }),
+          catchError((error) =>
+            of(
+              PurchaseActions.createCustomerFailure({
+                errorMessage: error.message,
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
   getCurrentCustomer$ = createEffect(() =>
     this.actions$.pipe(
       ofType(PurchaseActions.getCustomer),
@@ -50,6 +71,7 @@ export class PurchaseEffects {
         this.checkoutService.getCustomer(email).pipe(
           map((customer) => {
             if (customer) {
+              sessionStorage.setItem('customer', JSON.stringify(customer));
               return PurchaseActions.getCustomerSuccess({ customer });
             } else {
               return PurchaseActions.getCustomerFailure({
@@ -77,13 +99,14 @@ export class PurchaseEffects {
           return this.checkoutService
             .updateCustomer(customerId, updateObject)
             .pipe(
-              map((customer) =>
-                PurchaseActions.updateCustomerSuccess({ customer })
-              ),
-              catchError((error) =>
+              map((customer) => {
+                sessionStorage.setItem('customer', JSON.stringify(customer));
+                return PurchaseActions.updateCustomerSuccess({ customer });
+              }),
+              catchError((error: StripeError) =>
                 of(
                   PurchaseActions.updateCustomerFailure({
-                    errorMessage: 'Error during user update!',
+                    errorMessage: error.message! ?? 'Error during user update!',
                   })
                 )
               )
@@ -123,13 +146,24 @@ export class PurchaseEffects {
                   transactions,
                 });
               }),
-              catchError((error) =>
+              catchError((error: StripeError) =>
                 of(
                   PurchaseActions.getAllTransactionsFailure({
-                    errorMessage: 'Error during all transactions loading!',
+                    errorMessage:
+                      `Error: ${error.message!}` ??
+                      'Error during all transactions loading!',
                   })
                 )
               )
+            )
+          ),
+          catchError((error: StripeError) =>
+            of(
+              PurchaseActions.getAllTransactionsFailure({
+                errorMessage:
+                  `Error: ${error.message!}` ??
+                  'Error during all transactions loading!',
+              })
             )
           )
         )

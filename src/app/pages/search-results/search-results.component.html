@@ -1,6 +1,5 @@
 <div *ngIf="visibleProducts$ | async as products">
   <div class="container">
-    <app-breadcrumbs [breadcrumbs]="breadcrumbs"></app-breadcrumbs>
     <div class="d-flex flex-column align-items-center">
       <div class="text-center">
         <h2>Product search by name: {{ searchTerm$ | async }}</h2>
