@@ -82,6 +82,7 @@ export class PersonalInformationComponent
 
   updatedUserPhotoFile: File | null = null;
   userPhotoURL: string | null = null;
+  isUserSignInManually: boolean = true;
 
   previousDisplayName: string | null = null;
 
@@ -116,6 +117,8 @@ export class PersonalInformationComponent
 
     const userSubscription = this.user$.subscribe((user) => {
       this.userPhotoURL = user?.userCredential?.providerData[0].photoURL!;
+      this.isUserSignInManually =
+        user?.userCredential?.tokenResult.signInProvider === 'password';
     });
 
     const timerSubscription = timer(2000).subscribe(
@@ -125,7 +128,9 @@ export class PersonalInformationComponent
   }
 
   ngAfterViewInit(): void {
-    this.changeProfile();
+    if (this.isUserSignInManually) {
+      this.changeProfile();
+    }
   }
 
   changeProfile() {
