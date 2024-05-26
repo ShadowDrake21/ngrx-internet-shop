@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { map, Observable, of, switchMap } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 
@@ -13,7 +13,6 @@ import { BreadcrumbsComponent } from '@shared/components/breadcrumbs/breadcrumbs
 
 // interfaces
 import { IFilterFormObj } from '@shared/models/forms.model';
-import { IBreadcrumbs } from '@shared/models/breadcrumbs.model';
 import { IProduct } from '@shared/models/product.model';
 
 // created ngrx stuff
@@ -23,6 +22,8 @@ import * as ProductSelectors from '@store/product/product.selectors';
 
 // utils
 import { ProductsListComponent } from '@shared/components/products-list/products-list.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CategoryService } from '@app/core/services/category.service';
 
 @Component({
   selector: 'app-products',
@@ -33,7 +34,6 @@ import { ProductsListComponent } from '@shared/components/products-list/products
     FormsModule,
     PaginationModule,
     FilterSidebarComponent,
-    BreadcrumbsComponent,
     ProductsListComponent,
   ],
   templateUrl: './products.component.html',
@@ -41,18 +41,30 @@ import { ProductsListComponent } from '@shared/components/products-list/products
 })
 export class ProductsComponent implements OnInit {
   private store = inject(Store<AppState>);
+  private activatedRoute = inject(ActivatedRoute);
+  private router = inject(Router);
+  private categoryService = inject(CategoryService);
 
+  categoryId$!: Observable<number | null>;
   products$!: Observable<IProduct[]>;
 
   filteredProducts$!: Observable<IProduct[]>;
   filteredProductsError$!: Observable<string>;
 
-  breadcrumbs: IBreadcrumbs = {
-    links: ['home'],
-    current: 'Products',
-  };
-
   ngOnInit(): void {
+    this.categoryId$ = this.activatedRoute.queryParams.pipe(
+      map((categoryRoute) => categoryRoute['category'] as string),
+      switchMap((categoryStr) => {
+        if (categoryStr) {
+          return this.categoryService
+            .getCategoryByName(categoryStr)
+            .pipe(map((categoryObj) => categoryObj?.id!));
+        } else {
+          return of(null);
+        }
+      })
+    );
+
     this.store.dispatch(ProductActions.loadProducts());
     this.products$ = this.store.select(ProductSelectors.selectProducts);
   }
@@ -65,5 +77,11 @@ export class ProductsComponent implements OnInit {
   onRestoreProducts() {
     this.store.dispatch(ProductActions.loadProducts());
     this.products$ = this.store.select(ProductSelectors.selectProducts);
+    this.router.navigate([], {
+      queryParams: {
+        category: null,
+      },
+      queryParamsHandling: 'merge',
+    });
   }
 }

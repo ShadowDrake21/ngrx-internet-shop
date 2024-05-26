@@ -71,7 +71,11 @@ export const cartReducer = createReducer(
       products: updatedProducts,
       totalPrice: calcTotalCartPrice(updatedProducts),
     };
-  })
+  }),
+  on(CartActions.clearCartState, () => ({
+    products: [],
+    totalPrice: 0,
+  }))
 );
 
 export function calcTotalCartPrice(products: IProduct[]): number {

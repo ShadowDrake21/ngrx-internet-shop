@@ -102,6 +102,7 @@ export class ReauthenticateModalComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.reauthenticationSubscription.unsubscribe();
+    if (this.reauthenticationSubscription)
+      this.reauthenticationSubscription.unsubscribe();
   }
 }

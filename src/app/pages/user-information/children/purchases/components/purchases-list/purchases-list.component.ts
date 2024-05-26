@@ -1,32 +1,10 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  inject,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ISupplementedCharge } from '@app/shared/models/purchase.model';
-import { PurchaseState } from '@app/store/purchase/purchase.reducer';
-import { Store } from '@ngrx/store';
-import * as PurchaseActions from '@store/purchase/purchase.actions';
-import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
-import {
-  delay,
-  finalize,
-  map,
-  Observable,
-  of,
-  Subscription,
-  take,
-  tap,
-} from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { PurchaseThumbnailComponent } from '../purchase-thumbnail/purchase-thumbnail.component';
 import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { AppState } from '@app/store/app.state';
-import Stripe from 'stripe';
 
 @Component({
   selector: 'app-purchases-list',

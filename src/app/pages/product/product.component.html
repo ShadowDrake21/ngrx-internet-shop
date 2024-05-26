@@ -11,7 +11,12 @@
       <h1 class="card-title">{{ product.title }}</h1>
       <h4>
         Category:
-        <a href="#" class="text-dark">{{ product.category.name }}</a>
+        <a
+          routerLink="/products"
+          [queryParams]="{ category: product.category.name }"
+          class="text-dark"
+          >{{ product.category.name }}</a
+        >
       </h4>
       <p class="mb-1">{{ product.description | truncateText : 400 }}</p>
       <div class="fs-4 mb-3">
@@ -23,14 +28,16 @@
           *ngIf="(source$ | async) === 'api'"
           class="btn btn-primary"
           (click)="onAddToCart(product)"
-          [disabled]="isInCart"
+          [disabled]="isInCart || !isAuthorizedGuest"
         >
           {{ isInCart ? "Added to cart" : "Add to cart" }}
-          <fa-icon [icon]="cartAdd"></fa-icon></button
-        ><button
+          <fa-icon [icon]="cartAdd"></fa-icon>
+        </button>
+        <button
           class="btn btn-danger text-light"
           (click)="onToggleToFavourites(product.id)"
           [class.inFavorites]="isInFavorites"
+          [disabled]="!isAuthorizedGuest"
         >
           @if (isInFavorites) { Remove from favorites
           <fa-icon [icon]="favoriteRemove"></fa-icon>

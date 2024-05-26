@@ -1,12 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IShipping } from '@app/shared/models/purchase.model';
 import { changeDetailsIcons } from '@app/shared/utils/icons.utils';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';

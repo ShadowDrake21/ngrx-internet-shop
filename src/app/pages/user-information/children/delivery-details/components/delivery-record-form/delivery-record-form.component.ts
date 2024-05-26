@@ -61,7 +61,7 @@ export class DeliveryRecordFormComponent
       Validators.required,
     ]),
     address: new FormGroup({
-      country: new FormControl('0', [Validators.required]),
+      country: new FormControl('0', Validators.required),
       city: new FormControl('', Validators.required),
       line1: new FormControl('', Validators.required),
       line2: new FormControl('', Validators.required),

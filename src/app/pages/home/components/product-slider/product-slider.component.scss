@@ -1,7 +1,10 @@
 .product-slider {
-  padding-bottom: 60px;
-  margin-left: 0;
-  margin-right: 0;
+  &__wrapper {
+    padding-bottom: 60px;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
   &__slide {
     &-blackout {
       position: absolute;

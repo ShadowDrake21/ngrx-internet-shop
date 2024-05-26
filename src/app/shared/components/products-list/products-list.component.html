@@ -1,5 +1,4 @@
 <div class="container">
-  <app-breadcrumbs [breadcrumbs]="breadcrumbs"></app-breadcrumbs>
   <h1 *ngIf="title" class="text-center mb-3">{{ title }}</h1>
   <div class="d-flex">
     <ng-content></ng-content>
@@ -35,10 +34,12 @@
     "
   >
     <pagination
+      #paginationComponent
       [totalItems]="(listProducts$ | async)!.length"
       (pageChanged)="pageChanged($event)"
       [itemsPerPage]="itemsPerPage"
       [maxSize]="maxSize"
+      [(ngModel)]="currentPage"
     ></pagination>
   </div>
   @if (productError$ | async) {

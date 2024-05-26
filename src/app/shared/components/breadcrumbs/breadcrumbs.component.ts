@@ -1,10 +1,10 @@
 // angular stuff
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 // interfaces
-import { IBreadcrumbs } from '../../models/breadcrumbs.model';
+import { BreadcrumbService } from '@app/core/services/breadcrumb.service';
 
 @Component({
   selector: 'app-breadcrumbs',
@@ -13,6 +13,14 @@ import { IBreadcrumbs } from '../../models/breadcrumbs.model';
   templateUrl: './breadcrumbs.component.html',
   styleUrl: './breadcrumbs.component.scss',
 })
-export class BreadcrumbsComponent {
-  @Input({ required: true }) breadcrumbs!: IBreadcrumbs;
+export class BreadcrumbsComponent implements OnInit {
+  private breadcrumbService = inject(BreadcrumbService);
+
+  breadcrumbs: Array<{ label: string; url: string }> = [];
+
+  ngOnInit(): void {
+    this.breadcrumbService.breadcrumbs$.subscribe((breadcrumbs) => {
+      this.breadcrumbs = breadcrumbs;
+    });
+  }
 }

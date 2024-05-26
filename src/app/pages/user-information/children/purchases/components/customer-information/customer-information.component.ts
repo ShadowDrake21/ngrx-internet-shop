@@ -8,28 +8,22 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  AbstractControl,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { AppState } from '@app/store/app.state';
 import { Store } from '@ngrx/store';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { TooltipDirective, TooltipModule } from 'ngx-bootstrap/tooltip';
-import { delay, Observable, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import Stripe from 'stripe';
 
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import { IPurchaseUpdate } from '@app/shared/models/purchase.model';
 import { errorMessages } from './constants/errors.constants';
-import {
-  allFieldsFilled,
-  shippingFieldsValidator,
-} from './utils/formValidators.utils';
+import { shippingFieldsValidator } from './utils/formValidators.utils';
 import {
   countryCodePattern,
   phonePattern,
@@ -50,6 +44,7 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
   @ViewChild('nameTooltip') nameTooltip!: TooltipDirective;
   @ViewChild('descriptionTooltip') descriptionTooltip!: TooltipDirective;
   @ViewChild('shippingTooltip') shippingTooltip!: TooltipDirective;
+  @ViewChild('billingTooltip') billingTooltip!: TooltipDirective;
   @ViewChild('shippingNameTooltip') shippingNameTooltip!: TooltipDirective;
   @ViewChild('shippingPhoneTooltip') shippingPhoneTooltip!: TooltipDirective;
   @ViewChild('shippingCountryTooltip')
@@ -68,15 +63,25 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
       Validators.minLength(10),
       Validators.maxLength(100),
     ]),
+    billing: new FormGroup(
+      {
+        country: new FormControl('0'),
+        city: new FormControl(''),
+        line1: new FormControl(''),
+        line2: new FormControl(''),
+        postalCode: new FormControl(''),
+      },
+      { validators: shippingFieldsValidator() }
+    ),
     shipping: new FormGroup(
       {
         name: new FormControl('', [
           Validators.minLength(3),
           Validators.maxLength(40),
         ]),
-        phone: new FormControl('', [Validators.pattern(phonePattern)]),
+        phone: new FormControl('', Validators.pattern(phonePattern)),
         address: new FormGroup({
-          country: new FormControl('', Validators.pattern(countryCodePattern)),
+          country: new FormControl('0'),
           city: new FormControl(''),
           line1: new FormControl(''),
           line2: new FormControl(''),
@@ -125,6 +130,14 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
       'length'
     );
 
+    const billingGroup = this.customerUpdateForm.controls.billing;
+    this.validateCustomerUpdateFormControl(
+      billingGroup,
+      this.billingTooltip,
+      errorMessages[2],
+      'custom'
+    );
+
     const shippingGroup = this.customerUpdateForm.controls.shipping;
     this.validateCustomerUpdateFormControl(
       shippingGroup,
@@ -148,16 +161,6 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
       shippingPhoneControl,
       this.shippingPhoneTooltip,
       errorMessages[3],
-      'pattern'
-    );
-
-    const shippingCountryControl =
-      this.customerUpdateForm.controls.shipping.controls.address.controls
-        .country;
-    this.validateCustomerUpdateFormControl(
-      shippingCountryControl,
-      this.shippingCountryTooltip,
-      errorMessages[4],
       'pattern'
     );
   }
@@ -217,11 +220,18 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
     this.customerUpdateForm.patchValue({
       name: customer.name,
       description: customer.description,
+      billing: {
+        country: customer.address?.country || '0',
+        city: customer.address?.city,
+        line1: customer.address?.line1,
+        line2: customer.address?.line2,
+        postalCode: customer.address?.postal_code,
+      },
       shipping: {
         name: customer.shipping?.name,
         phone: customer.shipping?.phone,
         address: {
-          country: customer.shipping?.address!.country,
+          country: customer.shipping?.address!.country || '0',
           city: customer.shipping?.address!.city,
           line1: customer.shipping?.address!.line1,
           line2: customer.shipping?.address!.line2,
@@ -236,6 +246,15 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
     let updateObject: IPurchaseUpdate = {
       name: formValues.name ?? undefined,
       description: formValues.description ?? undefined,
+      address: formValues.billing
+        ? {
+            country: formValues.billing!.country!,
+            city: formValues.billing!.city!,
+            line1: formValues.billing!.line1!,
+            line2: formValues.billing!.line2!,
+            postal_code: formValues.billing!.postalCode!,
+          }
+        : undefined,
       shipping: formValues.shipping
         ? {
             name: formValues.shipping.name!,

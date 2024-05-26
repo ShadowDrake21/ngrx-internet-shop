@@ -67,3 +67,6 @@ export const loadProductsByCategoryFailure = createAction(
   '[Products Component] LoadProductsByCategoryFailure',
   props<{ errorMessage: string }>()
 );
+export const clearProductState = createAction(
+  '[Products Component] ClearProductState'
+);

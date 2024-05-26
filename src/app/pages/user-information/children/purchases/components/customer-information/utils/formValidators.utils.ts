@@ -14,7 +14,7 @@ export function shippingFieldsValidator(): ValidatorFn {
         if (control instanceof FormGroup) {
           return anyNestedFieldFilled(control);
         } else {
-          return control.value !== undefined && control.value !== '';
+          return isFieldFilled(control);
         }
       }
     );
@@ -35,7 +35,7 @@ function anyNestedFieldFilled(formGroup: FormGroup): boolean {
     if (control instanceof FormGroup) {
       return anyNestedFieldFilled(control);
     } else {
-      return control.value !== undefined && control.value !== '';
+      return isFieldFilled(control);
     }
   });
 }
@@ -45,7 +45,12 @@ export function allFieldsFilled(formGroup: FormGroup): boolean {
     if (control instanceof FormGroup) {
       return allFieldsFilled(control);
     } else {
-      return control.value !== undefined && control.value !== '';
+      return isFieldFilled(control);
     }
   });
+}
+
+function isFieldFilled(control: AbstractControl): boolean {
+  const value = control.value;
+  return value !== undefined && value !== '' && value !== '0';
 }

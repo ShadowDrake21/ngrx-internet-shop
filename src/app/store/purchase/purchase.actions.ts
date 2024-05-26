@@ -1,4 +1,3 @@
-import { IProduct } from '@app/shared/models/product.model';
 import {
   ICheckoutInit,
   IPurchaseUpdate,
@@ -11,6 +10,19 @@ import Stripe from 'stripe';
 export const initializeCheckout = createAction(
   '[Checkout Component] InitializeCheckout',
   props<{ data: ICheckoutInit }>()
+);
+
+export const createCustomer = createAction(
+  '[Checkout Component] CreateCustomer',
+  props<{ email: string }>()
+);
+export const createCustomerSuccess = createAction(
+  '[Checkout Component] CreateCustomerSuccess',
+  props<{ customer: Stripe.Customer }>()
+);
+export const createCustomerFailure = createAction(
+  '[Checkout Component] CreateCustomerFailure',
+  props<{ errorMessage: string }>()
 );
 
 export const getCustomer = createAction(
@@ -65,7 +77,10 @@ export const getCustomerPaymentMethodsFailure = createAction(
   props<{ customerId: string }>()
 );
 
+export const browserReload = createAction(
+  '[Checkout Component] BrowserReload',
+  props<{ customer: Stripe.Customer }>()
+);
 export const clearPurchaseState = createAction(
   '[Checkout Component] ClearPurchaseState'
 );
-// shipping and so on

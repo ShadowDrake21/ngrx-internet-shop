@@ -1,7 +1,16 @@
 // angular stuff
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { forkJoin, from, map, mergeMap, Observable, of, switchMap } from 'rxjs';
+import {
+  catchError,
+  forkJoin,
+  from,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  switchMap,
+} from 'rxjs';
 
 // interfaces
 import Stripe from 'stripe';
@@ -21,6 +30,7 @@ import {
   ref,
 } from '@angular/fire/database';
 import { equalTo } from 'firebase/database';
+import { ICard } from '@app/shared/models/card.model';
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
@@ -41,7 +51,18 @@ export class CheckoutService {
     return this.http.post('http://localhost:4242/checkout', {
       items: data.products,
       email: data.email,
+      deliveryAddress: data.deliveryAddress,
+      paymentMethodId: data.paymentMethodId,
     });
+  }
+
+  createCustomer(email: string): Observable<Stripe.Customer> {
+    return from(this.stripe.customers.create({ email })).pipe(
+      map((customer) => {
+        const { lastResponse, ...clearCustomer } = customer;
+        return clearCustomer as Stripe.Customer;
+      })
+    );
   }
 
   getCustomer(email: string): Observable<Stripe.Customer | null> {
@@ -55,7 +76,7 @@ export class CheckoutService {
         if ('data' in result) {
           return result.data.length > 0 ? of(result.data[0]) : of(null);
         } else {
-          return of(result); //????
+          return of(result);
         }
       })
     );
@@ -65,8 +86,12 @@ export class CheckoutService {
     customerId: string,
     updateObject: IPurchaseUpdate
   ): Observable<Stripe.Customer> {
-    // lastResponse???
-    return from(this.stripe.customers.update(customerId, updateObject));
+    return from(this.stripe.customers.update(customerId, updateObject)).pipe(
+      map((updatedCustomer) => {
+        const { lastResponse, ...clearUpdatedCustomer } = updatedCustomer;
+        return clearUpdatedCustomer as Stripe.Customer;
+      })
+    );
   }
 
   getAllTransactions(customerId: string): Observable<{
@@ -170,6 +195,47 @@ export class CheckoutService {
     return from(this.stripe.prices.retrieve(priceId)).pipe(
       map((price) => {
         return price as Stripe.Price;
+      })
+    );
+  }
+
+  createPaymentMethod(cardObj: ICard): Observable<string> {
+    return from(
+      this.stripe.tokens.create({
+        card: {
+          name: cardObj.cardHolder,
+          number: cardObj.cardNumber,
+          exp_month: cardObj.expirationMonth,
+          exp_year: cardObj.expirationYear,
+          cvc: cardObj.cvc,
+        },
+      })
+    ).pipe(
+      switchMap((tokenResult) => {
+        if (tokenResult.lastResponse.statusCode !== 200) {
+          throw new Error(
+            'Error creating token: ' + tokenResult.lastResponse.statusCode
+          );
+        }
+        return from(
+          this.stripe.paymentMethods.create({
+            type: 'card',
+            card: { token: tokenResult.id },
+            billing_details: { name: tokenResult.card?.name },
+          })
+        );
+      }),
+      map((paymentMethodResult) => {
+        if (paymentMethodResult.lastResponse.statusCode !== 200) {
+          throw new Error(
+            'Error creating payment method: ' +
+              paymentMethodResult.lastResponse.statusCode
+          );
+        }
+        return paymentMethodResult.id;
+      }),
+      catchError((error) => {
+        throw new Error(error.message);
       })
     );
   }

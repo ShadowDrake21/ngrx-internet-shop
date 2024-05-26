@@ -6,10 +6,9 @@ import { debounceTime, Observable, Subscription, take } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 // services
-import { RoutingService } from '../../core/services/routing.service';
 import { AuthService } from '../../core/authentication/auth.service';
 import { SignInService } from '../../core/services/signIn.service';
 
@@ -19,11 +18,7 @@ import * as UserSelectors from '../../store/user/user.selectors';
 
 // interfaces and types
 import { AlertType } from '../../shared/models/alerts.model';
-import {
-  IStoreUserCredential,
-  IUser,
-  ProviderData,
-} from '../../shared/models/user.model';
+import { IUser } from '../../shared/models/user.model';
 
 // components
 import { AlertComponent } from '../../shared/components/alert/alert.component';
@@ -34,7 +29,6 @@ import { AvailableProvidersModalComponent } from './components/available-provide
 // utils
 import { createAuthInLS } from '../../core/utils/auth.utils';
 import { signInModalIcons } from '../../shared/utils/icons.utils';
-import { IdTokenResult } from 'firebase/auth';
 
 @Component({
   selector: 'app-sign-in',
@@ -58,10 +52,10 @@ export class SignInComponent implements OnInit, OnDestroy {
   icons = signInModalIcons;
 
   private store = inject(Store<UserState>);
-  private routingService = inject(RoutingService);
   private modalService = inject(BsModalService);
   private authService = inject(AuthService);
   private signInService = inject(SignInService);
+  private router = inject(Router);
 
   previousRoute!: string;
   bsModalRef?: BsModalRef;
@@ -83,7 +77,6 @@ export class SignInComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.signInForm = this.signInService.getSignInForm();
-    this.previousRoute = this.routingService.getPreviousUrl() ?? '/';
   }
 
   onFormSubmit() {
@@ -102,7 +95,7 @@ export class SignInComponent implements OnInit, OnDestroy {
             this.signInForm.value.rememberMe!
           );
 
-          this.goToPrevious();
+          this.router.navigate(['/']);
         } else {
           const errorSubscription: Subscription = this.store
             .select(UserSelectors.selectErrorMessage)
@@ -168,7 +161,8 @@ export class SignInComponent implements OnInit, OnDestroy {
           );
         } else if (userState.email && userState.user?.userCredential) {
           createAuthInLS(userState.user.userCredential);
-          this.goToPrevious();
+
+          this.router.navigate(['/']);
           if (this.userStateSubscription) {
             this.userStateSubscription.unsubscribe();
           }
@@ -191,10 +185,6 @@ export class SignInComponent implements OnInit, OnDestroy {
   setModalFeatures(classStr: string) {
     this.bsModalRef?.setClass(classStr);
     this.bsModalRef!.content.closeBtnName = 'Close';
-  }
-
-  goToPrevious() {
-    this.routingService.goToPreviousPage(this.previousRoute);
   }
 
   ngOnDestroy(): void {

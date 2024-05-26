@@ -16,19 +16,26 @@ import { ExpirationModalComponent } from './shared/components/expiration-modal/e
 // created ngrx stuff
 import { AppState } from './store/app.state';
 import * as UserActions from '@store/user/user.actions';
-import * as FavoritesActions from '@store/favorites/favorites.action';
-import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
+import * as UserSelectors from '@store/user/user.selectors';
+import * as FavoritesActions from '@app/store/favorites/favorites.actions';
+import * as PurchaseActions from '@store/purchase/purchase.actions';
 
 // constants
 import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
-import { AlertComponent } from './shared/components/alert/alert.component';
-import { AlertType } from './shared/models/alerts.model';
-import { map, Subject, Subscription, switchMap, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
+import { BreadcrumbsComponent } from './shared/components/breadcrumbs/breadcrumbs.component';
+import Stripe from 'stripe';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, HeaderComponent, FooterComponent],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    HeaderComponent,
+    FooterComponent,
+    BreadcrumbsComponent,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: [BsModalService],
@@ -44,8 +51,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private destroy$$: Subject<void> = new Subject<void>();
 
+  private subscriptions: Subscription[] = [];
+
   ngOnInit(): void {
-    this.getUserFromLS();
+    this.getDataFromStorages();
 
     this.router.events
       .pipe(takeUntil(this.destroy$$))
@@ -62,15 +71,16 @@ export class AppComponent implements OnInit, OnDestroy {
           }
         }
       });
-
     this.store.dispatch(FavoritesActions.loadAllFavorites());
-
     this.checkExpirationTime();
   }
 
-  getUserFromLS() {
+  getDataFromStorages() {
     const userCredential: IStoreUserCredential | null = JSON.parse(
       localStorage.getItem(LS_AUTH_ITEM_NAME)!
+    );
+    const customer: Stripe.Customer | null = JSON.parse(
+      sessionStorage.getItem('customer')!
     );
 
     if (userCredential) {
@@ -81,6 +91,27 @@ export class AppComponent implements OnInit, OnDestroy {
         })
       );
     }
+    if (customer) {
+      this.store.dispatch(PurchaseActions.browserReload({ customer }));
+    } else {
+      this.loadCustomer();
+    }
+  }
+
+  loadCustomer() {
+    const userSubscription = this.store
+      .select(UserSelectors.selectUser)
+      .subscribe((user) => {
+        if (user) {
+          this.store.dispatch(
+            PurchaseActions.getCustomer({
+              email: user.userCredential?.providerData[0].email!,
+            })
+          );
+        }
+      });
+
+    this.subscriptions.push(userSubscription);
   }
 
   checkExpirationTime() {
@@ -102,6 +133,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     this.destroy$$.next();
     this.destroy$$.complete();
   }

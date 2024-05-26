@@ -27,7 +27,8 @@ export class CategoryService {
       map(
         (categories) =>
           categories.find(
-            (category) => category.name.toLowerCase() === categoryName
+            (category) =>
+              category.name.toLowerCase() === categoryName.toLowerCase()
           ) as ICategory | null
       )
     );

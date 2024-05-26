@@ -19,3 +19,4 @@ export const removeProductFromCart = createAction(
   '[Cart Component] RemoveProductFromCart',
   props<{ productId: number }>()
 );
+export const clearCartState = createAction('[Cart Component] ClearCartState');
