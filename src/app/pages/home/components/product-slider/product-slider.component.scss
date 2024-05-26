@@ -33,3 +33,19 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .product-slider__slide-content {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .product-slider__wrapper {
+    padding-bottom: 30px;
+  }
+  .product-slider__slide-image {
+    margin-left: -50%;
+  }
+}

@@ -51,6 +51,10 @@ main {
   width: 100%;
 }
 
+.modal-dialog {
+  padding: 10px;
+}
+
 .product-list {
   list-style: none;
 }
@@ -293,7 +297,6 @@ main {
   }
 
   .modal-dialog {
-    padding: 10px;
     margin: 1.75rem auto;
   }
 

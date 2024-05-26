@@ -12,3 +12,30 @@
     height: 350px;
   }
 }
+
+@media (max-width: 1400px) {
+  .user-sidebar {
+    width: 100%;
+  }
+
+  .user-sidebar__inner {
+    gap: 30px;
+    height: 100%;
+  }
+
+  .user-sidebar__img {
+    height: 700px;
+    max-width: 500px;
+
+    img {
+      object-position: center center;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .user-sidebar__img {
+    height: 500px;
+    max-width: 400px;
+  }
+}
