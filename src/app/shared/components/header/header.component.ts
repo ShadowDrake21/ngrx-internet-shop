@@ -1,4 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -46,11 +53,14 @@ import { LS_AUTH_ITEM_NAME } from '../../../core/constants/auth.constants';
   styleUrl: './header.component.scss',
   providers: [BsModalService],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, AfterViewInit {
   private store = inject(Store<AppState>);
   private modalService = inject(BsModalService);
   private productService = inject(ProductService);
   private router = inject(Router);
+
+  @ViewChild('navbarToggler') navbarToggler!: ElementRef<HTMLButtonElement>;
+  @ViewChild('navbarList') navbarList!: ElementRef<HTMLUListElement>;
 
   cart = faCartShopping;
   signIn = faSignInAlt;
@@ -72,6 +82,15 @@ export class HeaderComponent implements OnInit {
     this.cartProducts$ = this.store.select(CartSelectors.selectCartProducts);
     this.user$ = this.store.select(UserSelectors.selectUser);
     this.searchTypeahead();
+  }
+
+  ngAfterViewInit(): void {
+    const togglerEl = this.navbarToggler.nativeElement;
+    const listEl = this.navbarList.nativeElement;
+
+    listEl.addEventListener('click', (event) => {
+      togglerEl.click();
+    });
   }
 
   searchTypeahead() {
