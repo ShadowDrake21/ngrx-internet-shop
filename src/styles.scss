@@ -275,3 +275,16 @@ main {
 .opacity-0 {
   opacity: 0;
 }
+
+@media (max-width: 992px) {
+  .dropdown.dropdown-menu {
+    max-height: 300px !important;
+    overflow-y: scroll !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .dropdown.dropdown-menu {
+    max-width: 295px;
+  }
+}

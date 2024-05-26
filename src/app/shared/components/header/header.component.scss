@@ -28,3 +28,21 @@
   font-size: 10px;
   color: #fff;
 }
+
+@media (max-width: 992px) {
+  .navbar-container {
+    max-width: 100%;
+  }
+
+  #navbarSupportedContent > ul {
+    padding-top: 10px;
+    & > li {
+      text-align: center;
+    }
+  }
+
+  .dropdown.dropdown-menu {
+    max-height: 400px !important;
+    overflow-y: scroll !important;
+  }
+}
