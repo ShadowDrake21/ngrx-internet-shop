@@ -74,8 +74,8 @@ export class PurchaseEffects {
               sessionStorage.setItem('customer', JSON.stringify(customer));
               return PurchaseActions.getCustomerSuccess({ customer });
             } else {
-              return PurchaseActions.getCustomerFailure({
-                errorMessage: 'The user has not made any purchase',
+              return PurchaseActions.createCustomer({
+                email,
               });
             }
           }),

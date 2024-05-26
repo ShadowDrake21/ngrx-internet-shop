@@ -38,8 +38,6 @@ export class CheckoutService {
   private db = inject(Database);
 
   stripe!: Stripe;
-  email: string | null = null;
-  customer!: Stripe.Customer;
 
   constructor() {
     this.stripe = new Stripe(

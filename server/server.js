@@ -25,18 +25,10 @@ app.post("/checkout", async (req, res, next) => {
     let customer;
     try {
       customer = await stripe.customers.list({ email: email, limit: 1 });
+      customer = customer.data[0];
     } catch (error) {
       next(error);
       return;
-    }
-
-    if (customer.data.length > 0) {
-      customer = customer.data[0];
-      console.log("customer", customer);
-    } else {
-      customer = await stripe.customers.create({
-        email,
-      });
     }
 
     const session = await stripe.checkout.sessions.create({

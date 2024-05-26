@@ -63,16 +63,13 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
       Validators.minLength(10),
       Validators.maxLength(100),
     ]),
-    billing: new FormGroup(
-      {
-        country: new FormControl('0'),
-        city: new FormControl(''),
-        line1: new FormControl(''),
-        line2: new FormControl(''),
-        postalCode: new FormControl(''),
-      },
-      { validators: shippingFieldsValidator() }
-    ),
+    billing: new FormGroup({
+      country: new FormControl('0'),
+      city: new FormControl(''),
+      line1: new FormControl(''),
+      line2: new FormControl(''),
+      postalCode: new FormControl(''),
+    }),
     shipping: new FormGroup(
       {
         name: new FormControl('', [
@@ -291,6 +288,33 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
 
     this.customerUpdateForm.markAsUntouched();
     this.subscriptions.push(customerSubscription);
+  }
+
+  onFormReset() {
+    this.customerUpdateForm.reset({
+      name: '',
+      description: '',
+      billing: {
+        country: '0',
+        city: '',
+        line1: '',
+        line2: '',
+        postalCode: '',
+      },
+      shipping: {
+        name: '',
+        phone: '',
+        address: {
+          country: '0',
+          city: '',
+          line1: '',
+          line2: '',
+          postalCode: '',
+        },
+      },
+    });
+
+    this.customerUpdateForm.markAllAsTouched();
   }
 
   ngOnDestroy(): void {

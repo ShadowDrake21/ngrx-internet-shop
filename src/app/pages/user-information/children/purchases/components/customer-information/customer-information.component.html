@@ -24,23 +24,23 @@
                   <ul>
                     <li>
                       <span class="fw-bold">Country:</span>
-                      {{ customer.address?.country ?? "unknown" }}
+                      {{ customer.address?.country || "unknown" }}
                     </li>
                     <li>
                       <span class="fw-bold">City:</span>
-                      {{ customer.address?.city ?? "unknown" }}
+                      {{ customer.address?.city || "unknown" }}
                     </li>
                     <li>
                       <span class="fw-bold">Address line 1:</span>
-                      {{ customer.address?.line1 ?? "unknown" }}
+                      {{ customer.address?.line1 || "unknown" }}
                     </li>
                     <li>
                       <span class="fw-bold">Address line 2:</span>
-                      {{ customer.address?.line2 ?? "unknown" }}
+                      {{ customer.address?.line2 || "unknown" }}
                     </li>
                     <li>
                       <span class="fw-bold">Postal code:</span>
-                      {{ customer.address?.postal_code ?? "unknown" }}
+                      {{ customer.address?.postal_code || "unknown" }}
                     </li>
                   </ul>
                 </div>
@@ -49,34 +49,34 @@
                   <div class="pt-1">
                     <div class="pb-2">
                       <span class="fw-bold">Name:</span>
-                      {{ customer.shipping?.name ?? "unknown" }}
+                      {{ customer.shipping?.name || "unknown" }}
                     </div>
                     <div class="pb-2">
                       <span class="fw-bold">Phone:</span>
-                      {{ customer.shipping?.phone ?? "unknown" }}
+                      {{ customer.shipping?.phone || "unknown" }}
                     </div>
                   </div>
                   <span class="fw-bold">Shipping address:</span>
                   <ul>
                     <li>
                       <span class="fw-bold">Country:</span>
-                      {{ customer.shipping?.address?.country ?? "unknown" }}
+                      {{ customer.shipping?.address?.country || "unknown" }}
                     </li>
                     <li>
                       <span class="fw-bold">City:</span>
-                      {{ customer.shipping?.address?.city ?? "unknown" }}
+                      {{ customer.shipping?.address?.city || "unknown" }}
                     </li>
                     <li>
                       <span class="fw-bold">Address line 1:</span>
-                      {{ customer.shipping?.address?.line1 ?? "unknown" }}
+                      {{ customer.shipping?.address?.line1 || "unknown" }}
                     </li>
                     <li>
                       <span class="fw-bold">Address line 2:</span>
-                      {{ customer.shipping?.address?.line2 ?? "unknown" }}
+                      {{ customer.shipping?.address?.line2 || "unknown" }}
                     </li>
                     <li>
                       <span class="fw-bold">Postal code:</span>
-                      {{ customer.shipping?.address?.postal_code ?? "unknown" }}
+                      {{ customer.shipping?.address?.postal_code || "unknown" }}
                     </li>
                   </ul>
                 </div>
@@ -436,6 +436,14 @@
                       (click)="onCancelChanges()"
                     >
                       Cancel changes
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-secondary w-100"
+                      [disabled]="customerUpdateForm.pristine"
+                      (click)="onFormReset()"
+                    >
+                      Reset
                     </button>
                   </div>
                 </div>

@@ -35,12 +35,14 @@ import { minimalizeUserCredential } from '../../shared/utils/store.utils';
 import { createAuthInLS } from '@app/core/utils/auth.utils';
 import { Store } from '@ngrx/store';
 import { AppState } from '../app.state';
+import { CheckoutService } from '@app/core/services/checkout.service';
 
 @Injectable()
 export class UserEffects {
   private store = inject(Store<AppState>);
   private actions$ = inject(Actions);
   private authService = inject(AuthService);
+  private checkoutService = inject(CheckoutService);
 
   signUp$ = createEffect(() =>
     this.actions$.pipe(
@@ -134,7 +136,13 @@ export class UserEffects {
           }),
           mergeMap((action) =>
             action.type === UserActions.signInWithFacebookSuccess.type
-              ? of(action, FavoritesActions.loadAllFavorites())
+              ? of(
+                  action,
+                  PurchaseActions.getCustomer({
+                    email: action.email,
+                  }),
+                  FavoritesActions.loadAllFavorites()
+                )
               : of(action)
           ),
           catchError((error: FirebaseError) =>
@@ -166,7 +174,13 @@ export class UserEffects {
           }),
           mergeMap((action) =>
             action.type === UserActions.signInWithTwitterSuccess.type
-              ? of(action, FavoritesActions.loadAllFavorites())
+              ? of(
+                  action,
+                  PurchaseActions.getCustomer({
+                    email: action.email,
+                  }),
+                  FavoritesActions.loadAllFavorites()
+                )
               : of(action)
           ),
           catchError((error: FirebaseError) =>
@@ -198,7 +212,13 @@ export class UserEffects {
           }),
           mergeMap((action) =>
             action.type === UserActions.signInWithGoogleSuccess.type
-              ? of(action, FavoritesActions.loadAllFavorites())
+              ? of(
+                  action,
+                  PurchaseActions.getCustomer({
+                    email: action.email,
+                  }),
+                  FavoritesActions.loadAllFavorites()
+                )
               : of(action)
           ),
           catchError((error: FirebaseError) =>
