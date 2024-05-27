@@ -20,3 +20,38 @@
     right: 0;
   }
 }
+
+@media (max-width: 992px) {
+  .modal-product {
+    gap: 15px;
+  }
+
+  .modal-product-img {
+    max-width: 400px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-product__prices {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 992px) {
+  .modal-product {
+    gap: 15px;
+  }
+
+  .modal-product-img {
+    max-width: 400px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .modal-btns {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+}
