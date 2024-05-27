@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  HostListener,
   inject,
   OnInit,
   ViewChild,
@@ -78,6 +79,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   user$!: Observable<IUser | null>;
   noResult = false;
 
+  windowSize!: number;
+
   ngOnInit(): void {
     this.cartProducts$ = this.store.select(CartSelectors.selectCartProducts);
     this.user$ = this.store.select(UserSelectors.selectUser);
@@ -85,13 +88,28 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const togglerEl = this.navbarToggler.nativeElement;
-    const listEl = this.navbarList.nativeElement;
-
-    listEl.addEventListener('click', (event) => {
-      togglerEl.click();
-    });
+    this.updateNavbarBehavior();
   }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    this.updateNavbarBehavior();
+  }
+
+  private updateNavbarBehavior(): void {
+    this.windowSize = window.innerWidth;
+    const listEl = this.navbarList.nativeElement;
+    if (this.windowSize <= 992) {
+      listEl.addEventListener('click', this.handleListClick);
+    } else {
+      listEl.removeEventListener('click', this.handleListClick);
+    }
+  }
+
+  private handleListClick = (click: Event) => {
+    const togglerEl = this.navbarToggler.nativeElement;
+    togglerEl.click();
+  };
 
   searchTypeahead() {
     this.suggestions$ = new Observable(

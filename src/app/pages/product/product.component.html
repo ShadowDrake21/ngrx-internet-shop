@@ -1,5 +1,7 @@
 <div class="container" *ngIf="product$ | async as product">
-  <div class="d-flex product pb-5">
+  <div
+    class="d-flex product pb-5 flex-column flex-lg-row align-items-center align-items-lg-start"
+  >
     <div class="product-image__slider-wrapper">
       <carousel [noPause]="false">
         <slide *ngFor="let image of product.images">
@@ -7,7 +9,7 @@
         </slide>
       </carousel>
     </div>
-    <div>
+    <div class="text-center text-md-start">
       <h1 class="card-title">{{ product.title }}</h1>
       <h4>
         Category:
@@ -23,14 +25,16 @@
         Price:
         <span class="fw-bold">{{ product.price | currency : "PLN" }}</span>
       </div>
-      <div class="d-flex product-btns">
+      <div
+        class="d-flex justify-content-center justify-content-md-start product-btns"
+      >
         <button
           *ngIf="(source$ | async) === 'api'"
           class="btn btn-primary"
           (click)="onAddToCart(product)"
           [disabled]="isInCart || !isAuthorizedGuest"
         >
-          {{ isInCart ? "Added to cart" : "Add to cart" }}
+          {{ cartBtnText }}
           <fa-icon [icon]="cartAdd"></fa-icon>
         </button>
         <button
@@ -39,9 +43,10 @@
           [class.inFavorites]="isInFavorites"
           [disabled]="!isAuthorizedGuest"
         >
-          @if (isInFavorites) { Remove from favorites
+          {{ favoritesBtnText }}
+          @if (isInFavorites) {
           <fa-icon [icon]="favoriteRemove"></fa-icon>
-          } @else { Add to favorites
+          } @else {
           <fa-icon [icon]="favoriteAdd"></fa-icon>
           }
         </button>
@@ -50,7 +55,7 @@
   </div>
   <div
     *ngIf="product.category as category"
-    class="category-group d-flex align-items-center"
+    class="category-group d-flex align-items-center flex-column flex-xxl-row"
   >
     <div style="max-width: 590px">
       <h4 class="text-center">Category</h4>
@@ -86,11 +91,12 @@
     <div>
       <h4 class="text-center">Similar products</h4>
       <carousel
-        [itemsPerSlide]="2"
+        [itemsPerSlide]="itemsPerSlide"
         [singleSlideOffset]="true"
         [startFromIndex]="0"
         [interval]="0"
         *ngIf="similarProducts$ | async as similarProducts"
+        data-slider="similar-products-slider"
       >
         <slide *ngFor="let item of similarProducts">
           <app-similar-product [item]="item"></app-similar-product>
