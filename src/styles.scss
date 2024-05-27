@@ -101,6 +101,28 @@ main {
   }
 }
 
+[data-slider="similar-products-slider"] .carousel {
+  & .carousel-indicators {
+    display: none;
+  }
+  & .carousel-control-next {
+    right: 40px;
+  }
+  & .carousel-control-prev {
+    left: 40px;
+  }
+  & .carousel-control {
+    height: 32px;
+    width: 32px;
+    transform: translateY(-50%);
+    top: 50%;
+    & .carousel-control-next-icon,
+    & .carousel-control-prev-icon {
+      background-color: #000;
+    }
+  }
+}
+
 [data-slider="favorites-slider"] {
   display: block;
   padding-bottom: 20px;
