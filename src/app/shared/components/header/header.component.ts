@@ -106,7 +106,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private handleListClick = (click: Event) => {
+  private handleListClick = () => {
     const togglerEl = this.navbarToggler.nativeElement;
     togglerEl.click();
   };
@@ -144,6 +144,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   onSearch() {
+    this.handleListClick();
     this.router.navigate(['search-results'], {
       queryParams: { query: this.searchName },
     });

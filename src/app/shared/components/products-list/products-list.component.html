@@ -19,13 +19,13 @@
       </div>
       }} @else{ @if (productError$ | async) {
       <div class="w-100 d-flex align-items-center justify-content-center">
-        <p class="fw-bold fs-3">
+        <p class="fw-bold fs-3 text-center text-md-start">
           {{ productError$ | async }}
         </p>
       </div>
       } @else {
       <div class="w-100 d-flex align-items-center justify-content-center">
-        <p class="fw-bold fs-3">
+        <p class="fw-bold fs-3 text-center text-md-start">
           There is no product that meets these criteria...
         </p>
       </div>

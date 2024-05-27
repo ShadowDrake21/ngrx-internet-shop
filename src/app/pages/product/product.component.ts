@@ -200,7 +200,7 @@ export class ProductComponent implements OnInit, OnDestroy {
       });
 
     this.checkInCart();
-    this.updateBtnsTexts(window.innerWidth);
+
     this.adjustItemsPerSlide();
 
     this.subscriptions.push(
@@ -303,6 +303,7 @@ export class ProductComponent implements OnInit, OnDestroy {
 
           this.subscriptions.push(sourceSubscription);
         }
+        this.updateBtnsTexts(window.innerWidth);
       });
 
     this.subscriptions.push(favoritesSubscription);
@@ -394,7 +395,6 @@ export class ProductComponent implements OnInit, OnDestroy {
   }
 
   private updateBtnsTexts(windowSize: number) {
-    console.log('updateBtnsTexts');
     if (windowSize <= 400) {
       this.cartBtnText = '';
       this.favoritesBtnText = '';
