@@ -23,7 +23,6 @@ import { ProductsCategorySliderItemComponent } from './components/products-categ
 })
 export class ProductsCategorySliderComponent implements OnInit {
   private productService = inject(ProductService);
-  private categoryService = inject(CategoryService);
 
   @Input({ required: true, alias: 'categoryId' }) categoryIdStr!: string;
 
@@ -33,6 +32,12 @@ export class ProductsCategorySliderComponent implements OnInit {
   itemsPerSlide: number = 4;
   singleSlideOffset = true;
 
+  private innerWidth!: number;
+  private mobileBreakpoint: number = 600;
+  private tabletBreakpoint: number = 1000;
+  private desktopBreakpoint: number = 1300;
+  showIndicator: boolean = true;
+
   ngOnInit(): void {
     this.products$ = this.productService.getProductsByCategory(
       parseInt(this.categoryIdStr),
@@ -41,5 +46,28 @@ export class ProductsCategorySliderComponent implements OnInit {
         limit: 15,
       }
     );
+
+    this.adjustItemsPerSlide();
+  }
+
+  private adjustItemsPerSlide() {
+    this.innerWidth = window.innerWidth;
+    if (this.innerWidth < this.mobileBreakpoint) {
+      this.itemsPerSlide = 1;
+      // this.toggleIndicator(false);
+      this.showIndicator = false;
+    } else if (
+      this.innerWidth >= this.mobileBreakpoint &&
+      this.innerWidth < this.tabletBreakpoint
+    ) {
+      this.itemsPerSlide = 2;
+    } else if (
+      this.innerWidth >= this.tabletBreakpoint &&
+      this.innerWidth < this.desktopBreakpoint
+    ) {
+      this.itemsPerSlide = 3;
+    } else {
+      this.itemsPerSlide = 4;
+    }
   }
 }
