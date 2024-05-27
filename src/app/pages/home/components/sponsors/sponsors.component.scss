@@ -1,2 +1,50 @@
 .sponsors {
 }
+
+@media (max-width: 1200px) {
+  .sponsor-list {
+    display: grid !important;
+    text-align: center;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px 20px;
+    grid-template-areas:
+      "sponsor1 sponsor2"
+      "sponsor3 sponsor4"
+      "sponsor5 sponsor6";
+  }
+
+  .sponsor1 {
+    grid-area: sponsor1;
+  }
+  .sponsor2 {
+    grid-area: sponsor2;
+  }
+  .sponsor3 {
+    grid-area: sponsor3;
+  }
+  .sponsor4 {
+    grid-area: sponsor4;
+  }
+  .sponsor5 {
+    grid-area: sponsor5;
+  }
+  .sponsor6 {
+    grid-area: sponsor6;
+  }
+}
+
+@media (max-width: 576px) {
+  .sponsor-list {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    gap: 30px;
+    grid-template-areas:
+      "sponsor1"
+      "sponsor2"
+      "sponsor3"
+      "sponsor4"
+      "sponsor5"
+      "sponsor6";
+  }
+}
