@@ -1,8 +1,14 @@
 <div class="p-4" style="background-color: #e7e7e7">
   <div class="container">
-    <h2 class="text-center fw-bold">{{ "Our sponsors" | titlecase }}</h2>
-    <div class="d-flex justify-content-between align-items-center">
-      <div *ngFor="let sponsor of sponsors" class="sponsor-item">
+    <h2 class="text-center fw-bold pb-3 pb-mb-1">
+      {{ "Our sponsors" | titlecase }}
+    </h2>
+    <div class="d-flex justify-content-between align-items-center sponsor-list">
+      <div
+        *ngFor="let sponsor of sponsors; let i = index"
+        class="sponsor-item"
+        [class]="'sponsor' + (i + 1)"
+      >
         <img
           [ngSrc]="sponsor.url"
           alt="sponsor img"

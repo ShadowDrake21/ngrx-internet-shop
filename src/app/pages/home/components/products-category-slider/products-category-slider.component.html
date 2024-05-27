@@ -1,4 +1,4 @@
-<div *ngIf="products$ | async as products" class="pb-4">
+<div *ngIf="products$ | async as products" style="padding-bottom: 3rem">
   <ng-container *ngIf="products.length; else noProducts">
     <h4 class="text-center pb-2">{{ products[0].category.name }}</h4>
     <ng-container>
