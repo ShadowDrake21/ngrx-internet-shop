@@ -59,6 +59,18 @@ main {
   list-style: none;
 }
 
+.carousel {
+  .carousel-control {
+    height: 32px;
+    width: 32px;
+    transform: translateY(-50%);
+    top: 50%;
+    &.disabled {
+      display: none;
+    }
+  }
+}
+
 [data-slider="product-category-slider"] .carousel {
   & .carousel-indicators {
     background-color: #000;
@@ -76,6 +88,12 @@ main {
     width: 32px;
     transform: translateY(-50%);
     top: 50%;
+    &.disabled {
+      .carousel-control-next-icon,
+      .carousel-control-prev-icon {
+        display: none;
+      }
+    }
     & .carousel-control-next-icon,
     & .carousel-control-prev-icon {
       background-color: #000;
