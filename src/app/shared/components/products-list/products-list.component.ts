@@ -17,11 +17,12 @@ import {
 import { ProductsItemComponent } from '../products-item/products-item.component';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../store/app.state';
-import { map, Observable } from 'rxjs';
+import { filter, map, Observable } from 'rxjs';
 import { IProduct } from '../../models/product.model';
 import { calcPageNum } from '../../utils/pagination.utils';
 import * as CartActions from '../../../store/cart/cart.actions';
 import * as CartSelectors from '../../../store/cart/cart.selectors';
+import * as ProductSelectors from '../../../store/product/product.selectors';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -36,10 +37,10 @@ export class ProductsListComponent implements OnInit, OnChanges {
   private cdr = inject(ChangeDetectorRef);
 
   @Input({ required: true, alias: 'items' }) listProducts$!: Observable<
-    IProduct[]
+    IProduct[] | null
   >;
   @Input() itemsPerPage: number = 6;
-  @Input({ alias: 'colsStyle' }) tableSizeStyle: string = 'row-cols-md-4';
+  @Input({ alias: 'colsStyle' }) tableSizeStyle: string = 'row-cols-md-4 g-4';
   @Input() title!: string;
 
   @ViewChild('paginationComponent')
@@ -64,7 +65,11 @@ export class ProductsListComponent implements OnInit, OnChanges {
     if (changes['listProducts$']) {
       this.currentPage = 1;
       this.visibleProducts$ = this.listProducts$.pipe(
-        map((products) => products.slice(0, this.itemsPerPage))
+        filter((products) => !!products),
+        map((products) => products!.slice(0, this.itemsPerPage))
+      );
+      this.productError$ = this.store.select(
+        ProductSelectors.selectErrorMessage
       );
     }
   }
@@ -78,7 +83,8 @@ export class ProductsListComponent implements OnInit, OnChanges {
   private updateVisibleProducts(start: number, end: number): void {
     setTimeout(() => {
       this.visibleProducts$ = this.listProducts$.pipe(
-        map((products) => products.slice(start, end))
+        filter((products) => !!products),
+        map((products) => products!.slice(start, end))
       );
       this.cdr.detectChanges();
     });
