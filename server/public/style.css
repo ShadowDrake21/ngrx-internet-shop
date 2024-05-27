@@ -9,6 +9,8 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+  line-height: 24px;
 }
 section {
   display: flex;
@@ -104,4 +106,24 @@ button:hover {
   font-size: 20px;
   line-height: 26px;
   margin-top: 15px;
+}
+
+@media (max-width: 1000px) {
+  .info {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 610px) {
+  .info {
+    padding: 10px 15px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  p {
+    text-align: center;
+    padding: 0 10px;
+  }
 }
