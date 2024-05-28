@@ -54,7 +54,6 @@ export class ProductsCategorySliderComponent implements OnInit {
     this.innerWidth = window.innerWidth;
     if (this.innerWidth < this.mobileBreakpoint) {
       this.itemsPerSlide = 1;
-      // this.toggleIndicator(false);
       this.showIndicator = false;
     } else if (
       this.innerWidth >= this.mobileBreakpoint &&

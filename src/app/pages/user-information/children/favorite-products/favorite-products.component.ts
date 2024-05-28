@@ -48,6 +48,12 @@ export class FavoriteProductsComponent implements OnInit, OnDestroy {
   isUserAuthenticate: boolean = false;
   favoritesLoading: boolean = false;
 
+  itemsPerSlide: number = 3;
+
+  private innerWidth!: number;
+  private mobileBreakpoint: number = 600;
+  private desktopBreakpoint: number = 1400;
+
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
@@ -70,6 +76,7 @@ export class FavoriteProductsComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
+    this.adjustItemsPerSlide();
     this.subscriptions.push(favoritesSubscription);
   }
 
@@ -114,6 +121,20 @@ export class FavoriteProductsComponent implements OnInit, OnDestroy {
       this.categories
     ).slice(startItem, endItem)) {
       this.visibleCategories[categoryName] = products;
+    }
+  }
+
+  private adjustItemsPerSlide() {
+    this.innerWidth = window.innerWidth;
+    if (this.innerWidth < this.mobileBreakpoint) {
+      this.itemsPerSlide = 1;
+    } else if (
+      this.innerWidth >= this.mobileBreakpoint &&
+      this.innerWidth < this.desktopBreakpoint
+    ) {
+      this.itemsPerSlide = 2;
+    } else {
+      this.itemsPerSlide = 3;
     }
   }
 
