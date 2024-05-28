@@ -2,21 +2,26 @@
   <app-alert [alerts]="alerts"></app-alert>
   <div class="d-flex user-information__inner">
     <div
-      class="d-flex flex-column flex-shrink-0 bg-light position-relative"
+      class="user-information__wrapper d-flex flex-column flex-shrink-0 bg-light position-relative"
       style="max-width: 280px; width: 100%"
     >
-      <div class="p-3 h-100" style="position: fixed; width: 280px">
-        <div class="w-100 h-100 d-flex flex-column justify-content-between">
-          <div>
+      <div
+        class="user-information__inner-wrapper p-3 h-100"
+        style="position: fixed; width: 280px"
+      >
+        <div
+          class="user-information__nested-inner__wrapper w-100 h-100 d-flex flex-column justify-content-between"
+        >
+          <div class="user-information__top">
             <a
               [routerLink]="['/user-information']"
-              class="d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none"
+              class="user-information__title d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none"
             >
               <span class="fs-4">NgRxShop User mode</span>
             </a>
             <hr />
 
-            <ul class="nav nav-pills flex-column mb-auto">
+            <ul class="nav nav-pills flex-column mb-auto menu">
               <li class="nav-item">
                 <a
                   class="nav-link link-dark"
@@ -24,7 +29,7 @@
                   [routerLinkActive]="['active']"
                 >
                   <fa-icon [icon]="sidebarIcons.faInfo" class="me-3"></fa-icon>
-                  General
+                  <span class="nav-link__title">General</span>
                 </a>
               </li>
               <li>
@@ -37,7 +42,7 @@
                     [icon]="sidebarIcons.faPerson"
                     class="me-3"
                   ></fa-icon>
-                  Personal information
+                  <span class="nav-link__title">Personal information</span>
                 </a>
               </li>
               <li>
@@ -50,7 +55,7 @@
                     [icon]="sidebarIcons.faBasketShopping"
                     class="me-3"
                   ></fa-icon>
-                  Purcheses
+                  <span class="nav-link__title">Purcheses</span>
                 </a>
               </li>
               <li>
@@ -63,7 +68,7 @@
                     [icon]="sidebarIcons.faEarthEurope"
                     class="me-3"
                   ></fa-icon>
-                  Delivery details
+                  <span class="nav-link__title">Delivery details</span>
                 </a>
               </li>
               <li>
@@ -76,7 +81,7 @@
                     [icon]="sidebarIcons.faCreditCard"
                     class="me-3"
                   ></fa-icon>
-                  Card details
+                  <span class="nav-link__title">Card details</span>
                 </a>
               </li>
               <li>
@@ -89,7 +94,7 @@
                     [icon]="sidebarIcons.faHeartCircleCheck"
                     class="me-3"
                   ></fa-icon>
-                  Favorite products
+                  <span class="nav-link__title">Favorite products</span>
                 </a>
               </li>
             </ul>
@@ -135,10 +140,10 @@
               </ul>
             </div>
           </div>
-          <div>
+          <div class="user-information__bottom">
             <div class="text-dark">
               <a
-                class="footer-link text-dark text-decoration-none"
+                class="footer-link text-dark text-decoration-none copyright"
                 target="_blank"
                 href="https://github.com/ShadowDrake21"
               >
@@ -149,14 +154,14 @@
             <hr />
             <a class="nav-link link-dark" routerLink="/">
               <fa-icon [icon]="sidebarIcons.faPowerOff" class="me-3"></fa-icon>
-              Exit user mode
+              <span class="nav-exit__title">Exit user mode</span>
             </a>
           </div>
         </div>
       </div>
     </div>
-    <div class="user-container">
+    <!-- <div class="user-container">
       <router-outlet></router-outlet>
-    </div>
+    </div> -->
   </div>
 </div>
