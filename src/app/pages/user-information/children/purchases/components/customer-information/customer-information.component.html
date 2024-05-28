@@ -5,8 +5,12 @@
       <tabset>
         <tab heading="View all">
           <div class="pt-3 pb-3">
-            <div class="d-flex justify-content-between align-items-center">
-              <h4>{{ customer.email }}</h4>
+            <div
+              class="d-flex justify-content-between align-items-center flex-column flex-md-row text-center text-md-start"
+            >
+              <h4 style="word-break: break-all">
+                {{ customer.email }}
+              </h4>
               <p>Created: {{ customer.created * 1000 | date : "medium" }}</p>
             </div>
             <div>
@@ -18,7 +22,9 @@
                 <span class="fw-bold">Description:</span>
                 {{ customer.description ?? "unknown" }}
               </div>
-              <div class="d-flex justify-content-between">
+              <div
+                class="d-flex justify-content-between flex-column flex-lg-row"
+              >
                 <div class="purchases-customer__view-shipping">
                   <span class="fw-bold">Billing address:</span>
                   <ul>
@@ -91,8 +97,8 @@
               (ngSubmit)="onUpdateSubmit()"
             >
               <h5 class="pb-1">Personal info</h5>
-              <div class="row">
-                <div class="form-group col">
+              <div class="row flex-column flex-sm-row">
+                <div class="form-group col pb-3 pb-sm-0">
                   <label
                     for="customerName"
                     [style.color]="
@@ -253,8 +259,8 @@
                   triggers=""
                   #shippingTooltip="bs-tooltip"
                 >
-                  <div class="row">
-                    <div class="form-group col">
+                  <div class="row flex-column flex-sm-row">
+                    <div class="form-group col pb-3 pb-sm-0">
                       <label
                         for="customerShippingName"
                         [style.color]="

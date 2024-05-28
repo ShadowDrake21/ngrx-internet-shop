@@ -1,27 +1,22 @@
 <div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <span class="fs-5">Last customer purchases</span>
+  <div
+    class="card-header d-flex justify-content-between align-items-start align-items-sm-center flex-column flex-sm-row"
+  >
+    <span class="fs-5 pb-2 pb-sm-0">Last customer purchases</span>
     <span>Number of last purchases: {{ (transactions$ | async)?.length }}</span>
   </div>
   <div class="card-body">
     <div *ngIf="(transactions$ | async)?.length; else noTransactions">
       <ng-container *ngIf="transactions$ | async as transactions">
         <div
-          class="d-flex flex-wrap pb-4"
+          class="d-flex flex-wrap justify-content-center pb-4"
           style="gap: 25px"
-          *ngIf="visibleTransactions$ | async as visibleTransactions"
         >
           <app-purchase-thumbnail
-            *ngFor="let transaction of visibleTransactions"
+            *ngFor="let transaction of transactions"
             [transaction]="transaction"
           ></app-purchase-thumbnail>
         </div>
-        <pagination
-          class="d-flex justify-content-center"
-          [itemsPerPage]="4"
-          [totalItems]="transactions.length"
-          (pageChanged)="pageChanged($event)"
-        ></pagination>
       </ng-container>
     </div>
     <ng-template #noTransactions>

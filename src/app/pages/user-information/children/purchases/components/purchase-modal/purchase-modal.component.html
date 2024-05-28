@@ -1,7 +1,7 @@
 <div>
   <div class="modal-header">
     <div class="w-100 d-flex justify-content-between align-items-center pe-4">
-      <h4 class="modal-title pull-left">{{ title }}</h4>
+      <h4 class="modal-title pull-left d-none d-md-block">{{ title }}</h4>
       <div class="fw-bold">
         {{ transaction?.charge?.amount! / 100 | currency : "PLN" }}
       </div>
@@ -17,10 +17,10 @@
   </div>
   <div class="modal-body">
     <div *ngIf="transaction?.products as products">
-      <div class="d-flex">
+      <div class="d-flex flex-column flex-xxl-row">
         <div
           *ngIf="transaction?.charge as charge"
-          class="flex-shrink-0 border p-3"
+          class="flex-shrink-0 border p-3 purchase-product__modal-slider__info"
         >
           <h5 class="pb-2">Purchase info</h5>
           <p class="fw-bold">
@@ -107,11 +107,13 @@
           [interval]="0"
           [showIndicators]="false"
           data-slider="purchase-slider"
-          class="d-block w-100 purchase__modal-slider"
+          class="d-block w-100 pt-4 pt-xxl-0"
         >
           <slide *ngFor="let product of products; let i = index">
             <div class="d-flex flex-column" style="padding: 0 10%">
-              <div class="d-flex w-100 justify-content-between fw-light">
+              <div
+                class="d-flex w-100 justify-content-between fw-light flex-column flex-md-row align-items-center align-items-md-start text-center text-md-start purchase-product__modal-slider__top"
+              >
                 <p>{{ product.product.id }}</p>
                 <p>
                   Add to the store:
@@ -135,8 +137,7 @@
                   </div>
                 </div>
                 <div
-                  class="d-flex mt-4"
-                  style="height: 80px; flex-direction: column; flex-wrap: wrap"
+                  class="d-flex mt-4 purchase-product__modal-slider__bottom align-items-center align-items-md-start flex-column flex-wrap"
                 >
                   <p class="fw-light">{{ product.price.id }}</p>
                   <p>
