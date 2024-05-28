@@ -14,3 +14,24 @@
   max-height: 500px;
   overflow-y: auto;
 }
+
+.latest-purchase__product-info__top {
+  gap: 0 10px;
+}
+
+.latest-purchase__product-info__bottom {
+  height: 80px;
+  gap: 0 10px;
+}
+
+@media (max-width: 1399px) {
+  .latest-purchase-info {
+    max-height: 250px;
+  }
+}
+
+@media (max-width: 767px) {
+  .latest-purchase__product-info__bottom {
+    height: 100%;
+  }
+}
