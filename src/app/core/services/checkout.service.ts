@@ -98,7 +98,7 @@ export class CheckoutService {
     return from(
       this.stripe.charges.list({
         customer: customerId,
-        limit: 2,
+        limit: 4,
       })
     ).pipe(
       mergeMap((result) => {

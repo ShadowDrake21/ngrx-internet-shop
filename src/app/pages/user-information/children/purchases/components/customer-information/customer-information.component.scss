@@ -16,3 +16,17 @@
     grid-row-gap: 20px;
   }
 }
+
+@media (max-width: 800px) {
+  .purchases-customer__edit-addresses {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 575px) {
+  .purchases-customer__edit-addresses {
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+  }
+}
