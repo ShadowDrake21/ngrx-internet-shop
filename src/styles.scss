@@ -345,3 +345,17 @@ main {
     text-align: center;
   }
 }
+
+@media (max-width: 500px) {
+  [data-slider="purchase-product-slider"] {
+    .carousel {
+      & .carousel-indicators {
+        display: none;
+      }
+
+      & .carousel-control {
+        display: none;
+      }
+    }
+  }
+}

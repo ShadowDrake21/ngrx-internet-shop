@@ -1,0 +1,19 @@
+.user-info__top {
+  gap: 50px;
+}
+
+.user-info__img-wrapper {
+  width: 225px;
+}
+
+@media (max-width: 992px) {
+  .user-info__top {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .user-info__img-wrapper {
+    width: 75%;
+  }
+}
