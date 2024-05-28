@@ -26,3 +26,18 @@
     width: 300px;
   }
 }
+
+@media (max-width: 767px) {
+  .delivery-details__bg-author {
+    top: 10px;
+  }
+
+  .delivery-details__form-inner {
+    width: 100% !important;
+  }
+
+  .delivery-details__form-errors {
+    width: 100% !important;
+    min-height: 100px;
+  }
+}
