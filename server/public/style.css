@@ -1,3 +1,9 @@
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
 body {
   display: flex;
   justify-content: center;
@@ -98,8 +104,8 @@ button:hover {
   border: 1px solid #000;
   width: 700px;
   max-height: 500px;
-  height: 100%;
-  overflow-y: auto;
+
+  overflow-y: scroll;
 }
 
 .go-back-link {
@@ -120,10 +126,26 @@ button:hover {
     padding: 10px 15px;
     justify-content: center;
     align-items: center;
+    height: 500px;
+    overflow-y: hidden;
   }
 
   p {
     text-align: center;
     padding: 0 10px;
+  }
+
+  .info-inner {
+    position: absolute;
+    max-height: 500px;
+    overflow-y: scroll;
+    padding: 10px 35px;
+  }
+}
+
+@media (max-width: 450px) {
+  p {
+    font-size: 16px;
+    line-height: 20px;
   }
 }
