@@ -11,15 +11,9 @@ import { Observable } from 'rxjs';
   templateUrl: './latest-purchase.component.html',
   styleUrl: './latest-purchase.component.scss',
 })
-export class LatestPurchaseComponent implements OnInit {
+export class LatestPurchaseComponent {
   @Input({ alias: 'latestTransaction', required: true })
   latestTransaction$!: Observable<ISupplementedCharge | undefined>;
 
   @Input({ alias: 'error', required: true }) error$!: Observable<string | null>;
-
-  ngOnInit(): void {
-    this.latestTransaction$.subscribe((transaction) => {
-      console.log(transaction);
-    });
-  }
 }

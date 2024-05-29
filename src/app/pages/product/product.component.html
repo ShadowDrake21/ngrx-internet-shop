@@ -34,16 +34,16 @@
           (click)="onAddToCart(product)"
           [disabled]="isInCart || !isAuthorizedGuest"
         >
-          {{ cartBtnText }}
+          {{ isInCart ? "Added to cart" : "Add to cart" }}
           <fa-icon [icon]="cartAdd"></fa-icon>
         </button>
         <button
           class="btn btn-danger text-light"
           (click)="onToggleToFavourites(product.id)"
           [class.inFavorites]="isInFavorites"
-          [disabled]="!isAuthorizedGuest"
+          [disabled]="!isAuthorizedGuest || isProductOfTheDay"
         >
-          {{ favoritesBtnText }}
+          {{ isInFavorites ? "Remove from favorites" : "Add to favorites" }}
           @if (isInFavorites) {
           <fa-icon [icon]="favoriteRemove"></fa-icon>
           } @else {

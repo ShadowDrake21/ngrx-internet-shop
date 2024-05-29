@@ -111,13 +111,11 @@ app.get("/success", async (req, res) => {
   const session = await stripe.checkout.sessions.retrieve(session_id);
   const customer = await stripe.customers.retrieve(session.customer);
   const lineItems = await stripe.checkout.sessions.listLineItems(session_id);
-  console.log(lineItems);
   const minimizeProducts = lineItems.data.map((product) => ({
     price_id: product.price.id,
     product_id: product.price.product,
     quantity: product.quantity,
   }));
-  console.log("session", session);
   const purchaseItem = {
     productsIds: minimizeProducts,
     payment_intent: session.payment_intent,
