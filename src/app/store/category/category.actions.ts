@@ -1,7 +1,8 @@
+// angular stuff
 import { createAction, props } from '@ngrx/store';
 
 // interfaces
-import { ICategory } from '../../shared/models/category.model';
+import { ICategory } from '@models/category.model';
 
 export const loadCategories = createAction(
   '[Categories Component] LoadCategories'

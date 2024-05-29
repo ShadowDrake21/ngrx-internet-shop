@@ -1,8 +1,9 @@
+// angular stuff
 import {
   ICheckoutInit,
   IPurchaseUpdate,
   ISupplementedCharge,
-} from '@app/shared/models/purchase.model';
+} from '@models/purchase.model';
 import { createAction, props } from '@ngrx/store';
 import { PaymentMethod } from '@stripe/stripe-js';
 import Stripe from 'stripe';

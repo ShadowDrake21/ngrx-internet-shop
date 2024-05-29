@@ -16,26 +16,25 @@ import {
   tap,
 } from 'rxjs';
 import { FirebaseError } from 'firebase/app';
+import { Store } from '@ngrx/store';
 
-import {
-  IStoreUserCredential,
-  ProviderData,
-} from '../../shared/models/user.model';
+// interfaces
+import { IStoreUserCredential, ProviderData } from '@models/user.model';
 
 // services
-import { AuthService } from '../../core/authentication/auth.service';
+import { AuthService } from '@core/authentication/auth.service';
+import { CheckoutService } from '@core/services/checkout.service';
 
 // actions
+import { AppState } from '../app.state';
 import * as UserActions from './user.actions';
 import * as FavoritesActions from '@store/favorites/favorites.actions';
 import * as CartActions from '@store/cart/cart.actions';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
+
 // utils
-import { minimalizeUserCredential } from '../../shared/utils/store.utils';
-import { createAuthInLS } from '@app/core/utils/auth.utils';
-import { Store } from '@ngrx/store';
-import { AppState } from '../app.state';
-import { CheckoutService } from '@app/core/services/checkout.service';
+import { minimalizeUserCredential } from '@shared/utils/store.utils';
+import { createAuthInLS } from '@core/utils/auth.utils';
 
 @Injectable()
 export class UserEffects {

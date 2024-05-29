@@ -1,9 +1,11 @@
+// angular stuffs
 import { createReducer, on } from '@ngrx/store';
 
-// actions
+// created ngrx stuff
 import * as FavoritesActions from './favorites.actions';
-import { IFavoriteProduct } from '@app/shared/models/favorite.model';
-import { IProduct } from '@app/shared/models/product.model';
+
+// interfaces
+import { IProduct } from '@models/product.model';
 
 export interface FavoritesState {
   products: IProduct[];

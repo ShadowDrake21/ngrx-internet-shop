@@ -1,19 +1,27 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { IUser } from '@app/shared/models/user.model';
 import { Store } from '@ngrx/store';
-import { filter, Observable, of, Subscription, take } from 'rxjs';
+import { Observable, of, Subscription, take } from 'rxjs';
+import { RouterLink } from '@angular/router';
+
+// interfaces
+import { IUser } from '@models/user.model';
+import { IUserTransactionsData } from '@models/purchase.model';
+import { IProduct } from '@models/product.model';
+
+// created ngrx stuff
+import { AppState } from '@app/store/app.state';
 import * as UserSelectors from '@store/user/user.selectors';
-import * as PurchaseActions from '@store/purchase/purchase.actions';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
-import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
-import { AppState } from '@app/store/app.state';
-import { RouterLink } from '@angular/router';
-import { IUserTransactionsData } from '@app/shared/models/purchase.model';
-import { CheckoutService } from '@app/core/services/checkout.service';
-import { IProduct } from '@app/shared/models/product.model';
-import { DatabaseService } from '@app/core/services/database.service';
+
+// pipes
+import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
+
+// services
+import { CheckoutService } from '@core/services/checkout.service';
+import { DatabaseService } from '@core/services/database.service';
 
 @Component({
   selector: 'app-user-sidebar',

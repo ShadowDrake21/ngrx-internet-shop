@@ -6,8 +6,8 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
 // created ngrx stuff
-import { UserState } from '../../../../store/user/user.reducer';
-import * as UserActions from '../../../../store/user/user.actions';
+import { UserState } from '@store/user/user.reducer';
+import * as UserActions from '@store/user/user.actions';
 
 @Component({
   selector: 'app-reset-password-modal',

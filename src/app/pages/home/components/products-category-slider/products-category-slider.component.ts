@@ -1,13 +1,19 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, inject, Input, OnInit } from '@angular/core';
-import { CategoryService } from '@app/core/services/category.service';
-import { ProductService } from '@app/core/services/product.service';
-import { ProductsItemComponent } from '@app/shared/components/products-item/products-item.component';
-import { ICategory } from '@app/shared/models/category.model';
-import { IProduct } from '@app/shared/models/product.model';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
+
+// services
+import { ProductService } from '@core/services/product.service';
+
+// components
 import { ProductsCategorySliderItemComponent } from './components/products-category-slider-item/products-category-slider-item.component';
+import { ProductsItemComponent } from '@shared/components/products-item/products-item.component';
+
+// interfaces
+import { ICategory } from '@models/category.model';
+import { IProduct } from '@models/product.model';
 
 @Component({
   selector: 'app-products-category-slider',

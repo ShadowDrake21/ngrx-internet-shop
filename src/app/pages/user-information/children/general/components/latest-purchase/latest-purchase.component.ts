@@ -1,8 +1,11 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
-import { ISupplementedCharge } from '@app/shared/models/purchase.model';
-import { CarouselModule } from 'ngx-bootstrap/carousel';
+import { Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
+import { CarouselModule } from 'ngx-bootstrap/carousel';
+
+// interfaces
+import { ISupplementedCharge } from '@models/purchase.model';
 
 @Component({
   selector: 'app-latest-purchase',

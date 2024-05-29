@@ -1,5 +1,8 @@
-import { IProduct } from '@app/shared/models/product.model';
+// angular stuff
 import { createAction, props } from '@ngrx/store';
+
+// interfaces
+import { IProduct } from '@models/product.model';
 
 export const loadAllFavorites = createAction(
   '[Favorites Component] LoadAllFavorites'

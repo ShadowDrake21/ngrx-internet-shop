@@ -1,9 +1,10 @@
+// angular stuff
 import { createReducer, on } from '@ngrx/store';
 
 // interfaces
-import { ICategory } from '../../shared/models/category.model';
+import { ICategory } from '@models/category.model';
 
-// actions
+// created ngrx stuff
 import * as CategoryActions from './category.actions';
 
 export interface CategoryState {

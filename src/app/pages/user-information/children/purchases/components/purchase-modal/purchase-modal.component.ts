@@ -1,8 +1,11 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { ISupplementedCharge } from '@app/shared/models/purchase.model';
-import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { BsModalRef } from 'ngx-bootstrap/modal';
+import { CarouselModule } from 'ngx-bootstrap/carousel';
+
+// interfaces
+import { ISupplementedCharge } from '@models/purchase.model';
 
 @Component({
   selector: 'app-purchase-modal',

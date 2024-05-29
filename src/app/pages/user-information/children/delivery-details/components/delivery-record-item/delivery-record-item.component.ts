@@ -1,8 +1,13 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { IShipping } from '@app/shared/models/purchase.model';
-import { changeDetailsIcons } from '@app/shared/utils/icons.utils';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+//interfaces
+import { IShipping } from '@models/purchase.model';
+
+// utils
+import { changeDetailsIcons } from '@shared/utils/icons.utils';
 
 @Component({
   selector: 'app-delivery-record-item',

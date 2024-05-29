@@ -1,7 +1,10 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { AlertModule } from 'ngx-bootstrap/alert';
-import { AlertType } from '../../models/alerts.model';
+
+// interfaces
+import { AlertType } from '@models/alerts.model';
 
 @Component({
   selector: 'app-alert',

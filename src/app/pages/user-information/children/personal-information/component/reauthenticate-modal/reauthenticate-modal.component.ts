@@ -1,3 +1,4 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -12,12 +13,16 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AuthService } from '@app/core/authentication/auth.service';
-import { SignInService } from '@app/core/services/signIn.service';
-import { minimalizeUserCredential } from '@app/shared/utils/store.utils';
 import { User, UserCredential } from 'firebase/auth';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { concatMap, of, Subscription } from 'rxjs';
+
+// services
+import { AuthService } from '@core/authentication/auth.service';
+import { SignInService } from '@core/services/signIn.service';
+
+// utils
+import { minimalizeUserCredential } from '@shared/utils/store.utils';
 
 @Component({
   selector: 'app-reauthenticate-modal',

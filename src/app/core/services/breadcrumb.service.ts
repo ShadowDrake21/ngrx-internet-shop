@@ -1,4 +1,5 @@
-import { inject, Injectable, OnInit } from '@angular/core';
+// angular stuff
+import { inject, Injectable } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { BehaviorSubject, filter } from 'rxjs';
 
@@ -22,8 +23,6 @@ export class BreadcrumbService {
         this.breadcrumbs$$.next(breadcrumbs);
       });
   }
-
-  // try to do the same by ngrx
 
   private createBreadcrumbs(
     route: ActivatedRoute,

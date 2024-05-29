@@ -1,9 +1,13 @@
+// angular stuff
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { AppState } from '../app.state';
-import { ProductService } from '@app/core/services/product.service';
 
+// services
+import { ProductService } from '@core/services/product.service';
+
+// created ngrx stuff
+import { AppState } from '../app.state';
 import * as FavoritesActions from './favorites.actions';
 import * as FavoritesSelectors from '../favorites/favorites.selectors';
 import * as UserSelectors from '../user/user.selectors';
@@ -18,7 +22,7 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import { DatabaseService } from '@app/core/services/database.service';
+import { DatabaseService } from '@core/services/database.service';
 import { FirebaseError } from 'firebase/app';
 
 @Injectable()

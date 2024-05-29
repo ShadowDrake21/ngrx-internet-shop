@@ -1,12 +1,6 @@
 // angular stuff
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  HostListener,
-  inject,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   filter,
@@ -37,18 +31,20 @@ import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { SimilarProductComponent } from './components/similar-product/similar-product.component';
 
 // interfaces
-import { IProduct } from '../../shared/models/product.model';
+import { IProduct } from '@models/product.model';
 
 // services
-import { ProductService } from '../../core/services/product.service';
+import { ProductService } from '@core/services/product.service';
+import { DatabaseService } from '@core/services/database.service';
+import { ProductManipulationsService } from '@core/services/product-manipulations.service';
 
 // pipes
-import { SafeHTMLPipe } from '../../shared/pipes/safe-html.pipe';
-import { ClearURLPipe } from '../../shared/pipes/clear-url.pipe';
-import { TruncateTextPipe } from '../../shared/pipes/truncate-text.pipe';
+import { SafeHTMLPipe } from '@shared/pipes/safe-html.pipe';
+import { ClearURLPipe } from '@shared/pipes/clear-url.pipe';
+import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
 
 // created ngrx stuff
-import { AppState } from '../../store/app.state';
+import { AppState } from '@store/app.state';
 import * as UserSelectors from '@store/user/user.selectors';
 import * as ProductActions from '@store/product/product.actions';
 import * as CartActions from '@store/cart/cart.actions';
@@ -56,8 +52,6 @@ import * as ProductSelectors from '@store/product/product.selectors';
 import * as CartSelectors from '@store/cart/cart.selectors';
 import * as FavoritesActions from '@app/store/favorites/favorites.actions';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
-import { ProductManipulationsService } from '@app/core/services/product-manipulations.service';
-import { DatabaseService } from '@app/core/services/database.service';
 
 @Component({
   selector: 'app-product',

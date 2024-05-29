@@ -11,26 +11,25 @@ import {
   of,
   switchMap,
 } from 'rxjs';
+import {
+  Database,
+  get,
+  orderByChild,
+  query,
+  ref,
+} from '@angular/fire/database';
+import { equalTo } from 'firebase/database';
+import Stripe from 'stripe';
 
 // interfaces
-import Stripe from 'stripe';
 import {
   ICheckoutInit,
   IPurchaseUpdate,
   ISupplementedChargeProduct,
   ITransactionIds,
   IUserTransactionsData,
-} from '@app/shared/models/purchase.model';
-import {
-  Database,
-  get,
-  orderByChild,
-  query,
-  Query,
-  ref,
-} from '@angular/fire/database';
-import { equalTo } from 'firebase/database';
-import { ICard } from '@app/shared/models/card.model';
+} from '@models/purchase.model';
+import { ICard } from '@models/card.model';
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {

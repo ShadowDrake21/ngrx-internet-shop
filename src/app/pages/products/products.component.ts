@@ -5,15 +5,15 @@ import { Store } from '@ngrx/store';
 import { map, Observable, of, switchMap } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { ActivatedRoute, Router } from '@angular/router';
 
 // components
 import { ProductsItemComponent } from '@shared/components/products-item/products-item.component';
 import { FilterSidebarComponent } from './components/filter-sidebar/filter-sidebar.component';
-import { BreadcrumbsComponent } from '@shared/components/breadcrumbs/breadcrumbs.component';
 
 // interfaces
-import { IFilterFormObj } from '@shared/models/forms.model';
-import { IProduct } from '@shared/models/product.model';
+import { IFilterFormObj } from '@models/forms.model';
+import { IProduct } from '@models/product.model';
 
 // created ngrx stuff
 import { AppState } from '@store/app.state';
@@ -22,8 +22,9 @@ import * as ProductSelectors from '@store/product/product.selectors';
 
 // utils
 import { ProductsListComponent } from '@shared/components/products-list/products-list.component';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CategoryService } from '@app/core/services/category.service';
+
+// services
+import { CategoryService } from '@core/services/category.service';
 
 @Component({
   selector: 'app-products',

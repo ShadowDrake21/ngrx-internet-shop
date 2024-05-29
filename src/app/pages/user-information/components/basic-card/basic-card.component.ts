@@ -1,5 +1,8 @@
+// angular stuff
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Component, Input } from '@angular/core';
+
+// content
 import { IUserInformationContentItem } from '../../content/user-information.content';
 
 @Component({
