@@ -1,8 +1,12 @@
+// angular stuff
 import Stripe from 'stripe';
 import { createReducer, on } from '@ngrx/store';
 
+// created ngrx stuff
 import * as PurchaseActions from '@store/purchase/purchase.actions';
-import { ISupplementedCharge } from '@app/shared/models/purchase.model';
+
+// interfaces
+import { ISupplementedCharge } from '@models/purchase.model';
 
 export interface PurchaseState {
   customer: Stripe.Customer | null;

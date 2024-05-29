@@ -1,7 +1,12 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
-import { ISupplementedCharge } from '@app/shared/models/purchase.model';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { Component, inject, Input } from '@angular/core';
+
+// interfaces
+import { ISupplementedCharge } from '@models/purchase.model';
+
+// components
 import { PurchaseModalComponent } from '../purchase-modal/purchase-modal.component';
 
 @Component({

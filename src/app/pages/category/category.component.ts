@@ -9,19 +9,19 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 // interfaces
-import { IProduct } from '../../shared/models/product.model';
-import { ICategory } from '../../shared/models/category.model';
+import { IProduct } from '@models/product.model';
+import { ICategory } from '@models/category.model';
 
 // created ngrx stuff
-import { AppState } from '../../store/app.state';
-import * as ProductActions from '../../store/product/product.actions';
-import * as ProductSelectors from '../../store/product/product.selectors';
-import * as CategoryActions from '../../store/category/category.actions';
-import * as CategorySelectors from '../../store/category/category.selectors';
+import { AppState } from '@store/app.state';
+import * as ProductActions from '@store/product/product.actions';
+import * as ProductSelectors from '@store/product/product.selectors';
+import * as CategoryActions from '@store/category/category.actions';
+import * as CategorySelectors from '@store/category/category.selectors';
 
 // components
-import { ProductsItemComponent } from '../../shared/components/products-item/products-item.component';
-import { ProductsListComponent } from '../../shared/components/products-list/products-list.component';
+import { ProductsItemComponent } from '@shared/components/products-item/products-item.component';
+import { ProductsListComponent } from '@shared/components/products-list/products-list.component';
 
 @Component({
   selector: 'app-category',

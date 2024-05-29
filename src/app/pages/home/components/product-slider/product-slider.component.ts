@@ -1,3 +1,4 @@
+// angular stuff
 import {
   AfterViewInit,
   Component,
@@ -5,13 +6,14 @@ import {
   QueryList,
   ViewChildren,
 } from '@angular/core';
+import { CarouselModule } from 'ngx-bootstrap/carousel';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 
+// content
 import {
   IProductSliderImage,
   productSliderImages,
 } from './content/product-slider.content';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { CarouselModule } from 'ngx-bootstrap/carousel';
 
 @Component({
   selector: 'app-product-slider',

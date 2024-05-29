@@ -16,10 +16,10 @@ import { Store } from '@ngrx/store';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 // services
-import { DatabaseService } from '@app/core/services/database.service';
+import { DatabaseService } from '@core/services/database.service';
 
 // interfaces and types
-import { ICard } from '@app/shared/models/card.model';
+import { ICard } from '@models/card.model';
 
 // content
 import { userInformationContent } from '../../content/user-information.content';

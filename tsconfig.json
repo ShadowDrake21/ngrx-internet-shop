@@ -27,6 +27,7 @@
       "@app/*": ["app/*"],
       "@pages/*": ["app/pages/*"],
       "@shared/*": ["app/shared/*"],
+      "@models/*": ["app/shared/models/*"],
       "@store/*": ["app/store/*"],
       "@assets/*": ["assets/*"],
       "@core/*": ["app/core/*"]

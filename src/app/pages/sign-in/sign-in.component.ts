@@ -9,26 +9,26 @@ import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { Router, RouterLink } from '@angular/router';
 
 // services
-import { AuthService } from '../../core/authentication/auth.service';
-import { SignInService } from '../../core/services/signIn.service';
+import { AuthService } from '@core/authentication/auth.service';
+import { SignInService } from '@core/services/signIn.service';
 
 // created ngrx stuff
-import { UserState } from '../../store/user/user.reducer';
-import * as UserSelectors from '../../store/user/user.selectors';
+import { UserState } from '@store/user/user.reducer';
+import * as UserSelectors from '@store/user/user.selectors';
 
 // interfaces and types
-import { AlertType } from '../../shared/models/alerts.model';
-import { IUser } from '../../shared/models/user.model';
+import { AlertType } from '@models/alerts.model';
+import { IUser } from '@models/user.model';
 
 // components
-import { AlertComponent } from '../../shared/components/alert/alert.component';
-import { LoaderComponent } from '../../shared/components/loader/loader.component';
+import { AlertComponent } from '@shared/components/alert/alert.component';
+import { LoaderComponent } from '@shared/components/loader/loader.component';
 import { ResetPasswordModalComponent } from './components/reset-password-modal/reset-password-modal.component';
 import { AvailableProvidersModalComponent } from './components/available-providers-modal/available-providers-modal.component';
 
 // utils
-import { createAuthInLS } from '../../core/utils/auth.utils';
-import { signInModalIcons } from '../../shared/utils/icons.utils';
+import { createAuthInLS } from '@core/utils/auth.utils';
+import { signInModalIcons } from '@shared/utils/icons.utils';
 
 @Component({
   selector: 'app-sign-in',

@@ -1,8 +1,13 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { IUser } from '@app/shared/models/user.model';
-import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
 import { Observable } from 'rxjs';
+
+// interfaces
+import { IUser } from '@models/user.model';
+
+// pipes
+import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
 
 @Component({
   selector: 'app-user-info',

@@ -1,11 +1,16 @@
+// angular stuff
 import { Routes } from '@angular/router';
-import { GeneralComponent } from './pages/user-information/children/general/general.component';
-import { PersonalInformationComponent } from './pages/user-information/children/personal-information/personal-information.component';
-import { PurchasesComponent } from './pages/user-information/children/purchases/purchases.component';
-import { DeliveryDetailsComponent } from './pages/user-information/children/delivery-details/delivery-details.component';
-import { CardDetailsComponent } from './pages/user-information/children/card-details/card-details.component';
-import { FavoriteProductsComponent } from './pages/user-information/children/favorite-products/favorite-products.component';
-import { authGuard } from './core/guards/auth.guard';
+
+// components
+import { GeneralComponent } from '@pages/user-information/children/general/general.component';
+import { PersonalInformationComponent } from '@pages/user-information/children/personal-information/personal-information.component';
+import { PurchasesComponent } from '@pages/user-information/children/purchases/purchases.component';
+import { DeliveryDetailsComponent } from '@pages/user-information/children/delivery-details/delivery-details.component';
+import { CardDetailsComponent } from '@pages/user-information/children/card-details/card-details.component';
+import { FavoriteProductsComponent } from '@pages/user-information/children/favorite-products/favorite-products.component';
+
+// guards
+import { authGuard } from '@core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/home' },

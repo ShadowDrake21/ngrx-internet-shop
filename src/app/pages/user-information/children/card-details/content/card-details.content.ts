@@ -1,4 +1,4 @@
-import { ICard } from '@app/shared/models/card.model';
+import { ICard } from '@models/card.model';
 
 export const months: string[] = [
   '01',

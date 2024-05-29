@@ -23,9 +23,9 @@
     <h3 class="text-center text-white">
       {{ isEditMode ? "Edit an existing card" : "Add a new card" }}
     </h3>
-    <div class="d-flex" style="gap: 20px">
+    <div class="d-flex flex-column flex-xxl-row" style="gap: 20px">
       <div
-        class="center d-flex align-items-center flex-shrink-1 w-75"
+        class="center d-flex align-items-center flex-shrink-1 w-75 card-details__add-wrapper flex-column flex-md-row"
         style="max-width: 100%"
       >
         <div #card class="card" [class.card-disabled]="cardForm.disabled">
@@ -200,7 +200,7 @@
       </div>
 
       <div
-        class="d-flex flex-column justify-content-between w-25 flex-shrink-1 card-details__add-errors"
+        class="d-flex flex-column justify-content-between w-25 flex-shrink-1 card-details__add-errors align-items-end align-items-xxl-start"
       >
         <ul *ngIf="cardForm.invalid" style="color: red">
           <li

@@ -9,4 +9,30 @@
     object-fit: cover;
     object-position: center;
   }
+
+  &__top {
+    gap: 0 10px;
+  }
+
+  &__bottom {
+    height: 80px;
+    gap: 0 10px;
+  }
+}
+
+@media (max-width: 1399px) {
+  .purchase-product__modal-slider__info {
+    max-height: 300px;
+    overflow-y: scroll;
+  }
+}
+
+@media (max-width: 767px) {
+  .purchase-product__modal-slider__bottom {
+    height: 100%;
+  }
+
+  .purchase-product__modal-slider__img {
+    height: 400px;
+  }
 }

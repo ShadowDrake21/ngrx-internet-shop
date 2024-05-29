@@ -1,3 +1,4 @@
+// created ngrx stuff
 import { CartState } from './cart/cart.reducer';
 import { CategoryState } from './category/category.reducer';
 import { FavoritesState } from './favorites/favorites.reducer';

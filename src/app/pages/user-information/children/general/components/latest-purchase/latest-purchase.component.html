@@ -1,6 +1,6 @@
 <div
   *ngIf="latestTransaction$ | async as latestTransaction; else errors"
-  class="d-flex"
+  class="d-flex flex-column flex-xxl-row"
 >
   <ng-container *ngIf="latestTransaction?.products as products">
     <div
@@ -93,13 +93,15 @@
     </div>
     <carousel
       [interval]="0"
-      class="d-block w-100"
       [showIndicators]="false"
+      class="d-block w-100 pt-4 pt-xxl-0"
       data-slider="purchase-slider"
     >
       <slide *ngFor="let product of products; let i = index">
         <div class="d-flex flex-column" style="padding: 0 10%">
-          <div class="d-flex w-100 justify-content-between fw-light">
+          <div
+            class="latest-purchase__product-info__top d-flex w-100 justify-content-between flex-column flex-md-row align-items-center align-items-md-start text-center text-md-start fw-light"
+          >
             <p>{{ product.product.id }}</p>
             <p>
               Add to the store:
@@ -125,8 +127,7 @@
               </div>
             </div>
             <div
-              class="d-flex mt-4"
-              style="height: 80px; flex-direction: column; flex-wrap: wrap"
+              class="d-flex mt-4 flex-column flex-wrap align-items-center align-items-md-start text-center text-md-start latest-purchase__product-info__bottom"
             >
               <p class="fw-light">{{ product.price.id }}</p>
               <p>

@@ -23,8 +23,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 
 // components
-import { AlertComponent } from '@app/shared/components/alert/alert.component';
-import { userInformationSidebar } from '@app/shared/utils/icons.utils';
+import { AlertComponent } from '@shared/components/alert/alert.component';
+import { userInformationSidebar } from '@shared/utils/icons.utils';
 import { SidebarProfileModalComponent } from './components/sidebar-profile-modal/sidebar-profile-modal.component';
 
 // created ngrx stuff
@@ -35,19 +35,19 @@ import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import * as UserActions from '@store/user/user.actions';
 
-// interfaces and types
-import { IUser } from '@app/shared/models/user.model';
-import { AlertType } from '@app/shared/models/alerts.model';
+// interfaces
+import { IUser } from '@models/user.model';
+import { AlertType } from '@models/alerts.model';
 import { ISidebarModal } from './models/sidebar-modal.model';
 
 // pipes
-import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
+import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
 
 // services
-import { CheckoutService } from '@app/core/services/checkout.service';
+import { CheckoutService } from '@core/services/checkout.service';
 
 // constants
-import { LS_AUTH_ITEM_NAME } from '@app/core/constants/auth.constants';
+import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
 
 @Component({
   selector: 'app-user-information',

@@ -11,13 +11,20 @@
     </button>
   </div>
   <div class="modal-body">
-    <div class="d-flex" style="gap: 25px">
-      <div class="flex-shrink-0" style="width: 225px">
+    <div
+      class="d-flex flex-column flex-lg-row align-items-center align-items-lg-start sidebar-profile-modal__body"
+    >
+      <div class="flex-shrink-0 sidebar-profile-modal__image-wrapper">
         <img [src]="data.user.photoUrl" alt="user img" style="width: 100%" />
       </div>
-      <div class="w-100">
-        <div class="d-flex align-items-center" style="gap: 50px">
-          <h3 class="fst-italic fw-lighter fs-4 pb-2">
+      <div class="w-100 text-center text-lg-start">
+        <div
+          class="d-flex align-items-center flex-column flex-lg-row sidebar-profile-modal__email"
+        >
+          <h3
+            class="fst-italic fw-lighter fs-4 pb-2"
+            style="word-break: break-all"
+          >
             {{ data.user.email | truncateText : 60 }}
           </h3>
           <p>

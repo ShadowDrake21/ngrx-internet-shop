@@ -2,7 +2,7 @@
 import { UserCredential } from 'firebase/auth';
 
 // interfaces
-import { IStoreUserCredential, ProviderData } from '../models/user.model';
+import { IStoreUserCredential, ProviderData } from '@models/user.model';
 
 export const minimalizeUserCredential = async (
   userCredential: UserCredential

@@ -1,3 +1,4 @@
+// angular stuff
 import {
   AfterViewInit,
   Component,
@@ -7,19 +8,9 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
-import { userInformationContent } from '../../content/user-information.content';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Store } from '@ngrx/store';
-import { UserState } from '@app/store/user/user.reducer';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Observable, of, Subscription, switchMap, take, timer } from 'rxjs';
-import { IStoreUserCredential, IUser } from '@app/shared/models/user.model';
-
-import * as UserSelectors from '@store/user/user.selectors';
-import * as UserActions from '@store/user/user.actions';
-import { AuthService } from '@app/core/authentication/auth.service';
-import { MEDIA_STORAGE_PATH } from '@app/core/constants/storage.constants';
-import { StorageService } from '@app/core/services/storage.service';
 import {
   FormBuilder,
   FormControl,
@@ -28,13 +19,36 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { createAuthInLS } from '@app/core/utils/auth.utils';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { AlertComponent } from '@app/shared/components/alert/alert.component';
-import { AlertType } from '@app/shared/models/alerts.model';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+// created ngrx stuff
+import { UserState } from '@app/store/user/user.reducer';
+import * as UserSelectors from '@store/user/user.selectors';
+import * as UserActions from '@store/user/user.actions';
+
+// interfaces
+import { IStoreUserCredential, IUser } from '@models/user.model';
+import { AlertType } from '@models/alerts.model';
+
+// components
+import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
+import { AlertComponent } from '@shared/components/alert/alert.component';
 import { ReauthenticateModalComponent } from './component/reauthenticate-modal/reauthenticate-modal.component';
-import { personalInformationIcons } from '@app/shared/utils/icons.utils';
+
+// content
+import { userInformationContent } from '../../content/user-information.content';
+
+// utils
+import { createAuthInLS } from '@core/utils/auth.utils';
+import { personalInformationIcons } from '@shared/utils/icons.utils';
+
+//services
+import { AuthService } from '@core/authentication/auth.service';
+import { StorageService } from '@core/services/storage.service';
+
+// constants
+import { MEDIA_STORAGE_PATH } from '@core/constants/storage.constants';
 
 @Component({
   selector: 'app-personal-information',

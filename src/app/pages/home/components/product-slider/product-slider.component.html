@@ -1,13 +1,13 @@
 <div class="product-slider__wrapper">
-  <carousel [noPause]="false" data-slider="product-slider">
+  <carousel class="d-block" [noPause]="false" data-slider="product-slider">
     <slide
       *ngFor="let item of sliderItems; index as idx"
-      class="position-relative product-slider__slide"
+      class="position-relative product-slider__slide text-center"
     >
       <div class="product-slider__slide-blackout"></div>
       <img
         [ngSrc]="item.path"
-        class="product-slider__slide-image"
+        class="product-slider__slide-image text-center"
         alt="slider image"
         [width]="1296"
         [height]="600"

@@ -1,9 +1,15 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { BASE_UNSPLASH_URL } from '../constants/unsplash.constants';
-import { environment } from 'environments/environment.development';
 import { Observable } from 'rxjs';
-import { IUnsplashImageResponse } from '@app/shared/models/unsplash.model';
+
+// interfaces
+import { IUnsplashImageResponse } from '@models/unsplash.model';
+
+// constants
+import { BASE_UNSPLASH_URL } from '../constants/unsplash.constants';
+
+// environment
+import { environment } from 'environments/environment.development';
 
 @Injectable({ providedIn: 'root' })
 export class UnsplashService {

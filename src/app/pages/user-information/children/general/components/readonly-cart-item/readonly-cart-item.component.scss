@@ -13,3 +13,17 @@
     gap: 25px;
   }
 }
+
+@media (max-width: 568px) {
+  .product {
+    gap: 20px;
+  }
+
+  .product-img__wrapper {
+    width: 100%;
+  }
+
+  .product-img {
+    width: 100%;
+  }
+}

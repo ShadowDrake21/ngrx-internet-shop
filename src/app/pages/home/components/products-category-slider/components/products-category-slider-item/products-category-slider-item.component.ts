@@ -1,10 +1,15 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { IProduct } from '@app/shared/models/product.model';
-import { ClearURLPipe } from '@app/shared/pipes/clear-url.pipe';
-import { SafeHTMLPipe } from '@app/shared/pipes/safe-html.pipe';
-import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
+
+// interfaces
+import { IProduct } from '@models/product.model';
+
+// pipes
+import { ClearURLPipe } from '@shared/pipes/clear-url.pipe';
+import { SafeHTMLPipe } from '@shared/pipes/safe-html.pipe';
+import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
 
 @Component({
   selector: 'app-products-category-slider-item',

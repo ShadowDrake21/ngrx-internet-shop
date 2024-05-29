@@ -1,10 +1,8 @@
+// angular stuff
 import { createAction, props } from '@ngrx/store';
 
 // interfaces
-import {
-  IStoreUserCredential,
-  IUserSignUpData,
-} from '../../shared/models/user.model';
+import { IStoreUserCredential, IUserSignUpData } from '@models/user.model';
 
 export const signUp = createAction(
   '[User Component] SignUp',

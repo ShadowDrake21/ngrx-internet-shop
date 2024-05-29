@@ -1,6 +1,7 @@
+// angular stuff
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
-// state
+// created ngrx stuff
 import { CartState } from './cart.reducer';
 
 export const selectCartState = createFeatureSelector<CartState>('cart');

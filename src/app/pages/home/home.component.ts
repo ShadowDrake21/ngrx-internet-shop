@@ -1,5 +1,8 @@
+// angular stuff
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
+// components
 import { ProductSliderComponent } from './components/product-slider/product-slider.component';
 import { SponsorsComponent } from './components/sponsors/sponsors.component';
 import { UserSidebarComponent } from './components/user-sidebar/user-sidebar.component';

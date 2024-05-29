@@ -12,19 +12,23 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
 
 // interfaces
-import { IProduct } from '../../models/product.model';
+import { IProduct } from '@models/product.model';
 
 // pipes
-import { SafeHTMLPipe } from '../../pipes/safe-html.pipe';
-import { ClearURLPipe } from '../../pipes/clear-url.pipe';
-import { TruncateTextPipe } from '../../pipes/truncate-text.pipe';
-import { ProductManipulationsService } from '@app/core/services/product-manipulations.service';
-import { Store } from '@ngrx/store';
+import { SafeHTMLPipe } from '@shared/pipes/safe-html.pipe';
+import { ClearURLPipe } from '@shared/pipes/clear-url.pipe';
+import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
+
+// services
+import { ProductManipulationsService } from '@core/services/product-manipulations.service';
+
+// created ngrx stuff
 import { UserState } from '@app/store/user/user.reducer';
 import * as UserSelectors from '@store/user/user.selectors';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-single-product',

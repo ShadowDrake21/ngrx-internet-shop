@@ -4,27 +4,27 @@ import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { Store } from '@ngrx/store';
+import Stripe from 'stripe';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 // interfaces
-import { IStoreUserCredential } from './shared/models/user.model';
+import { IStoreUserCredential } from '@models/user.model';
 
 // components
-import { HeaderComponent } from './shared/components/header/header.component';
-import { FooterComponent } from './shared/components/footer/footer.component';
-import { ExpirationModalComponent } from './shared/components/expiration-modal/expiration-modal.component';
+import { HeaderComponent } from '@shared/components/header/header.component';
+import { FooterComponent } from '@shared/components/footer/footer.component';
+import { ExpirationModalComponent } from '@shared/components/expiration-modal/expiration-modal.component';
+import { BreadcrumbsComponent } from '@shared/components/breadcrumbs/breadcrumbs.component';
 
 // created ngrx stuff
-import { AppState } from './store/app.state';
+import { AppState } from '@store/app.state';
 import * as UserActions from '@store/user/user.actions';
 import * as UserSelectors from '@store/user/user.selectors';
-import * as FavoritesActions from '@app/store/favorites/favorites.actions';
+import * as FavoritesActions from '@store/favorites/favorites.actions';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 
 // constants
 import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
-import { Subject, Subscription, takeUntil } from 'rxjs';
-import { BreadcrumbsComponent } from './shared/components/breadcrumbs/breadcrumbs.component';
-import Stripe from 'stripe';
 
 @Component({
   selector: 'app-root',

@@ -4,12 +4,12 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 
 // interfaces and types
-import { IStoreUserCredential } from '../../shared/models/user.model';
-import { AlertType } from '../../shared/models/alerts.model';
+import { IStoreUserCredential } from '@models/user.model';
+import { AlertType } from '@models/alerts.model';
 
 // created ngrx stuff
-import { UserState } from '../../store/user/user.reducer';
-import * as UserActions from '../../store/user/user.actions';
+import { UserState } from '@store/user/user.reducer';
+import * as UserActions from '@store/user/user.actions';
 
 // utils
 import { createAuthInLS } from '../utils/auth.utils';

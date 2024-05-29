@@ -1,8 +1,6 @@
+// angular stuff
 import { inject, Injectable } from '@angular/core';
-import { CheckoutService } from '@app/core/services/checkout.service';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import * as PurchaseActions from '@store/purchase/purchase.actions';
-import { loadStripe, StripeError } from '@stripe/stripe-js';
 import {
   catchError,
   exhaustMap,
@@ -12,6 +10,13 @@ import {
   of,
   switchMap,
 } from 'rxjs';
+import { loadStripe, StripeError } from '@stripe/stripe-js';
+
+// created ngrx stuff
+import * as PurchaseActions from '@store/purchase/purchase.actions';
+
+// services
+import { CheckoutService } from '@core/services/checkout.service';
 
 @Injectable()
 export class PurchaseEffects {

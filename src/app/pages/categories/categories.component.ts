@@ -6,19 +6,19 @@ import { Observable, of, Subscription } from 'rxjs';
 import { RouterLink } from '@angular/router';
 
 // interfaces
-import { ICategory } from '../../shared/models/category.model';
+import { ICategory } from '@models/category.model';
 
 // created ngrx stuff
-import { CategoryState } from '../../store/category/category.reducer';
-import * as CategoryActions from '../../store/category/category.actions';
-import * as CategorySelectors from '../../store/category/category.selectors';
+import { CategoryState } from '@store/category/category.reducer';
+import * as CategoryActions from '@store/category/category.actions';
+import * as CategorySelectors from '@store/category/category.selectors';
 
 // pipes
-import { SafeHTMLPipe } from '../../shared/pipes/safe-html.pipe';
-import { ClearURLPipe } from '../../shared/pipes/clear-url.pipe';
+import { SafeHTMLPipe } from '@shared/pipes/safe-html.pipe';
+import { ClearURLPipe } from '@shared/pipes/clear-url.pipe';
 
 // utils
-import { handleImageUnavailable } from '../../shared/utils/errorHandlers.utils';
+import { handleImageUnavailable } from '@shared/utils/errorHandlers.utils';
 
 @Component({
   selector: 'app-categories',

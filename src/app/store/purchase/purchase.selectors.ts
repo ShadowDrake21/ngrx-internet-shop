@@ -1,4 +1,7 @@
+// angular stuff
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+
+// created ngrx stuff
 import { PurchaseState } from './purchase.reducer';
 
 export const selectPurchaseState =

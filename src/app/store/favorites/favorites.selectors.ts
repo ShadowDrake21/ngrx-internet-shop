@@ -1,6 +1,7 @@
+// angular stuff
 import { createSelector } from '@ngrx/store';
 
-// states
+// created ngrx stuff
 import { AppState } from '../app.state';
 import { FavoritesState } from './favorites.reducer';
 

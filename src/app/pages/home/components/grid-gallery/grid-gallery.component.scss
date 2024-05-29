@@ -107,3 +107,42 @@ img {
     }
   }
 }
+
+@media (max-width: 1200px) {
+  .grid-gallery__card-overlay {
+    h2 {
+      font-size: 1.25rem;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .grid-gallery__card-overlay {
+    padding: 10px !important;
+    h2 {
+      display: none;
+    }
+    p {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 690px) {
+  .grid-gallery__card-overlay {
+    h2 {
+      display: block;
+      word-wrap: break-word;
+      text-align: center;
+      font-size: 1rem;
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .grid-gallery__card-overlay {
+    h2 {
+      font-size: 0.85rem;
+    }
+  }
+}

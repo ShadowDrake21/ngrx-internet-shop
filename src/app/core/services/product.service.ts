@@ -4,8 +4,8 @@ import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 
 // interfaces
-import { IProduct } from '../../shared/models/product.model';
-import { IFilterFormObj } from '../../shared/models/forms.model';
+import { IProduct } from '@models/product.model';
+import { IFilterFormObj } from '@models/forms.model';
 
 // constants
 import { BASE_URL_API } from '../constants/api.constants';

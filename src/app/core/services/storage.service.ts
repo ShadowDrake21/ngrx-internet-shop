@@ -1,3 +1,4 @@
+// angular stuff
 import { inject, Injectable } from '@angular/core';
 import {
   getDownloadURL,

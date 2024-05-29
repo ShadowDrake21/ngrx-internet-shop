@@ -4,7 +4,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 // interfaces
-import { BreadcrumbService } from '@app/core/services/breadcrumb.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
   selector: 'app-breadcrumbs',

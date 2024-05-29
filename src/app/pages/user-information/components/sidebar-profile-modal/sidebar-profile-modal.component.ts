@@ -1,9 +1,14 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Observable } from 'rxjs';
+
+// interfaces
 import { ISidebarModal } from '../../models/sidebar-modal.model';
-import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
+
+// pipes
+import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
 
 @Component({
   selector: 'app-sidebar-profile-modal',

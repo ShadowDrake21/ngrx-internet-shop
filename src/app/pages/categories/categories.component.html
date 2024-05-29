@@ -1,58 +1,63 @@
 <div class="container">
-  <div class="text-center">
+  <div class="text-center pt-3 pb-5">
     <h1 class="mb-3">Categories</h1>
-    <div class="d-flex justify-content-center">
-      <ul
-        class="row row-cols-1 w-100 category-list g-4 row-cols-md-4"
-        *ngIf="mainCategories$ | async as mainCategories"
-      >
-        <a
-          *ngFor="let category of mainCategories"
-          class="card bg-dark text-white category-card col offset-md-0.5 border-0"
-          [routerLink]="['/category']"
-          [queryParams]="{ id: category.id }"
+    <div class="d-flex d-lg-block flex-column-reverse">
+      <div class="d-flex justify-content-center">
+        <div
+          class="category-list"
+          *ngIf="mainCategories$ | async as mainCategories"
         >
-          <img
-            [src]="category.image | clearURL | safeHTML"
-            (error)="handleImageError($event)"
-            class="card-img category-card__img"
-            alt="category-img"
-          />
-          <div class="card-img-overlay">
-            <h5 class="card-title">{{ category.name }}</h5>
-            <p class="card-text">
-              Created: {{ category.creationAt | date : "medium" }}
-            </p>
-            <p class="card-text">
-              Last updated: {{ category.updatedAt | date : "medium" }}
-            </p>
-          </div>
-        </a>
-      </ul>
+          <a
+            *ngFor="let category of mainCategories; let i = index"
+            class="card bg-dark text-white category-card col offset-md-0.5 border-0"
+            [class]="'category' + (i + 1)"
+            [routerLink]="['/category']"
+            [queryParams]="{ id: category.id }"
+          >
+            <img
+              [src]="category.image | clearURL | safeHTML"
+              (error)="handleImageError($event)"
+              class="card-img category-card__img"
+              alt="category-img"
+            />
+            <div class="card-img-overlay">
+              <h5 class="card-title">{{ category.name }}</h5>
+              <p class="card-text">
+                Created: {{ category.creationAt | date : "medium" }}
+              </p>
+              <p class="card-text">
+                Last updated: {{ category.updatedAt | date : "medium" }}
+              </p>
+            </div>
+          </a>
+        </div>
+      </div>
+      <p class="fs-4 fw-bolder pt-3">OR</p>
+      <div>
+        <select
+          class="form-select mb-3"
+          *ngIf="secondaryCategories$ | async as secondaryCategories"
+          (change)="selectChange($event)"
+        >
+          <option value="null" class="text-center" disabled selected>
+            --Choose a category--
+          </option>
+          <option
+            class="text-center"
+            *ngFor="let category of secondaryCategories"
+            [value]="category.id"
+          >
+            {{ category.name }}
+          </option>
+        </select>
+        <a
+          *ngIf="secondaryCategoryId"
+          [routerLink]="['/category']"
+          [queryParams]="{ id: secondaryCategoryId }"
+          class="btn btn-link"
+          >Link to the choosen category</a
+        >
+      </div>
     </div>
-    <p class="fs-4 fw-bolder">OR</p>
-    <select
-      class="form-select mb-3"
-      *ngIf="secondaryCategories$ | async as secondaryCategories"
-      (change)="selectChange($event)"
-    >
-      <option value="null" class="text-center" disabled selected>
-        --Choose a category--
-      </option>
-      <option
-        class="text-center"
-        *ngFor="let category of secondaryCategories"
-        [value]="category.id"
-      >
-        {{ category.name }}
-      </option>
-    </select>
-    <a
-      *ngIf="secondaryCategoryId"
-      [routerLink]="['/category']"
-      [queryParams]="{ id: secondaryCategoryId }"
-      class="btn btn-link"
-      >Link to the choosen category</a
-    >
   </div>
 </div>

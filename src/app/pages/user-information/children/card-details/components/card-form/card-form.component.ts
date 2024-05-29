@@ -1,3 +1,4 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
@@ -19,10 +20,16 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { DatabaseService } from '@app/core/services/database.service';
-import { ICard } from '@app/shared/models/card.model';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { of, Subscription } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+// services
+import { DatabaseService } from '@core/services/database.service';
+
+// interfaces
+import { ICard } from '@models/card.model';
+
+// content
 import {
   cardCVCSelector,
   cardExpirationMonthSelector,
@@ -32,7 +39,9 @@ import {
   cardNumberSelectors,
   initialCardData,
 } from '../../content/card-details.content';
-import { cardDetailsIcons } from '@app/shared/utils/icons.utils';
+
+// utils
+import { cardDetailsIcons } from '@shared/utils/icons.utils';
 import { formCardObject } from '../../utils/card-details.utils';
 
 @Component({

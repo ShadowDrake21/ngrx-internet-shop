@@ -6,7 +6,7 @@ import { catchError, exhaustMap, map, of } from 'rxjs';
 // services
 import { CategoryService } from '../../core/services/category.service';
 
-// actions
+// created ngrx stuff
 import * as CategoryActions from './category.actions';
 
 @Injectable()

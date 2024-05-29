@@ -1,5 +1,8 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+
+// content
 import { gridGalleryContent } from './content/grid-gallery.content';
 
 @Component({

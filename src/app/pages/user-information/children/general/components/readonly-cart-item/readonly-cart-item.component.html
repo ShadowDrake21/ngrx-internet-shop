@@ -1,7 +1,7 @@
 <div
-  class="d-flex product mb-2 position-relative border-top border-bottom pt-3 pb-3 align-items-center"
+  class="d-flex product mb-2 position-relative border-top border-bottom pt-3 pb-3 align-items-start align-items-md-center flex-column flex-sm-row"
 >
-  <div>
+  <div class="product-img__wrapper">
     <img [src]="product.images[0] | clearURL | safeHTML" class="product-img" />
   </div>
   <div>
@@ -16,7 +16,7 @@
         <span class="fw-bolder">{{ product.quantity }}</span>
       </div>
     </div>
-    <div class="d-flex product-prices fs-5">
+    <div class="d-flex flex-column flex-md-row product-prices fs-5">
       <div>
         Price for 1 item:
         <span class="fw-bolder">{{ product.price | currency : "PLN" }}</span>

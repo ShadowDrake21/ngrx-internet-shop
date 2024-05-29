@@ -15,18 +15,18 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 // interfaces
-import { IUserSignUpData } from '../../shared/models/user.model';
+import { IUserSignUpData } from '@models/user.model';
 
 // created ngrx stuff
-import { UserState } from '../../store/user/user.reducer';
-import * as UserActions from '../../store/user/user.actions';
-import * as UserSelectors from '../../store/user/user.selectors';
+import { UserState } from '@store/user/user.reducer';
+import * as UserActions from '@store/user/user.actions';
+import * as UserSelectors from '@store/user/user.selectors';
 
 // utils
-import { createAuthInLS } from '../../core/utils/auth.utils';
+import { createAuthInLS } from '@core/utils/auth.utils';
 
 // components
-import { LoaderComponent } from '../../shared/components/loader/loader.component';
+import { LoaderComponent } from '@shared/components/loader/loader.component';
 import { EmailVerificationModalComponent } from './components/email-verification-modal/email-verification-modal.component';
 
 @Component({

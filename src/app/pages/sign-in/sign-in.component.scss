@@ -326,13 +326,6 @@ h3 {
   }
 }
 
-@media (max-width: 991.98px) {
-  .half {
-    .bg {
-      height: 500px;
-    }
-  }
-}
 @media (max-width: 1199.98px) {
   .half {
     .contents {
@@ -340,6 +333,42 @@ h3 {
     }
     .bg {
       width: 100%;
+    }
+  }
+}
+
+@media (max-width: 991.98px) {
+  .half {
+    .bg {
+      height: 500px;
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .half {
+    & .bg {
+      height: 400px;
+    }
+    & .container > .row {
+      padding: 40px 0;
+      height: 100%;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .half {
+    & .container > .row {
+      padding-top: 25px;
+    }
+
+    & .cancel-btn {
+      height: 50px;
+      padding-left: 20px;
+      padding-right: 20px;
+      width: 100%;
+      justify-content: center;
     }
   }
 }

@@ -14,28 +14,28 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { provideDatabase, getDatabase } from '@angular/fire/database';
+import { getStorage, provideStorage } from '@angular/fire/storage';
 
 // routes
 import { routes } from './app.routes';
 
 // ngrx reducers
-import { productReducer } from './store/product/products.reducer';
-import { cartReducer } from './store/cart/cart.reducer';
-import { categoryReducer } from './store/category/category.reducer';
-import { favoritesReducer } from './store/favorites/favorites.reducer';
-import { userReducer } from './store/user/user.reducer';
+import { productReducer } from '@store/product/products.reducer';
+import { cartReducer } from '@store/cart/cart.reducer';
+import { categoryReducer } from '@store/category/category.reducer';
+import { favoritesReducer } from '@store/favorites/favorites.reducer';
+import { userReducer } from '@store/user/user.reducer';
+import { purchaseReducer } from '@store/purchase/purchase.reducer';
 
 // ngrx effects
-import { ProductEffects } from './store/product/product.effects';
-import { CategoryEffects } from './store/category/category.effects';
-import { UserEffects } from './store/user/user.effects';
+import { ProductEffects } from '@store/product/product.effects';
+import { CategoryEffects } from '@store/category/category.effects';
+import { UserEffects } from '@store/user/user.effects';
+import { FavoritesEffects } from '@store/favorites/favorites.effects';
+import { PurchaseEffects } from '@store/purchase/purchase.effects';
 
 // environment
 import { environment } from '../environments/environment.development';
-import { getStorage, provideStorage } from '@angular/fire/storage';
-import { purchaseReducer } from './store/purchase/purchase.reducer';
-import { PurchaseEffects } from './store/purchase/purchase.effects';
-import { FavoritesEffects } from './store/favorites/favorites.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [

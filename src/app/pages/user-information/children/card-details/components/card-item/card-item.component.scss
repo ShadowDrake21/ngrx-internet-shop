@@ -147,3 +147,9 @@ $color_4: black;
     justify-content: space-between;
   }
 }
+
+@media (max-width: 500px) {
+  .card__details__list-item__wrapper {
+    width: 300px;
+  }
+}

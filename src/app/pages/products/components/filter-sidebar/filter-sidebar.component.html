@@ -8,19 +8,19 @@
             [formGroup]="filterForm"
             (ngSubmit)="onFilter()"
           >
-            <div>
-              <div
-                class="border-bottom d-flex align-items-end filter-header justify-content-between"
+            <div
+              class="border-bottom d-flex align-items-end filter-header justify-content-between"
+            >
+              <h2 class="filter-title mb-0">Categories</h2>
+              <button
+                type="button"
+                class="btn btn-info text-light"
+                (click)="onResetForm()"
               >
-                <h2 class="filter-title mb-0">Categories</h2>
-                <button
-                  type="button"
-                  class="btn btn-info text-light"
-                  (click)="onResetForm()"
-                >
-                  Reset
-                </button>
-              </div>
+                Reset
+              </button>
+            </div>
+            <div class="filter-body__inner">
               <div class="mb-30 filter-options">
                 <div
                   class="custom-control custom-checkbox mb-3"
@@ -41,48 +41,52 @@
                   >
                 </div>
               </div>
+            </div>
 
+            <div>
               <h2 class="text-start border-bottom filter-title filter-header">
                 Price Range
               </h2>
-              <div
-                class="mb-3 theme-clr xs2-font d-flex justify-content-between"
-              >
-                <span id="slider-range-value1">0 PLN</span>
-                <span id="slider-range-current"
-                  >{{ filterForm.value.maxPriceLimit }} PLN</span
+
+              <div class="filter-range__wrapper">
+                <div
+                  class="mb-3 theme-clr xs2-font d-flex justify-content-between"
                 >
-                <span id="slider-range-value2">1,000 PLN</span>
-              </div>
-              <div class="mb-30 filter-options">
-                <div>
-                  <div id="slider-range">
-                    <form>
-                      <div class="form-group">
-                        <input
-                          type="range"
-                          class="form-control-range"
-                          max="1000"
-                          min="0"
-                          formControlName="maxPriceLimit"
-                        />
-                      </div>
-                    </form>
+                  <span id="slider-range-value1">0 PLN</span>
+                  <span id="slider-range-current"
+                    >{{ filterForm.value.maxPriceLimit }} PLN</span
+                  >
+                  <span id="slider-range-value2">1,000 PLN</span>
+                </div>
+                <div class="mb-30 filter-options">
+                  <div class="w-100">
+                    <div id="slider-range">
+                      <form>
+                        <div class="form-group">
+                          <input
+                            type="range"
+                            class="form-control-range"
+                            max="1000"
+                            min="0"
+                            formControlName="maxPriceLimit"
+                          />
+                        </div>
+                      </form>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="d-grid">
-                <button
-                  class="btn btn-outline-primary"
-                  type="submit"
-                  [disabled]="
-                    !filterForm.value.category &&
-                    !filterForm.value.maxPriceLimit
-                  "
-                >
-                  Filter
-                </button>
-              </div>
+            </div>
+            <div class="d-grid">
+              <button
+                class="btn btn-outline-primary"
+                type="submit"
+                [disabled]="
+                  !filterForm.value.category && !filterForm.value.maxPriceLimit
+                "
+              >
+                Filter
+              </button>
             </div>
           </form>
         </div>

@@ -1,6 +1,9 @@
+// angular stuff
 import { Component } from '@angular/core';
-import { sponsors } from './content/sponsors.content';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
+
+// content
+import { sponsors } from './content/sponsors.content';
 
 @Component({
   selector: 'app-sponsors',

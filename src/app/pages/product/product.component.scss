@@ -10,3 +10,10 @@
 .category-group {
   gap: 20px;
 }
+
+@media (max-width: 400px) {
+  .product-btns {
+    gap: 10px;
+    flex-direction: column;
+  }
+}

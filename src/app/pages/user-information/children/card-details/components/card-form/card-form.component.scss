@@ -336,14 +336,21 @@ select {
 }
 @media (max-width: 500px) {
   .card {
-    width: 300px;
+    width: 280px;
     height: 187.5px;
     .front {
-      width: 300px;
+      width: 280px;
       height: 187.5px;
       &:after {
-        width: 300px;
+        width: 280px;
         height: 187.5px;
+      }
+      .back {
+        width: 280px;
+        height: 187.5px;
+        .top {
+          padding-top: 20px;
+        }
       }
       .top {
         .cardType {
@@ -368,7 +375,26 @@ select {
     }
   }
   .form {
-    width: 300px;
+    width: 280px;
     margin-top: -25px;
+  }
+
+  .card-details__add {
+    padding: 10px;
+  }
+
+  .card .front .middle .cd-number p span {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 1399px) {
+  .card-details__add-wrapper {
+    width: 100% !important;
+  }
+
+  .card-details__add-errors {
+    width: 100% !important;
+    min-height: 100px;
   }
 }
