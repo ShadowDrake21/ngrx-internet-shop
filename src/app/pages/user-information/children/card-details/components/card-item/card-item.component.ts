@@ -1,8 +1,13 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ICard } from '@app/shared/models/card.model';
-import { changeDetailsIcons } from '@app/shared/utils/icons.utils';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+// interfaces
+import { ICard } from '@models/card.model';
+
+// utils
+import { changeDetailsIcons } from '@shared/utils/icons.utils';
 
 @Component({
   selector: 'app-card-item',

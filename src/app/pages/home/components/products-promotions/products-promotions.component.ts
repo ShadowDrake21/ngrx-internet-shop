@@ -1,10 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { AuthService } from '@app/core/authentication/auth.service';
-import { ProductService } from '@app/core/services/product.service';
-import { ProductsItemComponent } from '@app/shared/components/products-item/products-item.component';
-import { IProduct } from '@app/shared/models/product.model';
 import { Observable, Subscription, tap } from 'rxjs';
+
+// services
+import { ProductService } from '@core/services/product.service';
+
+// interfaces
+import { IProduct } from '@models/product.model';
+
+// components
+import { ProductsItemComponent } from '@shared/components/products-item/products-item.component';
 
 @Component({
   selector: 'app-products-promotions',

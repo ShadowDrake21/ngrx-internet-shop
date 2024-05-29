@@ -1,9 +1,8 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
-import { userInformationContent } from '../../content/user-information.content';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReactiveFormsModule } from '@angular/forms';
-import { DatabaseService } from '@app/core/services/database.service';
 import {
   debounceTime,
   map,
@@ -14,12 +13,23 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import { IShipping } from '@app/shared/models/purchase.model';
 import { Store } from '@ngrx/store';
 
-import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
+// created ngrx stuff
 import { PurchaseState } from '@app/store/purchase/purchase.reducer';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
+
+// interfaces
+import { IShipping } from '@models/purchase.model';
+
+// content
+import { userInformationContent } from '../../content/user-information.content';
+
+// services
+import { DatabaseService } from '@core/services/database.service';
+
+// components
+import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
 import { DeliveryRecordFormComponent } from './components/delivery-record-form/delivery-record-form.component';
 import { DeliveryRecordListComponent } from './components/delivery-record-item/delivery-record-item.component';
 

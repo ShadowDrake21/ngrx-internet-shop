@@ -1,3 +1,4 @@
+// angular stuff
 import { Component } from '@angular/core';
 import {
   FormControl,
@@ -5,13 +6,19 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { contactUsIcons } from '@app/shared/utils/icons.utils';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import emailjs from '@emailjs/browser';
-import { from } from 'rxjs';
-import { AlertComponent } from '@app/shared/components/alert/alert.component';
-import { AlertType } from '@app/shared/models/alerts.model';
 import { CommonModule } from '@angular/common';
+import { from } from 'rxjs';
+
+// utils
+import { contactUsIcons } from '@shared/utils/icons.utils';
+
+// components
+import { AlertComponent } from '@shared/components/alert/alert.component';
+
+// models
+import { AlertType } from '@models/alerts.model';
 
 @Component({
   selector: 'app-contact-us',

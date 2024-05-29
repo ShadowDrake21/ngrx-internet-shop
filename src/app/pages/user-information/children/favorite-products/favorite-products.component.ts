@@ -1,20 +1,28 @@
+// angular stuff
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
-import { userInformationContent } from '../../content/user-information.content';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { Store } from '@ngrx/store';
 import { debounceTime, map, Observable, Subscription, tap } from 'rxjs';
-import { IProduct } from '@app/shared/models/product.model';
-
-import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { ClearURLPipe } from '@app/shared/pipes/clear-url.pipe';
-import { SafeHTMLPipe } from '@app/shared/pipes/safe-html.pipe';
-import { TruncateTextPipe } from '@app/shared/pipes/truncate-text.pipe';
 import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
-import { FavoriteProductsItemComponent } from './components/favorite-products-item/favorite-products-item.component';
+import { RouterLink } from '@angular/router';
+
+// created ngrx stuff
 import { AppState } from '@app/store/app.state';
+import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
+
+// interfaces
+import { IProduct } from '@models/product.model';
+
+// pipes
+import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
+import { ClearURLPipe } from '@shared/pipes/clear-url.pipe';
+import { SafeHTMLPipe } from '@shared/pipes/safe-html.pipe';
+
+// components
+import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
+import { userInformationContent } from '../../content/user-information.content';
+import { FavoriteProductsItemComponent } from './components/favorite-products-item/favorite-products-item.component';
 
 @Component({
   selector: 'app-favorite-products',

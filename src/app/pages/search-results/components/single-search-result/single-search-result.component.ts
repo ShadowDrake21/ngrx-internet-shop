@@ -4,11 +4,11 @@ import { RouterLink } from '@angular/router';
 import { CarouselConfig, CarouselModule } from 'ngx-bootstrap/carousel';
 
 // interfaces
-import { IProduct } from '../../../../shared/models/product.model';
+import { IProduct } from '@models/product.model';
 
 // pipes
-import { SafeHTMLPipe } from '../../../../shared/pipes/safe-html.pipe';
-import { ClearURLPipe } from '../../../../shared/pipes/clear-url.pipe';
+import { SafeHTMLPipe } from '@shared/pipes/safe-html.pipe';
+import { ClearURLPipe } from '@shared/pipes/clear-url.pipe';
 
 @Component({
   selector: 'app-single-search-result',

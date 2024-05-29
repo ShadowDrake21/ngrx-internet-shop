@@ -26,18 +26,20 @@ import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { CartModalComponent } from './components/cart-modal/cart-modal.component';
 
 // services
-import { ProductService } from '../../../core/services/product.service';
+import { ProductService } from '@core/services/product.service';
 
 // intefaces
-import { IProduct } from '../../models/product.model';
+import { IProduct } from '@models/product.model';
+import { IUser } from '@models/user.model';
 
 // created ngrx stuff
-import * as CartSelectors from '../../../store/cart/cart.selectors';
-import * as UserSelectors from '../../../store/user/user.selectors';
-import * as UserActions from '../../../store/user/user.actions';
-import { AppState } from '../../../store/app.state';
-import { IUser } from '../../models/user.model';
-import { LS_AUTH_ITEM_NAME } from '../../../core/constants/auth.constants';
+import { AppState } from '@store/app.state';
+import * as CartSelectors from '@store/cart/cart.selectors';
+import * as UserSelectors from '@store/user/user.selectors';
+import * as UserActions from '@store/user/user.actions';
+
+// constants
+import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
 
 @Component({
   selector: 'app-header',

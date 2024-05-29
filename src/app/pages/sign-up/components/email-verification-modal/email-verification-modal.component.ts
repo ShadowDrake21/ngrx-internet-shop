@@ -5,9 +5,9 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Observable, of, Subscription } from 'rxjs';
 
 // created ngrx stuff
-import { UserState } from '../../../../store/user/user.reducer';
-import * as UserActions from '../../../../store/user/user.actions';
-import * as UserSelectors from '../../../../store/user/user.selectors';
+import { UserState } from '@store/user/user.reducer';
+import * as UserActions from '@store/user/user.actions';
+import * as UserSelectors from '@store/user/user.selectors';
 
 @Component({
   selector: 'app-email-verification-modal',

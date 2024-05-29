@@ -14,16 +14,24 @@ import {
   PaginationComponent,
   PaginationModule,
 } from 'ngx-bootstrap/pagination';
-import { ProductsItemComponent } from '../products-item/products-item.component';
 import { Store } from '@ngrx/store';
-import { AppState } from '../../../store/app.state';
 import { filter, map, Observable } from 'rxjs';
-import { IProduct } from '../../models/product.model';
-import { calcPageNum } from '../../utils/pagination.utils';
-import * as CartActions from '../../../store/cart/cart.actions';
-import * as CartSelectors from '../../../store/cart/cart.selectors';
-import * as ProductSelectors from '../../../store/product/product.selectors';
 import { FormsModule } from '@angular/forms';
+
+// created ngrx stuff
+import { AppState } from '@store/app.state';
+import * as CartActions from '@store/cart/cart.actions';
+import * as CartSelectors from '@store/cart/cart.selectors';
+import * as ProductSelectors from '@store/product/product.selectors';
+
+// interfaces
+import { IProduct } from '@models/product.model';
+
+// components
+import { ProductsItemComponent } from '../products-item/products-item.component';
+
+// utils
+import { calcPageNum } from '@shared/utils/pagination.utils';
 
 @Component({
   selector: 'app-products-list',

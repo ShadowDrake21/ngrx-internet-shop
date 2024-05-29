@@ -12,13 +12,13 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { filter, map, Observable, tap } from 'rxjs';
 
 // interfaces
-import { IFilterFormObj } from '../../../../shared/models/forms.model';
+import { IFilterFormObj } from '@models/forms.model';
 
 // static content
 import { filterCategories } from './content/filter-categories.content';
-import { filter, map, Observable, tap } from 'rxjs';
 
 @Component({
   selector: 'app-filter-sidebar',

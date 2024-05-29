@@ -1,3 +1,4 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -5,15 +6,8 @@ import {
   OnDestroy,
   OnInit,
   TemplateRef,
-  ViewChild,
 } from '@angular/core';
-import {
-  BsModalRef,
-  BsModalService,
-  ModalDirective,
-  ModalModule,
-} from 'ngx-bootstrap/modal';
-import { IProduct } from '../../../../models/product.model';
+import { BsModalRef, BsModalService, ModalModule } from 'ngx-bootstrap/modal';
 import { Store } from '@ngrx/store';
 import {
   combineLatest,
@@ -25,34 +19,31 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-
-import * as CartActions from '../../../../../store/cart/cart.actions';
-import * as CartSelectors from '../../../../../store/cart/cart.selectors';
-import * as UserSelectors from '../../../../../store/user/user.selectors';
-import * as PurchaseActions from '../../../../../store/purchase/purchase.actions';
-import * as PurchaseSelectors from '../../../../../store/purchase/purchase.selectors';
-import { ClearURLPipe } from '../../../../pipes/clear-url.pipe';
-import { SafeHTMLPipe } from '../../../../pipes/safe-html.pipe';
-import { TruncateTextPipe } from '../../../../pipes/truncate-text.pipe';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { loadStripe } from '@stripe/stripe-js';
-import { CheckoutService } from '../../../../../core/services/checkout.service';
-import { AppState } from '../../../../../store/app.state';
-import { IUser } from '../../../../models/user.model';
-import { DatabaseService } from '@app/core/services/database.service';
 import Stripe from 'stripe';
-import { IShipping } from '@app/shared/models/purchase.model';
-import { ICard } from '@app/shared/models/card.model';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import {
-  phonePattern,
-  countryCodePattern,
-} from '@app/pages/user-information/children/purchases/components/customer-information/constants/pattern.constants';
+
+// created ngrx stuff
+import { AppState } from '@store/app.state';
+import * as CartActions from '@store/cart/cart.actions';
+import * as CartSelectors from '@store/cart/cart.selectors';
+import * as UserSelectors from '@store/user/user.selectors';
+import * as PurchaseActions from '@store/purchase/purchase.actions';
+import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
+
+// interfaces
+import { IProduct } from '@models/product.model';
+import { IUser } from '@models/user.model';
+import { IShipping } from '@models/purchase.model';
+import { ICard } from '@models/card.model';
+
+// pipes
+import { ClearURLPipe } from '@shared/pipes/clear-url.pipe';
+import { SafeHTMLPipe } from '@shared/pipes/safe-html.pipe';
+import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
+
+// services
+import { DatabaseService } from '@core/services/database.service';
 
 @Component({
   selector: 'app-cart-modal',
