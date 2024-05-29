@@ -49,9 +49,13 @@
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 440px) {
   .modal-btns {
     flex-direction: column-reverse;
     gap: 10px;
+  }
+
+  .select-modal__title {
+    display: none;
   }
 }

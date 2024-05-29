@@ -12,7 +12,7 @@ import { ICard } from '@app/shared/models/card.model';
 import { IProduct } from '@app/shared/models/product.model';
 import { IShipping } from '@app/shared/models/purchase.model';
 import { query, set } from 'firebase/database';
-import { from, map, Observable } from 'rxjs';
+import { from, map, Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -112,7 +112,10 @@ export class DatabaseService {
     );
   }
 
-  getLastViewedProduct(email: string) {
+  getLastViewedProduct(email: string): Observable<string> {
+    if (!email) {
+      return of('');
+    }
     return from(
       get(
         child(

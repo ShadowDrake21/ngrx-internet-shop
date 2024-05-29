@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { IUser } from '@app/shared/models/user.model';
 import { Store } from '@ngrx/store';
-import { Observable, of, Subscription, take } from 'rxjs';
+import { filter, Observable, of, Subscription, take } from 'rxjs';
 import * as UserSelectors from '@store/user/user.selectors';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';

@@ -111,9 +111,7 @@ export class AuthService {
   }
 
   signInManually(email: string, password: string): Observable<UserCredential> {
-    return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
-      tap(() => console.log('this.auth', this.auth))
-    );
+    return from(signInWithEmailAndPassword(this.auth, email, password));
   }
 
   sendPasswordReset(email: string): Observable<void> {

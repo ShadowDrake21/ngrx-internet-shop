@@ -162,10 +162,8 @@ export class CartModalComponent implements OnInit, OnDestroy {
     this.userShippingDataSubscription = this.store
       .select(PurchaseSelectors.selectCustomer)
       .pipe(
-        tap((customer) => console.log('customer', customer)),
         filter((customer): customer is Stripe.Customer => !!customer),
         switchMap((customer: Stripe.Customer) => {
-          console.log('inside of switchMap');
           return combineLatest([
             this.databaseService.getAllDeliveryRecords(customer.id),
             this.databaseService.getAllCards(customer.id),

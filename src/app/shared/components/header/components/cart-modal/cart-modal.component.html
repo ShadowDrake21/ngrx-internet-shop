@@ -126,94 +126,99 @@
   </div>
 
   <ng-template #selectModal>
-    <div class="modal-header">
-      <h4 class="modal-title pull-left">Select your definded shipping data</h4>
-      <span
-        >Stripe does not support such functionality, so it is just facade
-        implementation</span
-      >
-      <button
-        type="button"
-        class="btn-close close pull-right"
-        aria-label="Close"
-        (click)="onHideSelectModal()"
-      >
-        <span aria-hidden="true" class="visually-hidden">&times;</span>
-      </button>
-    </div>
-    <div class="modal-body">
-      <form
-        [formGroup]="selectShippingDataForm"
-        (ngSubmit)="onSelectFormSubmit()"
-      >
-        <div
-          class="form-group"
-          *ngIf="userDeliveryAddresses$ | async as deliveryAddresses"
+    <div class="p-2">
+      <div class="modal-header">
+        <h4 class="modal-title select-modal__title pull-left">
+          Select your definded shipping data
+        </h4>
+
+        <button
+          type="button"
+          class="btn-close close pull-right"
+          aria-label="Close"
+          (click)="onHideSelectModal()"
         >
-          <label for="deliveryAddress">Country</label>
-          <select
-            class="form-select"
-            id="deliveryAddress"
-            formControlName="deliveryAddressId"
+          <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <span class="pb-2">
+          Stripe does not support such functionality, so it is just facade
+          implementation
+        </span>
+        <form
+          [formGroup]="selectShippingDataForm"
+          (ngSubmit)="onSelectFormSubmit()"
+        >
+          <div
+            class="form-group"
+            *ngIf="userDeliveryAddresses$ | async as deliveryAddresses"
           >
-            <option selected disabled value="0">Delivery Address</option>
-            <option
-              *ngFor="let deliveryAddress of deliveryAddresses"
-              [value]="deliveryAddress.id"
+            <label for="deliveryAddress">Country</label>
+            <select
+              class="form-select"
+              id="deliveryAddress"
+              formControlName="deliveryAddressId"
             >
-              {{
-                deliveryAddress.name +
-                  ", " +
-                  deliveryAddress.phone +
-                  ", " +
-                  deliveryAddress.address.country +
-                  ", " +
-                  deliveryAddress.address.city +
-                  ", " +
-                  deliveryAddress.address.line1 +
-                  ", " +
-                  deliveryAddress.address.line2 +
-                  ", " +
-                  deliveryAddress.address.postal_code
-              }}
-            </option>
-          </select>
-        </div>
-        <div class="form-group" *ngIf="userCreditCards$ | async as cards">
-          <label for="deliveryAddress">Card</label>
-          <select class="form-select" id="card" formControlName="cardId">
-            <option selected disabled value="0">Card</option>
-            <option *ngFor="let card of cards" [value]="card.id">
-              {{
-                "····" +
-                  card.cardNumber.slice(
-                    card.cardNumber.length - 4,
-                    card.cardNumber.length
-                  ) +
-                  ", " +
-                  card.cardHolder +
-                  ", " +
-                  card.expirationMonth +
-                  "/" +
-                  card.expirationYear +
-                  ", " +
-                  "··" +
-                  card.cvc.slice(card.cvc.length - 1, card.cvc.length)
-              }}
-            </option>
-          </select>
-        </div>
-        <div class="d-flex pt-3 w-100" style="gap: 25px">
-          <button type="submit" class="btn btn-primary w-100">Select</button>
-          <button
-            type="button"
-            class="btn btn-danger w-100"
-            (click)="onResetSelectForm()"
-          >
-            Reset
-          </button>
-        </div>
-      </form>
+              <option selected disabled value="0">Delivery Address</option>
+              <option
+                *ngFor="let deliveryAddress of deliveryAddresses"
+                [value]="deliveryAddress.id"
+              >
+                {{
+                  deliveryAddress.name +
+                    ", " +
+                    deliveryAddress.phone +
+                    ", " +
+                    deliveryAddress.address.country +
+                    ", " +
+                    deliveryAddress.address.city +
+                    ", " +
+                    deliveryAddress.address.line1 +
+                    ", " +
+                    deliveryAddress.address.line2 +
+                    ", " +
+                    deliveryAddress.address.postal_code
+                }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group" *ngIf="userCreditCards$ | async as cards">
+            <label for="deliveryAddress">Card</label>
+            <select class="form-select" id="card" formControlName="cardId">
+              <option selected disabled value="0">Card</option>
+              <option *ngFor="let card of cards" [value]="card.id">
+                {{
+                  "····" +
+                    card.cardNumber.slice(
+                      card.cardNumber.length - 4,
+                      card.cardNumber.length
+                    ) +
+                    ", " +
+                    card.cardHolder +
+                    ", " +
+                    card.expirationMonth +
+                    "/" +
+                    card.expirationYear +
+                    ", " +
+                    "··" +
+                    card.cvc.slice(card.cvc.length - 1, card.cvc.length)
+                }}
+              </option>
+            </select>
+          </div>
+          <div class="d-flex pt-3 w-100" style="gap: 25px">
+            <button type="submit" class="btn btn-primary w-100">Select</button>
+            <button
+              type="button"
+              class="btn btn-danger w-100"
+              (click)="onResetSelectForm()"
+            >
+              Reset
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </ng-template>
 </div>

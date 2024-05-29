@@ -144,7 +144,10 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   onSearch() {
-    this.handleListClick();
+    if (window.innerWidth <= 992) {
+      this.handleListClick();
+    }
+
     this.router.navigate(['search-results'], {
       queryParams: { query: this.searchName },
     });

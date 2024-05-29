@@ -1,0 +1,33 @@
+.sidebar-profile-modal {
+  &__body {
+    gap: 25px;
+  }
+
+  &__email {
+    gap: 50px;
+  }
+
+  &__image-wrapper {
+    width: 225px;
+  }
+}
+
+@media (max-width: 991px) {
+  .sidebar-profile-modal__body {
+    gap: 15px;
+  }
+
+  .sidebar-profile-modal__email {
+    gap: 0;
+  }
+
+  .sidebar-profile-modal__image-wrapper {
+    width: 75%;
+  }
+}
+
+@media (max-width: 500px) {
+  .modal-title {
+    display: none;
+  }
+}

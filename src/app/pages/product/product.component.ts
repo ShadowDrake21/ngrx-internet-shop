@@ -96,9 +96,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   isInCart: boolean = false;
   isInFavorites: boolean = false;
   isAuthorizedGuest: boolean = true;
-
-  cartBtnText!: string;
-  favoritesBtnText!: string;
+  isProductOfTheDay: boolean = false;
 
   itemsPerSlide: number = 2;
   private innerWidth!: number;
@@ -123,6 +121,7 @@ export class ProductComponent implements OnInit, OnDestroy {
       (productId) => {
         const productOfTheDay: IProduct | null = this.loadProductOfTheDay();
         if (Number(productId) !== this.loadProductOfTheDay()?.id) {
+          this.isProductOfTheDay = false;
           this.store.dispatch(
             ProductActions.loadSingleProductById({
               productId: productId as number,
@@ -130,6 +129,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           );
         } else {
           if (productOfTheDay) {
+            this.isProductOfTheDay = true;
             this.store.dispatch(
               ProductActions.setSingleProduct({ product: productOfTheDay })
             );
@@ -200,7 +200,6 @@ export class ProductComponent implements OnInit, OnDestroy {
       });
 
     this.checkInCart();
-
     this.adjustItemsPerSlide();
 
     this.subscriptions.push(
@@ -286,7 +285,6 @@ export class ProductComponent implements OnInit, OnDestroy {
             .subscribe();
 
           this.isInFavorites = true;
-          this.changeFavoritesText(this.isInFavorites);
 
           this.subscriptions.push(productSubscription);
         } else {
@@ -298,12 +296,10 @@ export class ProductComponent implements OnInit, OnDestroy {
               }
             }
             this.isInFavorites = false;
-            this.changeFavoritesText(this.isInFavorites);
           });
 
           this.subscriptions.push(sourceSubscription);
         }
-        this.updateBtnsTexts(window.innerWidth);
       });
 
     this.subscriptions.push(favoritesSubscription);
@@ -365,7 +361,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         )
         .subscribe();
       this.isInFavorites = !this.isInFavorites;
-      this.changeFavoritesText(this.isInFavorites);
+
       this.subscriptions.push(productSubscription);
     }
   }
@@ -383,47 +379,15 @@ export class ProductComponent implements OnInit, OnDestroy {
       )
       .subscribe((isInCart) => {
         this.isInCart = isInCart;
-        this.changeCartText(isInCart);
       });
 
     this.subscriptions.push(cartSubscription);
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onResize(event: Event) {
-    this.updateBtnsTexts(window.innerWidth);
-  }
-
-  private updateBtnsTexts(windowSize: number) {
-    if (windowSize <= 400) {
-      this.cartBtnText = '';
-      this.favoritesBtnText = '';
-    } else {
-      this.changeCartText(this.isInCart);
-      this.changeFavoritesText(this.isInFavorites);
-    }
   }
 
   private adjustItemsPerSlide() {
     this.innerWidth = window.innerWidth;
     if (this.innerWidth < this.mobileBreakpoint) {
       this.itemsPerSlide = 1;
-    }
-  }
-
-  changeCartText(value: boolean) {
-    if (value) {
-      this.cartBtnText = 'Added to cart';
-    } else {
-      this.cartBtnText = 'Add to cart';
-    }
-  }
-
-  changeFavoritesText(value: boolean) {
-    if (value) {
-      this.favoritesBtnText = 'Remove from favorites';
-    } else {
-      this.favoritesBtnText = 'Add to favorites';
     }
   }
 
