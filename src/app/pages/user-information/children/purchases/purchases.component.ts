@@ -1,9 +1,6 @@
+// angular stuff
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
-import { userInformationContent } from '../../content/user-information.content';
 import { Store } from '@ngrx/store';
-import { AppState } from '@app/store/app.state';
-import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import {
   combineLatest,
   debounceTime,
@@ -16,9 +13,22 @@ import { CommonModule } from '@angular/common';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { TooltipDirective, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ReactiveFormsModule } from '@angular/forms';
+
+// created ngrx stuff
+import { AppState } from '@store/app.state';
+import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
+
+// components
 import { CustomerInformationComponent } from './components/customer-information/customer-information.component';
+import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
 import { PurchasesListComponent } from './components/purchases-list/purchases-list.component';
-import { ISupplementedCharge } from '@app/shared/models/purchase.model';
+
+// interfaces
+import { ISupplementedCharge } from '@models/purchase.model';
+
+// content
+import { userInformationContent } from '../../content/user-information.content';
+
 @Component({
   selector: 'app-purcheses',
   standalone: true,

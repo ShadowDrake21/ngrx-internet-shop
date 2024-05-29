@@ -30,3 +30,19 @@
     gap: 5px;
   }
 }
+
+@media (max-width: 576px) {
+  .delivery-details__list-item {
+    padding: 25px 10px;
+  }
+
+  .delivery-details__list-item__author {
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .delivery-details__list-item__btns {
+    top: 15px;
+    right: 15px;
+  }
+}

@@ -1,9 +1,12 @@
+// angular stuff
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { BsModalRef } from 'ngx-bootstrap/modal';
-import { UserState } from '../../../store/user/user.reducer';
-import * as UserActions from '../../../store/user/user.actions';
+
+// created ngrx stuffs
+import { UserState } from '@store/user/user.reducer';
+import * as UserActions from '@store/user/user.actions';
 
 @Component({
   selector: 'app-expiration-modal',

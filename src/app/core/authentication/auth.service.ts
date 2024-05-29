@@ -29,11 +29,6 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-
-import * as UserActions from '@store/user/user.actions';
-
-// interfaces
-import { IUserSignUpData, IUserUpdate } from '../../shared/models/user.model';
 import {
   child,
   Database,
@@ -42,9 +37,17 @@ import {
   ref,
   update,
 } from '@angular/fire/database';
-import { SIGN_IN_PHOTO_URL } from '../constants/auth.constants';
 import { Store } from '@ngrx/store';
+
+// created ngrx stuff
+import * as UserActions from '@store/user/user.actions';
 import { UserState } from '@app/store/user/user.reducer';
+
+// interfaces
+import { IUserSignUpData, IUserUpdate } from '@models/user.model';
+
+// constants
+import { SIGN_IN_PHOTO_URL } from '../constants/auth.constants';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -111,9 +114,7 @@ export class AuthService {
   }
 
   signInManually(email: string, password: string): Observable<UserCredential> {
-    return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
-      tap(() => console.log('this.auth', this.auth))
-    );
+    return from(signInWithEmailAndPassword(this.auth, email, password));
   }
 
   sendPasswordReset(email: string): Observable<void> {

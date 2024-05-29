@@ -1,4 +1,12 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -18,18 +26,20 @@ import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { CartModalComponent } from './components/cart-modal/cart-modal.component';
 
 // services
-import { ProductService } from '../../../core/services/product.service';
+import { ProductService } from '@core/services/product.service';
 
 // intefaces
-import { IProduct } from '../../models/product.model';
+import { IProduct } from '@models/product.model';
+import { IUser } from '@models/user.model';
 
 // created ngrx stuff
-import * as CartSelectors from '../../../store/cart/cart.selectors';
-import * as UserSelectors from '../../../store/user/user.selectors';
-import * as UserActions from '../../../store/user/user.actions';
-import { AppState } from '../../../store/app.state';
-import { IUser } from '../../models/user.model';
-import { LS_AUTH_ITEM_NAME } from '../../../core/constants/auth.constants';
+import { AppState } from '@store/app.state';
+import * as CartSelectors from '@store/cart/cart.selectors';
+import * as UserSelectors from '@store/user/user.selectors';
+import * as UserActions from '@store/user/user.actions';
+
+// constants
+import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
 
 @Component({
   selector: 'app-header',
@@ -46,11 +56,14 @@ import { LS_AUTH_ITEM_NAME } from '../../../core/constants/auth.constants';
   styleUrl: './header.component.scss',
   providers: [BsModalService],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, AfterViewInit {
   private store = inject(Store<AppState>);
   private modalService = inject(BsModalService);
   private productService = inject(ProductService);
   private router = inject(Router);
+
+  @ViewChild('navbarToggler') navbarToggler!: ElementRef<HTMLButtonElement>;
+  @ViewChild('navbarList') navbarList!: ElementRef<HTMLUListElement>;
 
   cart = faCartShopping;
   signIn = faSignInAlt;
@@ -68,11 +81,37 @@ export class HeaderComponent implements OnInit {
   user$!: Observable<IUser | null>;
   noResult = false;
 
+  windowSize!: number;
+
   ngOnInit(): void {
     this.cartProducts$ = this.store.select(CartSelectors.selectCartProducts);
     this.user$ = this.store.select(UserSelectors.selectUser);
     this.searchTypeahead();
   }
+
+  ngAfterViewInit(): void {
+    this.updateNavbarBehavior();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    this.updateNavbarBehavior();
+  }
+
+  private updateNavbarBehavior(): void {
+    this.windowSize = window.innerWidth;
+    const listEl = this.navbarList.nativeElement;
+    if (this.windowSize <= 992) {
+      listEl.addEventListener('click', this.handleListClick);
+    } else {
+      listEl.removeEventListener('click', this.handleListClick);
+    }
+  }
+
+  private handleListClick = () => {
+    const togglerEl = this.navbarToggler.nativeElement;
+    togglerEl.click();
+  };
 
   searchTypeahead() {
     this.suggestions$ = new Observable(
@@ -107,6 +146,10 @@ export class HeaderComponent implements OnInit {
   }
 
   onSearch() {
+    if (window.innerWidth <= 992) {
+      this.handleListClick();
+    }
+
     this.router.navigate(['search-results'], {
       queryParams: { query: this.searchName },
     });

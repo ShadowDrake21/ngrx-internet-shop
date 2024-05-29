@@ -1,4 +1,5 @@
-import { ICard } from '@app/shared/models/card.model';
+// interfaces
+import { ICard } from '@models/card.model';
 
 export const formCardObject = (data: any): ICard => {
   const cardNumber =

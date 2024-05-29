@@ -1,3 +1,4 @@
+// angular stuff
 import { inject, Injectable } from '@angular/core';
 import {
   child,
@@ -6,13 +7,14 @@ import {
   get,
   ref,
   remove,
-  update,
 } from '@angular/fire/database';
-import { ICard } from '@app/shared/models/card.model';
-import { IProduct } from '@app/shared/models/product.model';
-import { IShipping } from '@app/shared/models/purchase.model';
 import { query, set } from 'firebase/database';
-import { from, map, Observable } from 'rxjs';
+import { from, map, Observable, of } from 'rxjs';
+
+// interfaces
+import { ICard } from '@models/card.model';
+import { IProduct } from '@models/product.model';
+import { IShipping } from '@models/purchase.model';
 
 @Injectable({
   providedIn: 'root',
@@ -112,7 +114,10 @@ export class DatabaseService {
     );
   }
 
-  getLastViewedProduct(email: string) {
+  getLastViewedProduct(email: string): Observable<string> {
+    if (!email) {
+      return of('');
+    }
     return from(
       get(
         child(

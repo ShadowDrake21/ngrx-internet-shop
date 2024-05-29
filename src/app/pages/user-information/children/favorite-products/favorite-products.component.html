@@ -7,7 +7,7 @@
       <ng-container *ngFor="let category of visibleCategories | keyvalue">
         <h4 class="text-center pb-2">{{ category.key }}</h4>
         <carousel
-          [itemsPerSlide]="3"
+          [itemsPerSlide]="itemsPerSlide"
           [singleSlideOffset]="true"
           [startFromIndex]="0"
           [interval]="0"

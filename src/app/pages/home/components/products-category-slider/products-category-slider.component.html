@@ -1,4 +1,4 @@
-<div *ngIf="products$ | async as products" class="pb-4">
+<div *ngIf="products$ | async as products" style="padding-bottom: 3rem">
   <ng-container *ngIf="products.length; else noProducts">
     <h4 class="text-center pb-2">{{ products[0].category.name }}</h4>
     <ng-container>
@@ -7,6 +7,7 @@
         [singleSlideOffset]="singleSlideOffset"
         [interval]="0"
         [noWrap]="true"
+        [showIndicators]="showIndicator"
         data-slider="product-category-slider"
         class="d-flex justify-content-center"
       >
@@ -14,8 +15,9 @@
           <app-products-category-slider-item
             [item]="product"
           ></app-products-category-slider-item>
-        </slide> </carousel
-    ></ng-container>
+        </slide>
+      </carousel>
+    </ng-container>
   </ng-container>
   <ng-template #noProducts>
     <div class="text-center pt-3 pb-3">

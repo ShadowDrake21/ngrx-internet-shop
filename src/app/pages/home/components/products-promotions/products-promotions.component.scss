@@ -1,0 +1,9 @@
+.promotions {
+  gap: 30px;
+}
+
+@media (max-width: 992px) {
+  .promotions {
+    gap: 15px;
+  }
+}

@@ -1,3 +1,4 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -13,21 +14,25 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AppState } from '@app/store/app.state';
 import { Store } from '@ngrx/store';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { TooltipDirective, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { Observable, Subscription } from 'rxjs';
 import Stripe from 'stripe';
 
+// created ngrx stuff
+import { AppState } from '@app/store/app.state';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
-import { IPurchaseUpdate } from '@app/shared/models/purchase.model';
+
+// interfaces
+import { IPurchaseUpdate } from '@models/purchase.model';
+
+// constants
 import { errorMessages } from './constants/errors.constants';
+import { phonePattern } from './constants/pattern.constants';
+
+// utils
 import { shippingFieldsValidator } from './utils/formValidators.utils';
-import {
-  countryCodePattern,
-  phonePattern,
-} from './constants/pattern.constants';
 
 @Component({
   selector: 'app-customer-information',

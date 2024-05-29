@@ -13,8 +13,7 @@
       <div *ngIf="cards$ | async as cards">
         <ng-container *ngIf="cards.length; else noCards">
           <div
-            class="d-flex"
-            style="gap: 25px"
+            class="d-flex card__details-counts"
             [class.text-danger]="cards.length === sizeRestriction"
           >
             <p>
@@ -26,7 +25,10 @@
               <span class="fw-bold">{{ cards.length }}</span>
             </p>
           </div>
-          <div class="d-flex flex-wrap" style="gap: 40px; padding: 0 10px">
+          <div
+            class="d-flex flex-wrap justify-content-center"
+            style="gap: 40px; padding: 0 10px"
+          >
             <app-card-item
               *ngFor="let card of cards"
               [card]="card"

@@ -2,9 +2,9 @@
 import { createReducer, on } from '@ngrx/store';
 
 // interfaces
-import { IUser } from '../../shared/models/user.model';
+import { IUser } from '@models/user.model';
 
-// actions
+// created ngrx stuff
 import * as UserActions from './user.actions';
 
 export interface UserState {

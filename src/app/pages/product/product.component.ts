@@ -31,18 +31,20 @@ import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { SimilarProductComponent } from './components/similar-product/similar-product.component';
 
 // interfaces
-import { IProduct } from '../../shared/models/product.model';
+import { IProduct } from '@models/product.model';
 
 // services
-import { ProductService } from '../../core/services/product.service';
+import { ProductService } from '@core/services/product.service';
+import { DatabaseService } from '@core/services/database.service';
+import { ProductManipulationsService } from '@core/services/product-manipulations.service';
 
 // pipes
-import { SafeHTMLPipe } from '../../shared/pipes/safe-html.pipe';
-import { ClearURLPipe } from '../../shared/pipes/clear-url.pipe';
-import { TruncateTextPipe } from '../../shared/pipes/truncate-text.pipe';
+import { SafeHTMLPipe } from '@shared/pipes/safe-html.pipe';
+import { ClearURLPipe } from '@shared/pipes/clear-url.pipe';
+import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
 
 // created ngrx stuff
-import { AppState } from '../../store/app.state';
+import { AppState } from '@store/app.state';
 import * as UserSelectors from '@store/user/user.selectors';
 import * as ProductActions from '@store/product/product.actions';
 import * as CartActions from '@store/cart/cart.actions';
@@ -50,8 +52,6 @@ import * as ProductSelectors from '@store/product/product.selectors';
 import * as CartSelectors from '@store/cart/cart.selectors';
 import * as FavoritesActions from '@app/store/favorites/favorites.actions';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
-import { ProductManipulationsService } from '@app/core/services/product-manipulations.service';
-import { DatabaseService } from '@app/core/services/database.service';
 
 @Component({
   selector: 'app-product',
@@ -90,6 +90,11 @@ export class ProductComponent implements OnInit, OnDestroy {
   isInCart: boolean = false;
   isInFavorites: boolean = false;
   isAuthorizedGuest: boolean = true;
+  isProductOfTheDay: boolean = false;
+
+  itemsPerSlide: number = 2;
+  private innerWidth!: number;
+  private mobileBreakpoint: number = 600;
 
   subscriptions: Subscription[] = [];
 
@@ -110,6 +115,7 @@ export class ProductComponent implements OnInit, OnDestroy {
       (productId) => {
         const productOfTheDay: IProduct | null = this.loadProductOfTheDay();
         if (Number(productId) !== this.loadProductOfTheDay()?.id) {
+          this.isProductOfTheDay = false;
           this.store.dispatch(
             ProductActions.loadSingleProductById({
               productId: productId as number,
@@ -117,6 +123,7 @@ export class ProductComponent implements OnInit, OnDestroy {
           );
         } else {
           if (productOfTheDay) {
+            this.isProductOfTheDay = true;
             this.store.dispatch(
               ProductActions.setSingleProduct({ product: productOfTheDay })
             );
@@ -187,6 +194,8 @@ export class ProductComponent implements OnInit, OnDestroy {
       });
 
     this.checkInCart();
+    this.adjustItemsPerSlide();
+
     this.subscriptions.push(
       sourceSubscription,
       productInitializationSubscription
@@ -270,6 +279,7 @@ export class ProductComponent implements OnInit, OnDestroy {
             .subscribe();
 
           this.isInFavorites = true;
+
           this.subscriptions.push(productSubscription);
         } else {
           const sourceSubscription = this.source$.subscribe((source) => {
@@ -345,6 +355,7 @@ export class ProductComponent implements OnInit, OnDestroy {
         )
         .subscribe();
       this.isInFavorites = !this.isInFavorites;
+
       this.subscriptions.push(productSubscription);
     }
   }
@@ -365,6 +376,13 @@ export class ProductComponent implements OnInit, OnDestroy {
       });
 
     this.subscriptions.push(cartSubscription);
+  }
+
+  private adjustItemsPerSlide() {
+    this.innerWidth = window.innerWidth;
+    if (this.innerWidth < this.mobileBreakpoint) {
+      this.itemsPerSlide = 1;
+    }
   }
 
   ngOnDestroy(): void {

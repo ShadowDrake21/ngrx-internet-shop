@@ -1,3 +1,4 @@
+// angular stuff
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -16,13 +17,21 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { DatabaseService } from '@app/core/services/database.service';
-import { phonePattern } from '../../../purchases/components/customer-information/constants/pattern.constants';
 import { map, Observable, of, Subscription, switchMap } from 'rxjs';
-import { IShipping } from '@app/shared/models/purchase.model';
-import { IReducedUnsplashImage } from '@app/shared/models/unsplash.model';
-import { shuffleArray } from '@app/shared/utils/arrayManipulations.utils';
-import { UnsplashService } from '@app/core/services/unsplash.service';
+
+// services
+import { DatabaseService } from '@core/services/database.service';
+import { UnsplashService } from '@core/services/unsplash.service';
+
+// constants
+import { phonePattern } from '../../../purchases/components/customer-information/constants/pattern.constants';
+
+// interfaces
+import { IShipping } from '@models/purchase.model';
+import { IReducedUnsplashImage } from '@models/unsplash.model';
+
+// utils
+import { shuffleArray } from '@shared/utils/arrayManipulations.utils';
 
 @Component({
   selector: 'app-delivery-record-form',

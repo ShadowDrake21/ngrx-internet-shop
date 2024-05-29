@@ -1,3 +1,9 @@
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
 body {
   display: flex;
   justify-content: center;
@@ -9,6 +15,8 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+  line-height: 24px;
 }
 section {
   display: flex;
@@ -96,12 +104,48 @@ button:hover {
   border: 1px solid #000;
   width: 700px;
   max-height: 500px;
-  height: 100%;
-  overflow-y: auto;
+
+  overflow-y: scroll;
 }
 
 .go-back-link {
   font-size: 20px;
   line-height: 26px;
   margin-top: 15px;
+}
+
+@media (max-width: 1000px) {
+  .info {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 610px) {
+  .info {
+    padding: 10px 15px;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
+    overflow-y: hidden;
+  }
+
+  p {
+    text-align: center;
+    padding: 0 10px;
+  }
+
+  .info-inner {
+    position: absolute;
+    max-height: 500px;
+    overflow-y: scroll;
+    padding: 10px 35px;
+  }
+}
+
+@media (max-width: 450px) {
+  p {
+    font-size: 16px;
+    line-height: 20px;
+  }
 }

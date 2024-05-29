@@ -1,14 +1,14 @@
 <div class="container">
   <h1 *ngIf="title" class="text-center mb-3">{{ title }}</h1>
-  <div class="d-flex">
+  <div class="d-flex products-list__wrapper" style="gap: 30px">
     <ng-content></ng-content>
-    <ul
-      class="row row-cols-1 g-4 product-list flex-grow-1 w-100"
-      [ngClass]="tableSizeStyle"
+    <div
+      class="d-flex flex-wrap product-list flex-grow-1 w-100 justify-content-center pb-4"
+      style="gap: 30px"
       *ngIf="visibleProducts$ | async as products"
     >
-      @if(products.length > 0) { @for (product of products; track $index) {
-      <li class="col text-decoration-none">
+      @if(products.length > 0 ) { @for (product of products; track $index) {
+      <div class="text-decoration-none">
         <app-single-product
           [item]="product"
           [isInCart]="
@@ -16,21 +16,27 @@
           "
           (onAddToCart)="handleAddToCart($event)"
         ></app-single-product>
-      </li>
-      }} @else{
+      </div>
+      }} @else{ @if (productError$ | async) {
       <div class="w-100 d-flex align-items-center justify-content-center">
-        <p class="fw-bold fs-3">
+        <p class="fw-bold fs-3 text-center text-md-start">
+          {{ productError$ | async }}
+        </p>
+      </div>
+      } @else {
+      <div class="w-100 d-flex align-items-center justify-content-center">
+        <p class="fw-bold fs-3 text-center text-md-start">
           There is no product that meets these criteria...
         </p>
       </div>
-      }
-    </ul>
+      } }
+    </div>
   </div>
   <div
     class="d-flex justify-content-center pt-2"
     *ngIf="
       (visibleProducts$ | async)?.length &&
-      calcPageNum((listProducts$ | async)!.length, itemsPerPage)
+      calcPageNum((listProducts$ | async)!.length, itemsPerPage) > 1
     "
   >
     <pagination
@@ -42,7 +48,4 @@
       [(ngModel)]="currentPage"
     ></pagination>
   </div>
-  @if (productError$ | async) {
-  <p>{{ productError$ | async }}</p>
-  }
 </div>

@@ -1,8 +1,9 @@
+// angular stuff
 import { createAction, props } from '@ngrx/store';
 
 // interfaces
-import { IProduct } from '../../shared/models/product.model';
-import { IFilterFormObj } from '../../shared/models/forms.model';
+import { IProduct } from '@models/product.model';
+import { IFilterFormObj } from '@models/forms.model';
 
 export const loadProducts = createAction('[Products Component] LoadProducts');
 export const loadProductsSuccess = createAction(
