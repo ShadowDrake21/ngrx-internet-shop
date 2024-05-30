@@ -1,6 +1,12 @@
 .alert {
   z-index: 99;
   top: 25px;
-  right: 5%;
-  left: 5%;
+  right: 25px;
+}
+
+@media (max-width: 800px) {
+  .alert {
+    right: 5%;
+    left: 5%;
+  }
 }
