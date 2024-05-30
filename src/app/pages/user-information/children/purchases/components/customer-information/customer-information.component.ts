@@ -245,6 +245,13 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
 
   onUpdateSubmit() {
     const formValues = this.customerUpdateForm.value;
+    if (formValues.billing?.country === '0') {
+      formValues.billing.country = undefined;
+    }
+    if (formValues.shipping?.address?.country === '0') {
+      formValues.shipping.address.country = undefined;
+    }
+
     let updateObject: IPurchaseUpdate = {
       name: formValues.name ?? undefined,
       description: formValues.description ?? undefined,
@@ -300,7 +307,7 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
       name: '',
       description: '',
       billing: {
-        country: '0',
+        country: '',
         city: '',
         line1: '',
         line2: '',
@@ -310,7 +317,7 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
         name: '',
         phone: '',
         address: {
-          country: '0',
+          country: '',
           city: '',
           line1: '',
           line2: '',
