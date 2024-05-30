@@ -136,7 +136,7 @@ app.get('/success', async (req, res) => {
       <img class="image" src="/images/check.png" alt="success purchasing" />
         <div class="info">
         <div class="info-inner">
-          <p>Thank you for your order, ${customer.name}!</p>
+          <p>Thank you for your order, ${customer.name || 'my friend'}!</p>
           <p>
             You will receive an order confirmation email with details of your
             order. Here are your ordered items:
