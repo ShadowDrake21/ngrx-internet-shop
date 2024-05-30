@@ -1,15 +1,15 @@
-import express from "express";
-import cors from "cors";
-import bodyparser from "body-parser";
-import Stripe from "stripe";
-import createPurchase from "./controllers/purchaseControllers.js";
-import dotenv from "dotenv";
+import express from 'express';
+import cors from 'cors';
+import bodyparser from 'body-parser';
+import Stripe from 'stripe';
+import createPurchase from './controllers/purchaseControllers.js';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
 const app = express();
-app.use(express.static("public"));
-app.use("/images", express.static("images"));
+app.use(express.static('public'));
+app.use('/images', express.static('images'));
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(cors({ origin: true, credentials: true }));
@@ -18,7 +18,7 @@ const { PORT, STRIPE_API_KEY } = process.env;
 
 const stripe = new Stripe(STRIPE_API_KEY);
 
-app.post("/checkout", async (req, res, next) => {
+app.post('/checkout', async (req, res, next) => {
   try {
     const { email } = req.body;
 
@@ -33,26 +33,26 @@ app.post("/checkout", async (req, res, next) => {
 
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
-      payment_method_types: ["card"],
+      payment_method_types: ['card'],
       shipping_address_collection: {
-        allowed_countries: ["UA", "PL"],
+        allowed_countries: ['UA', 'PL'],
       },
       shipping_options: [
         {
           shipping_rate_data: {
-            type: "fixed_amount",
+            type: 'fixed_amount',
             fixed_amount: {
               amount: 0,
-              currency: "PLN",
+              currency: 'PLN',
             },
-            display_name: "Free shipping",
+            display_name: 'Free shipping',
             delivery_estimate: {
               minimum: {
-                unit: "business_day",
+                unit: 'business_day',
                 value: 4,
               },
               maximum: {
-                unit: "business_day",
+                unit: 'business_day',
                 value: 8,
               },
             },
@@ -60,19 +60,19 @@ app.post("/checkout", async (req, res, next) => {
         },
         {
           shipping_rate_data: {
-            type: "fixed_amount",
+            type: 'fixed_amount',
             fixed_amount: {
               amount: 1500,
-              currency: "PLN",
+              currency: 'PLN',
             },
-            display_name: "Next day air",
+            display_name: 'Next day air',
             delivery_estimate: {
               minimum: {
-                unit: "business_day",
+                unit: 'business_day',
                 value: 1,
               },
               maximum: {
-                unit: "business_day",
+                unit: 'business_day',
                 value: 1,
               },
             },
@@ -81,7 +81,7 @@ app.post("/checkout", async (req, res, next) => {
       ],
       line_items: req.body.items.map((item) => ({
         price_data: {
-          currency: "PLN",
+          currency: 'PLN',
           product_data: {
             name: item.title,
             images: item.images,
@@ -93,10 +93,11 @@ app.post("/checkout", async (req, res, next) => {
       phone_number_collection: {
         enabled: true,
       },
-      mode: "payment",
+      mode: 'payment',
       success_url:
-        "http://localhost:4242/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "http://localhost:4242/cancel.html",
+        'https://ngrx-internet-shop-stripe-backend.onrender.com/success?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url:
+        'https://ngrx-internet-shop-stripe-backend.onrender.com/cancel.html',
     });
 
     res.status(200).json(session);
@@ -105,7 +106,7 @@ app.post("/checkout", async (req, res, next) => {
   }
 });
 
-app.get("/success", async (req, res) => {
+app.get('/success', async (req, res) => {
   const session_id = req.query.session_id;
 
   const session = await stripe.checkout.sessions.retrieve(session_id);
@@ -155,7 +156,7 @@ app.get("/success", async (req, res) => {
               ${item.currency.toUpperCase()}</li>
               <li>Quantity: ${item.quantity}</li></ul>`
             )
-            .join("")}
+            .join('')}
           </div>
         </div>
         <a
@@ -170,4 +171,4 @@ app.get("/success", async (req, res) => {
   );
 });
 
-app.listen(PORT, () => console.log("App is running on 4242..."));
+app.listen(PORT, () => console.log('App is running on 4242...'));

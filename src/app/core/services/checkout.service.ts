@@ -45,12 +45,15 @@ export class CheckoutService {
   }
 
   checkoutInit(data: ICheckoutInit): Observable<any> {
-    return this.http.post('http://localhost:4242/checkout', {
-      items: data.products,
-      email: data.email,
-      deliveryAddress: data.deliveryAddress,
-      paymentMethodId: data.paymentMethodId,
-    });
+    return this.http.post(
+      'https://ngrx-internet-shop-stripe-backend.onrender.com/checkout',
+      {
+        items: data.products,
+        email: data.email,
+        deliveryAddress: data.deliveryAddress,
+        paymentMethodId: data.paymentMethodId,
+      }
+    );
   }
 
   createCustomer(email: string): Observable<Stripe.Customer> {
