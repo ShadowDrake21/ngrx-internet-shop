@@ -14,7 +14,7 @@ app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(cors({ origin: true, credentials: true }));
 
-const { PORT, STRIPE_API_KEY } = process.env;
+const { PORT, STRIPE_API_KEY, HOST_URL } = process.env;
 
 const stripe = new Stripe(STRIPE_API_KEY);
 
@@ -94,10 +94,8 @@ app.post('/checkout', async (req, res, next) => {
         enabled: true,
       },
       mode: 'payment',
-      success_url:
-        'https://ngrx-internet-shop-stripe-backend.onrender.com/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url:
-        'https://ngrx-internet-shop-stripe-backend.onrender.com/cancel.html',
+      success_url: `${HOST_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${HOST_URL}/cancel.html`,
     });
 
     res.status(200).json(session);
@@ -131,6 +129,7 @@ app.get('/success', async (req, res) => {
       <title>Thanks for your order!</title>
       <link rel="stylesheet" href="/style.css" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     </head>
     <body>
       <section class="success">
@@ -161,7 +160,7 @@ app.get('/success', async (req, res) => {
         </div>
         <a
             class="go-back-link"
-            href="http://localhost:4200/"
+            href="https://ngrx-internet-shop.netlify.app"
             style="text-align: center"
             >Go back to shop</a
           >
