@@ -152,13 +152,14 @@
         >
           <div
             class="form-group"
-            *ngIf="userDeliveryAddresses$ | async as deliveryAddresses"
+            *ngIf="(userDeliveryAddresses$ | async)?.length"
           >
-            <label for="deliveryAddress">Delivery Address</label>
+            <label for="deliveryAddress" class="pb-2">Delivery Address</label>
             <select
               class="form-select"
               id="deliveryAddress"
               formControlName="deliveryAddressId"
+              *ngIf="userDeliveryAddresses$ | async as deliveryAddresses"
             >
               <option selected disabled value="0">Delivery Address</option>
               <option
@@ -184,7 +185,7 @@
             </select>
           </div>
           <div class="form-group" *ngIf="(userCreditCards$ | async)?.length">
-            <label for="deliveryAddress">Card</label>
+            <label for="deliveryAddress" class="pb-2">Card</label>
             <select
               class="form-select"
               id="card"
