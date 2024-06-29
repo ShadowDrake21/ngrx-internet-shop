@@ -30,6 +30,7 @@ import {
   IUserTransactionsData,
 } from '@models/purchase.model';
 import { ICard } from '@models/card.model';
+import { CHECKOUT_BASE_URL } from '../constants/checkout.constants';
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
@@ -45,15 +46,12 @@ export class CheckoutService {
   }
 
   checkoutInit(data: ICheckoutInit): Observable<any> {
-    return this.http.post(
-      'https://ngrx-internet-shop-stripe-backend.onrender.com/checkout',
-      {
-        items: data.products,
-        email: data.email,
-        deliveryAddress: data.deliveryAddress,
-        paymentMethodId: data.paymentMethodId,
-      }
-    );
+    return this.http.post(`${CHECKOUT_BASE_URL}/checkout`, {
+      items: data.products,
+      email: data.email,
+      deliveryAddress: data.deliveryAddress,
+      paymentMethodId: data.paymentMethodId,
+    });
   }
 
   createCustomer(email: string): Observable<Stripe.Customer> {
