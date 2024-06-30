@@ -5,7 +5,11 @@
     <div class="product-image__slider-wrapper">
       <carousel [noPause]="false">
         <slide *ngFor="let image of product.images">
-          <img [src]="image" alt="product-image" class="card-img-top" />
+          <img
+            [src]="image"
+            alt="product-image"
+            class="card-img-top product-image__slider-item"
+          />
         </slide>
       </carousel>
     </div>
@@ -41,7 +45,11 @@
           class="btn btn-danger text-light"
           (click)="onToggleToFavourites(product.id)"
           [class.inFavorites]="isInFavorites"
-          [disabled]="!isAuthorizedGuest || isProductOfTheDay"
+          [disabled]="
+            !isAuthorizedGuest ||
+            isProductOfTheDay ||
+            product.category.id === 10999
+          "
         >
           {{ isInFavorites ? "Remove from favorites" : "Add to favorites" }}
           @if (isInFavorites) {
@@ -60,6 +68,7 @@
     <div style="max-width: 590px">
       <h4 class="text-center">Category</h4>
       <a
+        [class.pe-none]="category.id === 10999"
         class="card mb-3 text-decoration-none text-dark"
         [routerLink]="['/category']"
         [queryParams]="{ id: category.id }"

@@ -3,7 +3,7 @@
     [src]="product.images[0] | clearURL | safeHTML"
     class="card-img-top"
     alt="product"
-    style="height: 286px"
+    style="height: 286px; overflow: auto"
   />
   <div class="card-body card-display">
     <h5 class="card-title">{{ product.title | truncateText : 20 }}</h5>

@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import {
   catchError,
+  delay,
   exhaustMap,
   forkJoin,
   from,
@@ -17,18 +18,23 @@ import * as PurchaseActions from '@store/purchase/purchase.actions';
 
 // services
 import { CheckoutService } from '@core/services/checkout.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app.state';
 
 @Injectable()
 export class PurchaseEffects {
   private actions$ = inject(Actions);
+  private store = inject(Store<AppState>);
   private checkoutService = inject(CheckoutService);
 
   initializeCheckout$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(PurchaseActions.initializeCheckout),
-        exhaustMap(({ data }) =>
-          this.checkoutService.checkoutInit(data).pipe(
+        exhaustMap(({ data }) => {
+          this.store.dispatch(PurchaseActions.startCheckoutLoading());
+          return this.checkoutService.checkoutInit(data).pipe(
+            delay(10000),
             switchMap(async (res: any) => {
               const stripe = from(
                 loadStripe(
@@ -41,9 +47,15 @@ export class PurchaseEffects {
                   sessionId: res.id,
                 })
               );
+            }),
+            catchError((error) => {
+              return of(error);
             })
-          )
-        )
+          );
+        }),
+        map(() => {
+          this.store.dispatch(PurchaseActions.endCheckoutLoading());
+        })
       ),
     { dispatch: false }
   );

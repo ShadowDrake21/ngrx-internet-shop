@@ -8,6 +8,13 @@ import { createAction, props } from '@ngrx/store';
 import { PaymentMethod } from '@stripe/stripe-js';
 import Stripe from 'stripe';
 
+export const startCheckoutLoading = createAction(
+  '[Checkout Component] Start Loading'
+);
+export const endCheckoutLoading = createAction(
+  '[Checkout Component] End Loading'
+);
+
 export const initializeCheckout = createAction(
   '[Checkout Component] InitializeCheckout',
   props<{ data: ICheckoutInit }>()

@@ -7,6 +7,10 @@ import { PurchaseState } from './purchase.reducer';
 export const selectPurchaseState =
   createFeatureSelector<PurchaseState>('purchase');
 
+export const selectLoading = createSelector(
+  selectPurchaseState,
+  (state: PurchaseState) => state.loading
+);
 export const selectCustomer = createSelector(
   selectPurchaseState,
   (state: PurchaseState) => state.customer
