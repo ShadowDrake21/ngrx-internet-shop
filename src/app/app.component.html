@@ -4,6 +4,7 @@
 >
   <app-header *ngIf="headerFooterAvailable"></app-header>
   <div class="content">
+    <app-checkout-loading *ngIf="checkoutLoading$ | async" />
     <app-breadcrumbs *ngIf="headerFooterAvailable"></app-breadcrumbs>
     <router-outlet></router-outlet>
     <button

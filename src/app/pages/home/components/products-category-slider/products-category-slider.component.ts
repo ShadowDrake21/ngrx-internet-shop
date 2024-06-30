@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 // services
 import { ProductService } from '@core/services/product.service';
@@ -14,6 +14,7 @@ import { ProductsItemComponent } from '@shared/components/products-item/products
 // interfaces
 import { ICategory } from '@models/category.model';
 import { IProduct } from '@models/product.model';
+import { customProducts } from '@app/shared/mocks/products.mocks';
 
 @Component({
   selector: 'app-products-category-slider',
@@ -30,7 +31,9 @@ import { IProduct } from '@models/product.model';
 export class ProductsCategorySliderComponent implements OnInit {
   private productService = inject(ProductService);
 
-  @Input({ required: true, alias: 'categoryId' }) categoryIdStr!: string;
+  @Input({ required: true, alias: 'categoryId' }) categoryIdStr!:
+    | string
+    | 'custom';
 
   category$!: Observable<ICategory | null>;
   products$!: Observable<IProduct[]>;
@@ -45,14 +48,17 @@ export class ProductsCategorySliderComponent implements OnInit {
   showIndicator: boolean = true;
 
   ngOnInit(): void {
-    this.products$ = this.productService.getProductsByCategory(
-      parseInt(this.categoryIdStr),
-      {
-        offset: 0,
-        limit: 15,
-      }
-    );
-
+    if (this.categoryIdStr === 'custom') {
+      this.products$ = of(customProducts);
+    } else {
+      this.products$ = this.productService.getProductsByCategory(
+        parseInt(this.categoryIdStr),
+        {
+          offset: 0,
+          limit: 15,
+        }
+      );
+    }
     this.adjustItemsPerSlide();
   }
 

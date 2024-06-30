@@ -8,6 +8,7 @@ import { ProductService } from '../../core/services/product.service';
 
 // actions
 import * as ProductActions from '../../store/product/product.actions';
+import { customProducts } from '@app/shared/mocks/products.mocks';
 
 @Injectable()
 export class ProductEffects {
@@ -18,7 +19,12 @@ export class ProductEffects {
       ofType(ProductActions.loadProducts),
       exhaustMap(() =>
         this.productService.getAllProducts().pipe(
-          map((products) => ProductActions.loadProductsSuccess({ products })),
+          map((products) => {
+            const completeProducts = [...products, ...customProducts];
+            return ProductActions.loadProductsSuccess({
+              products: completeProducts,
+            });
+          }),
           catchError((error) =>
             of(
               ProductActions.loadProductsFailure({
@@ -70,20 +76,32 @@ export class ProductEffects {
   loadSingleProductById$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProductActions.loadSingleProductById),
-      exhaustMap((productId) =>
-        this.productService.getSingleProductById(productId.productId).pipe(
-          map((product) =>
-            ProductActions.loadSingleProductByIdSuccess({ product })
-          ),
-          catchError((error) =>
-            of(
-              ProductActions.loadSingleProductByIdFailure({
-                errorMessage: 'Error during product fetching!',
-              })
+      exhaustMap((productId) => {
+        const customProduct = customProducts.find(
+          (product) => product.id === +productId.productId
+        );
+        if (customProduct) {
+          return of(
+            ProductActions.loadSingleProductByIdSuccess({
+              product: customProduct,
+            })
+          );
+        }
+        return this.productService
+          .getSingleProductById(productId.productId)
+          .pipe(
+            map((product) =>
+              ProductActions.loadSingleProductByIdSuccess({ product })
+            ),
+            catchError((error) =>
+              of(
+                ProductActions.loadSingleProductByIdFailure({
+                  errorMessage: 'Error during product fetching!',
+                })
+              )
             )
-          )
-        )
-      )
+          );
+      })
     )
   );
 

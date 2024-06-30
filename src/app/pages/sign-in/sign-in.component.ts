@@ -187,6 +187,14 @@ export class SignInComponent implements OnInit, OnDestroy {
     this.bsModalRef!.content.closeBtnName = 'Close';
   }
 
+  setTestProfile() {
+    this.signInForm.setValue({
+      email: 'test123@gmail.com',
+      password: '111111',
+      rememberMe: false,
+    });
+  }
+
   ngOnDestroy(): void {
     if (this.subscriptions) {
       this.subscriptions.forEach((subscribtion) => subscribtion.unsubscribe());

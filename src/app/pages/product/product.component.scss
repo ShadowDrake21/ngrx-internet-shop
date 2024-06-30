@@ -10,6 +10,11 @@
 .category-group {
   gap: 20px;
 }
+.product-image__slider-item {
+  width: 350px;
+  height: 350px;
+  object-fit: cover;
+}
 
 @media (max-width: 400px) {
   .product-btns {

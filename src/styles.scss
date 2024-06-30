@@ -16,6 +16,10 @@ body {
   margin-bottom: 0;
 }
 
+body:has(.checkout-loading) {
+  overflow: hidden;
+}
+
 main {
   min-height: 100vh;
   display: flex;

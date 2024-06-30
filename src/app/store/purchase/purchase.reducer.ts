@@ -9,11 +9,13 @@ import * as PurchaseActions from '@store/purchase/purchase.actions';
 import { ISupplementedCharge } from '@models/purchase.model';
 
 export interface PurchaseState {
+  loading: boolean;
   customer: Stripe.Customer | null;
   transactions: ISupplementedCharge[];
   errorMessage: string | null;
 }
 export const initialPurchaseState: PurchaseState = {
+  loading: false,
   customer: null,
   transactions: [],
   errorMessage: null,
@@ -21,6 +23,14 @@ export const initialPurchaseState: PurchaseState = {
 
 export const purchaseReducer = createReducer(
   initialPurchaseState,
+  on(PurchaseActions.startCheckoutLoading, (state) => ({
+    ...state,
+    loading: true,
+  })),
+  on(PurchaseActions.endCheckoutLoading, (state) => ({
+    ...state,
+    loading: false,
+  })),
   on(PurchaseActions.createCustomerSuccess, (state, { customer }) => ({
     ...state,
     customer,
