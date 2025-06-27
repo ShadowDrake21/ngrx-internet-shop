@@ -26,10 +26,9 @@ export class CategoryService {
     return allCategories$.pipe(
       map(
         (categories) =>
-          categories.find(
-            (category) =>
-              category.name.toLowerCase() === categoryName.toLowerCase()
-          ) as ICategory | null
+          categories.find((category) => {
+            return category.name.toLowerCase() === categoryName.toLowerCase();
+          }) as ICategory | null
       )
     );
   }

@@ -31,27 +31,24 @@ import {
 } from '@models/purchase.model';
 import { ICard } from '@models/card.model';
 import { CHECKOUT_BASE_URL } from '../constants/checkout.constants';
+import { environment } from 'environments/environment.development';
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
-  private http = inject(HttpClient);
-  private db = inject(Database);
+  private readonly http = inject(HttpClient);
+  private readonly db = inject(Database);
 
-  stripe!: Stripe;
-
-  constructor() {
-    this.stripe = new Stripe(
-      'sk_test_51OSDbAAGBN9qzN7ZebHv8tsmZYaQwHC0xDtAaZ3GAJJTJbO8DJpTGvLtaIMcJAsgCrW69d2W8Vx5E356Mw04dAqM00EkfSFmu1'
-    );
-  }
+  private stripe: Stripe = new Stripe(environment.stripe.apiKey);
 
   checkoutInit(data: ICheckoutInit): Observable<any> {
-    return this.http.post(`${CHECKOUT_BASE_URL}/checkout`, {
+    const checkoutData = {
       items: data.products,
       email: data.email,
       deliveryAddress: data.deliveryAddress,
       paymentMethodId: data.paymentMethodId,
-    });
+    };
+
+    return this.http.post(`${CHECKOUT_BASE_URL}/checkout`, checkoutData);
   }
 
   createCustomer(email: string): Observable<Stripe.Customer> {

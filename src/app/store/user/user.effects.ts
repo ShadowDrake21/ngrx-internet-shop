@@ -304,7 +304,7 @@ export class UserEffects {
     this.actions$.pipe(
       ofType(UserActions.reauthenticateUser),
       exhaustMap(({ email, password }) =>
-        this.authService.reauthenticateUserObservable(email, password).pipe(
+        this.authService.reauthenticateUserObservable({ email, password }).pipe(
           mergeMap(async (userCredential) => {
             const photoURL = await this.retrievePhotoURL();
 

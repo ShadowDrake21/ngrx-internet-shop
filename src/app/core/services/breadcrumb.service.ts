@@ -1,6 +1,7 @@
 // angular stuff
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { IBreadcrumb } from '@app/shared/models/breadcrump.model';
 import { BehaviorSubject, filter } from 'rxjs';
 
 @Injectable({
@@ -10,9 +11,7 @@ export class BreadcrumbService {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
-  private breadcrumbs$$ = new BehaviorSubject<
-    Array<{ label: string; url: string }>
-  >([]);
+  private breadcrumbs$$ = new BehaviorSubject<IBreadcrumb[]>([]);
   breadcrumbs$ = this.breadcrumbs$$.asObservable();
 
   constructor() {
@@ -27,8 +26,8 @@ export class BreadcrumbService {
   private createBreadcrumbs(
     route: ActivatedRoute,
     url: string = '',
-    breadcrumbs: Array<{ label: string; url: string }> = []
-  ): Array<{ label: string; url: string }> {
+    breadcrumbs: IBreadcrumb[] = []
+  ): IBreadcrumb[] {
     const children: ActivatedRoute[] = route.children;
 
     if (children.length === 0) {
