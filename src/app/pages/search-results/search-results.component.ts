@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { ActivatedRoute, ParamMap, RouterLink } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { map, Observable, Subscription } from 'rxjs';
 import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
 
@@ -20,15 +20,10 @@ import { IProduct } from '@models/product.model';
 import { calcPageNum } from '@shared/utils/pagination.utils';
 
 @Component({
-    selector: 'app-search-results',
-    imports: [
-        CommonModule,
-        SingleSearchResultComponent,
-        PaginationModule,
-        RouterLink,
-    ],
-    templateUrl: './search-results.component.html',
-    styleUrl: './search-results.component.scss'
+  selector: 'app-search-results',
+  imports: [CommonModule, SingleSearchResultComponent, PaginationModule],
+  templateUrl: './search-results.component.html',
+  styleUrl: './search-results.component.scss',
 })
 export class SearchResultsComponent implements OnInit, OnDestroy {
   private store = inject(Store<ProductState>);

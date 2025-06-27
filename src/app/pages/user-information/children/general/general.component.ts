@@ -16,11 +16,6 @@ import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 import { IUser } from '@models/user.model';
 import { ISupplementedCharge } from '@models/purchase.model';
 
-// pipes
-import { ClearURLPipe } from '@shared/pipes/clear-url.pipe';
-import { SafeHTMLPipe } from '@shared/pipes/safe-html.pipe';
-import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
-
 // components
 import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
 import { ReadonlyCartItemComponent } from './components/readonly-cart-item/readonly-cart-item.component';
@@ -30,21 +25,18 @@ import { LatestPurchaseComponent } from './components/latest-purchase/latest-pur
 import { UserInfoComponent } from './components/user-info/user-info.component';
 
 @Component({
-    selector: 'app-general',
-    imports: [
-        CommonModule,
-        AccordionModule,
-        TruncateTextPipe,
-        BasicCardComponent,
-        ClearURLPipe,
-        SafeHTMLPipe,
-        UserInfoComponent,
-        ReadonlyCartItemComponent,
-        LatestPurchaseComponent,
-        FaqTabsComponent,
-    ],
-    templateUrl: './general.component.html',
-    styleUrl: './general.component.scss'
+  selector: 'app-general',
+  imports: [
+    CommonModule,
+    AccordionModule,
+    BasicCardComponent,
+    UserInfoComponent,
+    ReadonlyCartItemComponent,
+    LatestPurchaseComponent,
+    FaqTabsComponent,
+  ],
+  templateUrl: './general.component.html',
+  styleUrl: './general.component.scss',
 })
 export class GeneralComponent implements OnInit {
   userInformationItem = userInformationContent[0];

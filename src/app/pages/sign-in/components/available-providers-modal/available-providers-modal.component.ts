@@ -20,24 +20,22 @@ import * as UserSelectors from '@store/user/user.selectors';
 
 // components
 import { LoaderComponent } from '@shared/components/loader/loader.component';
-import { AlertComponent } from '@shared/components/alert/alert.component';
 
 // utils
 import { createAuthInLS } from '@core/utils/auth.utils';
 import { signInModalIcons } from '@shared/utils/icons.utils';
 
 @Component({
-    selector: 'app-available-providers-modal',
-    imports: [
-        CommonModule,
-        FontAwesomeModule,
-        ReactiveFormsModule,
-        LoaderComponent,
-        AlertComponent,
-    ],
-    templateUrl: './available-providers-modal.component.html',
-    styleUrl: './available-providers-modal.component.scss',
-    providers: [SignInService]
+  selector: 'app-available-providers-modal',
+  imports: [
+    CommonModule,
+    FontAwesomeModule,
+    ReactiveFormsModule,
+    LoaderComponent,
+  ],
+  templateUrl: './available-providers-modal.component.html',
+  styleUrl: './available-providers-modal.component.scss',
+  providers: [SignInService],
 })
 export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
   icons = signInModalIcons;

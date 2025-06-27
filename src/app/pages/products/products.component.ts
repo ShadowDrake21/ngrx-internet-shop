@@ -8,7 +8,6 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { ActivatedRoute, Router } from '@angular/router';
 
 // components
-import { ProductsItemComponent } from '@shared/components/products-item/products-item.component';
 import { FilterSidebarComponent } from './components/filter-sidebar/filter-sidebar.component';
 
 // interfaces
@@ -27,17 +26,16 @@ import { ProductsListComponent } from '@shared/components/products-list/products
 import { CategoryService } from '@core/services/category.service';
 
 @Component({
-    selector: 'app-products',
-    imports: [
-        CommonModule,
-        ProductsItemComponent,
-        FormsModule,
-        PaginationModule,
-        FilterSidebarComponent,
-        ProductsListComponent,
-    ],
-    templateUrl: './products.component.html',
-    styleUrl: './products.component.scss'
+  selector: 'app-products',
+  imports: [
+    CommonModule,
+    FormsModule,
+    PaginationModule,
+    FilterSidebarComponent,
+    ProductsListComponent,
+  ],
+  templateUrl: './products.component.html',
+  styleUrl: './products.component.scss',
 })
 export class ProductsComponent implements OnInit {
   private store = inject(Store<AppState>);

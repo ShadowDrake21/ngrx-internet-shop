@@ -1,15 +1,14 @@
 // angular stuff
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlayCircle } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-    selector: 'app-video-section',
-    imports: [CommonModule, RouterLink, FontAwesomeModule],
-    templateUrl: './video-section.component.html',
-    styleUrls: ['./video-section.component.scss']
+  selector: 'app-video-section',
+  imports: [CommonModule, FontAwesomeModule],
+  templateUrl: './video-section.component.html',
+  styleUrls: ['./video-section.component.scss'],
 })
 export class VideoSectionComponent implements AfterViewInit {
   videoItem: { url: string; author: string; link: string } = {

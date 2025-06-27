@@ -5,16 +5,14 @@ import { Component, inject, Input } from '@angular/core';
 
 // interfaces
 import { ISupplementedCharge } from '@models/purchase.model';
-
-// components
 import { PurchaseModalComponent } from '../purchase-modal/purchase-modal.component';
 
 @Component({
-    selector: 'app-purchase-thumbnail',
-    imports: [CommonModule, PurchaseModalComponent],
-    templateUrl: './purchase-thumbnail.component.html',
-    styleUrl: './purchase-thumbnail.component.scss',
-    providers: [BsModalService]
+  selector: 'app-purchase-thumbnail',
+  imports: [CommonModule],
+  templateUrl: './purchase-thumbnail.component.html',
+  styleUrl: './purchase-thumbnail.component.scss',
+  providers: [BsModalService],
 })
 export class PurchaseThumbnailComponent {
   @Input({ required: true }) transaction!: ISupplementedCharge;

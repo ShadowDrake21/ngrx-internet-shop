@@ -9,7 +9,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Observable, of, Subscription, switchMap, take, timer } from 'rxjs';
 import {
   FormBuilder,
@@ -51,20 +51,18 @@ import { StorageService } from '@core/services/storage.service';
 import { MEDIA_STORAGE_PATH } from '@core/constants/storage.constants';
 
 @Component({
-    selector: 'app-personal-information',
-    imports: [
-        CommonModule,
-        BasicCardComponent,
-        NgOptimizedImage,
-        ReactiveFormsModule,
-        FormsModule,
-        FontAwesomeModule,
-        AlertComponent,
-        ReauthenticateModalComponent,
-    ],
-    templateUrl: './personal-information.component.html',
-    styleUrl: './personal-information.component.scss',
-    providers: [BsModalService]
+  selector: 'app-personal-information',
+  imports: [
+    CommonModule,
+    BasicCardComponent,
+    ReactiveFormsModule,
+    FormsModule,
+    FontAwesomeModule,
+    AlertComponent,
+  ],
+  templateUrl: './personal-information.component.html',
+  styleUrl: './personal-information.component.scss',
+  providers: [BsModalService],
 })
 export class PersonalInformationComponent
   implements OnInit, AfterViewInit, OnDestroy
