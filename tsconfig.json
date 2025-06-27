@@ -13,7 +13,7 @@
     "sourceMap": true,
     "declaration": false,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
@@ -24,13 +24,27 @@
     ],
     "baseUrl": "src",
     "paths": {
-      "@app/*": ["app/*"],
-      "@pages/*": ["app/pages/*"],
-      "@shared/*": ["app/shared/*"],
-      "@models/*": ["app/shared/models/*"],
-      "@store/*": ["app/store/*"],
-      "@assets/*": ["assets/*"],
-      "@core/*": ["app/core/*"]
+      "@app/*": [
+        "app/*"
+      ],
+      "@pages/*": [
+        "app/pages/*"
+      ],
+      "@shared/*": [
+        "app/shared/*"
+      ],
+      "@models/*": [
+        "app/shared/models/*"
+      ],
+      "@store/*": [
+        "app/store/*"
+      ],
+      "@assets/*": [
+        "assets/*"
+      ],
+      "@core/*": [
+        "app/core/*"
+      ]
     }
   },
   "angularCompilerOptions": {
