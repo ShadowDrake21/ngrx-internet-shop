@@ -1,5 +1,5 @@
 // angular stuff
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import {
   catchError,
@@ -37,8 +37,7 @@ import { environment } from 'environments/environment.development';
 export class CheckoutService {
   private readonly http = inject(HttpClient);
   private readonly db = inject(Database);
-
-  private stripe: Stripe = new Stripe(environment.stripe.apiKey);
+  private readonly stripe: Stripe = new Stripe(environment.stripe.apiKey);
 
   checkoutInit(data: ICheckoutInit): Observable<any> {
     const checkoutData = {
@@ -52,59 +51,41 @@ export class CheckoutService {
   }
 
   createCustomer(email: string): Observable<Stripe.Customer> {
-    return from(this.stripe.customers.create({ email })).pipe(
-      map((customer) => {
-        const { lastResponse, ...clearCustomer } = customer;
-        return clearCustomer as Stripe.Customer;
-      })
+    return this.stripeRequest<Stripe.Customer>(
+      this.stripe.customers.create({ email })
     );
   }
 
   getCustomer(email: string): Observable<Stripe.Customer | null> {
-    return from(
+    return this.stripeRequest<Stripe.ApiList<Stripe.Customer>>(
       this.stripe.customers.list({
         email,
         limit: 1,
       })
-    ).pipe(
-      mergeMap((result) => {
-        if ('data' in result) {
-          return result.data.length > 0 ? of(result.data[0]) : of(null);
-        } else {
-          return of(result);
-        }
-      })
-    );
+    ).pipe(map((result) => result.data?.[0] ?? null));
   }
 
   updateCustomer(
     customerId: string,
     updateObject: IPurchaseUpdate
   ): Observable<Stripe.Customer> {
-    return from(this.stripe.customers.update(customerId, updateObject)).pipe(
-      map((updatedCustomer) => {
-        const { lastResponse, ...clearUpdatedCustomer } = updatedCustomer;
-        return clearUpdatedCustomer as Stripe.Customer;
-      })
+    return this.stripeRequest<Stripe.Customer>(
+      this.stripe.customers.update(customerId, updateObject)
     );
   }
 
   getAllTransactions(customerId: string): Observable<{
     charges: Stripe.Charge[];
   }> {
-    return from(
+    return this.stripeRequest<Stripe.ApiList<Stripe.Charge>>(
       this.stripe.charges.list({
         customer: customerId,
         limit: 4,
       })
     ).pipe(
-      mergeMap((result) => {
-        if ('data' in result) {
-          return of({ charges: result.data });
-        } else {
-          return of({ charges: [] });
-        }
-      })
+      map((result) => ({
+        charges: result.data,
+      }))
     );
   }
 
@@ -116,10 +97,8 @@ export class CheckoutService {
     );
 
     return from(get(transactionProductsQuery)).pipe(
-      switchMap((snapshot) => {
-        if (!snapshot.exists()) {
-          return of(null);
-        }
+      map((snapshot) => {
+        if (!snapshot.exists()) return null;
 
         let transactionsData: IUserTransactionsData = { count: 0, price: 0 };
         snapshot.forEach((childSnapshot) => {
@@ -127,9 +106,11 @@ export class CheckoutService {
             count: transactionsData.count + 1,
             price: transactionsData.price + childSnapshot.val().total_price,
           };
+
+          return false;
         });
 
-        return of(transactionsData);
+        return transactionsData;
       })
     );
   }
@@ -146,91 +127,103 @@ export class CheckoutService {
 
     return from(get(transactionProductsQuery)).pipe(
       switchMap((snapshot) => {
-        if (!snapshot.exists()) {
-          return of([]);
-        }
+        if (!snapshot.exists()) return of([]);
 
-        const transactionIds: ITransactionIds[] = [];
-        snapshot.forEach((childSnapshot) => {
-          childSnapshot
-            .val()
-            .productsIds.forEach((productIds: ITransactionIds) =>
-              transactionIds.push(productIds)
-            );
-        });
-
-        const requests = transactionIds.map((ids) => {
-          const { quantity } = ids;
-          return forkJoin({
-            product: this.getTransactionProduct(ids.product_id),
-            price: this.getTransactionPrice(ids.price_id),
-          }).pipe(
-            map(({ product, price }) => ({
-              product,
-              price,
-              quantity,
-            }))
+        const transactionIds = snapshot
+          .val()
+          .productsIds.flatMap(
+            (purchase: { productsIds: ITransactionIds[] }) =>
+              purchase.productsIds
           );
-        });
 
-        return forkJoin(requests);
+        return this.getSupplementedProducts(transactionIds);
       })
     );
   }
 
   getTransactionProduct(productId: string): Observable<Stripe.Product> {
-    return from(this.stripe.products.retrieve(productId)).pipe(
-      map((product) => {
-        return product as Stripe.Product;
-      })
+    return this.stripeRequest<Stripe.Product>(
+      this.stripe.products.retrieve(productId)
     );
   }
 
   getTransactionPrice(priceId: string): Observable<Stripe.Price> {
-    return from(this.stripe.prices.retrieve(priceId)).pipe(
-      map((price) => {
-        return price as Stripe.Price;
-      })
+    return this.stripeRequest<Stripe.Price>(
+      this.stripe.prices.retrieve(priceId)
     );
   }
 
   createPaymentMethod(cardObj: ICard): Observable<string> {
-    return from(
+    return this.createCardToken(cardObj).pipe(
+      switchMap((token) => this.createStripePaymentMethod(token)),
+      map((paymentMethod) => paymentMethod.id),
+      catchError((error) => {
+        throw new Error(`Payment method creation failed: ${error.message}`);
+      })
+    );
+  }
+
+  // ------------- HELPER METHODS ------------- //
+
+  private getSupplementedProducts(
+    transactionIds: ITransactionIds[]
+  ): Observable<ISupplementedChargeProduct[]> {
+    const requests = transactionIds.map(({ product_id, price_id, quantity }) =>
+      forkJoin({
+        product: this.getTransactionProduct(product_id),
+        price: this.getTransactionPrice(price_id),
+      }).pipe(
+        map(({ product, price }) => ({
+          product,
+          price,
+          quantity,
+        }))
+      )
+    );
+
+    return forkJoin(requests);
+  }
+
+  private stripeRequest<T>(
+    promise: Promise<T>
+  ): Observable<Omit<T, 'lastResponse'>> {
+    return from(promise).pipe(
+      map((result) => {
+        const { lastResponse, ...clearResult } = result as any;
+        return clearResult as T;
+      })
+    );
+  }
+
+  private createCardToken({
+    cardHolder,
+    cardNumber,
+    expirationMonth,
+    expirationYear,
+    cvc,
+  }: ICard): Observable<Stripe.Token> {
+    return this.stripeRequest<Stripe.Token>(
       this.stripe.tokens.create({
         card: {
-          name: cardObj.cardHolder,
-          number: cardObj.cardNumber,
-          exp_month: cardObj.expirationMonth,
-          exp_year: cardObj.expirationYear,
-          cvc: cardObj.cvc,
+          name: cardHolder,
+          number: cardNumber,
+          exp_month: expirationMonth,
+          exp_year: expirationYear,
+          cvc,
         },
       })
-    ).pipe(
-      switchMap((tokenResult) => {
-        if (tokenResult.lastResponse.statusCode !== 200) {
-          throw new Error(
-            'Error creating token: ' + tokenResult.lastResponse.statusCode
-          );
-        }
-        return from(
-          this.stripe.paymentMethods.create({
-            type: 'card',
-            card: { token: tokenResult.id },
-            billing_details: { name: tokenResult.card?.name },
-          })
-        );
-      }),
-      map((paymentMethodResult) => {
-        if (paymentMethodResult.lastResponse.statusCode !== 200) {
-          throw new Error(
-            'Error creating payment method: ' +
-              paymentMethodResult.lastResponse.statusCode
-          );
-        }
-        return paymentMethodResult.id;
-      }),
-      catchError((error) => {
-        throw new Error(error.message);
+    );
+  }
+
+  private createStripePaymentMethod({
+    id,
+    card,
+  }: Stripe.Token): Observable<Stripe.PaymentMethod> {
+    return this.stripeRequest<Stripe.PaymentMethod>(
+      this.stripe.paymentMethods.create({
+        type: 'card',
+        card: { token: id },
+        billing_details: { name: card?.name },
       })
     );
   }
