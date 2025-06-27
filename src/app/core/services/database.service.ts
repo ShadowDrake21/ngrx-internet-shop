@@ -20,49 +20,28 @@ import { IShipping } from '@models/purchase.model';
   providedIn: 'root',
 })
 export class DatabaseService {
-  private database = inject(Database);
+  private readonly database = inject(Database);
 
   setDeliveryRecord(
     shipping: IShipping,
     customerId: string,
     recordName: string
   ): Observable<void> {
-    return from(
-      set(
-        ref(
-          this.database,
-          `customers/${customerId}/deliveryRecords/${recordName}`
-        ),
-        shipping
-      )
+    return this.setData(
+      `customers/${customerId}/deliveryRecords/${recordName}`,
+      shipping
     );
   }
 
   getAllDeliveryRecords(customerId: string): Observable<IShipping[]> {
-    return from(
-      get(child(ref(this.database), `customers/${customerId}/deliveryRecords/`))
-    ).pipe(
-      map((snaphot: DataSnapshot) => {
-        let deliveryRecords: IShipping[] = [];
-        if (snaphot.exists()) {
-          snaphot.forEach((childSnapshot) => {
-            const shippingData = childSnapshot.val() as IShipping;
-            deliveryRecords.push(shippingData);
-          });
-        }
-        return deliveryRecords;
-      })
+    return this.getListData<IShipping>(
+      `customers/${customerId}/deliveryRecords`
     );
   }
 
   deleteDeliveryRecord(customerId: string, recordId: string): Observable<void> {
-    return from(
-      remove(
-        ref(
-          this.database,
-          `customers/${customerId}/deliveryRecords/${recordId}`
-        )
-      )
+    return this.deleteData(
+      `customers/${customerId}/deliveryRecords/${recordId}`
     );
   }
 
@@ -71,91 +50,33 @@ export class DatabaseService {
     customerId: string,
     recordName: string
   ): Observable<void> {
-    return from(
-      set(
-        ref(this.database, `customers/${customerId}/cards/${recordName}`),
-        card
-      )
-    );
+    return this.setData(`customers/${customerId}/cards/${recordName}`, card);
   }
 
   getAllCards(customerId: string): Observable<ICard[]> {
-    return from(
-      get(child(ref(this.database), `customers/${customerId}/cards/`))
-    ).pipe(
-      map((snaphot: DataSnapshot) => {
-        let cards: ICard[] = [];
-        if (snaphot.exists()) {
-          snaphot.forEach((childSnapshot) => {
-            const cardData = childSnapshot.val() as ICard;
-            cards.push(cardData);
-          });
-        }
-        return cards;
-      })
-    );
+    return this.getListData<ICard>(`customers/${customerId}/cards/`);
   }
 
   deleteCard(customerId: string, cardId: string): Observable<void> {
-    return from(
-      remove(ref(this.database, `customers/${customerId}/cards/${cardId}`))
-    );
+    return this.deleteData(`customers/${customerId}/cards/${cardId}`);
   }
 
   setLastViewedProduct(email: string, productName: string) {
-    return from(
-      set(
-        ref(
-          this.database,
-          `basic-info/${email.replace(/[.$#[\]/]/g, '_')}/lastViewedProduct`
-        ),
-        { product: productName }
-      )
-    );
+    return this.setData(this.getUserPath(email, 'lastViewedProduct'), {
+      product: productName,
+    });
   }
 
   getLastViewedProduct(email: string): Observable<string> {
-    if (!email) {
-      return of('');
-    }
-    return from(
-      get(
-        child(
-          ref(this.database),
-          `basic-info/${email.replace(/[.$#[\]/]/g, '_')}/lastViewedProduct`
-        )
-      )
-    ).pipe(
-      map((snapshot: DataSnapshot) => {
-        let productName = '';
-        if (snapshot.exists()) {
-          productName = snapshot.val().product as string;
-        }
-        return productName;
-      })
-    );
+    if (!email) return of('');
+
+    return this.getData<{ product: string }>(
+      this.getUserPath(email, 'lastViewedProduct')
+    ).pipe(map((data) => data?.product || ''));
   }
 
   getAllFavoritesProducts(email: string): Observable<IProduct[]> {
-    return from(
-      get(
-        child(
-          ref(this.database),
-          `basic-info/${email.replace(/[.$#[\]/]/g, '_')}/favorites/`
-        )
-      )
-    ).pipe(
-      map((snapshot: DataSnapshot) => {
-        let favorites: IProduct[] = [];
-        if (snapshot.exists()) {
-          snapshot.forEach((childSnapshot) => {
-            const favoriteData = childSnapshot.val() as IProduct;
-            favorites.push(favoriteData);
-          });
-        }
-        return favorites;
-      })
-    );
+    return this.getListData<IProduct>(this.getUserPath(email, 'favorites'));
   }
 
   setFavoriteProduct(
@@ -163,50 +84,46 @@ export class DatabaseService {
     email: string,
     recordName: string
   ): Observable<void> {
-    return from(
-      set(
-        ref(
-          this.database,
-          `basic-info/${email.replace(
-            /[.$#[\]/]/g,
-            '_'
-          )}/favorites/${recordName}`
-        ),
-        product
-      )
+    return this.setData(
+      `
+    ${this.getUserPath(email, 'favorites')}/${recordName}`,
+      product
     );
   }
 
   searchFavoriteProduct(email: string, id: string) {
-    const favoriteProductQuery = query(
-      ref(
-        this.database,
-        `basic-info/${email.replace(/[.$#[\]/]/g, '_')}/favorites/${id}`
-      )
-    );
-
-    return from(
-      get(favoriteProductQuery).then((snapshot) => {
-        if (!snapshot.exists()) {
-          return null;
-        } else {
-          return snapshot.val() as IProduct;
-        }
-      })
-    );
+    return this.getData<IProduct>(this.getUserPath(email, `favorites/${id}`));
   }
 
   deleteFavoriteProduct(email: string, favoriteId: string): Observable<void> {
-    return from(
-      remove(
-        ref(
-          this.database,
-          `basic-info/${email.replace(
-            /[.$#[\]/]/g,
-            '_'
-          )}/favorites/${favoriteId}`
-        )
+    return this.deleteData(this.getUserPath(email, `favorites/${favoriteId}`));
+  }
+
+  // ---------- Helpers -------------
+  private setData<T>(path: string, data: T): Observable<void> {
+    return from(set(ref(this.database, path), data));
+  }
+
+  private getData<T>(path: string): Observable<T | null> {
+    return from(get(child(ref(this.database), path))).pipe(
+      map((snapshot: DataSnapshot) =>
+        snapshot.exists() ? (snapshot.val() as T) : null
       )
     );
+  }
+
+  private deleteData(path: string): Observable<void> {
+    return from(remove(ref(this.database, path)));
+  }
+
+  private getListData<T>(path: string): Observable<T[]> {
+    return this.getData<Record<string, T>>(path).pipe(
+      map((data) => (data ? Object.values(data) : []))
+    );
+  }
+
+  private getUserPath(email: string, ...segments: string[]): string {
+    const sanitizedEmail = email.replace(/[.$#[\]/]/g, '_');
+    return `basic-info/${sanitizedEmail}/${segments.join('/')}`;
   }
 }

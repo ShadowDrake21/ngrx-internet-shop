@@ -11,7 +11,7 @@ import { BASE_URL_API } from '../constants/api.constants';
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
 
   getAllCategories(): Observable<ICategory[]> {
     return this.http.get<ICategory[]>(`${BASE_URL_API}/categories`);
@@ -22,13 +22,14 @@ export class CategoryService {
   }
 
   getCategoryByName(categoryName: string): Observable<ICategory | null> {
-    const allCategories$ = this.getAllCategories();
-    return allCategories$.pipe(
+    return this.getAllCategories().pipe(
       map(
         (categories) =>
-          categories.find((category) => {
-            return category.name.toLowerCase() === categoryName.toLowerCase();
-          }) as ICategory | null
+          categories.find(
+            (category) =>
+              category.name.toLowerCase().trim() ===
+              categoryName.toLowerCase().trim()
+          ) || null
       )
     );
   }
