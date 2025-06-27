@@ -42,18 +42,18 @@ import * as UserActions from '@store/user/user.actions';
 import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
 
 @Component({
-    selector: 'app-header',
-    imports: [
-        CommonModule,
-        RouterLink,
-        RouterLinkActive,
-        FontAwesomeModule,
-        FormsModule,
-        TypeaheadModule,
-    ],
-    templateUrl: './header.component.html',
-    styleUrl: './header.component.scss',
-    providers: [BsModalService]
+  selector: 'app-header',
+  imports: [
+    CommonModule,
+    RouterLink,
+    RouterLinkActive,
+    FontAwesomeModule,
+    FormsModule,
+    TypeaheadModule,
+  ],
+  templateUrl: './header.component.html',
+  styleUrl: './header.component.scss',
+  providers: [BsModalService],
 })
 export class HeaderComponent implements OnInit, AfterViewInit {
   private store = inject(Store<AppState>);
@@ -118,20 +118,20 @@ export class HeaderComponent implements OnInit, AfterViewInit {
         observer.next(this.searchName);
       }
     ).pipe(
-      switchMap((query: string) => {
+      switchMap((query: string | undefined) => {
         if (query) {
           return this.productService.getProductsByTitle(query).pipe(
             map(
               (products: IProduct[]) =>
                 products.map((product) => product.title) || []
             ),
-            tap(
-              () => noop,
-              (err) => {
+            tap({
+              next: () => noop,
+              error: (err) => {
                 this.errorMessage =
                   (err && err.message) || 'Something goes wrong';
-              }
-            )
+              },
+            })
           );
         }
 

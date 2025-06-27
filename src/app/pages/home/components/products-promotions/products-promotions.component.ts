@@ -12,10 +12,10 @@ import { IProduct } from '@models/product.model';
 import { ProductsItemComponent } from '@shared/components/products-item/products-item.component';
 
 @Component({
-    selector: 'app-products-promotions',
-    imports: [CommonModule, ProductsItemComponent],
-    templateUrl: './products-promotions.component.html',
-    styleUrl: './products-promotions.component.scss'
+  selector: 'app-products-promotions',
+  imports: [CommonModule, ProductsItemComponent],
+  templateUrl: './products-promotions.component.html',
+  styleUrl: './products-promotions.component.scss',
 })
 export class ProductsPromotionsComponent implements OnInit, OnDestroy {
   private productService = inject(ProductService);

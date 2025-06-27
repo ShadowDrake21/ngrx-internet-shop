@@ -5,7 +5,6 @@ import { Store } from '@ngrx/store';
 import { debounceTime, map, Observable, Subscription, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
-import { RouterLink } from '@angular/router';
 
 // created ngrx stuff
 import { AppState } from '@app/store/app.state';
@@ -14,31 +13,22 @@ import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
 // interfaces
 import { IProduct } from '@models/product.model';
 
-// pipes
-import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
-import { ClearURLPipe } from '@shared/pipes/clear-url.pipe';
-import { SafeHTMLPipe } from '@shared/pipes/safe-html.pipe';
-
 // components
 import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
 import { userInformationContent } from '../../content/user-information.content';
 import { FavoriteProductsItemComponent } from './components/favorite-products-item/favorite-products-item.component';
 
 @Component({
-    selector: 'app-favorite-products',
-    imports: [
-        CommonModule,
-        BasicCardComponent,
-        CarouselModule,
-        RouterLink,
-        ClearURLPipe,
-        SafeHTMLPipe,
-        TruncateTextPipe,
-        PaginationModule,
-        FavoriteProductsItemComponent,
-    ],
-    templateUrl: './favorite-products.component.html',
-    styleUrl: './favorite-products.component.scss'
+  selector: 'app-favorite-products',
+  imports: [
+    CommonModule,
+    BasicCardComponent,
+    CarouselModule,
+    PaginationModule,
+    FavoriteProductsItemComponent,
+  ],
+  templateUrl: './favorite-products.component.html',
+  styleUrl: './favorite-products.component.scss',
 })
 export class FavoriteProductsComponent implements OnInit, OnDestroy {
   userInformationItem = userInformationContent[5];

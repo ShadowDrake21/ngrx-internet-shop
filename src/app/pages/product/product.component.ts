@@ -39,8 +39,6 @@ import { DatabaseService } from '@core/services/database.service';
 import { ProductManipulationsService } from '@core/services/product-manipulations.service';
 
 // pipes
-import { SafeHTMLPipe } from '@shared/pipes/safe-html.pipe';
-import { ClearURLPipe } from '@shared/pipes/clear-url.pipe';
 import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
 
 // created ngrx stuff
@@ -54,19 +52,17 @@ import * as FavoritesActions from '@app/store/favorites/favorites.actions';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
 
 @Component({
-    selector: 'app-product',
-    imports: [
-        CommonModule,
-        CarouselModule,
-        SafeHTMLPipe,
-        ClearURLPipe,
-        TruncateTextPipe,
-        FontAwesomeModule,
-        RouterLink,
-        SimilarProductComponent,
-    ],
-    templateUrl: './product.component.html',
-    styleUrl: './product.component.scss'
+  selector: 'app-product',
+  imports: [
+    CommonModule,
+    CarouselModule,
+    TruncateTextPipe,
+    FontAwesomeModule,
+    RouterLink,
+    SimilarProductComponent,
+  ],
+  templateUrl: './product.component.html',
+  styleUrl: './product.component.scss',
 })
 export class ProductComponent implements OnInit, OnDestroy {
   cartAdd = faCartPlus;
