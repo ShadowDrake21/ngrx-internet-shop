@@ -51,21 +51,20 @@ import { StorageService } from '@core/services/storage.service';
 import { MEDIA_STORAGE_PATH } from '@core/constants/storage.constants';
 
 @Component({
-  selector: 'app-personal-information',
-  standalone: true,
-  imports: [
-    CommonModule,
-    BasicCardComponent,
-    NgOptimizedImage,
-    ReactiveFormsModule,
-    FormsModule,
-    FontAwesomeModule,
-    AlertComponent,
-    ReauthenticateModalComponent,
-  ],
-  templateUrl: './personal-information.component.html',
-  styleUrl: './personal-information.component.scss',
-  providers: [BsModalService],
+    selector: 'app-personal-information',
+    imports: [
+        CommonModule,
+        BasicCardComponent,
+        NgOptimizedImage,
+        ReactiveFormsModule,
+        FormsModule,
+        FontAwesomeModule,
+        AlertComponent,
+        ReauthenticateModalComponent,
+    ],
+    templateUrl: './personal-information.component.html',
+    styleUrl: './personal-information.component.scss',
+    providers: [BsModalService]
 })
 export class PersonalInformationComponent
   implements OnInit, AfterViewInit, OnDestroy

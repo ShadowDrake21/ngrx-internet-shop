@@ -54,20 +54,19 @@ import * as FavoritesActions from '@app/store/favorites/favorites.actions';
 import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
 
 @Component({
-  selector: 'app-product',
-  standalone: true,
-  imports: [
-    CommonModule,
-    CarouselModule,
-    SafeHTMLPipe,
-    ClearURLPipe,
-    TruncateTextPipe,
-    FontAwesomeModule,
-    RouterLink,
-    SimilarProductComponent,
-  ],
-  templateUrl: './product.component.html',
-  styleUrl: './product.component.scss',
+    selector: 'app-product',
+    imports: [
+        CommonModule,
+        CarouselModule,
+        SafeHTMLPipe,
+        ClearURLPipe,
+        TruncateTextPipe,
+        FontAwesomeModule,
+        RouterLink,
+        SimilarProductComponent,
+    ],
+    templateUrl: './product.component.html',
+    styleUrl: './product.component.scss'
 })
 export class ProductComponent implements OnInit, OnDestroy {
   cartAdd = faCartPlus;

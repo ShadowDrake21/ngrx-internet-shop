@@ -34,11 +34,10 @@ import { IReducedUnsplashImage } from '@models/unsplash.model';
 import { shuffleArray } from '@shared/utils/arrayManipulations.utils';
 
 @Component({
-  selector: 'app-delivery-record-form',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './delivery-record-form.component.html',
-  styleUrl: './delivery-record-form.component.scss',
+    selector: 'app-delivery-record-form',
+    imports: [CommonModule, ReactiveFormsModule],
+    templateUrl: './delivery-record-form.component.html',
+    styleUrl: './delivery-record-form.component.scss'
 })
 export class DeliveryRecordFormComponent
   implements OnInit, OnChanges, OnDestroy

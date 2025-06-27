@@ -42,19 +42,18 @@ import * as UserActions from '@store/user/user.actions';
 import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    RouterLinkActive,
-    FontAwesomeModule,
-    FormsModule,
-    TypeaheadModule,
-  ],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.scss',
-  providers: [BsModalService],
+    selector: 'app-header',
+    imports: [
+        CommonModule,
+        RouterLink,
+        RouterLinkActive,
+        FontAwesomeModule,
+        FormsModule,
+        TypeaheadModule,
+    ],
+    templateUrl: './header.component.html',
+    styleUrl: './header.component.scss',
+    providers: [BsModalService]
 })
 export class HeaderComponent implements OnInit, AfterViewInit {
   private store = inject(Store<AppState>);

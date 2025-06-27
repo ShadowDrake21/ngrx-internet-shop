@@ -10,11 +10,10 @@ import { IShipping } from '@models/purchase.model';
 import { changeDetailsIcons } from '@shared/utils/icons.utils';
 
 @Component({
-  selector: 'app-delivery-record-item',
-  standalone: true,
-  imports: [CommonModule, FontAwesomeModule],
-  templateUrl: './delivery-record-item.component.html',
-  styleUrl: './delivery-record-item.component.scss',
+    selector: 'app-delivery-record-item',
+    imports: [CommonModule, FontAwesomeModule],
+    templateUrl: './delivery-record-item.component.html',
+    styleUrl: './delivery-record-item.component.scss'
 })
 export class DeliveryRecordListComponent {
   icons = changeDetailsIcons;

@@ -13,18 +13,17 @@ import { SafeHTMLPipe } from '@shared/pipes/safe-html.pipe';
 import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
 
 @Component({
-  selector: 'app-favorite-products-item',
-  standalone: true,
-  imports: [
-    CommonModule,
-    CarouselModule,
-    RouterLink,
-    ClearURLPipe,
-    SafeHTMLPipe,
-    TruncateTextPipe,
-  ],
-  templateUrl: './favorite-products-item.component.html',
-  styleUrl: './favorite-products-item.component.scss',
+    selector: 'app-favorite-products-item',
+    imports: [
+        CommonModule,
+        CarouselModule,
+        RouterLink,
+        ClearURLPipe,
+        SafeHTMLPipe,
+        TruncateTextPipe,
+    ],
+    templateUrl: './favorite-products-item.component.html',
+    styleUrl: './favorite-products-item.component.scss'
 })
 export class FavoriteProductsItemComponent {
   @Input({ required: true }) product!: IProduct;

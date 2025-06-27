@@ -31,19 +31,18 @@ import { LoaderComponent } from './shared/components/loader/loader.component';
 import { CheckoutLoadingComponent } from './shared/components/checkout-loading/checkout-loading.component';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterOutlet,
-    HeaderComponent,
-    FooterComponent,
-    BreadcrumbsComponent,
-    CheckoutLoadingComponent,
-  ],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
-  providers: [BsModalService],
+    selector: 'app-root',
+    imports: [
+        CommonModule,
+        RouterOutlet,
+        HeaderComponent,
+        FooterComponent,
+        BreadcrumbsComponent,
+        CheckoutLoadingComponent,
+    ],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss',
+    providers: [BsModalService]
 })
 export class AppComponent implements OnInit, OnDestroy {
   private store = inject(Store<AppState>);

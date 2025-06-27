@@ -10,11 +10,10 @@ import { ICard } from '@models/card.model';
 import { changeDetailsIcons } from '@shared/utils/icons.utils';
 
 @Component({
-  selector: 'app-card-item',
-  standalone: true,
-  imports: [CommonModule, FontAwesomeModule],
-  templateUrl: './card-item.component.html',
-  styleUrl: './card-item.component.scss',
+    selector: 'app-card-item',
+    imports: [CommonModule, FontAwesomeModule],
+    templateUrl: './card-item.component.html',
+    styleUrl: './card-item.component.scss'
 })
 export class CardItemComponent {
   icons = changeDetailsIcons;

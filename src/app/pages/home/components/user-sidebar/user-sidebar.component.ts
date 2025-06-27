@@ -24,11 +24,10 @@ import { CheckoutService } from '@core/services/checkout.service';
 import { DatabaseService } from '@core/services/database.service';
 
 @Component({
-  selector: 'app-user-sidebar',
-  standalone: true,
-  imports: [CommonModule, TruncateTextPipe, RouterLink],
-  templateUrl: './user-sidebar.component.html',
-  styleUrl: './user-sidebar.component.scss',
+    selector: 'app-user-sidebar',
+    imports: [CommonModule, TruncateTextPipe, RouterLink],
+    templateUrl: './user-sidebar.component.html',
+    styleUrl: './user-sidebar.component.scss'
 })
 export class UserSidebarComponent implements OnInit, OnDestroy {
   private store = inject(Store<AppState>);

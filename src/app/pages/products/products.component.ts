@@ -27,18 +27,17 @@ import { ProductsListComponent } from '@shared/components/products-list/products
 import { CategoryService } from '@core/services/category.service';
 
 @Component({
-  selector: 'app-products',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ProductsItemComponent,
-    FormsModule,
-    PaginationModule,
-    FilterSidebarComponent,
-    ProductsListComponent,
-  ],
-  templateUrl: './products.component.html',
-  styleUrl: './products.component.scss',
+    selector: 'app-products',
+    imports: [
+        CommonModule,
+        ProductsItemComponent,
+        FormsModule,
+        PaginationModule,
+        FilterSidebarComponent,
+        ProductsListComponent,
+    ],
+    templateUrl: './products.component.html',
+    styleUrl: './products.component.scss'
 })
 export class ProductsComponent implements OnInit {
   private store = inject(Store<AppState>);

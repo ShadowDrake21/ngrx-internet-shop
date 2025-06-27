@@ -21,11 +21,10 @@ import { IFilterFormObj } from '@models/forms.model';
 import { filterCategories } from './content/filter-categories.content';
 
 @Component({
-  selector: 'app-filter-sidebar',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './filter-sidebar.component.html',
-  styleUrl: './filter-sidebar.component.scss',
+    selector: 'app-filter-sidebar',
+    imports: [CommonModule, ReactiveFormsModule],
+    templateUrl: './filter-sidebar.component.html',
+    styleUrl: './filter-sidebar.component.scss'
 })
 export class FilterSidebarComponent implements OnInit, OnChanges {
   filterCategories = filterCategories;

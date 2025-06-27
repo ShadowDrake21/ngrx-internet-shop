@@ -11,11 +11,10 @@ import { ISidebarModal } from '../../models/sidebar-modal.model';
 import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
 
 @Component({
-  selector: 'app-sidebar-profile-modal',
-  standalone: true,
-  imports: [CommonModule, TruncateTextPipe],
-  templateUrl: './sidebar-profile-modal.component.html',
-  styleUrl: './sidebar-profile-modal.component.scss',
+    selector: 'app-sidebar-profile-modal',
+    imports: [CommonModule, TruncateTextPipe],
+    templateUrl: './sidebar-profile-modal.component.html',
+    styleUrl: './sidebar-profile-modal.component.scss'
 })
 export class SidebarProfileModalComponent {
   public bsModalRef = inject(BsModalRef);

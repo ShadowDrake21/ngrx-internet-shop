@@ -34,18 +34,17 @@ import { DeliveryRecordFormComponent } from './components/delivery-record-form/d
 import { DeliveryRecordListComponent } from './components/delivery-record-item/delivery-record-item.component';
 
 @Component({
-  selector: 'app-delivery-details',
-  standalone: true,
-  imports: [
-    CommonModule,
-    BasicCardComponent,
-    ReactiveFormsModule,
-    FontAwesomeModule,
-    DeliveryRecordFormComponent,
-    DeliveryRecordListComponent,
-  ],
-  templateUrl: './delivery-details.component.html',
-  styleUrl: './delivery-details.component.scss',
+    selector: 'app-delivery-details',
+    imports: [
+        CommonModule,
+        BasicCardComponent,
+        ReactiveFormsModule,
+        FontAwesomeModule,
+        DeliveryRecordFormComponent,
+        DeliveryRecordListComponent,
+    ],
+    templateUrl: './delivery-details.component.html',
+    styleUrl: './delivery-details.component.scss'
 })
 export class DeliveryDetailsComponent implements OnInit, OnDestroy {
   userInformationItem = userInformationContent[3];

@@ -10,12 +10,10 @@ import { UserState } from '@store/user/user.reducer';
 import * as UserActions from '@store/user/user.actions';
 
 @Component({
-  selector: 'app-reset-password-modal',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-
-  templateUrl: './reset-password-modal.component.html',
-  styleUrl: './reset-password-modal.component.scss',
+    selector: 'app-reset-password-modal',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './reset-password-modal.component.html',
+    styleUrl: './reset-password-modal.component.scss'
 })
 export class ResetPasswordModalComponent implements OnInit {
   private store = inject(Store<UserState>);

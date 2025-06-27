@@ -10,11 +10,10 @@ import * as UserActions from '@store/user/user.actions';
 import * as UserSelectors from '@store/user/user.selectors';
 
 @Component({
-  selector: 'app-email-verification-modal',
-  standalone: true,
-  imports: [],
-  templateUrl: './email-verification-modal.component.html',
-  styleUrl: './email-verification-modal.component.scss',
+    selector: 'app-email-verification-modal',
+    imports: [],
+    templateUrl: './email-verification-modal.component.html',
+    styleUrl: './email-verification-modal.component.scss'
 })
 export class EmailVerificationModalComponent implements OnInit, OnDestroy {
   private store = inject(Store<UserState>);

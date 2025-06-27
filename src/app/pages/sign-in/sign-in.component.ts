@@ -31,22 +31,20 @@ import { createAuthInLS } from '@core/utils/auth.utils';
 import { signInModalIcons } from '@shared/utils/icons.utils';
 
 @Component({
-  selector: 'app-sign-in',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FontAwesomeModule,
-    ReactiveFormsModule,
-    AlertComponent,
-    LoaderComponent,
-    ResetPasswordModalComponent,
-    AvailableProvidersModalComponent,
-    RouterLink,
-  ],
-
-  templateUrl: './sign-in.component.html',
-  styleUrl: './sign-in.component.scss',
-  providers: [BsModalService, SignInService],
+    selector: 'app-sign-in',
+    imports: [
+        CommonModule,
+        FontAwesomeModule,
+        ReactiveFormsModule,
+        AlertComponent,
+        LoaderComponent,
+        ResetPasswordModalComponent,
+        AvailableProvidersModalComponent,
+        RouterLink,
+    ],
+    templateUrl: './sign-in.component.html',
+    styleUrl: './sign-in.component.scss',
+    providers: [BsModalService, SignInService]
 })
 export class SignInComponent implements OnInit, OnDestroy {
   icons = signInModalIcons;

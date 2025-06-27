@@ -24,18 +24,17 @@ import { ProductsItemComponent } from '@shared/components/products-item/products
 import { ProductsListComponent } from '@shared/components/products-list/products-list.component';
 
 @Component({
-  selector: 'app-category',
-  standalone: true,
-  imports: [
-    CommonModule,
-    PaginationModule,
-    ProductsItemComponent,
-    ProductsListComponent,
-    RouterLink,
-    FontAwesomeModule,
-  ],
-  templateUrl: './category.component.html',
-  styleUrl: './category.component.scss',
+    selector: 'app-category',
+    imports: [
+        CommonModule,
+        PaginationModule,
+        ProductsItemComponent,
+        ProductsListComponent,
+        RouterLink,
+        FontAwesomeModule,
+    ],
+    templateUrl: './category.component.html',
+    styleUrl: './category.component.scss'
 })
 export class CategoryComponent implements OnInit, OnDestroy {
   private store = inject(Store<AppState>);

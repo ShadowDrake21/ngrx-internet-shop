@@ -25,21 +25,20 @@ import { userInformationContent } from '../../content/user-information.content';
 import { FavoriteProductsItemComponent } from './components/favorite-products-item/favorite-products-item.component';
 
 @Component({
-  selector: 'app-favorite-products',
-  standalone: true,
-  imports: [
-    CommonModule,
-    BasicCardComponent,
-    CarouselModule,
-    RouterLink,
-    ClearURLPipe,
-    SafeHTMLPipe,
-    TruncateTextPipe,
-    PaginationModule,
-    FavoriteProductsItemComponent,
-  ],
-  templateUrl: './favorite-products.component.html',
-  styleUrl: './favorite-products.component.scss',
+    selector: 'app-favorite-products',
+    imports: [
+        CommonModule,
+        BasicCardComponent,
+        CarouselModule,
+        RouterLink,
+        ClearURLPipe,
+        SafeHTMLPipe,
+        TruncateTextPipe,
+        PaginationModule,
+        FavoriteProductsItemComponent,
+    ],
+    templateUrl: './favorite-products.component.html',
+    styleUrl: './favorite-products.component.scss'
 })
 export class FavoriteProductsComponent implements OnInit, OnDestroy {
   userInformationItem = userInformationContent[5];

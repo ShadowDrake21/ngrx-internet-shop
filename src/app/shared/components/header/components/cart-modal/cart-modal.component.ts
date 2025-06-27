@@ -46,20 +46,19 @@ import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
 import { DatabaseService } from '@core/services/database.service';
 
 @Component({
-  selector: 'app-cart-modal',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ClearURLPipe,
-    SafeHTMLPipe,
-    TruncateTextPipe,
-    RouterLink,
-    ModalModule,
-    ReactiveFormsModule,
-  ],
-  templateUrl: './cart-modal.component.html',
-  styleUrl: './cart-modal.component.scss',
-  providers: [BsModalService],
+    selector: 'app-cart-modal',
+    imports: [
+        CommonModule,
+        ClearURLPipe,
+        SafeHTMLPipe,
+        TruncateTextPipe,
+        RouterLink,
+        ModalModule,
+        ReactiveFormsModule,
+    ],
+    templateUrl: './cart-modal.component.html',
+    styleUrl: './cart-modal.component.scss',
+    providers: [BsModalService]
 })
 export class CartModalComponent implements OnInit, OnDestroy {
   private store = inject(Store<AppState>);

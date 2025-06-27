@@ -31,17 +31,16 @@ import { UserState } from '@app/store/user/user.reducer';
 import * as UserSelectors from '@store/user/user.selectors';
 
 @Component({
-  selector: 'app-single-product',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    SafeHTMLPipe,
-    ClearURLPipe,
-    TruncateTextPipe,
-  ],
-  templateUrl: './products-item.component.html',
-  styleUrl: './products-item.component.scss',
+    selector: 'app-single-product',
+    imports: [
+        CommonModule,
+        RouterLink,
+        SafeHTMLPipe,
+        ClearURLPipe,
+        TruncateTextPipe,
+    ],
+    templateUrl: './products-item.component.html',
+    styleUrl: './products-item.component.scss'
 })
 export class ProductsItemComponent implements OnInit, OnChanges, OnDestroy {
   private store = inject(Store<UserState>);

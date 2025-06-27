@@ -50,22 +50,21 @@ import { CheckoutService } from '@core/services/checkout.service';
 import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
 
 @Component({
-  selector: 'app-user-information',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterOutlet,
-    FontAwesomeModule,
-    TabsModule,
-    RouterLink,
-    RouterLinkActive,
-    TruncateTextPipe,
-    SidebarProfileModalComponent,
-    AlertComponent,
-  ],
-  templateUrl: './user-information.component.html',
-  styleUrl: './user-information.component.scss',
-  providers: [BsModalService],
+    selector: 'app-user-information',
+    imports: [
+        CommonModule,
+        RouterOutlet,
+        FontAwesomeModule,
+        TabsModule,
+        RouterLink,
+        RouterLinkActive,
+        TruncateTextPipe,
+        SidebarProfileModalComponent,
+        AlertComponent,
+    ],
+    templateUrl: './user-information.component.html',
+    styleUrl: './user-information.component.scss',
+    providers: [BsModalService]
 })
 export class UserInformationComponent implements OnInit, OnDestroy {
   sidebarIcons = userInformationSidebar;

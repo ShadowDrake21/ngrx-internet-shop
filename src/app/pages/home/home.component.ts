@@ -13,20 +13,19 @@ import { VideoSectionComponent } from './components/video-section/video-section.
 import { ContactUsComponent } from './components/contact-us/contact-us.component';
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ProductSliderComponent,
-    SponsorsComponent,
-    UserSidebarComponent,
-    ProductsPromotionsComponent,
-    ProductsCategorySliderComponent,
-    GridGalleryComponent,
-    VideoSectionComponent,
-    ContactUsComponent,
-  ],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+    selector: 'app-home',
+    imports: [
+        CommonModule,
+        ProductSliderComponent,
+        SponsorsComponent,
+        UserSidebarComponent,
+        ProductsPromotionsComponent,
+        ProductsCategorySliderComponent,
+        GridGalleryComponent,
+        VideoSectionComponent,
+        ContactUsComponent,
+    ],
+    templateUrl: './home.component.html',
+    styleUrl: './home.component.scss'
 })
 export class HomeComponent {}

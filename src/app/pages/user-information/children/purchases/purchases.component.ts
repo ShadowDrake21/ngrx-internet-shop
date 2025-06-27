@@ -30,20 +30,19 @@ import { ISupplementedCharge } from '@models/purchase.model';
 import { userInformationContent } from '../../content/user-information.content';
 
 @Component({
-  selector: 'app-purcheses',
-  standalone: true,
-  imports: [
-    CommonModule,
-    BasicCardComponent,
-    TabsModule,
-    TooltipModule,
-    ReactiveFormsModule,
-    CustomerInformationComponent,
-    PurchasesListComponent,
-  ],
-  templateUrl: './purchases.component.html',
-  styleUrl: './purchases.component.scss',
-  providers: [TooltipDirective],
+    selector: 'app-purcheses',
+    imports: [
+        CommonModule,
+        BasicCardComponent,
+        TabsModule,
+        TooltipModule,
+        ReactiveFormsModule,
+        CustomerInformationComponent,
+        PurchasesListComponent,
+    ],
+    templateUrl: './purchases.component.html',
+    styleUrl: './purchases.component.scss',
+    providers: [TooltipDirective]
 })
 export class PurchasesComponent implements OnInit, OnDestroy {
   userInformationItem = userInformationContent[2];

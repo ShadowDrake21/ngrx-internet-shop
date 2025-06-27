@@ -45,11 +45,10 @@ import { cardDetailsIcons } from '@shared/utils/icons.utils';
 import { formCardObject } from '../../utils/card-details.utils';
 
 @Component({
-  selector: 'app-card-form',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
-  templateUrl: './card-form.component.html',
-  styleUrl: './card-form.component.scss',
+    selector: 'app-card-form',
+    imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
+    templateUrl: './card-form.component.html',
+    styleUrl: './card-form.component.scss'
 })
 export class CardFormComponent
   implements OnInit, AfterViewInit, OnChanges, OnDestroy

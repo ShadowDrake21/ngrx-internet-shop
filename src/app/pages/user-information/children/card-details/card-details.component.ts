@@ -34,18 +34,17 @@ import { CardItemComponent } from './components/card-item/card-item.component';
 import { CardFormComponent } from './components/card-form/card-form.component';
 
 @Component({
-  selector: 'app-card-details',
-  standalone: true,
-  imports: [
-    CommonModule,
-    BasicCardComponent,
-    FontAwesomeModule,
-    ReactiveFormsModule,
-    CardFormComponent,
-    CardItemComponent,
-  ],
-  templateUrl: './card-details.component.html',
-  styleUrl: './card-details.component.scss',
+    selector: 'app-card-details',
+    imports: [
+        CommonModule,
+        BasicCardComponent,
+        FontAwesomeModule,
+        ReactiveFormsModule,
+        CardFormComponent,
+        CardItemComponent,
+    ],
+    templateUrl: './card-details.component.html',
+    styleUrl: './card-details.component.scss'
 })
 export class CardDetailsComponent implements OnInit, OnDestroy {
   userInformationItem = userInformationContent[4];

@@ -35,12 +35,11 @@ import { phonePattern } from './constants/pattern.constants';
 import { shippingFieldsValidator } from './utils/formValidators.utils';
 
 @Component({
-  selector: 'app-customer-information',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TabsModule, TooltipModule],
-  templateUrl: './customer-information.component.html',
-  styleUrl: './customer-information.component.scss',
-  providers: [TooltipDirective],
+    selector: 'app-customer-information',
+    imports: [CommonModule, ReactiveFormsModule, TabsModule, TooltipModule],
+    templateUrl: './customer-information.component.html',
+    styleUrl: './customer-information.component.scss',
+    providers: [TooltipDirective]
 })
 export class CustomerInformationComponent implements OnInit, OnDestroy {
   @Input({ alias: 'customer', required: true })

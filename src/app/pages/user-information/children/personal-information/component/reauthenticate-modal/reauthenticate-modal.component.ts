@@ -25,12 +25,11 @@ import { SignInService } from '@core/services/signIn.service';
 import { minimalizeUserCredential } from '@shared/utils/store.utils';
 
 @Component({
-  selector: 'app-reauthenticate-modal',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './reauthenticate-modal.component.html',
-  styleUrl: './reauthenticate-modal.component.scss',
-  providers: [SignInService],
+    selector: 'app-reauthenticate-modal',
+    imports: [CommonModule, ReactiveFormsModule],
+    templateUrl: './reauthenticate-modal.component.html',
+    styleUrl: './reauthenticate-modal.component.scss',
+    providers: [SignInService]
 })
 export class ReauthenticateModalComponent implements OnDestroy {
   private authService = inject(AuthService);

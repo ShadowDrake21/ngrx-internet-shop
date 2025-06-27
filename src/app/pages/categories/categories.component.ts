@@ -21,11 +21,10 @@ import { ClearURLPipe } from '@shared/pipes/clear-url.pipe';
 import { handleImageUnavailable } from '@shared/utils/errorHandlers.utils';
 
 @Component({
-  selector: 'app-categories',
-  standalone: true,
-  imports: [CommonModule, SafeHTMLPipe, ClearURLPipe, RouterLink],
-  templateUrl: './categories.component.html',
-  styleUrl: './categories.component.scss',
+    selector: 'app-categories',
+    imports: [CommonModule, SafeHTMLPipe, ClearURLPipe, RouterLink],
+    templateUrl: './categories.component.html',
+    styleUrl: './categories.component.scss'
 })
 export class CategoriesComponent implements OnInit, OnDestroy {
   private store = inject(Store<CategoryState>);

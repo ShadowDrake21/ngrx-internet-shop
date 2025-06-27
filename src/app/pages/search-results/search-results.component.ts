@@ -20,16 +20,15 @@ import { IProduct } from '@models/product.model';
 import { calcPageNum } from '@shared/utils/pagination.utils';
 
 @Component({
-  selector: 'app-search-results',
-  standalone: true,
-  imports: [
-    CommonModule,
-    SingleSearchResultComponent,
-    PaginationModule,
-    RouterLink,
-  ],
-  templateUrl: './search-results.component.html',
-  styleUrl: './search-results.component.scss',
+    selector: 'app-search-results',
+    imports: [
+        CommonModule,
+        SingleSearchResultComponent,
+        PaginationModule,
+        RouterLink,
+    ],
+    templateUrl: './search-results.component.html',
+    styleUrl: './search-results.component.scss'
 })
 export class SearchResultsComponent implements OnInit, OnDestroy {
   private store = inject(Store<ProductState>);

@@ -8,11 +8,10 @@ import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { ISupplementedCharge } from '@models/purchase.model';
 
 @Component({
-  selector: 'app-latest-purchase',
-  standalone: true,
-  imports: [CommonModule, CarouselModule],
-  templateUrl: './latest-purchase.component.html',
-  styleUrl: './latest-purchase.component.scss',
+    selector: 'app-latest-purchase',
+    imports: [CommonModule, CarouselModule],
+    templateUrl: './latest-purchase.component.html',
+    styleUrl: './latest-purchase.component.scss'
 })
 export class LatestPurchaseComponent {
   @Input({ alias: 'latestTransaction', required: true })

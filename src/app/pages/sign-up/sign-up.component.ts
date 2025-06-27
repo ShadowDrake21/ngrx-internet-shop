@@ -30,19 +30,18 @@ import { LoaderComponent } from '@shared/components/loader/loader.component';
 import { EmailVerificationModalComponent } from './components/email-verification-modal/email-verification-modal.component';
 
 @Component({
-  selector: 'app-sign-up',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FontAwesomeModule,
-    LoaderComponent,
-    EmailVerificationModalComponent,
-    RouterLink,
-  ],
-  templateUrl: './sign-up.component.html',
-  styleUrl: './sign-up.component.scss',
-  providers: [BsModalService],
+    selector: 'app-sign-up',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        FontAwesomeModule,
+        LoaderComponent,
+        EmailVerificationModalComponent,
+        RouterLink,
+    ],
+    templateUrl: './sign-up.component.html',
+    styleUrl: './sign-up.component.scss',
+    providers: [BsModalService]
 })
 export class SignUpComponent {
   refreshIcon = faRefresh;

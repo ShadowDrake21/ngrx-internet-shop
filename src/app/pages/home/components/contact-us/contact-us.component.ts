@@ -21,16 +21,15 @@ import { AlertComponent } from '@shared/components/alert/alert.component';
 import { AlertType } from '@models/alerts.model';
 
 @Component({
-  selector: 'app-contact-us',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FontAwesomeModule,
-    ReactiveFormsModule,
-    AlertComponent,
-  ],
-  templateUrl: './contact-us.component.html',
-  styleUrl: './contact-us.component.scss',
+    selector: 'app-contact-us',
+    imports: [
+        CommonModule,
+        FontAwesomeModule,
+        ReactiveFormsModule,
+        AlertComponent,
+    ],
+    templateUrl: './contact-us.component.html',
+    styleUrl: './contact-us.component.scss'
 })
 export class ContactUsComponent {
   icons = contactUsIcons;

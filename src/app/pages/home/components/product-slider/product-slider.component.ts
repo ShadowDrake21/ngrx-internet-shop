@@ -16,11 +16,10 @@ import {
 } from './content/product-slider.content';
 
 @Component({
-  selector: 'app-product-slider',
-  standalone: true,
-  imports: [CommonModule, CarouselModule, NgOptimizedImage],
-  templateUrl: './product-slider.component.html',
-  styleUrl: './product-slider.component.scss',
+    selector: 'app-product-slider',
+    imports: [CommonModule, CarouselModule, NgOptimizedImage],
+    templateUrl: './product-slider.component.html',
+    styleUrl: './product-slider.component.scss'
 })
 export class ProductSliderComponent implements AfterViewInit {
   sliderItems: IProductSliderImage[] = productSliderImages;

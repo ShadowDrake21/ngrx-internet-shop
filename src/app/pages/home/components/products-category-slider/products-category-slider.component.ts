@@ -17,16 +17,15 @@ import { IProduct } from '@models/product.model';
 import { customProducts } from '@app/shared/mocks/products.mocks';
 
 @Component({
-  selector: 'app-products-category-slider',
-  standalone: true,
-  imports: [
-    CommonModule,
-    CarouselModule,
-    ProductsItemComponent,
-    ProductsCategorySliderItemComponent,
-  ],
-  templateUrl: './products-category-slider.component.html',
-  styleUrl: './products-category-slider.component.scss',
+    selector: 'app-products-category-slider',
+    imports: [
+        CommonModule,
+        CarouselModule,
+        ProductsItemComponent,
+        ProductsCategorySliderItemComponent,
+    ],
+    templateUrl: './products-category-slider.component.html',
+    styleUrl: './products-category-slider.component.scss'
 })
 export class ProductsCategorySliderComponent implements OnInit {
   private productService = inject(ProductService);
