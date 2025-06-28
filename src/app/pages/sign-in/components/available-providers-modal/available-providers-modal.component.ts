@@ -24,6 +24,7 @@ import { LoaderComponent } from '@shared/components/loader/loader.component';
 // utils
 import { createAuthInLS } from '@core/utils/auth.utils';
 import { signInModalIcons } from '@shared/utils/icons.utils';
+import { ISignInForm } from '@app/shared/models/auth.model';
 
 @Component({
   selector: 'app-available-providers-modal',
@@ -54,11 +55,7 @@ export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
 
   private userSubscription: Subscription[] = [];
 
-  signInForm!: FormGroup<{
-    email: FormControl<string | null>;
-    password: FormControl<string | null>;
-    rememberMe: FormControl<boolean | null>;
-  }>;
+  signInForm!: ISignInForm;
   isLogging: boolean = false;
 
   ngOnInit(): void {

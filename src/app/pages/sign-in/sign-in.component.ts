@@ -29,6 +29,7 @@ import { AvailableProvidersModalComponent } from './components/available-provide
 // utils
 import { createAuthInLS } from '@core/utils/auth.utils';
 import { signInModalIcons } from '@shared/utils/icons.utils';
+import { ISignInForm } from '@app/shared/models/auth.model';
 
 @Component({
   selector: 'app-sign-in',
@@ -59,11 +60,7 @@ export class SignInComponent implements OnInit, OnDestroy {
   alerts: AlertType[] = [];
   user$!: Observable<IUser | null>;
 
-  signInForm!: FormGroup<{
-    email: FormControl<string | null>;
-    password: FormControl<string | null>;
-    rememberMe: FormControl<boolean | null>;
-  }>;
+  signInForm!: ISignInForm;
   isLogging: boolean = false;
 
   private userStateSubscription!: Subscription | undefined;

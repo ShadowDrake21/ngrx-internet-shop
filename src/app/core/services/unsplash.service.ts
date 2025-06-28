@@ -11,23 +11,27 @@ import { BASE_UNSPLASH_URL } from '../constants/unsplash.constants';
 // environment
 import { environment } from 'environments/environment.development';
 
+type orientationType = 'landscape' | 'portrait' | 'squarish';
+
 @Injectable({ providedIn: 'root' })
 export class UnsplashService {
   private http = inject(HttpClient);
+  private readonly unsplashAccessKey = environment.unsplash.accessKey;
 
   getPhotoArray(
     location: string,
-    orientation: 'landscape' | 'portrait' | 'squarish' = 'landscape'
+    orientation: orientationType = 'landscape'
   ): Observable<IUnsplashImageResponse> {
-    return this.http.get<IUnsplashImageResponse>(
-      BASE_UNSPLASH_URL + 'search/photos/',
-      {
-        params: new HttpParams()
-          .set('query', location)
-          .set('orientation', orientation)
-          .set('per_page', 30)
-          .set('client_id', environment.unsplash.accessKey),
-      }
-    );
+    const params = new HttpParams()
+      .set('query', location)
+      .set('orientation', orientation)
+      .set('per_page', 30)
+      .set('client_id', this.unsplashAccessKey);
+
+    const url = BASE_UNSPLASH_URL + 'search/photos';
+
+    return this.http.get<IUnsplashImageResponse>(url, {
+      params,
+    });
   }
 }

@@ -16,16 +16,14 @@ export interface FilesUploadMetadata {
 
 @Injectable({ providedIn: 'root' })
 export class StorageService {
-  private storage = inject(Storage);
+  private readonly storage = inject(Storage);
 
   updateFileAndGetMetadata(
     mediaFolderPath: string,
     fileToUpload: File
   ): UploadTask {
-    const { name } = fileToUpload;
-    const filePath = `${mediaFolderPath}/${new Date().getTime()}_${name}`;
+    const filePath = this.generateFilePath(mediaFolderPath, fileToUpload);
     const storageRef = ref(this.storage, filePath);
-
     return uploadBytesResumable(storageRef, fileToUpload);
   }
 
@@ -33,30 +31,45 @@ export class StorageService {
     mediaFolderPath: string,
     fileToUpload: File
   ): Observable<string> {
-    const { name } = fileToUpload;
-    const filePath = `${mediaFolderPath}/${new Date().getTime()}_${name}`;
+    const filePath = this.generateFilePath(mediaFolderPath, fileToUpload);
     const storageRef = ref(this.storage, filePath);
+    const uploadTask = uploadBytesResumable(storageRef, fileToUpload);
 
-    const uploadTask: UploadTask = uploadBytesResumable(
-      storageRef,
-      fileToUpload
-    );
+    return new Observable<string>((subscriber) => {
+      const onComplete = async () => {
+        try {
+          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+          subscriber.next(downloadUrl);
+          subscriber.complete();
+        } catch (error) {
+          subscriber.error(error);
+        }
+      };
 
-    return new Observable<string>((observer) => {
-      uploadTask
-        .then((snapshot) => {
-          getDownloadURL(snapshot.ref)
-            .then((downloadURL) => {
-              observer.next(downloadURL);
-              observer.complete();
-            })
-            .catch((error) => {
-              observer.error(error);
-            });
-        })
-        .catch((error) => {
-          observer.error(error);
-        });
+      const onError = (error: any) => {
+        subscriber.error(error);
+      };
+
+      const unsubscribe = uploadTask.on(
+        'state_changed',
+        null,
+        onError,
+        onComplete
+      );
+
+      return () => {
+        unsubscribe();
+
+        try {
+          uploadTask.cancel();
+        } catch (e) {
+          console.warn('Error cancelling upload task:', e);
+        }
+      };
     });
+  }
+
+  private generateFilePath(folderPath: string, file: File): string {
+    return `${folderPath}/${Date.now()}_${file.name}`;
   }
 }

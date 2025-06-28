@@ -38,6 +38,7 @@ export class CheckoutService {
   private readonly http = inject(HttpClient);
   private readonly db = inject(Database);
   private readonly stripe: Stripe = new Stripe(environment.stripe.apiKey);
+  private readonly baseUrl = `${CHECKOUT_BASE_URL}/checkout`;
 
   checkoutInit(data: ICheckoutInit): Observable<any> {
     const checkoutData = {
@@ -47,7 +48,7 @@ export class CheckoutService {
       paymentMethodId: data.paymentMethodId,
     };
 
-    return this.http.post(`${CHECKOUT_BASE_URL}/checkout`, checkoutData);
+    return this.http.post(this.baseUrl, checkoutData);
   }
 
   createCustomer(email: string): Observable<Stripe.Customer> {
