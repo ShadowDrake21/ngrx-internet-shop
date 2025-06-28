@@ -1,8 +1,8 @@
 // angular stuff
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, of, Subscription, take } from 'rxjs';
+import { map, Observable, of, switchMap } from 'rxjs';
 import { RouterLink } from '@angular/router';
 
 // interfaces
@@ -24,63 +24,52 @@ import { CheckoutService } from '@core/services/checkout.service';
 import { DatabaseService } from '@core/services/database.service';
 
 @Component({
-    selector: 'app-user-sidebar',
-    imports: [CommonModule, TruncateTextPipe, RouterLink],
-    templateUrl: './user-sidebar.component.html',
-    styleUrl: './user-sidebar.component.scss'
+  selector: 'app-user-sidebar',
+  imports: [CommonModule, TruncateTextPipe, RouterLink],
+  templateUrl: './user-sidebar.component.html',
+  styleUrl: './user-sidebar.component.scss',
 })
-export class UserSidebarComponent implements OnInit, OnDestroy {
-  private store = inject(Store<AppState>);
-  private checkoutService = inject(CheckoutService);
-  private databaseService = inject(DatabaseService);
+export class UserSidebarComponent implements OnInit {
+  private readonly store = inject(Store<AppState>);
+  private readonly checkoutService = inject(CheckoutService);
+  private readonly databaseService = inject(DatabaseService);
 
-  onlineStatus: boolean = false;
+  onlineStatus$!: Observable<boolean>;
   user$!: Observable<IUser | null>;
   favorites$!: Observable<IProduct[]>;
   transactionsData$!: Observable<IUserTransactionsData | null>;
-  lastViewedProduct$!: Observable<string>;
-
-  private subscriptions: Subscription[] = [];
+  lastViewedProduct$!: Observable<string | null>;
 
   ngOnInit(): void {
-    const onlineStatusSubscription = this.store
-      .select(UserSelectors.selectUser)
-      .subscribe((user) => {
-        this.onlineStatus = user?.online!;
-      });
-
-    const userSubscription = this.store
-      .select(UserSelectors.selectUser)
-      .pipe(take(1))
-      .subscribe((user) => {
-        this.user$ = of(user);
-
-        if (user) {
-          this.lastViewedProduct$ = this.databaseService.getLastViewedProduct(
-            user?.userCredential?.providerData[0].email!
-          );
-        }
-      });
-
-    const customerSubscription = this.store
-      .select(PurchaseSelectors.selectCustomer)
-      .subscribe((customer) => {
-        if (customer?.id) {
-          this.transactionsData$ =
-            this.checkoutService.getUserTransactionsDataFromDB(customer.id);
-        }
-      });
-
-    this.favorites$ = this.store.select(FavoritesSelectors.selectFavorites);
-
-    this.subscriptions.push(
-      onlineStatusSubscription,
-      userSubscription,
-      customerSubscription
-    );
+    this.initialize();
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe);
+  initialize(): void {
+    this.onlineStatus$ = this.store
+      .select(UserSelectors.selectUser)
+      .pipe(map((user) => !!user?.online));
+    this.user$ = this.store.select(UserSelectors.selectUser);
+    this.favorites$ = this.store.select(FavoritesSelectors.selectFavorites);
+    this.transactionsData$ = this.store
+      .select(PurchaseSelectors.selectCustomer)
+      .pipe(
+        switchMap((customer) =>
+          customer?.id
+            ? this.checkoutService.getUserTransactionsDataFromDB(customer.id)
+            : of(null)
+        )
+      );
+
+    this.lastViewedProduct$ = this.store
+      .select(UserSelectors.selectUser)
+      .pipe(
+        switchMap((user) =>
+          user?.userCredential?.providerData[0].email
+            ? this.databaseService.getLastViewedProduct(
+                user.userCredential.providerData[0].email
+              )
+            : of(null)
+        )
+      );
   }
 }

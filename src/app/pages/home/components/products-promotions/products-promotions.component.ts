@@ -11,6 +11,8 @@ import { IProduct } from '@models/product.model';
 // components
 import { ProductsItemComponent } from '@shared/components/products-item/products-item.component';
 
+const PRODUCT_OF_THE_DAY_KEY = 'productOfTheDay';
+
 @Component({
   selector: 'app-products-promotions',
   imports: [CommonModule, ProductsItemComponent],
@@ -18,61 +20,62 @@ import { ProductsItemComponent } from '@shared/components/products-item/products
   styleUrl: './products-promotions.component.scss',
 })
 export class ProductsPromotionsComponent implements OnInit, OnDestroy {
-  private productService = inject(ProductService);
-
-  allProducts$!: Observable<IProduct[]>;
+  private readonly productService = inject(ProductService);
+  private allProductsSubscription = new Subscription();
 
   canBeInterestingProduct!: IProduct;
   productOfTheDay!: IProduct;
   theMostExpensiveProduct!: IProduct;
 
-  private allProductsSubscription!: Subscription;
-
   ngOnInit(): void {
-    this.allProducts$ = this.productService.getAllProducts().pipe(
-      tap(
-        (products) =>
-          (this.canBeInterestingProduct = this.getRandomProduct(products))
-      ),
-      tap(
-        (products) =>
-          (this.theMostExpensiveProduct =
-            this.getTheMostExpesiveProduct(products))
-      ),
-      tap((products) => this.productOfTheDayManipulations(products))
-    );
-
-    this.allProductsSubscription = this.allProducts$.subscribe();
+    this.initializeProducts();
   }
 
-  productOfTheDayManipulations(products: IProduct[]) {
-    const productOfTheDayStr = localStorage.getItem('productOfTheDay');
+  private initializeProducts(): void {
+    this.allProductsSubscription.add(
+      this.productService
+        .getAllProducts()
+        .pipe(
+          tap((products) => {
+            this.canBeInterestingProduct = this.getRandomProduct(products);
+            this.theMostExpensiveProduct =
+              this.getTheMostExpesiveProduct(products);
+            this.handleProductOfTheDay(products);
+          })
+        )
+        .subscribe()
+    );
+  }
 
-    if (!productOfTheDayStr || this.checkProductOfTheDayExpired()) {
+  private handleProductOfTheDay(products: IProduct[]): void {
+    const storedProduct = this.getStoredProductOfTheDay();
+
+    if (!storedProduct || this.isProductOfTheDayExpired(storedProduct)) {
       this.setNewProductOfTheDay(products);
     } else {
-      this.productOfTheDay = JSON.parse(productOfTheDayStr) as IProduct;
+      this.productOfTheDay = storedProduct;
     }
   }
 
-  setNewProductOfTheDay(products: IProduct[]) {
-    this.productOfTheDay = this.getRandomProduct(products);
-    this.productOfTheDay.expirationTime = this.calculateNextDay();
+  private getStoredProductOfTheDay(): IProduct | null {
+    const productStr = localStorage.getItem(PRODUCT_OF_THE_DAY_KEY);
+    return productStr ? (JSON.parse(productStr) as IProduct) : null;
+  }
+
+  private isProductOfTheDayExpired(product: IProduct): boolean {
+    return new Date(product.expirationTime!) <= new Date();
+  }
+
+  setNewProductOfTheDay(products: IProduct[]): void {
+    this.productOfTheDay = {
+      ...this.getRandomProduct(products),
+      expirationTime: this.calculateNextDay(),
+    };
+
     localStorage.setItem(
-      'productOfTheDay',
+      PRODUCT_OF_THE_DAY_KEY,
       JSON.stringify(this.productOfTheDay)
     );
-  }
-
-  checkProductOfTheDayExpired(): boolean {
-    const productOfTheDayStr = localStorage.getItem('productOfTheDay');
-
-    if (!productOfTheDayStr) {
-      return true;
-    }
-
-    const productOfTheDay = JSON.parse(productOfTheDayStr) as IProduct;
-    return new Date(productOfTheDay.expirationTime!) <= new Date();
   }
 
   calculateNextDay(): string {
@@ -87,11 +90,7 @@ export class ProductsPromotionsComponent implements OnInit, OnDestroy {
   }
 
   getTheMostExpesiveProduct(products: IProduct[]): IProduct {
-    const productsDesc: IProduct[] = products.sort(
-      (productA, productB) => productB.price - productA.price
-    );
-
-    return productsDesc[0];
+    return [...products].sort((a, b) => b.price - a.price)[0];
   }
 
   ngOnDestroy(): void {

@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, of, Subscription } from 'rxjs';
+import { distinctUntilChanged, map, Observable, of, Subscription } from 'rxjs';
 import { RouterLink } from '@angular/router';
 
 // interfaces
@@ -21,51 +21,52 @@ import { ClearURLPipe } from '@shared/pipes/clear-url.pipe';
 import { handleImageUnavailable } from '@shared/utils/errorHandlers.utils';
 
 @Component({
-    selector: 'app-categories',
-    imports: [CommonModule, SafeHTMLPipe, ClearURLPipe, RouterLink],
-    templateUrl: './categories.component.html',
-    styleUrl: './categories.component.scss'
+  selector: 'app-categories',
+  imports: [CommonModule, SafeHTMLPipe, ClearURLPipe, RouterLink],
+  templateUrl: './categories.component.html',
+  styleUrl: './categories.component.scss',
 })
 export class CategoriesComponent implements OnInit, OnDestroy {
-  private store = inject(Store<CategoryState>);
-
-  categories$!: Observable<ICategory[]>;
-  error$!: Observable<string | null>;
-
-  basicCategoryCount: number = 4;
-  mainCategories$!: Observable<ICategory[]>;
-
-  secondaryCategories$!: Observable<ICategory[]>;
-  secondaryCategoryId: number | null = null;
-
+  private readonly store = inject(Store<CategoryState>);
   private categoriesSubscription!: Subscription;
 
-  handleImageError = handleImageUnavailable;
+  private readonly BASIC_CATEGORY_COUNT = 4;
+
+  readonly categories$ = this.store.select(CategorySelectors.selectCategories);
+  readonly error$ = this.store.select(CategorySelectors.selectErrorMessage);
+  readonly mainCategories$ = this.getMainCategories();
+  readonly secondaryCategories$ = this.getSecondaryCategories();
+
+  secondaryCategoryId: number | null = null;
+
+  readonly handleImageError = handleImageUnavailable;
 
   ngOnInit(): void {
     this.store.dispatch(CategoryActions.loadCategories());
-    this.categories$ = this.store.select(CategorySelectors.selectCategories);
-    this.error$ = this.store.select(CategorySelectors.selectErrorMessage);
-
-    this.handleCategories();
   }
 
-  handleCategories() {
-    this.categoriesSubscription = this.categories$.subscribe((categories) => {
-      this.mainCategories$ = of(categories.slice(0, this.basicCategoryCount));
-      if (categories.length <= this.basicCategoryCount) {
-        return;
-      }
+  private getMainCategories(): Observable<ICategory[]> {
+    return this.categories$.pipe(
+      map((categories) => categories.slice(0, this.BASIC_CATEGORY_COUNT)),
+      distinctUntilChanged()
+    );
+  }
 
-      this.secondaryCategories$ = of(
-        categories.slice(this.basicCategoryCount, categories.length)
-      );
-    });
+  private getSecondaryCategories(): Observable<ICategory[]> {
+    return this.categories$.pipe(
+      map((categories) => {
+        if (categories.length <= this.BASIC_CATEGORY_COUNT) {
+          return [];
+        }
+        return categories.slice(this.BASIC_CATEGORY_COUNT);
+      }),
+      distinctUntilChanged()
+    );
   }
 
   selectChange(event: Event): void {
-    const el = event.target as HTMLSelectElement;
-    this.secondaryCategoryId = parseInt(el.value);
+    const selectElement = event.target as HTMLSelectElement;
+    this.secondaryCategoryId = parseInt(selectElement.value);
   }
 
   ngOnDestroy(): void {

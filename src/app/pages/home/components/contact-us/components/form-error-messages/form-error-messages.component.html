@@ -1,0 +1,46 @@
+@if (contactUsForm.invalid && ( contactUsForm.touched || contactUsForm.dirty)) {
+<ul class="position-absolute w-100 h-100">
+  @if(contactUsForm.controls.name.errors?.['required'] &&
+  contactUsForm.controls.name.touched) {
+  <li class="errors-list__item">The name field is mandatory</li>
+  } @if(contactUsForm.controls.name.errors?.['maxlength']) {
+  <li class="errors-list__item">
+    Name should be maximum 50 characters long. Now it is
+    {{ contactUsForm.value.name?.length }}
+  </li>
+  } @if (contactUsForm.controls.email.errors?.['required'] &&
+  contactUsForm.controls.email.touched) {
+  <li class="errors-list__item">The email field is mandatory</li>
+  } @if (contactUsForm.controls.email.errors?.['email']) {
+  <li class="errors-list__item">
+    {{ contactUsForm.value.email + " is not an email" }}
+  </li>
+  } @if(contactUsForm.controls.subject.errors?.['required'] &&
+  contactUsForm.controls.subject.touched) {
+  <li class="errors-list__item">The subject field is mandatory</li>
+  } @if(contactUsForm.controls.subject.errors?.['minlength']) {
+  <li class="errors-list__item">
+    Subject should be at least 6 characters long. Now it is
+    {{ contactUsForm.value.subject?.length }}
+  </li>
+  } @if(contactUsForm.controls.subject.errors?.['maxlength']) {
+  <li class="errors-list__item">
+    Subject should be maximum 60 characters long. Now it is
+    {{ contactUsForm.value.subject?.length }}
+  </li>
+  } @if(contactUsForm.controls.message.errors?.['required'] &&
+  contactUsForm.controls.message.touched) {
+  <li class="errors-list__item">The message field is mandatory</li>
+  } @if(contactUsForm.controls.message.errors?.['minlength']) {
+  <li class="errors-list__item">
+    Message should be at least 10 characters long. Now it is
+    {{ contactUsForm.value.message?.length }}
+  </li>
+  } @if(contactUsForm.controls.message.errors?.['maxlength']) {
+  <li class="errors-list__item">
+    Message should be maximum 255 characters long. Now it is
+    {{ contactUsForm.value.message?.length }}
+  </li>
+  }
+</ul>
+}

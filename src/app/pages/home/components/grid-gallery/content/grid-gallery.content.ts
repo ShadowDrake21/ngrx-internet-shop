@@ -1,8 +1,4 @@
-export interface IGridGalleryItem {
-  url: string;
-  name: string;
-  profession: string;
-}
+import { IGridGalleryItem } from '../types/grid-gallery.types';
 
 export const gridGalleryContent: IGridGalleryItem[] = [
   {

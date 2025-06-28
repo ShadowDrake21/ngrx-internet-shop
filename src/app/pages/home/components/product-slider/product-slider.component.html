@@ -1,9 +1,7 @@
 <div class="product-slider__wrapper">
   <carousel class="d-block" [noPause]="false" data-slider="product-slider">
-    <slide
-      *ngFor="let item of sliderItems; index as idx"
-      class="position-relative product-slider__slide text-center"
-    >
+    @for (item of sliderItems;; track $index) {
+    <slide class="position-relative product-slider__slide text-center">
       <div class="product-slider__slide-blackout"></div>
       <img
         [ngSrc]="item.path"
@@ -18,5 +16,6 @@
         <div #slideContentRef></div>
       </div>
     </slide>
+    }
   </carousel>
 </div>

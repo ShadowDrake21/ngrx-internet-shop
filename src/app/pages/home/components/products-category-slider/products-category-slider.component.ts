@@ -1,8 +1,15 @@
 // angular stuff
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
-import { Observable, of } from 'rxjs';
+import {
+  debounceTime,
+  fromEvent,
+  Observable,
+  of,
+  Subject,
+  takeUntil,
+} from 'rxjs';
 
 // services
 import { ProductService } from '@core/services/product.service';
@@ -15,63 +22,70 @@ import { ICategory } from '@models/category.model';
 import { IProduct } from '@models/product.model';
 import { customProducts } from '@app/shared/mocks/products.mocks';
 
+const RESPONSIVE_BREAKPOINTS = {
+  MOBILE: 600,
+  TABLET: 1000,
+  DESKTOP: 1300,
+} as const;
+
 @Component({
   selector: 'app-products-category-slider',
   imports: [CommonModule, CarouselModule, ProductsCategorySliderItemComponent],
   templateUrl: './products-category-slider.component.html',
   styleUrl: './products-category-slider.component.scss',
 })
-export class ProductsCategorySliderComponent implements OnInit {
-  private productService = inject(ProductService);
+export class ProductsCategorySliderComponent implements OnInit, OnDestroy {
+  private readonly productService = inject(ProductService);
+  private readonly destroy$ = new Subject<void>();
 
-  @Input({ required: true, alias: 'categoryId' }) categoryIdStr!:
-    | string
-    | 'custom';
+  @Input({ required: true, alias: 'categoryId' })
+  categoryId!: string | 'custom';
 
-  category$!: Observable<ICategory | null>;
   products$!: Observable<IProduct[]>;
-
   itemsPerSlide: number = 4;
   singleSlideOffset = true;
-
-  private innerWidth!: number;
-  private mobileBreakpoint: number = 600;
-  private tabletBreakpoint: number = 1000;
-  private desktopBreakpoint: number = 1300;
   showIndicator: boolean = true;
 
   ngOnInit(): void {
-    if (this.categoryIdStr === 'custom') {
-      this.products$ = of(customProducts);
-    } else {
-      this.products$ = this.productService.getProductsByCategory(
-        parseInt(this.categoryIdStr),
-        {
-          offset: 0,
-          limit: 15,
-        }
-      );
-    }
-    this.adjustItemsPerSlide();
+    this.loadProducts();
+    this.setupResponsiveBehavior();
   }
 
-  private adjustItemsPerSlide() {
-    this.innerWidth = window.innerWidth;
-    if (this.innerWidth < this.mobileBreakpoint) {
+  private loadProducts(): void {
+    this.products$ =
+      this.categoryId === 'custom'
+        ? of(customProducts)
+        : this.productService.getProductsByCategory(parseInt(this.categoryId), {
+            offset: 0,
+            limit: 15,
+          });
+  }
+
+  private setupResponsiveBehavior() {
+    this.adjustItemsPerSlide(window.innerWidth);
+    fromEvent(window, 'resize')
+      .pipe(debounceTime(100), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.adjustItemsPerSlide(window.innerWidth);
+      });
+  }
+
+  private adjustItemsPerSlide(width: number) {
+    if (width < RESPONSIVE_BREAKPOINTS.MOBILE) {
       this.itemsPerSlide = 1;
       this.showIndicator = false;
-    } else if (
-      this.innerWidth >= this.mobileBreakpoint &&
-      this.innerWidth < this.tabletBreakpoint
-    ) {
+    } else if (width < RESPONSIVE_BREAKPOINTS.TABLET) {
       this.itemsPerSlide = 2;
-    } else if (
-      this.innerWidth >= this.tabletBreakpoint &&
-      this.innerWidth < this.desktopBreakpoint
-    ) {
+      this.showIndicator = true;
+    } else if (width < RESPONSIVE_BREAKPOINTS.DESKTOP) {
       this.itemsPerSlide = 3;
     } else {
       this.itemsPerSlide = 4;
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

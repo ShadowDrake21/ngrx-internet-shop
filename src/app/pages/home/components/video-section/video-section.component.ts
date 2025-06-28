@@ -1,8 +1,18 @@
 // angular stuff
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  ViewChild,
+} from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlayCircle } from '@fortawesome/free-solid-svg-icons';
+import { videoItem } from './content/video-section.content';
+import { fromEvent } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-video-section',
@@ -11,35 +21,45 @@ import { faPlayCircle } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./video-section.component.scss'],
 })
 export class VideoSectionComponent implements AfterViewInit {
-  videoItem: { url: string; author: string; link: string } = {
-    url: '/assets/images/videos/video-section.mp4',
-    author: 'Polina Tankilevitch',
-    link: 'https://www.pexels.com/video/browsing-an-online-store-5585939/',
-  };
+  readonly videoItem = videoItem;
+  readonly playIcon = faPlayCircle;
+  private readonly destroyRef = inject(DestroyRef);
 
-  playIcon = faPlayCircle;
-
-  @ViewChild('videoPlayer') videoPlayer!: ElementRef;
-  @ViewChild('playButton') playButton!: ElementRef;
+  @ViewChild('videoPlayer', { static: true })
+  videoPlayer!: ElementRef<HTMLVideoElement>;
+  @ViewChild('playButton', { static: true })
+  playButton!: ElementRef<HTMLButtonElement>;
 
   ngAfterViewInit(): void {
-    if (this.videoPlayer && this.videoPlayer.nativeElement) {
-      const videoPlayer = this.videoPlayer.nativeElement as HTMLVideoElement;
-      const playButton = this.playButton.nativeElement as HTMLButtonElement;
-
-      videoPlayer.addEventListener('click', () =>
-        this.togglePlayback(videoPlayer, playButton)
-      );
-      playButton.addEventListener('click', () =>
-        this.togglePlayback(videoPlayer, playButton)
-      );
-    }
+    this.setupVideoControls();
   }
 
-  togglePlayback(videoPlayer: HTMLVideoElement, playButton: HTMLButtonElement) {
+  private setupVideoControls(): void {
+    const videoElement = this.videoPlayer.nativeElement;
+    const buttonElement = this.playButton.nativeElement;
+
+    fromEvent(videoElement, 'click')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.togglePlayback(videoElement, buttonElement));
+
+    fromEvent(buttonElement, 'click')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.togglePlayback(videoElement, buttonElement));
+
+    fromEvent(videoElement, 'ended')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => buttonElement.classList.remove('d-none'));
+  }
+
+  private togglePlayback(
+    videoPlayer: HTMLVideoElement,
+    playButton: HTMLButtonElement
+  ): void {
     if (videoPlayer.paused) {
-      videoPlayer.play();
-      playButton.classList.add('d-none');
+      videoPlayer
+        .play()
+        .then(() => playButton.classList.add('d-none'))
+        .catch((error) => console.error('Video playback failed:', error));
     } else {
       videoPlayer.pause();
       playButton.classList.remove('d-none');

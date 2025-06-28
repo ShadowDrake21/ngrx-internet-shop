@@ -6,13 +6,6 @@
     grid-template-rows: 1fr;
     grid-template-areas: "category1 category2 category3 category4";
   }
-  &-card {
-    max-width: 350px;
-    padding: 0;
-  }
-}
-.card-img-overlay {
-  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .category1 {
