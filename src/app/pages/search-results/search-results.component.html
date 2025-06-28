@@ -1,27 +1,25 @@
-<div *ngIf="visibleProducts$ | async as products">
+@if (visibleProducts$ | async; as products) {
+<div>
   <div class="container">
     <div class="d-flex flex-column align-items-center">
       <div class="text-center">
         <h2>Product search by name: {{ searchTerm$ | async }}</h2>
         <p>Found products: {{ (searchedProducts$ | async)!.length }}</p>
       </div>
-      <app-single-search-result
-        *ngFor="let product of products"
-        [item]="product"
-      ></app-single-search-result>
-      <div
-        class="d-flex justify-content-center pt-2"
-        *ngIf="
-          products.length &&
-          calcPageNum((searchedProducts$ | async)!.length, 5) > 1
-        "
-      >
+      @for (product of products; track product.id) {
+      <app-single-search-result [item]="product"></app-single-search-result>
+      } @if(products.length && ([(searchedProducts$ | async)!.length , 5] |
+      pageNum) > 1){
+      <div class="d-flex justify-content-center pt-2">
         <pagination
           [totalItems]="(searchedProducts$ | async)!.length"
           (pageChanged)="pageChanged($event)"
-          [itemsPerPage]="itemsPerPage"
+          [itemsPerPage]="ITEMS_PER_PAGE"
         ></pagination>
       </div>
+      }
     </div>
   </div>
 </div>
+
+}

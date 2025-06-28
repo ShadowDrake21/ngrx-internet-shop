@@ -6,7 +6,7 @@
           <form
             class="filter-body"
             [formGroup]="filterForm"
-            (ngSubmit)="onFilter()"
+            (ngSubmit)="applyFilter()"
           >
             <div
               class="border-bottom d-flex align-items-end filter-header justify-content-between"
@@ -15,17 +15,15 @@
               <button
                 type="button"
                 class="btn btn-info text-light"
-                (click)="onResetForm()"
+                (click)="resetForm()"
               >
                 Reset
               </button>
             </div>
             <div class="filter-body__inner">
               <div class="mb-30 filter-options">
-                <div
-                  class="custom-control custom-checkbox mb-3"
-                  *ngFor="let category of filterCategories"
-                >
+                @for(category of filterCategories; track category.id) {
+                <div class="custom-control custom-checkbox mb-3">
                   <input
                     type="radio"
                     class="custom-control-input"
@@ -40,6 +38,7 @@
                     >{{ category.name }}</label
                   >
                 </div>
+                }
               </div>
             </div>
 
@@ -100,7 +99,7 @@
       'd-none': restoreBtn !== true,
       'd-block': restoreBtn !== false
     }"
-    (click)="onRestoreProducts()"
+    (click)="restoreProducts()"
   >
     Restore all products
   </button>
