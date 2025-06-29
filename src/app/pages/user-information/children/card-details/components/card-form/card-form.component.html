@@ -140,12 +140,11 @@
                     (change)="updateExpirationMonth()"
                     formControlName="expirationMonth"
                   >
-                    <option
-                      *ngFor="let month of cardMonthsAndYears.months"
-                      [value]="month"
-                    >
+                    @for ( month of cardMonthsAndYears.months; track $index) {
+                    <option [value]="month">
                       {{ month }}
                     </option>
+                    }
                   </select>
                 </div>
                 <div class="field">
@@ -155,12 +154,11 @@
                     (change)="updateExpirationYear()"
                     formControlName="expirationYear"
                   >
-                    <option
-                      *ngFor="let year of cardMonthsAndYears.years"
-                      [value]="year"
-                    >
+                    @for(year of cardMonthsAndYears.years; track $index) {
+                    <option [value]="year">
                       {{ year }}
                     </option>
+                    }
                   </select>
                 </div>
               </div>
@@ -204,31 +202,20 @@
       <div
         class="d-flex flex-column justify-content-between w-25 flex-shrink-1 card-details__add-errors align-items-end align-items-xxl-start"
       >
-        <ul *ngIf="cardForm.invalid" style="color: red">
-          <li
-            *ngIf="
-              cardForm.controls.cardNumber.invalid &&
-              cardForm.controls.cardNumber.touched
-            "
-          >
-            Cardnumber field is mandatory
-          </li>
-          <li
-            *ngIf="
-              cardForm.controls.cardHolder.invalid &&
-              cardForm.controls.cardHolder.touched
-            "
-          >
-            Cardholder field is mandatory
-          </li>
-          <li
-            *ngIf="
-              cardForm.controls.cvc.invalid && cardForm.controls.cvc.touched
-            "
-          >
-            CVC field is mandatory
-          </li>
+        @if (cardForm.invalid) {
+        <ul class="text-danger">
+          @if (cardForm.controls.cardNumber.invalid &&
+          cardForm.controls.cardNumber.touched) {
+          <li>Cardnumber field is mandatory</li>
+          } @if( cardForm.controls.cardHolder.invalid &&
+          cardForm.controls.cardHolder.touched) {
+          <li>Cardholder field is mandatory</li>
+          } @if(cardForm.controls.cvc.invalid && cardForm.controls.cvc.touched)
+          {
+          <li>CVC field is mandatory</li>
+          }
         </ul>
+        }
       </div>
     </div>
   </div>

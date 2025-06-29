@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ICardForm } from '../types/form.types';
 import { ICard } from '@app/shared/models/card.model';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CardFormService {
   private readonly DEFAULT_MONTH = '01';
   private readonly DEFAULT_YEAR = '24';

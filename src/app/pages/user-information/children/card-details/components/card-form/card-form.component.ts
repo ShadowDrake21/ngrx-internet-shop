@@ -14,12 +14,7 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { of, Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -50,7 +45,6 @@ import { CardFormService } from './services/cardForm.service';
   imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
   templateUrl: './card-form.component.html',
   styleUrl: './card-form.component.scss',
-  providers: [CardFormService],
 })
 export class CardFormComponent
   implements OnInit, AfterViewInit, OnChanges, OnDestroy
