@@ -2,13 +2,16 @@
   <div class="row g-0 d-flex align-items-center">
     <div class="col-md-4">
       <carousel>
-        <slide *ngFor="let image of product.images">
+        @for(image of product.images; track $index){
+        <slide>
           <img
             [src]="image | clearURL | safeHTML"
             class="img-fluid rounded-start"
             alt="product-image"
-          /> </slide
-      ></carousel>
+          />
+        </slide>
+        }
+      </carousel>
     </div>
     <div class="col-md-8">
       <div class="card-body">

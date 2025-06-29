@@ -10,3 +10,5 @@ export type ISignInForm = FormGroup<{
   password: FormControl<string | null>;
   rememberMe: FormControl<boolean | null>;
 }>;
+
+export type SocialProvider = 'facebook' | 'twitter' | 'google';

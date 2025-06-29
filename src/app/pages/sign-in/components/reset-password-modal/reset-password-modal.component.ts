@@ -1,5 +1,5 @@
 // angular stuff
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -10,20 +10,18 @@ import { UserState } from '@store/user/user.reducer';
 import * as UserActions from '@store/user/user.actions';
 
 @Component({
-    selector: 'app-reset-password-modal',
-    imports: [CommonModule, FormsModule],
-    templateUrl: './reset-password-modal.component.html',
-    styleUrl: './reset-password-modal.component.scss'
+  selector: 'app-reset-password-modal',
+  imports: [CommonModule, FormsModule],
+  templateUrl: './reset-password-modal.component.html',
+  styleUrl: './reset-password-modal.component.scss',
 })
-export class ResetPasswordModalComponent implements OnInit {
-  private store = inject(Store<UserState>);
-  public bsModalRef = inject(BsModalRef);
+export class ResetPasswordModalComponent {
+  private readonly store = inject(Store<UserState>);
+  private readonly _bsModalRef = inject(BsModalRef);
 
   closeBtnName?: string;
-
   afterSubmit: boolean = false;
-
-  ngOnInit(): void {}
+  private readonly resetTimeout = 6000;
 
   onSubmit(form: NgForm) {
     const email = form.value.email as string;
@@ -32,8 +30,16 @@ export class ResetPasswordModalComponent implements OnInit {
     this.afterSubmit = true;
 
     setTimeout(() => {
-      this.afterSubmit = false;
-      this.bsModalRef?.hide();
-    }, 6000);
+      this.closeModal();
+    }, this.resetTimeout);
+  }
+
+  private closeModal(): void {
+    this.afterSubmit = false;
+    this._bsModalRef?.hide();
+  }
+
+  get bsModalRef() {
+    return this._bsModalRef;
   }
 }
