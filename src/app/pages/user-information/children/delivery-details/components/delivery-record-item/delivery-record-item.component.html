@@ -13,7 +13,13 @@
     *ngIf="record.background?.user as user"
   >
     Photo by
-    <a [href]="user.link" target="_blank" class="text-white">{{ user.name }}</a>
+    <a
+      [href]="user.link"
+      target="_blank"
+      ref="noopener noreferrer"
+      class="text-white"
+      >{{ user.name }}</a
+    >
   </div>
   <div class="delivery-details__list-item__btns">
     <button

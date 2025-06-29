@@ -48,6 +48,7 @@ import { CheckoutService } from '@core/services/checkout.service';
 
 // constants
 import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
+import { IUserTransactionsData } from '@app/shared/models/purchase.model';
 
 @Component({
   selector: 'app-user-information',
@@ -66,7 +67,8 @@ import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
   providers: [BsModalService],
 })
 export class UserInformationComponent implements OnInit, OnDestroy {
-  sidebarIcons = userInformationSidebar;
+  readonly sidebarIcons = userInformationSidebar;
+  readonly modalClasses = 'modal-dialog modal-dialog-centered';
 
   private store = inject(Store<AppState>);
   private router = inject(Router);
@@ -74,53 +76,56 @@ export class UserInformationComponent implements OnInit, OnDestroy {
   private checkoutService = inject(CheckoutService);
 
   user$!: Observable<IUser | null>;
-
   bsModalRef?: BsModalRef;
-
-  previousRoute!: string;
-
   alerts: AlertType[] = [];
-  private subscriptions: Subscription[] = [];
-  private modalClasses = 'modal-dialog modal-dialog-centered';
+
+  private subscriptions = new Subscription();
+
+  ngOnInit(): void {
+    this.initializeCustomerData();
+    this.setupErrorHadling();
+  }
 
   private initializeCustomerData(): void {
-    const customerSubscription = this.store
-      .select(PurchaseSelectors.selectCustomer)
-      .pipe(
-        tap((customer) => {
-          if (!customer) {
-            this.store
-              .select(UserSelectors.selectEmail)
-              .pipe(
-                tap((email) => {
-                  if (email) {
-                    this.store.dispatch(PurchaseActions.getCustomer({ email }));
-                  }
-                }),
-                take(1)
-              )
-              .subscribe();
-          }
-        }),
-        switchMap(() => this.fetchCustomerData())
-      )
-      .subscribe();
+    this.subscriptions.add(
+      this.store
+        .select(PurchaseSelectors.selectCustomer)
+        .pipe(
+          tap((customer) => {
+            if (!customer) {
+              this.fetchCustomerByEmail();
+            }
+          }),
+          switchMap(() => this.fetchCustomerData())
+        )
+        .subscribe()
+    );
+  }
 
-    this.subscriptions.push(customerSubscription);
+  private fetchCustomerByEmail(): void {
+    this.subscriptions.add(
+      this.store
+        .select(UserSelectors.selectEmail)
+        .pipe(
+          take(1),
+          tap((email) => {
+            if (email) {
+              this.store.dispatch(PurchaseActions.getCustomer({ email }));
+            }
+          })
+        )
+        .subscribe()
+    );
   }
 
   private fetchCustomerData(): Observable<void> {
-    return this.store.select(UserSelectors.selectUser).pipe(
-      tap((user) => {
-        this.user$ = of(user);
-      }),
-      switchMap(() =>
-        combineLatest([
-          this.store.select(PurchaseSelectors.selectCustomer),
-          this.store.select(PurchaseSelectors.selectTransactions),
-        ])
-      ),
-      tap(([customer, transactions]) => {
+    return combineLatest([
+      this.store.select(UserSelectors.selectUser),
+      this.store.select(PurchaseSelectors.selectCustomer),
+      this.store.select(PurchaseSelectors.selectTransactions),
+    ]).pipe(
+      tap(([user]) => (this.user$ = of(user))),
+      tap(([, customer, transactions]) => {
         if (customer && transactions.length === 0) {
           this.store.dispatch(
             PurchaseActions.getAllTransactions({ customerId: customer.id })
@@ -131,94 +136,83 @@ export class UserInformationComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnInit(): void {
-    this.initializeCustomerData();
-    this.checkStripeFailure();
-  }
-
   onProfileOpen() {
-    const initialState: ModalOptions = {
-      initialState: {
-        profileData: this.formProfileModalData(),
-      },
-    };
-    this.bsModalRef = this.modalService.show(
-      SidebarProfileModalComponent,
-      initialState
-    );
-    this.bsModalRef?.setClass(this.modalClasses);
+    this.formProfileModalData().subscribe((profileData) => {
+      const initialState: ModalOptions = {
+        initialState: {
+          profileData,
+        },
+      };
+
+      this.bsModalRef = this.modalService.show(
+        SidebarProfileModalComponent,
+        initialState
+      );
+      this.bsModalRef?.setClass(this.modalClasses);
+    });
   }
 
   formProfileModalData(): Observable<ISidebarModal> {
-    return this.user$.pipe(
-      switchMap((user) =>
-        this.store.select(PurchaseSelectors.selectCustomer).pipe(
-          switchMap((customer) =>
-            this.checkoutService
-              .getUserTransactionsDataFromDB(customer?.id!)
-              .pipe(
-                map((statisticsData) => ({ statisticsData, user })),
-                switchMap(({ user, statisticsData }) =>
-                  this.store.select(FavoritesSelectors.selectFavorites).pipe(
-                    map((products) => products.length),
-                    map((favoriteCount) => ({
-                      user,
-                      statisticsData,
-                      favoriteCount,
-                    }))
-                  )
-                )
-              )
-          )
-        )
+    return combineLatest([
+      this.store.select(UserSelectors.selectUser),
+      this.store.select(PurchaseSelectors.selectCustomer),
+      this.store.select(FavoritesSelectors.selectFavorites),
+    ]).pipe(
+      switchMap(([user, customer, favorites]) =>
+        this.checkoutService
+          .getUserTransactionsDataFromDB(customer?.id! ?? '')
+          .pipe(map((statisticData) => ({ user, statisticData, favorites })))
       ),
-      map(({ statisticsData, user, favoriteCount }) => {
-        const providerData = user?.userCredential?.providerData[0];
-        const tokenResult = user?.userCredential?.tokenResult;
-
-        return {
-          user: {
-            email: providerData?.email!,
-            displayName: providerData?.displayName!,
-            photoUrl: providerData?.photoURL!,
-            authTime: tokenResult?.authTime!,
-            authExpirationTime: tokenResult?.expirationTime!,
-            provider: tokenResult?.signInProvider!,
-            emailVerified: user?.userCredential?.emailVerified!,
-            onlineStatus: user?.online!,
-          },
-          favoritesCount: favoriteCount,
-          transactions: {
-            transactionsCount: statisticsData?.count || 0,
-            transactionsPrice: statisticsData?.price || 0,
-          },
-        } as ISidebarModal;
-      })
+      map(({ user, statisticData, favorites }) =>
+        this.mapToSidebarModal(user, statisticData, favorites.length)
+      )
     );
   }
 
-  checkStripeFailure() {
-    this.alerts = [];
-    const checkStripeFailureSubscription = this.store
-      .select(PurchaseSelectors.selectErrorMessage)
-      .pipe(
-        switchMap((errorMessage) =>
-          this.store
-            .select(PurchaseSelectors.selectCustomer)
-            .pipe(map((customer) => ({ customer, errorMessage })))
-        )
-      )
-      .subscribe(({ customer, errorMessage }) => {
-        if (errorMessage && customer) {
-          this.alerts.push({
-            msg: errorMessage!,
-            timeout: 5000,
-            type: 'danger',
-          });
-        }
-      });
+  private mapToSidebarModal(
+    user: IUser | null,
+    statisticsData: IUserTransactionsData | null,
+    favoriteCount: number
+  ): ISidebarModal {
+    const providerData = user?.userCredential?.providerData[0];
+    const tokenResult = user?.userCredential?.tokenResult;
 
-    this.subscriptions.push(checkStripeFailureSubscription);
+    return {
+      user: {
+        email: providerData?.email ?? '',
+        displayName: providerData?.displayName ?? '',
+        photoUrl: providerData?.photoURL ?? '',
+        authTime: tokenResult?.authTime ?? '',
+        authExpirationTime: tokenResult?.expirationTime ?? '',
+        provider: tokenResult?.signInProvider ?? '',
+        emailVerified: user?.userCredential?.emailVerified ?? false,
+        onlineStatus: user?.online ?? false,
+      },
+      favoritesCount: favoriteCount,
+      transactions: {
+        transactionsCount: statisticsData?.count ?? 0,
+        transactionsPrice: statisticsData?.price ?? 0,
+      },
+    };
+  }
+
+  private setupErrorHadling() {
+    this.subscriptions.add(
+      combineLatest([
+        this.store.select(UserSelectors.selectErrorMessage),
+        this.store.select(PurchaseSelectors.selectCustomer),
+      ]).subscribe(([errorMessage, customer]) => {
+        if (errorMessage && customer) {
+          this.alerts = [
+            {
+              msg: errorMessage,
+              timeout: 5000,
+              type: 'danger',
+            },
+          ];
+        }
+      })
+    );
   }
 
   onSignOut() {
@@ -228,6 +222,6 @@ export class UserInformationComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.subscriptions.unsubscribe();
   }
 }

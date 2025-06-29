@@ -1,5 +1,5 @@
 <div class="pt-3 pb-3">
-  <app-basic-card [item]="userInformationItem"></app-basic-card>
+  <app-basic-card [data]="userInformationItem"></app-basic-card>
   <div *ngIf="!purchasesLoading; else loading">
     <div class="pb-4">
       <app-customer-information

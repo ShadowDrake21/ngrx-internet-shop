@@ -1,5 +1,5 @@
 <div class="pt-3 pb-3">
-  <app-basic-card [item]="userInformationItem"></app-basic-card>
+  <app-basic-card [data]="userInformationItem"></app-basic-card>
   <div *ngIf="!deliveryDetailsLoading; else loading">
     <app-delivery-record-form
       [customerId]="customerId"
@@ -66,6 +66,7 @@
           <a
             class="text-white"
             target="_blank"
+            ref="noopener noreferrer"
             href="https://unsplash.com/@bipinsaxena?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
             >BIPIN SAXENA</a
           >
@@ -73,6 +74,7 @@
           <a
             class="text-white"
             target="_blank"
+            ref="noopener noreferrer"
             href="https://unsplash.com/photos/woman-in-yellow-dress-shirt-PE_nl_9msOE?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
             >Unsplash</a
           >

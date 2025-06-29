@@ -5,7 +5,7 @@
       type="button"
       class="btn-close close pull-right"
       aria-label="Close"
-      (click)="bsModalRef.hide()"
+      (click)="onHide()"
     >
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
@@ -70,7 +70,7 @@
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">
+    <button type="button" class="btn btn-default" (click)="onHide()">
       Close
     </button>
   </div>
