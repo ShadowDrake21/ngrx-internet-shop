@@ -11,4 +11,11 @@ export type ISignInForm = FormGroup<{
   rememberMe: FormControl<boolean | null>;
 }>;
 
+export type ISingUpForm = FormGroup<{
+  displayName: FormControl<string | null>;
+  email: FormControl<string | null>;
+  password: FormControl<string | null>;
+  confirmPassword: FormControl<string | null>;
+}>;
+
 export type SocialProvider = 'facebook' | 'twitter' | 'google';

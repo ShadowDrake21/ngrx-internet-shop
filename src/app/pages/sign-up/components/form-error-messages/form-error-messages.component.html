@@ -1,0 +1,41 @@
+@if((form.invalid && (form.touched || form.dirty)) || form.value.password !==
+form.value.confirmPassword){
+<ul class="mt-4 text-danger">
+  @if(form.controls.displayName.errors?.['required'] &&
+  form.controls.displayName.touched){
+  <li>The user name field is mandatory</li>
+  } @if(form.controls.displayName.errors?.['minlength']){
+  <li>
+    User name should be at least 3 characters long. Now it is
+    {{ form.value.displayName?.length }}
+  </li>
+  } @if(form.controls.displayName.errors?.['maxlength']){
+  <li>
+    User name should be maximum 20 characters long. Now it is
+    {{ form.value.displayName?.length }}
+  </li>
+  } @if(form.controls.email.errors?.['required'] &&
+  form.controls.email.touched){
+  <li>The email field is mandatory</li>
+  } @if(form.controls.email.errors?.['email']){
+  <li>
+    {{ form.value.email + " is not an email" }}
+  </li>
+  } @if(form.controls.password.errors?.['required'] &&
+  form.controls.password.touched){
+  <li>The password field is mandatory</li>
+  } @if(form.controls.password.errors?.['minlength']){
+  <li>
+    Password should be at least 6 characters long. Now it is
+    {{ form.value.password?.length }}
+  </li>
+  } @if(form.controls.password.errors?.['maxlength']){
+  <li>
+    Password should be maximum 20 characters long. Now it is
+    {{ form.value.password?.length }}
+  </li>
+  } @if( form.value.password !== form.value.confirmPassword){
+  <li>The passwords should be the same</li>
+  }
+</ul>
+}

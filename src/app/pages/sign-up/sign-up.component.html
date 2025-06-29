@@ -12,8 +12,10 @@
         alt="form-img"
       />
     </div>
+
     <form [formGroup]="signUpForm" (ngSubmit)="onFormSubmit()">
-      <div *ngIf="!isLogging; else loading">
+      @if(!isLogging) {
+      <div>
         <h3>Registration Form</h3>
         <div class="form-wrapper">
           <input
@@ -22,10 +24,8 @@
             class="form-control"
             formControlName="displayName"
             [class.error]="
-              (signUpForm.controls.displayName.touched &&
-                signUpForm.controls.displayName.invalid) ||
-              (signUpForm.controls.displayName.dirty &&
-                signUpForm.controls.displayName.invalid)
+              signUpForm.controls.displayName.invalid &&
+              signUpForm.controls.displayName.touched
             "
           />
         </div>
@@ -36,10 +36,8 @@
             class="form-control"
             formControlName="email"
             [class.error]="
-              (signUpForm.controls.email.touched &&
-                signUpForm.controls.email.invalid) ||
-              (signUpForm.controls.email.dirty &&
-                signUpForm.controls.email.invalid)
+              signUpForm.controls.email.invalid &&
+              signUpForm.controls.email.touched
             "
           />
         </div>
@@ -50,11 +48,8 @@
             class="form-control"
             formControlName="password"
             [class.error]="
-              (signUpForm.controls.password.touched &&
-                signUpForm.controls.password.invalid) ||
-              (signUpForm.controls.password.dirty &&
-                signUpForm.controls.password.invalid) ||
-              signUpForm.value.password !== signUpForm.value.confirmPassword
+              signUpForm.controls.password.invalid &&
+              signUpForm.controls.password.touched
             "
           />
         </div>
@@ -65,11 +60,8 @@
             class="form-control"
             formControlName="confirmPassword"
             [class.error]="
-              (signUpForm.controls.confirmPassword.touched &&
-                signUpForm.controls.confirmPassword.invalid) ||
-              (signUpForm.controls.confirmPassword.dirty &&
-                signUpForm.controls.confirmPassword.invalid) ||
-              signUpForm.value.password !== signUpForm.value.confirmPassword
+              signUpForm.hasError('passwordMismatch') &&
+              signUpForm.controls.confirmPassword.touched
             "
           />
         </div>
@@ -85,8 +77,7 @@
               class="btn btn-dark p-3 register-btn w-100"
               type="submit"
               [disabled]="
-                signUpForm.invalid ||
-                signUpForm.value.password !== signUpForm.value.confirmPassword
+                signUpForm.invalid || signUpForm.hasError('passwordMismatch')
               "
             >
               Register
@@ -101,68 +92,20 @@
             </button>
           </div>
         </div>
-        <ul
-          *ngIf="
-            (signUpForm.invalid && signUpForm.touched) ||
-            (signUpForm.invalid && signUpForm.dirty) ||
-            signUpForm.value.password !== signUpForm.value.confirmPassword
-          "
-          class="mt-4"
-          style="color: red"
-        >
-          <li
-            *ngIf="signUpForm.controls.displayName.errors?.['required'] && signUpForm.controls.displayName.touched"
-          >
-            The user name field is mandatory
-          </li>
-          <li *ngIf="signUpForm.controls.displayName.errors?.['minlength']">
-            User name should be at least 3 characters long. Now it is
-            {{ signUpForm.value.displayName?.length }}
-          </li>
-          <li *ngIf="signUpForm.controls.displayName.errors?.['maxlength']">
-            User name should be maximum 20 characters long. Now it is
-            {{ signUpForm.value.displayName?.length }}
-          </li>
-          <li
-            *ngIf="signUpForm.controls.email.errors?.['required'] && signUpForm.controls.email.touched"
-          >
-            The email field is mandatory
-          </li>
-          <li *ngIf="signUpForm.controls.email.errors?.['email']">
-            {{ signUpForm.value.email + " is not an email" }}
-          </li>
-          <li
-            *ngIf="signUpForm.controls.password.errors?.['required'] && signUpForm.controls.password.touched"
-          >
-            The password field is mandatory
-          </li>
-          <li *ngIf="signUpForm.controls.password.errors?.['minlength']">
-            Password should be at least 6 characters long. Now it is
-            {{ signUpForm.value.password?.length }}
-          </li>
-          <li *ngIf="signUpForm.controls.password.errors?.['maxlength']">
-            Password should be maximum 20 characters long. Now it is
-            {{ signUpForm.value.password?.length }}
-          </li>
-          <li
-            *ngIf="
-              signUpForm.value.password !== signUpForm.value.confirmPassword
-            "
-          >
-            The passwords should be the same
-          </li>
-        </ul>
-        <div *ngIf="error$ | async as errorMessage" class="mt-4 error-message">
-          <p><span class="fw-bold">Error:</span> {{ errorMessage }}</p>
-        </div>
+        <sign-up-form-error-messages [form]="signUpForm" />
+        @if(error$ | async; as errorMessage){
+        <p class="mt-4 error-message">
+          <span class="fw-bold">Error:</span> {{ errorMessage }}
+        </p>
+        }
       </div>
-      <ng-template #loading>
-        <div
-          class="w-100 h-100 d-flex flex-column justify-content-center align-items-center"
-        >
-          <app-loader></app-loader>
-        </div>
-      </ng-template>
+      } @else {
+      <div
+        class="w-100 h-100 d-flex flex-column justify-content-center align-items-center"
+      >
+        <app-loader></app-loader>
+      </div>
+      }
     </form>
   </div>
 </div>

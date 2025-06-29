@@ -1,6 +1,6 @@
 // angular stuff
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -9,13 +9,13 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, of, Subject, Subscription, takeUntil } from 'rxjs';
 import { faRefresh } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 // interfaces
-import { IUserSignUpData } from '@models/user.model';
+import { IUser, IUserSignUpData } from '@models/user.model';
 
 // created ngrx stuff
 import { UserState } from '@store/user/user.reducer';
@@ -28,6 +28,9 @@ import { createAuthInLS } from '@core/utils/auth.utils';
 // components
 import { LoaderComponent } from '@shared/components/loader/loader.component';
 import { EmailVerificationModalComponent } from './components/email-verification-modal/email-verification-modal.component';
+import { ISingUpForm } from '@app/shared/models/auth.model';
+import { SignUpService } from '@app/core/services/sign-up.service';
+import { FormErrorMessagesComponent } from './components/form-error-messages/form-error-messages.component';
 
 @Component({
   selector: 'app-sign-up',
@@ -37,102 +40,73 @@ import { EmailVerificationModalComponent } from './components/email-verification
     FontAwesomeModule,
     LoaderComponent,
     RouterLink,
+    FormErrorMessagesComponent,
   ],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.scss',
   providers: [BsModalService],
 })
-export class SignUpComponent {
-  refreshIcon = faRefresh;
+export class SignUpComponent implements OnDestroy {
+  readonly refreshIcon = faRefresh;
+  private readonly destroy$ = new Subject<void>();
 
-  private store = inject(Store<UserState>);
-  private router = inject(Router);
-  private modalService = inject(BsModalService);
+  private readonly store = inject(Store<UserState>);
+  private readonly router = inject(Router);
+  private readonly modalService = inject(BsModalService);
+  private readonly signUpFormService = inject(SignUpService);
 
-  bsModalRef?: BsModalRef;
+  private bsModalRef?: BsModalRef;
 
-  error$!: Observable<string | null>;
-
-  signUpForm = new FormGroup({
-    displayName: new FormControl('', [
-      Validators.required,
-      Validators.minLength(3),
-      Validators.maxLength(20),
-    ]),
-    email: new FormControl('', [Validators.email, Validators.required]),
-    password: new FormControl('', [
-      Validators.required,
-      Validators.minLength(6),
-      Validators.maxLength(20),
-    ]),
-    confirmPassword: new FormControl('', [
-      Validators.required,
-      Validators.minLength(6),
-      Validators.maxLength(20),
-    ]),
-  });
+  error$: Observable<string | null> = this.store.select(
+    UserSelectors.selectErrorMessage
+  );
+  signUpForm: ISingUpForm = this.signUpFormService.getSignUpForm();
   isLogging: boolean = false;
 
-  private userSubcription!: Subscription;
-  private errorSubcription!: Subscription;
-
   onFormSubmit() {
+    if (this.signUpForm.invalid) return;
+
     this.isLogging = true;
-
     this.store.dispatch(UserActions.clearUserState());
-    const signUpData: IUserSignUpData = {
-      email: this.signUpForm.value.email!,
-      password: this.signUpForm.value.password!,
-      displayName: this.signUpForm.value.displayName!,
-    };
+    this.store.dispatch(UserActions.signUp({ data: this.formSignUpObj() }));
 
-    this.store.dispatch(UserActions.signUp({ data: signUpData }));
-    this.userSubcription = this.store
+    this.store
       .select(UserSelectors.selectUser)
-      .subscribe((user) => {
-        if (user?.online) {
-          createAuthInLS(user.userCredential!);
-          this.isLogging = false;
-          this.router.navigate(['/']);
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((user) => this.handleSignUpSuccess(user));
 
-          this.bsModalRef = this.modalService.show(
-            EmailVerificationModalComponent
-          );
-        }
+    this.error$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((error) => this.handleSignUpError(error));
+  }
 
-        if (this.userSubcription) {
-          this.userSubcription.unsubscribe();
-        }
-      });
+  private formSignUpObj(): IUserSignUpData {
+    const { email, password, displayName } = this.signUpForm.value;
+    return {
+      email: email!,
+      password: password!,
+      displayName: displayName!,
+    };
+  }
 
-    this.error$ = this.store.select(UserSelectors.selectErrorMessage);
-    this.errorSubcription = this.error$.subscribe((error) => {
-      if (error) {
-        setTimeout(() => {
-          this.error$ = of(null);
-        }, 5000);
-        this.isLogging = false;
-        this.signUpForm.reset();
-      }
+  private handleSignUpSuccess(user: IUser | null): void {
+    if (user?.online) {
+      createAuthInLS(user.userCredential!);
+      this.isLogging = false;
+      this.router.navigate(['/']);
+      this.bsModalRef = this.modalService.show(EmailVerificationModalComponent);
+    }
+  }
 
-      if (this.errorSubcription) {
-        this.errorSubcription.unsubscribe();
-      }
-    });
+  private handleSignUpError(error: string | null): void {
+    if (!error) return;
 
-    this.error$ = this.store.select(UserSelectors.selectErrorMessage);
-    this.errorSubcription = this.error$.subscribe((error) => {
-      if (error) {
-        setTimeout(() => {
-          this.error$ = of(null);
-        }, 5000);
-        this.isLogging = false;
-        this.signUpForm.reset();
-      }
+    this.isLogging = false;
+    this.signUpForm.reset();
+  }
 
-      if (this.errorSubcription) {
-        this.errorSubcription.unsubscribe();
-      }
-    });
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
