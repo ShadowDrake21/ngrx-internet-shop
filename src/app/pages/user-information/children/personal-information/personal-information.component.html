@@ -15,30 +15,11 @@
   } @if(user.userCredential; as userCredential) {
   <div>
     @if(isUserSignInManually) {
-
     <div class="d-flex personal-info__wrapper">
-      <div class="personal-info__image-change flex-shrink-0" #changeImageEl>
-        <input
-          type="file"
-          accept="image/png, image/jpeg"
-          id="input-change"
-          #changeImageInput
-        />
-        <div class="personal-info__image-change__icon-responsive">
-          <img
-            src="/assets/images/icons/click.svg"
-            alt="change-img-responsive"
-          />
-        </div>
-        <div class="personal-info__image-change__icon">
-          <img src="/assets/images/icons/image-editing.png" alt="change-img" />
-        </div>
-        <img
-          [src]="userPhotoURL"
-          alt="user img"
-          class="personal-info__image-change__img"
-        />
-      </div>
+      <personal-information-user-image
+        [imageUrl]="userPhotoURL"
+        (imageChanged)="onImageChanged($event)"
+      />
       <div class="d-flex w-100 flex-column flex-lg-row">
         <div class="personal-info__settings-left">
           <div class="personal-info__settings-username">
@@ -66,27 +47,11 @@
                   </button>
                 </div>
               </div>
-              <div class="pb-2">
-                <h6 class="fw-bold fs-5 pb-1 text-center text-sm-start">
-                  Email verification
-                </h6>
-                <div
-                  class="d-flex personal-info__email-verification flex-column flex-sm-row"
-                >
-                  <p class="form-control m-0">
-                    {{ userCredential.emailVerified }}
-                  </p>
-                  <button
-                    class="btn btn-primary w-100"
-                    (click)="onSendEmailVerification()"
-                    [disabled]="
-                      wasEmailVerificationSent || userCredential.emailVerified
-                    "
-                  >
-                    Verify email
-                  </button>
-                </div>
-              </div>
+              <personal-information-email-verification
+                [emailVerified]="userCredential.emailVerified"
+                [wasEmailVerificationSent]="wasEmailVerificationSent"
+                (verifyEmail)="onSendEmailVerification()"
+              />
               <button
                 class="btn btn-success w-100"
                 style="text-wrap: nowrap"
@@ -102,51 +67,14 @@
             </div>
           </div>
 
-          <div class="personal-info__settings-password">
-            @if (isPasswordChangeMode) {
-            <div class="d-flex align-items-end w-100" style="gap: 25px">
-              <div
-                class="flex-shrink-0 personal-info__settings-password__inner"
-              >
-                <label for="changePassword" class="fw-bold fs-5 pb-2"
-                  >Change password</label
-                >
-                <input
-                  type="password"
-                  class="form-control"
-                  id="changePassword"
-                  [formControl]="passwordControl"
-                />
-                <div class="d-flex h-100 w-100 pt-2" style="gap: 10px">
-                  <button
-                    class="btn btn-primary w-100"
-                    [disabled]="changePasswordForm.invalid"
-                    (click)="onSaveNewPassword()"
-                  >
-                    Update
-                  </button>
-                  <button
-                    class="btn btn-danger w-100"
-                    (click)="onCancelChangePasswordForm()"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            } @else {
-            <div class="personal-info__settings-password__btn">
-              <button
-                class="btn btn-dark w-100"
-                (click)="isPasswordChangeMode = true"
-              >
-                Change password
-                <fa-icon [icon]="icons.passwordIcon" class="ms-1"></fa-icon>
-              </button>
-            </div>
-            }
-          </div>
+          <personal-information-password-form
+            [passwordForm]="changePasswordForm"
+            [isPasswordChangeMode]="isPasswordChangeMode"
+            [passwordIcon]="icons.passwordIcon"
+            (savePassword)="onSaveNewPassword()"
+            (cancelPasswordChange)="onCancelPasswordChangeForm()"
+            (togglePasswordChange)="onTogglePasswordChange()"
+          />
         </div>
         <div class="personal-info__settings-right pt-4 pt-lg-0">
           @if (hasErrorChangePasswordForm()) {

@@ -1,5 +1,5 @@
 // angular stuff
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   combineLatest,
@@ -43,32 +43,31 @@ import { userInformationContent } from '../../content/user-information.content';
   providers: [TooltipDirective],
 })
 export class PurchasesComponent implements OnInit, OnDestroy {
-  userInformationItem = userInformationContent[2];
+  readonly userInformationItem = userInformationContent[2];
+  private readonly store = inject(Store<AppState>);
 
-  private store = inject(Store<AppState>);
+  customer$: Observable<Stripe.Customer | null> = this.store.select(
+    PurchaseSelectors.selectCustomer
+  );
+  transactions$: Observable<ISupplementedCharge[]> = this.store.select(
+    PurchaseSelectors.selectTransactions
+  );
 
-  customer$!: Observable<Stripe.Customer | null>;
-  transactions$!: Observable<ISupplementedCharge[]>;
-
-  purchasesLoading: boolean = false;
-
-  private subscriptions: Subscription[] = [];
+  isLoading = signal(true);
+  private subscriptions = new Subscription();
 
   ngOnInit() {
-    this.purchasesLoading = true;
-    combineLatest([
-      this.store.select(PurchaseSelectors.selectCustomer),
-      this.store.select(PurchaseSelectors.selectTransactions),
-    ])
-      .pipe(debounceTime(2000))
-      .subscribe(([customer, transactions]) => {
-        this.customer$ = of(customer);
-        this.transactions$ = of(transactions);
-        this.purchasesLoading = false;
-      });
+    this.subscriptions.add(
+      combineLatest([this.customer$, this.transactions$])
+        .pipe(debounceTime(2000))
+        .subscribe({
+          next: () => this.isLoading.set(false),
+          error: () => this.isLoading.set(false),
+        })
+    );
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.subscriptions.unsubscribe();
   }
 }

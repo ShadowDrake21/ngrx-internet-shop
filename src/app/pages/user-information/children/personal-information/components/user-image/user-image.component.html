@@ -1,0 +1,19 @@
+<div class="personal-info__image-change flex-shrink-0" #changeImageEl>
+  <input
+    type="file"
+    accept="image/png, image/jpeg"
+    id="input-change"
+    #changeImageInput
+  />
+  <div class="personal-info__image-change__icon-responsive">
+    <img src="/assets/images/icons/click.svg" alt="change-img-responsive" />
+  </div>
+  <div class="personal-info__image-change__icon">
+    <img src="/assets/images/icons/image-editing.png" alt="change-img" />
+  </div>
+  <img
+    [src]="imageUrl"
+    alt="user img"
+    class="personal-info__image-change__img"
+  />
+</div>

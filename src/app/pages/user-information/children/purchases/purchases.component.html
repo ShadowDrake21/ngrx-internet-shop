@@ -1,6 +1,6 @@
 <div class="pt-3 pb-3">
   <app-basic-card [data]="userInformationItem"></app-basic-card>
-  @if(!purchasesLoading) {
+  @if(!isLoading()) {
   <div>
     <div class="pb-4">
       <app-customer-information
