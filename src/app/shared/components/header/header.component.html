@@ -72,7 +72,7 @@
               class="btn btn-outline-secondary"
               type="submit"
               (click)="onSearch()"
-              [disabled]="noResult || !searchName?.length"
+              [disabled]="noResult || !searchName.length"
             >
               Search
             </button>
@@ -82,32 +82,32 @@
           >
             <button
               class="btn btn-link text-dark position-relative"
-              (click)="openModalWithComponent()"
+              (click)="openCartModal()"
             >
               @if ((user$ | async)?.online) {
               <div class="cart-count">
                 {{ (cartProducts$ | async)?.length ?? 0 }}
               </div>
-              } <fa-icon [icon]="cart"></fa-icon></button
+              } <fa-icon [icon]="icons.cart"></fa-icon></button
             ><button
               class="btn btn-link text-dark"
               [class]="{ 'd-none': !(user$ | async)?.online }"
               [routerLink]="['/user-information']"
             >
-              <fa-icon [icon]="profile"></fa-icon></button
+              <fa-icon [icon]="icons.profile"></fa-icon></button
             ><button
               class="btn btn-link text-dark"
-              (click)="onSignIn()"
+              (click)="navigateToSignIn()"
               [class]="{ 'd-none': (user$ | async)?.online }"
             >
-              <fa-icon [icon]="signIn"></fa-icon>
+              <fa-icon [icon]="icons.signIn"></fa-icon>
             </button>
             <button
               class="btn btn-link text-dark"
-              (click)="onSignOut()"
+              (click)="signOut()"
               [class]="{ 'd-none': !(user$ | async)?.online }"
             >
-              <fa-icon [icon]="signOut"></fa-icon>
+              <fa-icon [icon]="icons.signOut"></fa-icon>
             </button>
           </div>
         </div>

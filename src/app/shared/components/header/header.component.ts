@@ -4,6 +4,7 @@ import {
   ElementRef,
   HostListener,
   inject,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -17,7 +18,18 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { Store } from '@ngrx/store';
-import { map, noop, Observable, Observer, of, switchMap, tap } from 'rxjs';
+import {
+  catchError,
+  map,
+  noop,
+  Observable,
+  Observer,
+  of,
+  Subject,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 
@@ -55,86 +67,106 @@ import { AsyncPipe } from '@angular/common';
   styleUrl: './header.component.scss',
   providers: [BsModalService],
 })
-export class HeaderComponent implements OnInit, AfterViewInit {
-  private store = inject(Store<AppState>);
-  private modalService = inject(BsModalService);
-  private productService = inject(ProductService);
-  private router = inject(Router);
+export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly store = inject(Store<AppState>);
+  private readonly modalService = inject(BsModalService);
+  private readonly productService = inject(ProductService);
+  private readonly router = inject(Router);
+  private readonly destroy$ = new Subject<void>();
 
   @ViewChild('navbarToggler') navbarToggler!: ElementRef<HTMLButtonElement>;
   @ViewChild('navbarList') navbarList!: ElementRef<HTMLUListElement>;
 
-  cart = faCartShopping;
-  signIn = faSignInAlt;
-  signOut = faSignOutAlt;
-  profile = faUserAlt;
+  readonly icons = {
+    cart: faCartShopping,
+    signIn: faSignInAlt,
+    signOut: faSignOutAlt,
+    profile: faUserAlt,
+  };
 
   bsModalRef?: BsModalRef;
-
-  cartProducts$!: Observable<IProduct[]>;
-
-  searchName?: string;
+  cartProducts$: Observable<IProduct[]> = this.store.select(
+    CartSelectors.selectCartProducts
+  );
+  user$: Observable<IUser | null> = this.store.select(UserSelectors.selectUser);
   suggestions$?: Observable<string[]>;
-  errorMessage?: string;
 
-  user$!: Observable<IUser | null>;
+  searchName = '';
+  errorMessage = '';
   noResult = false;
-
-  windowSize!: number;
+  windowSize = window.innerWidth;
 
   ngOnInit(): void {
-    this.cartProducts$ = this.store.select(CartSelectors.selectCartProducts);
-    this.user$ = this.store.select(UserSelectors.selectUser);
-    this.searchTypeahead();
+    this.setupSearchTypeahead();
   }
 
   ngAfterViewInit(): void {
-    this.updateNavbarBehavior();
+    this.setupNavbarBehavior();
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event: Event) {
-    this.updateNavbarBehavior();
-  }
-
-  private updateNavbarBehavior(): void {
+  @HostListener('window:resize')
+  onResize() {
     this.windowSize = window.innerWidth;
+    this.setupNavbarBehavior();
+  }
+
+  private setupNavbarBehavior(): void {
     const listEl = this.navbarList.nativeElement;
+    listEl.removeEventListener('click', this.handleListClick);
+
     if (this.windowSize <= 992) {
       listEl.addEventListener('click', this.handleListClick);
-    } else {
-      listEl.removeEventListener('click', this.handleListClick);
     }
   }
 
+  private cleanupNavbarBehavior(): void {
+    this.navbarList.nativeElement.removeEventListener(
+      'click',
+      this.handleListClick
+    );
+  }
+
   private handleListClick = () => {
-    const togglerEl = this.navbarToggler.nativeElement;
-    togglerEl.click();
+    this.navbarToggler.nativeElement.click();
   };
 
-  searchTypeahead() {
-    this.suggestions$ = new Observable(
-      (observer: Observer<string | undefined>) => {
-        observer.next(this.searchName);
-      }
-    ).pipe(
-      switchMap((query: string | undefined) => {
-        if (query) {
-          return this.productService.getProductsByTitle(query).pipe(
-            map(
-              (products: IProduct[]) =>
-                products.map((product) => product.title) || []
-            ),
-            tap({
-              next: () => noop,
-              error: (err) => {
-                this.errorMessage =
-                  (err && err.message) || 'Something goes wrong';
-              },
-            })
-          );
-        }
+  onSearch() {
+    if (!this.searchName) return;
+    this.closeMobileMenuIfNeeded();
+    this.navigateToSearchResults();
+    this.clearSearch();
+  }
 
+  private closeMobileMenuIfNeeded(): void {
+    if (this.windowSize <= 992) {
+      this.handleListClick();
+    }
+  }
+
+  private navigateToSearchResults(): void {
+    this.router.navigate(['search-results'], {
+      queryParams: { query: this.searchName },
+    });
+  }
+
+  private clearSearch(): void {
+    this.searchName = '';
+  }
+
+  private setupSearchTypeahead() {
+    this.suggestions$ = of(this.searchName).pipe(
+      switchMap((query) =>
+        query ? this.getProductSuggestions(query) : of([])
+      ),
+      takeUntil(this.destroy$)
+    );
+  }
+
+  private getProductSuggestions(query: string): Observable<string[]> {
+    return this.productService.getProductsByTitle(query).pipe(
+      map((products) => products.map((product) => product.title)),
+      catchError((err) => {
+        this.errorMessage = err?.message || 'Something goes wrong';
         return of([]);
       })
     );
@@ -144,34 +176,29 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.noResult = event;
   }
 
-  onSearch() {
-    if (window.innerWidth <= 992) {
-      this.handleListClick();
-    }
-
-    this.router.navigate(['search-results'], {
-      queryParams: { query: this.searchName },
-    });
-    this.searchName = '';
-  }
-
-  openModalWithComponent() {
-    const initialState: ModalOptions = {
+  openCartModal() {
+    const modalConfig: ModalOptions = {
       initialState: {
         title: 'My Cart',
       },
+      class: 'modal-dialog-centered',
     };
-    this.bsModalRef = this.modalService.show(CartModalComponent, initialState);
-    this.bsModalRef.setClass('modal-dialog-centered');
-    this.bsModalRef.content.closeBtnName = 'Close';
+
+    this.bsModalRef = this.modalService.show(CartModalComponent, modalConfig);
   }
 
-  onSignIn() {
+  navigateToSignIn() {
     this.router.navigate(['/sign-in']);
   }
 
-  onSignOut() {
+  signOut() {
     this.store.dispatch(UserActions.signOut());
     localStorage.removeItem(LS_AUTH_ITEM_NAME);
+  }
+
+  ngOnDestroy(): void {
+    this.cleanupNavbarBehavior();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

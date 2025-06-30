@@ -35,7 +35,7 @@
           <button
             type="button"
             class="btn btn-danger"
-            (click)="onDecreaseQuantity(product.id)"
+            (click)="updateProductQuantity(product.id, 'decrease')"
           >
             -
           </button>
@@ -46,7 +46,7 @@
           <button
             type="button"
             class="btn btn-primary"
-            (click)="onIncreaseQuantity(product.id)"
+            (click)="updateProductQuantity(product.id, 'increase')"
           >
             +
           </button>
@@ -105,7 +105,7 @@
         <button
           type="button"
           class="btn btn-link"
-          (click)="onOpenSelectModal(selectModal)"
+          (click)="openSelectionModal(selectModal)"
           [class.d-none]="!isShippingDataExist"
         >
           Select checkout data
@@ -136,7 +136,7 @@
           type="button"
           class="btn-close close pull-right"
           aria-label="Close"
-          (click)="onHideSelectModal()"
+          (click)="closeSelectionModal()"
         >
           <span aria-hidden="true" class="visually-hidden">&times;</span>
         </button>
@@ -216,7 +216,7 @@
             <button
               type="button"
               class="btn btn-danger w-100"
-              (click)="onResetSelectForm()"
+              (click)="resetSelectForm()"
             >
               Reset
             </button>

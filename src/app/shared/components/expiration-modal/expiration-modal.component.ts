@@ -9,14 +9,14 @@ import { UserState } from '@store/user/user.reducer';
 import * as UserActions from '@store/user/user.actions';
 
 @Component({
-    selector: 'app-expiration-modal',
-    imports: [],
-    templateUrl: './expiration-modal.component.html',
-    styleUrl: './expiration-modal.component.scss'
+  selector: 'app-expiration-modal',
+  imports: [],
+  templateUrl: './expiration-modal.component.html',
+  styleUrl: './expiration-modal.component.scss',
 })
 export class ExpirationModalComponent implements OnInit {
-  private store = inject(Store<UserState>);
-  private router = inject(Router);
+  private readonly store = inject(Store<UserState>);
+  private readonly router = inject(Router);
   public bsModalRef = inject(BsModalRef);
 
   ngOnInit(): void {

@@ -70,10 +70,10 @@ export class UserInformationComponent implements OnInit, OnDestroy {
   readonly sidebarIcons = userInformationSidebar;
   readonly modalClasses = 'modal-dialog modal-dialog-centered';
 
-  private store = inject(Store<AppState>);
-  private router = inject(Router);
-  private modalService = inject(BsModalService);
-  private checkoutService = inject(CheckoutService);
+  private readonly store = inject(Store<AppState>);
+  private readonly router = inject(Router);
+  private readonly modalService = inject(BsModalService);
+  private readonly checkoutService = inject(CheckoutService);
 
   user$!: Observable<IUser | null>;
   bsModalRef?: BsModalRef;
@@ -137,19 +137,23 @@ export class UserInformationComponent implements OnInit, OnDestroy {
   }
 
   onProfileOpen() {
-    this.formProfileModalData().subscribe((profileData) => {
-      const initialState: ModalOptions = {
-        initialState: {
-          profileData,
-        },
-      };
+    this.formProfileModalData().subscribe((profileData) =>
+      this.showProfileModal(profileData)
+    );
+  }
 
-      this.bsModalRef = this.modalService.show(
-        SidebarProfileModalComponent,
-        initialState
-      );
-      this.bsModalRef?.setClass(this.modalClasses);
-    });
+  private showProfileModal(profileData: ISidebarModal): void {
+    const initialState: ModalOptions = {
+      initialState: {
+        profileData,
+      },
+    };
+
+    this.bsModalRef = this.modalService.show(
+      SidebarProfileModalComponent,
+      initialState
+    );
+    this.bsModalRef?.setClass(this.modalClasses);
   }
 
   formProfileModalData(): Observable<ISidebarModal> {

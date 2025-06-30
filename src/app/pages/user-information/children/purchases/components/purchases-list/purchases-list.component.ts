@@ -21,17 +21,11 @@ import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
   styleUrl: './purchases-list.component.scss',
   providers: [BsModalService],
 })
-export class PurchasesListComponent implements OnInit {
-  private store = inject(Store<PurchaseState>);
-
+export class PurchasesListComponent {
   @Input({ required: true, alias: 'transactions' })
   transactions$!: Observable<ISupplementedCharge[]>;
 
-  transactionsError$!: Observable<string | null>;
+  private readonly store = inject(Store<PurchaseState>);
 
-  ngOnInit(): void {
-    this.transactionsError$ = this.store.select(
-      PurchaseSelectors.selectErrorMessage
-    );
-  }
+  transactionsError$ = this.store.select(PurchaseSelectors.selectErrorMessage);
 }

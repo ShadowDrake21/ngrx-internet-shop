@@ -32,7 +32,6 @@ import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 
 // interfaces
 import { IProduct } from '@models/product.model';
-import { IUser } from '@models/user.model';
 import { IShipping } from '@models/purchase.model';
 import { ICard } from '@models/card.model';
 
@@ -60,53 +59,43 @@ import { DatabaseService } from '@core/services/database.service';
   providers: [BsModalService],
 })
 export class CartModalComponent implements OnInit, OnDestroy {
-  private store = inject(Store<AppState>);
-  private databaseService = inject(DatabaseService);
-  public bsModalRef = inject(BsModalRef);
-  private modalService = inject(BsModalService);
+  private readonly store = inject(Store<AppState>);
+  private readonly databaseService = inject(DatabaseService);
+  private readonly modalService = inject(BsModalService);
+  public readonly bsModalRef = inject(BsModalRef);
 
   modalRef?: BsModalRef;
-
   title?: string;
   closeBtnName?: string;
 
-  products$!: Observable<IProduct[]>;
-  totalPrice$!: Observable<number>;
-
-  cartProducts$!: Observable<IProduct[]>;
-  cartProductsArr: IProduct[] = [];
-
-  user$!: Observable<IUser | null>;
-
+  products$ = this.store.select(CartSelectors.selectCartProducts);
+  totalPrice$ = this.store.select(CartSelectors.selectCartTotalPrice);
+  user$ = this.store.select(UserSelectors.selectUser);
   userDeliveryAddresses$!: Observable<IShipping[]>;
   userCreditCards$!: Observable<ICard[]>;
 
+  cartProductsArr: IProduct[] = [];
   isShippingDataExist: boolean = false;
+  private choosenDeliveryAddress: IShipping | undefined;
+  private choosenCard: ICard | undefined;
 
   selectShippingDataForm = new FormGroup({
     deliveryAddressId: new FormControl('0'),
     cardId: new FormControl('0'),
   });
 
-  private choosenDeliveryAddress: IShipping | undefined = undefined;
-  private choosenCard: ICard | undefined = undefined;
-
-  private userShippingDataSubscription!: Subscription;
+  private subscriptions = new Subscription();
 
   ngOnInit(): void {
-    this.products$ = this.store.select(CartSelectors.selectCartProducts);
-    this.totalPrice$ = this.store.select(CartSelectors.selectCartTotalPrice);
-    this.user$ = this.store.select(UserSelectors.selectUser);
-
-    this.getShippingDefinedData();
+    this.setupShippingData();
   }
 
-  onIncreaseQuantity(productId: number) {
-    this.store.dispatch(CartActions.increaseCountProduct({ productId }));
-  }
-
-  onDecreaseQuantity(productId: number) {
-    this.store.dispatch(CartActions.decreaseCountProduct({ productId }));
+  updateProductQuantity(productId: number, action: 'increase' | 'decrease') {
+    const actionMap = {
+      increase: CartActions.increaseCountProduct,
+      decrease: CartActions.decreaseCountProduct,
+    };
+    this.store.dispatch(actionMap[action]({ productId }));
   }
 
   onRemoveProduct(productId: number) {
@@ -116,110 +105,110 @@ export class CartModalComponent implements OnInit, OnDestroy {
   onGoToCheckout() {
     this.bsModalRef.hide();
 
-    this.cartProducts$ = this.store.select(CartSelectors.selectCartProducts);
-    this.cartProducts$.subscribe((products) => {
-      this.cartProductsArr = products;
-    });
-
-    this.user$.subscribe((user) => {
-      this.store.dispatch(
-        PurchaseActions.initializeCheckout({
-          data: {
-            email: user?.userCredential?.providerData[0].email!,
-            products: this.cartProductsArr!,
-          },
-        })
-      );
-    });
+    this.subscriptions.add(
+      combineLatest([
+        this.store.select(CartSelectors.selectCartProducts),
+        this.user$,
+      ]).subscribe(([products, user]) => {
+        if (user?.userCredential?.providerData[0].email) {
+          this.store.dispatch(
+            PurchaseActions.initializeCheckout({
+              data: {
+                email: user.userCredential.providerData[0].email,
+                products: products,
+                ...(this.choosenDeliveryAddress && {
+                  deliveryAddress: this.choosenDeliveryAddress,
+                }),
+                ...(this.choosenCard && { paymentMethod: this.choosenCard }),
+              },
+            })
+          );
+        }
+      })
+    );
   }
 
-  onOpenSelectModal(template: TemplateRef<void>) {
+  openSelectionModal(template: TemplateRef<void>): void {
     this.bsModalRef.setClass('opacity-0');
     this.modalRef = this.modalService.show(template, {
       backdrop: true,
       ignoreBackdropClick: true,
+      class: 'modal-dialog-centered',
     });
-    this.modalRef.setClass('modal-dialog-centered');
   }
 
-  onHideSelectModal() {
+  closeSelectionModal() {
     this.bsModalRef.setClass('opacity-1 modal-dialog-centered');
     this.modalRef?.hide();
   }
 
-  getShippingDefinedData() {
-    this.userShippingDataSubscription = this.store
-      .select(PurchaseSelectors.selectCustomer)
-      .pipe(
-        filter((customer): customer is Stripe.Customer => !!customer),
-        switchMap((customer: Stripe.Customer) => {
-          return combineLatest([
-            this.databaseService.getAllDeliveryRecords(customer.id),
-            this.databaseService.getAllCards(customer.id),
-          ]).pipe(
-            tap(([addresses, cards]) => {
-              this.isShippingDataExist =
-                addresses.length > 0 || cards.length > 0;
-            }),
-            map(([addresses, cards]) => {
-              this.userDeliveryAddresses$ = of(addresses);
-              this.userCreditCards$ = of(cards);
-            })
-          );
-        })
-      )
-      .subscribe();
+  private setupShippingData() {
+    this.subscriptions.add(
+      this.store
+        .select(PurchaseSelectors.selectCustomer)
+        .pipe(
+          filter((customer): customer is Stripe.Customer => !!customer),
+          switchMap((customer: Stripe.Customer) =>
+            combineLatest([
+              this.databaseService.getAllDeliveryRecords(customer.id),
+              this.databaseService.getAllCards(customer.id),
+            ])
+          ),
+          tap(([addresses, cards]) => {
+            this.isShippingDataExist = addresses.length > 0 || cards.length > 0;
+            this.userDeliveryAddresses$ = of(addresses);
+            this.userCreditCards$ = of(cards);
+          })
+        )
+        .subscribe()
+    );
   }
 
   onSelectFormSubmit() {
-    this.onHideSelectModal();
-    const formValue = this.selectShippingDataForm.value;
+    this.closeSelectionModal();
 
-    if (formValue.deliveryAddressId !== '0') {
-      this.userDeliveryAddresses$
-        .pipe(
-          map((addresses) =>
-            addresses.find(
-              (address) =>
-                address.id ===
-                this.selectShippingDataForm.value.deliveryAddressId
-            )
-          ),
+    const { cardId, deliveryAddressId } = this.selectShippingDataForm.value;
 
-          tap((choosenAddress) => {
-            if (choosenAddress) {
-              this.choosenDeliveryAddress = choosenAddress;
-            }
-          })
-        )
-        .subscribe();
+    if (deliveryAddressId && deliveryAddressId !== '0') {
+      this.subscriptions.add(
+        this.userDeliveryAddresses$
+          .pipe(
+            map((addresses) =>
+              addresses.find((address) => address.id === deliveryAddressId)
+            ),
+            tap((address) => {
+              if (address) {
+                this.choosenDeliveryAddress = address;
+              }
+            })
+          )
+          .subscribe()
+      );
     }
-    if (formValue.cardId !== '0') {
-      this.userCreditCards$
-        .pipe(
-          map((cards) =>
-            cards.find(
-              (cards) => cards.id === this.selectShippingDataForm.value.cardId
-            )
-          ),
-          tap((choosenCard) => {
-            if (choosenCard) {
-              this.choosenCard = choosenCard;
-            }
-          })
-        )
-        .subscribe();
+    if (cardId && cardId !== '0') {
+      this.subscriptions.add(
+        this.userCreditCards$
+          .pipe(
+            map((cards) => cards.find((cards) => cards.id === cardId)),
+            tap((card) => {
+              if (card) {
+                this.choosenCard = card;
+              }
+            })
+          )
+          .subscribe()
+      );
     }
   }
 
-  onResetSelectForm() {
-    this.onHideSelectModal();
+  resetSelectForm() {
+    this.closeSelectionModal();
     this.choosenDeliveryAddress = undefined;
     this.choosenCard = undefined;
     this.selectShippingDataForm.reset({ deliveryAddressId: '0', cardId: '0' });
   }
 
   ngOnDestroy(): void {
-    this.userShippingDataSubscription.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 }
