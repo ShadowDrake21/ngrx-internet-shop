@@ -1,47 +1,40 @@
-<div *ngIf="user$ | async as user">
-  <ng-container *ngIf="user.userCredential!.providerData[0] as userCredential">
+@if(user$ | async; as user){ @if(user.userCredential!.providerData[0]; as
+userCredential) {
+<div
+  class="d-flex flex-column flex-md-row align-items-center align-items-md-start"
+  style="gap: 25px"
+>
+  <div class="flex-shrink-0 user-info__img-wrapper">
+    <img [src]="userCredential.photoURL" alt="user img" style="width: 100%" />
+  </div>
+  <div class="w-100 text-center text-md-start">
     <div
-      class="d-flex flex-column flex-md-row align-items-center align-items-md-start"
-      style="gap: 25px"
+      class="user-info__top d-flex align-items-center align-items-md-start align-items-lg-center flex-column flex-lg-row"
     >
-      <div class="flex-shrink-0 user-info__img-wrapper">
-        <img
-          [src]="userCredential.photoURL"
-          alt="user img"
-          style="width: 100%"
-        />
-      </div>
-      <div class="w-100 text-center text-md-start">
-        <div
-          class="user-info__top d-flex align-items-center align-items-md-start align-items-lg-center flex-column flex-lg-row"
-        >
-          <h3 class="fst-italic fw-lighter fs-4 pb-2">
-            {{ userCredential.email | truncateText : 60 }}
-          </h3>
-          <p>
-            <span class="fw-bold"> Email verified: </span>
-            {{ user.userCredential?.tokenResult?.claims?.['email_verified'] }}
-          </p>
-        </div>
-        <p class="fw-bold">
-          {{ userCredential.displayName }}
-        </p>
-        <hr />
-        <p>
-          <span class="fw-bold"> Auth time: </span>
-          {{ user.userCredential?.tokenResult?.authTime | date : "medium" }}
-        </p>
-        <p>
-          <span class="fw-bold"> Auth expiration time: </span>
-          {{
-            user.userCredential?.tokenResult?.expirationTime | date : "medium"
-          }}
-        </p>
-        <p>
-          <span class="fw-bold"> Sign in provider: </span>
-          {{ user.userCredential?.tokenResult?.signInProvider }}
-        </p>
-      </div>
+      <h3 class="fst-italic fw-lighter fs-4 pb-2">
+        {{ userCredential.email | truncateText : 60 }}
+      </h3>
+      <p>
+        <span class="fw-bold"> Email verified: </span>
+        {{ user.userCredential?.tokenResult?.claims?.['email_verified'] }}
+      </p>
     </div>
-  </ng-container>
+    <p class="fw-bold">
+      {{ userCredential.displayName }}
+    </p>
+    <hr />
+    <p>
+      <span class="fw-bold"> Auth time: </span>
+      {{ user.userCredential?.tokenResult?.authTime | date : "medium" }}
+    </p>
+    <p>
+      <span class="fw-bold"> Auth expiration time: </span>
+      {{ user.userCredential?.tokenResult?.expirationTime | date : "medium" }}
+    </p>
+    <p>
+      <span class="fw-bold"> Sign in provider: </span>
+      {{ user.userCredential?.tokenResult?.signInProvider }}
+    </p>
+  </div>
 </div>
+} }

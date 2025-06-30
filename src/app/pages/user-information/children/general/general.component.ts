@@ -1,6 +1,11 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  AsyncPipe,
+  CurrencyPipe,
+  TitleCasePipe,
+  UpperCasePipe,
+} from '@angular/common';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { combineLatest, debounceTime, map, Observable, of, tap } from 'rxjs';
@@ -23,11 +28,15 @@ import { userInformationContent } from '../../content/user-information.content';
 import { FaqTabsComponent } from './components/faq-tabs/faq-tabs.component';
 import { LatestPurchaseComponent } from './components/latest-purchase/latest-purchase.component';
 import { UserInfoComponent } from './components/user-info/user-info.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-general',
   imports: [
-    CommonModule,
+    AsyncPipe,
+    CurrencyPipe,
+    TitleCasePipe,
+    UpperCasePipe,
     AccordionModule,
     BasicCardComponent,
     UserInfoComponent,
@@ -39,25 +48,36 @@ import { UserInfoComponent } from './components/user-info/user-info.component';
   styleUrl: './general.component.scss',
 })
 export class GeneralComponent implements OnInit {
-  userInformationItem = userInformationContent[0];
+  private readonly store = inject(Store<AppState>);
+  private readonly destroyRef = inject(DestroyRef);
 
-  private store = inject(Store<AppState>);
+  readonly userInformationItem = userInformationContent[0];
 
-  user$!: Observable<IUser | null>;
-  cartState$!: Observable<CartState>;
-  latestTransaction$!: Observable<ISupplementedCharge | undefined>;
+  user$: Observable<IUser | null> = of(null);
+  cartState$: Observable<CartState> = of({} as CartState);
+  latestTransaction$: Observable<ISupplementedCharge | undefined> =
+    of(undefined);
+  latestTransactionError$: Observable<string | null> = of(null);
 
-  latestTransactionError$!: Observable<string | null>;
-
-  generalLoading: boolean = false;
+  generalLoading = false;
 
   ngOnInit(): void {
-    this.generalLoading = true;
+    this.initializeLoadingState();
+    this.initializeErrorObservable();
+    this.initializeDataStreams();
+  }
 
+  private initializeLoadingState(): void {
+    this.generalLoading = true;
+  }
+
+  private initializeErrorObservable(): void {
     this.latestTransactionError$ = this.store.select(
       PurchaseSelectors.selectErrorMessage
     );
+  }
 
+  private initializeDataStreams(): void {
     combineLatest([
       this.store.select(UserSelectors.selectUser),
       this.store.select(CartSelectors.selectCartState),
@@ -67,13 +87,18 @@ export class GeneralComponent implements OnInit {
     ])
       .pipe(
         debounceTime(2000),
-        tap(() => (this.generalLoading = false))
+        tap(() => (this.generalLoading = false)),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: ([user, cartState, latestTransaction]) => {
           this.user$ = of(user);
           this.cartState$ = of(cartState);
           this.latestTransaction$ = of(latestTransaction);
+        },
+        error: (error) => {
+          console.error('Error loading general data:', error);
+          this.generalLoading = false;
         },
       });
   }

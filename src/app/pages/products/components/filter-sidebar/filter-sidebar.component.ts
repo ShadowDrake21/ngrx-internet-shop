@@ -10,7 +10,6 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { filter, Observable, tap } from 'rxjs';
 
@@ -22,7 +21,7 @@ import { filterCategories } from './content/filter-categories.content';
 
 @Component({
   selector: 'app-filter-sidebar',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './filter-sidebar.component.html',
   styleUrl: './filter-sidebar.component.scss',
 })

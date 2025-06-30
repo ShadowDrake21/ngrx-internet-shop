@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -34,10 +34,10 @@ import { ProductsItemComponent } from '../products-item/products-item.component'
 import { calcPageNum } from '@shared/utils/pagination.utils';
 
 @Component({
-    selector: 'app-products-list',
-    imports: [CommonModule, PaginationModule, ProductsItemComponent, FormsModule],
-    templateUrl: './products-list.component.html',
-    styleUrl: './products-list.component.scss'
+  selector: 'app-products-list',
+  imports: [AsyncPipe, PaginationModule, ProductsItemComponent, FormsModule],
+  templateUrl: './products-list.component.html',
+  styleUrl: './products-list.component.scss',
 })
 export class ProductsListComponent implements OnInit, OnChanges {
   private store = inject(Store<AppState>);

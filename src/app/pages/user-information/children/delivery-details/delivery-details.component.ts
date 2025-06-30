@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -37,7 +37,7 @@ const MAX_DELIVERY_RECORDS = 6;
 @Component({
   selector: 'app-delivery-details',
   imports: [
-    CommonModule,
+    AsyncPipe,
     BasicCardComponent,
     ReactiveFormsModule,
     FontAwesomeModule,

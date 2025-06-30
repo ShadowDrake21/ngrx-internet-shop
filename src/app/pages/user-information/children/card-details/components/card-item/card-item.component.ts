@@ -1,5 +1,4 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -10,13 +9,13 @@ import { ICard } from '@models/card.model';
 import { changeDetailsIcons } from '@shared/utils/icons.utils';
 
 @Component({
-    selector: 'app-card-item',
-    imports: [CommonModule, FontAwesomeModule],
-    templateUrl: './card-item.component.html',
-    styleUrl: './card-item.component.scss'
+  selector: 'app-card-item',
+  imports: [FontAwesomeModule],
+  templateUrl: './card-item.component.html',
+  styleUrl: './card-item.component.scss',
 })
 export class CardItemComponent {
-  icons = changeDetailsIcons;
+  readonly icons = changeDetailsIcons;
 
   @Input({ required: true }) card!: ICard;
   @Input({ required: true }) removeActive!: boolean;

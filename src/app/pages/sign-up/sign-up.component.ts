@@ -1,15 +1,10 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnDestroy } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, of, Subject, Subscription, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { faRefresh } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
@@ -35,7 +30,7 @@ import { FormErrorMessagesComponent } from './components/form-error-messages/for
 @Component({
   selector: 'app-sign-up',
   imports: [
-    CommonModule,
+    AsyncPipe,
     ReactiveFormsModule,
     FontAwesomeModule,
     LoaderComponent,

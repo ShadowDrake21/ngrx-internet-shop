@@ -1,5 +1,4 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -30,7 +29,6 @@ import { FormErrorMessagesComponent } from './components/form-error-messages/for
 @Component({
   selector: 'app-available-providers-modal',
   imports: [
-    CommonModule,
     FontAwesomeModule,
     ReactiveFormsModule,
     LoaderComponent,

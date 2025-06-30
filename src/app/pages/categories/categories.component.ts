@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { distinctUntilChanged, map, Observable, of, Subscription } from 'rxjs';
@@ -22,7 +22,7 @@ import { handleImageUnavailable } from '@shared/utils/errorHandlers.utils';
 
 @Component({
   selector: 'app-categories',
-  imports: [CommonModule, SafeHTMLPipe, ClearURLPipe, RouterLink],
+  imports: [AsyncPipe, DatePipe, SafeHTMLPipe, ClearURLPipe, RouterLink],
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.scss',
 })

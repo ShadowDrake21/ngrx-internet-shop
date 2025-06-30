@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { Component, inject, Input } from '@angular/core';
 
@@ -9,7 +9,7 @@ import { PurchaseModalComponent } from '../purchase-modal/purchase-modal.compone
 
 @Component({
   selector: 'app-purchase-thumbnail',
-  imports: [CommonModule],
+  imports: [DatePipe, CurrencyPipe],
   templateUrl: './purchase-thumbnail.component.html',
   styleUrl: './purchase-thumbnail.component.scss',
   providers: [BsModalService],

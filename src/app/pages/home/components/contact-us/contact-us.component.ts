@@ -8,7 +8,6 @@ import {
 } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import emailjs from '@emailjs/browser';
-import { CommonModule } from '@angular/common';
 import { from } from 'rxjs';
 
 // components
@@ -24,7 +23,6 @@ import { environment } from 'environments/environment.development';
 @Component({
   selector: 'home-contact-us',
   imports: [
-    CommonModule,
     FontAwesomeModule,
     ReactiveFormsModule,
     AlertComponent,

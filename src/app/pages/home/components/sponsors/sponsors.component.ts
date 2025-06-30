@@ -1,13 +1,13 @@
 // angular stuff
 import { Component } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage, TitleCasePipe } from '@angular/common';
 
 // content
 import { sponsors } from './content/sponsors.content';
 
 @Component({
   selector: 'app-sponsors',
-  imports: [CommonModule, NgOptimizedImage],
+  imports: [TitleCasePipe, NgOptimizedImage],
   templateUrl: './sponsors.component.html',
   styleUrl: './sponsors.component.scss',
 })

@@ -1,5 +1,4 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -16,7 +15,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-video-section',
-  imports: [CommonModule, FontAwesomeModule],
+  imports: [FontAwesomeModule],
   templateUrl: './video-section.component.html',
   styleUrls: ['./video-section.component.scss'],
 })

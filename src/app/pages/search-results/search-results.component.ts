@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ActivatedRoute, ParamMap } from '@angular/router';
@@ -23,7 +23,7 @@ import { PageNumPipe } from '@app/shared/pipes/page-num.pipe';
 @Component({
   selector: 'app-search-results',
   imports: [
-    CommonModule,
+    AsyncPipe,
     SingleSearchResultComponent,
     PaginationModule,
     PageNumPipe,

@@ -3,7 +3,6 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Store } from '@ngrx/store';
 import { debounceTime, Subscription, take } from 'rxjs';
-import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { Router, RouterLink } from '@angular/router';
@@ -35,7 +34,6 @@ import { SignInUtilsService } from './services/signInUtils.service';
 @Component({
   selector: 'app-sign-in',
   imports: [
-    CommonModule,
     FontAwesomeModule,
     ReactiveFormsModule,
     AlertComponent,

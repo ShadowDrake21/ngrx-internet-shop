@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import {
   Component,
   inject,
@@ -35,11 +35,17 @@ import { phonePattern } from './constants/pattern.constants';
 import { shippingFieldsValidator } from './utils/formValidators.utils';
 
 @Component({
-    selector: 'app-customer-information',
-    imports: [CommonModule, ReactiveFormsModule, TabsModule, TooltipModule],
-    templateUrl: './customer-information.component.html',
-    styleUrl: './customer-information.component.scss',
-    providers: [TooltipDirective]
+  selector: 'app-customer-information',
+  imports: [
+    AsyncPipe,
+    DatePipe,
+    ReactiveFormsModule,
+    TabsModule,
+    TooltipModule,
+  ],
+  templateUrl: './customer-information.component.html',
+  styleUrl: './customer-information.component.scss',
+  providers: [TooltipDirective],
 })
 export class CustomerInformationComponent implements OnInit, OnDestroy {
   @Input({ alias: 'customer', required: true })

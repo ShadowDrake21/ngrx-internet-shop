@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 // content
@@ -7,7 +7,7 @@ import { IUserInformationContentItem } from '../../content/user-information.cont
 
 @Component({
   selector: 'app-basic-card',
-  imports: [CommonModule, NgOptimizedImage],
+  imports: [NgOptimizedImage],
   templateUrl: './basic-card.component.html',
   styleUrl: './basic-card.component.scss',
 })

@@ -1,5 +1,4 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -42,7 +41,7 @@ import { CardFormService } from './services/cardForm.service';
 
 @Component({
   selector: 'app-card-form',
-  imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
+  imports: [ReactiveFormsModule, FontAwesomeModule],
   templateUrl: './card-form.component.html',
   styleUrl: './card-form.component.scss',
 })

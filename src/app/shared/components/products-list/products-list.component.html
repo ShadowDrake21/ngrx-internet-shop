@@ -1,11 +1,13 @@
 <div class="container">
-  <h1 *ngIf="title" class="text-center mb-3">{{ title }}</h1>
+  @if (title) {
+  <h1 class="text-center mb-3">{{ title }}</h1>
+  }
   <div class="d-flex products-list__wrapper" style="gap: 30px">
     <ng-content></ng-content>
+    @if (visibleProducts$ | async; as products) {
     <div
       class="d-flex flex-wrap product-list flex-grow-1 w-100 justify-content-center pb-4"
       style="gap: 30px"
-      *ngIf="visibleProducts$ | async as products"
     >
       @if(products.length > 0 ) { @for (product of products; track $index) {
       <div class="text-decoration-none">
@@ -31,14 +33,11 @@
       </div>
       } }
     </div>
+    }
   </div>
-  <div
-    class="d-flex justify-content-center pt-2"
-    *ngIf="
-      (visibleProducts$ | async)?.length &&
-      calcPageNum((listProducts$ | async)!.length, itemsPerPage) > 1
-    "
-  >
+  @if ((visibleProducts$ | async)?.length && calcPageNum((listProducts$ |
+  async)!.length, itemsPerPage) > 1) {
+  <div class="d-flex justify-content-center pt-2">
     <pagination
       #paginationComponent
       [totalItems]="(listProducts$ | async)!.length"
@@ -48,4 +47,5 @@
       [(ngModel)]="currentPage"
     ></pagination>
   </div>
+  }
 </div>

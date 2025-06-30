@@ -1,5 +1,4 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -26,7 +25,7 @@ import { minimalizeUserCredential } from '@shared/utils/store.utils';
 
 @Component({
   selector: 'app-reauthenticate-modal',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './reauthenticate-modal.component.html',
   styleUrl: './reauthenticate-modal.component.scss',
   providers: [SignInService],
@@ -108,5 +107,13 @@ export class ReauthenticateModalComponent implements OnDestroy {
   ngOnDestroy(): void {
     if (this.reauthenticationSubscription)
       this.reauthenticationSubscription.unsubscribe();
+  }
+
+  shouldShowPasswordError(): boolean {
+    const passwordControl = this.reauthenticationForm.controls.password;
+    return (
+      (passwordControl.touched || passwordControl.dirty) &&
+      passwordControl.invalid
+    );
   }
 }

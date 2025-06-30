@@ -1,5 +1,4 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -29,7 +28,7 @@ import { FormErrorMessagesComponent } from './components/form-error-messages/for
 
 @Component({
   selector: 'app-delivery-record-form',
-  imports: [CommonModule, ReactiveFormsModule, FormErrorMessagesComponent],
+  imports: [ReactiveFormsModule, FormErrorMessagesComponent],
   templateUrl: './delivery-record-form.component.html',
   styleUrl: './delivery-record-form.component.scss',
 })

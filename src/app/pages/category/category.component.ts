@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, RouterLink } from '@angular/router';
 import { filter, map, Observable, Subscription, tap } from 'rxjs';
@@ -25,7 +25,7 @@ import { ProductsListComponent } from '@shared/components/products-list/products
 @Component({
   selector: 'app-category',
   imports: [
-    CommonModule,
+    AsyncPipe,
     PaginationModule,
     ProductsListComponent,
     RouterLink,

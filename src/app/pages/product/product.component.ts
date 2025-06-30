@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
@@ -55,7 +55,9 @@ import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
 @Component({
   selector: 'app-product',
   imports: [
-    CommonModule,
+    AsyncPipe,
+    DatePipe,
+    CurrencyPipe,
     CarouselModule,
     TruncateTextPipe,
     FontAwesomeModule,

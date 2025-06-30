@@ -1,11 +1,17 @@
 <main
   class="main"
-  [ngClass]="headerFooterAvailable ? 'withHeader' : 'withoutHeader'"
+  [class.withHeader]="headerFooterAvailable"
+  [class.withoutHeader]="!headerFooterAvailable"
 >
-  <app-header *ngIf="headerFooterAvailable"></app-header>
+  @if (headerFooterAvailable) {
+  <app-header />
+  }
   <div class="content">
-    <app-checkout-loading *ngIf="checkoutLoading$ | async" />
-    <app-breadcrumbs *ngIf="headerFooterAvailable"></app-breadcrumbs>
+    @if(checkoutLoading$ | async) {
+    <app-checkout-loading />
+    } @if(headerFooterAvailable) {
+    <app-breadcrumbs />
+    }
     <router-outlet></router-outlet>
     <button
       type="button"
@@ -14,5 +20,6 @@
       id="openModalBtn"
     ></button>
   </div>
-  <app-footer *ngIf="headerFooterAvailable"></app-footer>
+  @if(headerFooterAvailable) {
+  <app-footer /> }
 </main>

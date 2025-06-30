@@ -1,5 +1,4 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { map, Observable, of, switchMap } from 'rxjs';
@@ -28,7 +27,6 @@ import { CategoryService } from '@core/services/category.service';
 @Component({
   selector: 'app-products',
   imports: [
-    CommonModule,
     FormsModule,
     PaginationModule,
     FilterSidebarComponent,

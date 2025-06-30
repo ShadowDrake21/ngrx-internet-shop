@@ -1,6 +1,5 @@
 // angular stuff
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 // components
 import { ProductSliderComponent } from './components/product-slider/product-slider.component';
@@ -13,19 +12,18 @@ import { VideoSectionComponent } from './components/video-section/video-section.
 import { ContactUsComponent } from './components/contact-us/contact-us.component';
 
 @Component({
-    selector: 'app-home',
-    imports: [
-        CommonModule,
-        ProductSliderComponent,
-        SponsorsComponent,
-        UserSidebarComponent,
-        ProductsPromotionsComponent,
-        ProductsCategorySliderComponent,
-        GridGalleryComponent,
-        VideoSectionComponent,
-        ContactUsComponent,
-    ],
-    templateUrl: './home.component.html',
-    styleUrl: './home.component.scss'
+  selector: 'app-home',
+  imports: [
+    ProductSliderComponent,
+    SponsorsComponent,
+    UserSidebarComponent,
+    ProductsPromotionsComponent,
+    ProductsCategorySliderComponent,
+    GridGalleryComponent,
+    VideoSectionComponent,
+    ContactUsComponent,
+  ],
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.scss',
 })
 export class HomeComponent {}

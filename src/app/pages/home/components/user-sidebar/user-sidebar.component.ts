@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { map, Observable, of, switchMap } from 'rxjs';
@@ -25,7 +25,7 @@ import { DatabaseService } from '@core/services/database.service';
 
 @Component({
   selector: 'app-user-sidebar',
-  imports: [CommonModule, TruncateTextPipe, RouterLink],
+  imports: [AsyncPipe, DatePipe, TruncateTextPipe, RouterLink],
   templateUrl: './user-sidebar.component.html',
   styleUrl: './user-sidebar.component.scss',
 })

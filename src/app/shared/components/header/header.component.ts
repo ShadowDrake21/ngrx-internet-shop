@@ -19,7 +19,6 @@ import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { Store } from '@ngrx/store';
 import { map, noop, Observable, Observer, of, switchMap, tap } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 
 // components
@@ -40,16 +39,17 @@ import * as UserActions from '@store/user/user.actions';
 
 // constants
 import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-header',
   imports: [
-    CommonModule,
     RouterLink,
     RouterLinkActive,
     FontAwesomeModule,
     FormsModule,
     TypeaheadModule,
+    AsyncPipe,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',

@@ -1,7 +1,6 @@
 // angular stuff
 import { Component, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
@@ -11,7 +10,7 @@ import * as UserActions from '@store/user/user.actions';
 
 @Component({
   selector: 'app-reset-password-modal',
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './reset-password-modal.component.html',
   styleUrl: './reset-password-modal.component.scss',
 })

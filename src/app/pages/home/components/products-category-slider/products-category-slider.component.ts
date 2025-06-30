@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import {
@@ -18,7 +18,6 @@ import { ProductService } from '@core/services/product.service';
 import { ProductsCategorySliderItemComponent } from './components/products-category-slider-item/products-category-slider-item.component';
 
 // interfaces
-import { ICategory } from '@models/category.model';
 import { IProduct } from '@models/product.model';
 import { customProducts } from '@app/shared/mocks/products.mocks';
 
@@ -30,7 +29,7 @@ const RESPONSIVE_BREAKPOINTS = {
 
 @Component({
   selector: 'app-products-category-slider',
-  imports: [CommonModule, CarouselModule, ProductsCategorySliderItemComponent],
+  imports: [AsyncPipe, CarouselModule, ProductsCategorySliderItemComponent],
   templateUrl: './products-category-slider.component.html',
   styleUrl: './products-category-slider.component.scss',
 })

@@ -9,7 +9,6 @@ import {
   Subscription,
 } from 'rxjs';
 import Stripe from 'stripe';
-import { CommonModule } from '@angular/common';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { TooltipDirective, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -30,19 +29,18 @@ import { ISupplementedCharge } from '@models/purchase.model';
 import { userInformationContent } from '../../content/user-information.content';
 
 @Component({
-    selector: 'app-purcheses',
-    imports: [
-        CommonModule,
-        BasicCardComponent,
-        TabsModule,
-        TooltipModule,
-        ReactiveFormsModule,
-        CustomerInformationComponent,
-        PurchasesListComponent,
-    ],
-    templateUrl: './purchases.component.html',
-    styleUrl: './purchases.component.scss',
-    providers: [TooltipDirective]
+  selector: 'app-purcheses',
+  imports: [
+    BasicCardComponent,
+    TabsModule,
+    TooltipModule,
+    ReactiveFormsModule,
+    CustomerInformationComponent,
+    PurchasesListComponent,
+  ],
+  templateUrl: './purchases.component.html',
+  styleUrl: './purchases.component.scss',
+  providers: [TooltipDirective],
 })
 export class PurchasesComponent implements OnInit, OnDestroy {
   userInformationItem = userInformationContent[2];

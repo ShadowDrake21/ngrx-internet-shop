@@ -1,9 +1,9 @@
 // angular stuff
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { Store } from '@ngrx/store';
 import { debounceTime, map, Observable, Subscription, tap } from 'rxjs';
-import { AsyncPipe, CommonModule, KeyValuePipe } from '@angular/common';
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
 import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
 
 // created ngrx stuff

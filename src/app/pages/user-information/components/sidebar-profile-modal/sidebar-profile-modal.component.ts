@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Observable } from 'rxjs';
@@ -12,7 +12,7 @@ import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
 
 @Component({
   selector: 'app-sidebar-profile-modal',
-  imports: [CommonModule, TruncateTextPipe],
+  imports: [DatePipe, AsyncPipe, TruncateTextPipe],
   templateUrl: './sidebar-profile-modal.component.html',
   styleUrl: './sidebar-profile-modal.component.scss',
 })

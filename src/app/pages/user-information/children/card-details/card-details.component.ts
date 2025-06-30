@@ -9,7 +9,7 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
@@ -38,7 +38,7 @@ const MAX_CARDS_ALLOWED = 6;
 @Component({
   selector: 'app-card-details',
   imports: [
-    CommonModule,
+    AsyncPipe,
     BasicCardComponent,
     FontAwesomeModule,
     ReactiveFormsModule,

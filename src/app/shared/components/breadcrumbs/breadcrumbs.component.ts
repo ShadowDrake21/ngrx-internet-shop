@@ -1,5 +1,4 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IBreadcrumb } from '@app/shared/models/breadcrump.model';
@@ -9,7 +8,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
   selector: 'app-breadcrumbs',
-  imports: [CommonModule, RouterLink],
+  imports: [RouterLink],
   templateUrl: './breadcrumbs.component.html',
   styleUrl: './breadcrumbs.component.scss',
 })

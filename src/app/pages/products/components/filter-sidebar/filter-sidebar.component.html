@@ -95,10 +95,8 @@
   <button
     type="button"
     class="btn btn-dark w-100 mt-3"
-    [ngClass]="{
-      'd-none': restoreBtn !== true,
-      'd-block': restoreBtn !== false
-    }"
+    [class.d-none]="!restoreBtn"
+    [class.d-block]="restoreBtn"
     (click)="restoreProducts()"
   >
     Restore all products

@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -10,10 +10,10 @@ import { IUser } from '@models/user.model';
 import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
 
 @Component({
-    selector: 'app-user-info',
-    imports: [CommonModule, TruncateTextPipe],
-    templateUrl: './user-info.component.html',
-    styleUrl: './user-info.component.scss'
+  selector: 'app-user-info',
+  imports: [AsyncPipe, DatePipe, TruncateTextPipe],
+  templateUrl: './user-info.component.html',
+  styleUrl: './user-info.component.scss',
 })
 export class UserInfoComponent {
   @Input({ alias: 'user', required: true }) user$!: Observable<IUser | null>;

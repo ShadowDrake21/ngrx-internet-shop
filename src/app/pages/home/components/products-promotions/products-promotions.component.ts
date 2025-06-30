@@ -1,6 +1,5 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subscription, tap } from 'rxjs';
+import { Subscription, tap } from 'rxjs';
 
 // services
 import { ProductService } from '@core/services/product.service';
@@ -15,7 +14,7 @@ const PRODUCT_OF_THE_DAY_KEY = 'productOfTheDay';
 
 @Component({
   selector: 'app-products-promotions',
-  imports: [CommonModule, ProductsItemComponent],
+  imports: [ProductsItemComponent],
   templateUrl: './products-promotions.component.html',
   styleUrl: './products-promotions.component.scss',
 })

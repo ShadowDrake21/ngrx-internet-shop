@@ -9,7 +9,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, TitleCasePipe } from '@angular/common';
 import { Observable, of, Subscription, switchMap, take, timer } from 'rxjs';
 import {
   FormBuilder,
@@ -53,12 +53,13 @@ import { MEDIA_STORAGE_PATH } from '@core/constants/storage.constants';
 @Component({
   selector: 'app-personal-information',
   imports: [
-    CommonModule,
     BasicCardComponent,
     ReactiveFormsModule,
     FormsModule,
     FontAwesomeModule,
     AlertComponent,
+    TitleCasePipe,
+    AsyncPipe,
   ],
   templateUrl: './personal-information.component.html',
   styleUrl: './personal-information.component.scss',

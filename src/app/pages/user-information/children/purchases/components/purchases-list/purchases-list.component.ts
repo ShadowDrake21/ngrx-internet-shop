@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
@@ -15,11 +15,11 @@ import { PurchaseState } from '@app/store/purchase/purchase.reducer';
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 
 @Component({
-    selector: 'app-purchases-list',
-    imports: [CommonModule, PurchaseThumbnailComponent, PaginationModule],
-    templateUrl: './purchases-list.component.html',
-    styleUrl: './purchases-list.component.scss',
-    providers: [BsModalService]
+  selector: 'app-purchases-list',
+  imports: [AsyncPipe, PurchaseThumbnailComponent, PaginationModule],
+  templateUrl: './purchases-list.component.html',
+  styleUrl: './purchases-list.component.scss',
+  providers: [BsModalService],
 })
 export class PurchasesListComponent implements OnInit {
   private store = inject(Store<PurchaseState>);

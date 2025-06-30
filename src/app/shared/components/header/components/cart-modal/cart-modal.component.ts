@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CurrencyPipe } from '@angular/common';
 import {
   Component,
   inject,
@@ -47,7 +47,8 @@ import { DatabaseService } from '@core/services/database.service';
 @Component({
   selector: 'app-cart-modal',
   imports: [
-    CommonModule,
+    AsyncPipe,
+    CurrencyPipe,
     ClearURLPipe,
     SafeHTMLPipe,
     TruncateTextPipe,

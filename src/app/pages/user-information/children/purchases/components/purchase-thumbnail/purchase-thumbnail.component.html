@@ -1,8 +1,5 @@
-<div
-  class="card transaction-thumbnail"
-  *ngIf="transaction.charge as charge"
-  (click)="openModalWithComponent()"
->
+@if (transaction.charge; as charge) {
+<div class="card transaction-thumbnail" (click)="openModalWithComponent()">
   <img
     src="/assets/images/icons/click.svg"
     class="transaction-thumbnail__click"
@@ -34,3 +31,4 @@
     </li>
   </ul>
 </div>
+}

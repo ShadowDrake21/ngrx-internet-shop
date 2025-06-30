@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   Router,
@@ -53,7 +53,7 @@ import { IUserTransactionsData } from '@app/shared/models/purchase.model';
 @Component({
   selector: 'app-user-information',
   imports: [
-    CommonModule,
+    AsyncPipe,
     RouterOutlet,
     FontAwesomeModule,
     TabsModule,
