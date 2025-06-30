@@ -1,0 +1,210 @@
+<div class="pt-3 pb-3">
+  <form [formGroup]="form" (ngSubmit)="onSubmit.emit()">
+    <h5 class="pb-1">Personal info</h5>
+    <div class="row flex-column flex-sm-row">
+      <div class="form-group col pb-3 pb-sm-0">
+        <label
+          for="customerName"
+          [style.color]="form.controls.name.invalid ? 'red' : ''"
+          >Name</label
+        >
+        <input
+          type="text"
+          class="form-control"
+          id="customerName"
+          placeholder="Name"
+          formControlName="name"
+          tooltip=""
+          triggers=""
+          #nameTooltip="bs-tooltip"
+          [class.error]="form.controls.name.invalid"
+        />
+      </div>
+      <div class="form-group col">
+        <label
+          for="customerDescription"
+          [style.color]="form.controls.description.invalid ? 'red' : ''"
+          >Description</label
+        >
+        <input
+          type="text"
+          class="form-control"
+          id="customerDescription"
+          placeholder="Description"
+          formControlName="description"
+          tooltip=""
+          triggers=""
+          #descriptionTooltip="bs-tooltip"
+          [class.error]="form.controls.description.invalid"
+        />
+      </div>
+    </div>
+    <div class="pt-4 pb-3">
+      <h5 class="pb-1">Billing info</h5>
+      <div
+        formGroupName="billing"
+        tooltip=""
+        triggers=""
+        #billingTooltip="bs-tooltip"
+        class="purchases-customer__edit-addresses"
+      >
+        <div class="form-group">
+          <label
+            for="customerCountry"
+            [style.color]="form.controls.billing.invalid ? 'red' : ''"
+            >Country (PL/UA)</label
+          >
+          <select
+            class="form-select"
+            id="customerCountry"
+            formControlName="country"
+            [class.error]="form.controls.billing.invalid"
+          >
+            <option selected disabled value="0">Country</option>
+            <option [ngValue]="'PL'">Poland</option>
+            <option [ngValue]="'UA'">Ukraine</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label
+            for="customerCity"
+            [style.color]="form.controls.billing.invalid ? 'red' : ''"
+            >City</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="customerCity"
+            placeholder="City"
+            formControlName="city"
+            [class.error]="form.controls.billing.invalid"
+          />
+        </div>
+        <div class="form-group">
+          <label
+            for="customerLine1"
+            [style.color]="form.controls.billing.invalid ? 'red' : ''"
+            >Address line 1</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="customerLine1"
+            placeholder="Street, PO Box, or company name"
+            formControlName="line1"
+            [class.error]="form.controls.billing.invalid"
+          />
+        </div>
+        <div class="form-group">
+          <label
+            for="customerLine2"
+            [style.color]="form.controls.billing.invalid ? 'red' : ''"
+            >Address line 2</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="customerLine2"
+            placeholder="Apartment, suite, unit, or building"
+            formControlName="line2"
+            [class.error]="form.controls.billing.invalid"
+          />
+        </div>
+        <div class="form-group">
+          <label
+            for="customerPostalCode"
+            [style.color]="form.controls.billing.invalid ? 'red' : ''"
+            >Postal code</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="customerPostalCode"
+            placeholder="Postal code"
+            formControlName="postalCode"
+            [class.error]="form.controls.billing.invalid"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="pt-4 pb-3">
+      <h5 class="pb-1">Shipping info</h5>
+      <div
+        formGroupName="shipping"
+        tooltip=""
+        triggers=""
+        #shippingTooltip="bs-tooltip"
+      >
+        <div class="row flex-column flex-sm-row">
+          <div class="form-group col pb-3 pb-sm-0">
+            <label
+              for="customerShippingName"
+              [style.color]="form.controls.shipping.invalid ? 'red' : ''"
+              >Customer name</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="customerShippingName"
+              placeholder="Customer shipping name"
+              formControlName="name"
+              [class.error]="form.controls.shipping.invalid"
+              tooltip=""
+              triggers=""
+              #shippingNameTooltip="bs-tooltip"
+            />
+          </div>
+          <div class="form-group col">
+            <label
+              for="customerPhone"
+              [style.color]="form.controls.shipping.invalid ? 'red' : ''"
+              >Customer phone</label
+            >
+            <input
+              type="tel"
+              class="form-control"
+              id="customerPhone"
+              placeholder="Customer shipping phone"
+              formControlName="phone"
+              [class.error]="form.controls.shipping.invalid"
+              tooltip=""
+              triggers=""
+              #shippingPhoneTooltip="bs-tooltip"
+            />
+          </div>
+        </div>
+        <app-address-form
+          [formGroup]="form"
+          groupName="address"
+        ></app-address-form>
+        <div
+          class="d-flex flex-column flex-sm-row align-items-end purchases-customer__edit-btns"
+        >
+          <button
+            type="submit"
+            class="btn btn-primary w-100"
+            [disabled]="form.invalid || !form.touched"
+          >
+            Save changes
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger w-100"
+            [disabled]="form.untouched"
+            (click)="onCancel.emit()"
+          >
+            Cancel changes
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary w-100"
+            [disabled]="form.pristine"
+            (click)="onReset.emit()"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
