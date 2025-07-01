@@ -8,7 +8,7 @@
         <div class="category-list">
           @for( category of mainCategories; track $index; let i = $index) {
           <a
-            class="text-inherit no-underline hover:text-inherit bg-dark text-white max-w-[350px] p-0 col offset-md-0.5 border-0"
+            class="card bg-dark text-white category-card col offset-md-0.5 border-0"
             [class]="'category' + (i + 1)"
             [routerLink]="['/category']"
             [queryParams]="{ id: category.id }"
@@ -16,9 +16,10 @@
             <img
               [src]="category.image | clearURL | safeHTML"
               (error)="handleImageError($event)"
-              alt="category image"
+              class="card-img category-card__img"
+              alt="category-img"
             />
-            <div class="bg-[#00000080]">
+            <div class="card-img-overlay">
               <h5 class="card-title">{{ category.name }}</h5>
               <p class="card-text">
                 Created: {{ category.creationAt | date : "medium" }}

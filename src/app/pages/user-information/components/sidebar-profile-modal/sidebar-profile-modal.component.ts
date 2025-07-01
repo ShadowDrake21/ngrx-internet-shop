@@ -23,5 +23,5 @@ export class SidebarProfileModalComponent {
     this.bsModalRef.hide();
   }
 
-  profileData?: Observable<ISidebarModal>;
+  profileData?: ISidebarModal;
 }

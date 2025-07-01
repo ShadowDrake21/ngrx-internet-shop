@@ -5,7 +5,7 @@
   >
     <div class="product-image__slider-wrapper">
       <carousel [noPause]="false">
-        @for(image of product.images; track image;) {
+        @for(image of product.images; track $index;) {
         <slide>
           <img
             [src]="image"

@@ -137,8 +137,10 @@ export class UserInformationComponent implements OnInit, OnDestroy {
   }
 
   onProfileOpen() {
-    this.formProfileModalData().subscribe((profileData) =>
-      this.showProfileModal(profileData)
+    this.subscriptions.add(
+      this.formProfileModalData().subscribe((profileData) =>
+        this.showProfileModal(profileData)
+      )
     );
   }
 

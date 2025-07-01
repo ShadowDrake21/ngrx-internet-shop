@@ -57,24 +57,19 @@ export class GeneralComponent implements OnInit {
   cartState$: Observable<CartState> = of({} as CartState);
   latestTransaction$: Observable<ISupplementedCharge | undefined> =
     of(undefined);
-  latestTransactionError$: Observable<string | null> = of(null);
+  latestTransactionError$: Observable<string | null> = this.store.select(
+    PurchaseSelectors.selectErrorMessage
+  );
 
   generalLoading = false;
 
   ngOnInit(): void {
     this.initializeLoadingState();
-    this.initializeErrorObservable();
     this.initializeDataStreams();
   }
 
   private initializeLoadingState(): void {
     this.generalLoading = true;
-  }
-
-  private initializeErrorObservable(): void {
-    this.latestTransactionError$ = this.store.select(
-      PurchaseSelectors.selectErrorMessage
-    );
   }
 
   private initializeDataStreams(): void {

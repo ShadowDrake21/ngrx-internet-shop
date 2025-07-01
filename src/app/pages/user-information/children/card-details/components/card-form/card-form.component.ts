@@ -204,7 +204,6 @@ export class CardFormComponent
     const submitSubscription = of(
       formCardObject(this.cardForm.value)
     ).subscribe((newCard) => {
-      console.log('New card data:', newCard);
       this.databaseService.setCard(newCard, this.customerId, newCard.id!);
 
       if (this.isEditMode) {

@@ -10,6 +10,7 @@ import {
   Observable,
   of,
   switchMap,
+  tap,
 } from 'rxjs';
 import {
   Database,
@@ -116,28 +117,34 @@ export class CheckoutService {
     );
   }
 
+  // TODO: Transaction articles bug
   getTransactionInfoFromDB(
     customerId: string,
-    searchValue: string
+    paymentIntentId: string
   ): Observable<ISupplementedChargeProduct[]> {
-    const transactionProductsQuery = query(
-      ref(this.db, `customers/${customerId}/purchases/`),
-      orderByChild('payment_intent'),
-      equalTo(searchValue)
-    );
+    const purchasesRef = ref(this.db, `customers/${customerId}/purchases`);
+    const queryRef = query(purchasesRef, equalTo(paymentIntentId));
 
-    return from(get(transactionProductsQuery)).pipe(
+    return from(get(queryRef)).pipe(
       switchMap((snapshot) => {
-        if (!snapshot.exists()) return of([]);
+        if (!snapshot.exists()) {
+          return of([]);
+        }
 
-        const transactionIds = snapshot
-          .val()
-          .productsIds.flatMap(
-            (purchase: { productsIds: ITransactionIds[] }) =>
-              purchase.productsIds
-          );
+        let purchaseData: any = null;
+        snapshot.forEach((childSnapshot) => {
+          purchaseData = childSnapshot.val();
+          return true;
+        });
 
-        return this.getSupplementedProducts(transactionIds);
+        if (!purchaseData?.productsIds) {
+          return of([]);
+        }
+
+        return this.getSupplementedProducts(purchaseData.productsIds);
+      }),
+      catchError((error) => {
+        return of([]);
       })
     );
   }
@@ -169,20 +176,29 @@ export class CheckoutService {
   private getSupplementedProducts(
     transactionIds: ITransactionIds[]
   ): Observable<ISupplementedChargeProduct[]> {
-    const requests = transactionIds.map(({ product_id, price_id, quantity }) =>
-      forkJoin({
-        product: this.getTransactionProduct(product_id),
-        price: this.getTransactionPrice(price_id),
-      }).pipe(
-        map(({ product, price }) => ({
-          product,
-          price,
-          quantity,
-        }))
-      )
-    );
+    if (!transactionIds?.length) return of([]);
 
-    return forkJoin(requests);
+    const requests = transactionIds
+      .filter(({ product_id, price_id }) => product_id && price_id)
+      .map(({ product_id, price_id, quantity }) =>
+        forkJoin({
+          product: this.getTransactionProduct(product_id).pipe(
+            catchError(() => of(null))
+          ),
+          price: this.getTransactionPrice(price_id).pipe(
+            catchError(() => of(null))
+          ),
+        }).pipe(
+          map(({ product, price }) => {
+            if (!product || !price) return null;
+            return { product, price, quantity } as ISupplementedChargeProduct;
+          })
+        )
+      );
+
+    return forkJoin(requests).pipe(
+      map((results) => results.filter(Boolean) as ISupplementedChargeProduct[])
+    );
   }
 
   private stripeRequest<T>(

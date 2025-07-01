@@ -66,8 +66,6 @@ export class DeliveryRecordFormComponent
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
-    console.log('Init - customerId:', this.customerId);
-
     this.initializeForm();
   }
 

@@ -127,7 +127,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
       if (new Date(user?.tokenResult.expirationTime!) <= new Date()) {
         localStorage.removeItem(LS_AUTH_ITEM_NAME);
-
+        this.router.navigate(['/']);
         (document.querySelector('#openModalBtn') as HTMLButtonElement).click();
       }
     }

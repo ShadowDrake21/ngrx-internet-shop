@@ -26,9 +26,8 @@ import { handleImageUnavailable } from '@shared/utils/errorHandlers.utils';
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.scss',
 })
-export class CategoriesComponent implements OnInit, OnDestroy {
+export class CategoriesComponent implements OnInit {
   private readonly store = inject(Store<CategoryState>);
-  private categoriesSubscription!: Subscription;
 
   private readonly BASIC_CATEGORY_COUNT = 4;
 
@@ -67,9 +66,5 @@ export class CategoriesComponent implements OnInit, OnDestroy {
   selectChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     this.secondaryCategoryId = parseInt(selectElement.value);
-  }
-
-  ngOnDestroy(): void {
-    this.categoriesSubscription.unsubscribe();
   }
 }

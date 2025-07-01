@@ -1,7 +1,8 @@
-@if (profileData | async ; as data) {
 <div>
   <div class="modal-header">
-    <h4 class="modal-title pull-left">Profile: {{ data.user.email }}</h4>
+    <h4 class="modal-title pull-left">
+      Profile: {{ profileData!.user.email }}
+    </h4>
     <button
       type="button"
       class="btn-close close pull-right"
@@ -16,7 +17,11 @@
       class="d-flex flex-column flex-lg-row align-items-center align-items-lg-start sidebar-profile-modal__body"
     >
       <div class="flex-shrink-0 sidebar-profile-modal__image-wrapper">
-        <img [src]="data.user.photoUrl" alt="user img" style="width: 100%" />
+        <img
+          [src]="profileData!.user.photoUrl"
+          alt="user img"
+          style="width: 100%"
+        />
       </div>
       <div class="w-100 text-center text-lg-start">
         <div
@@ -26,45 +31,45 @@
             class="fst-italic fw-lighter fs-4 pb-2"
             style="word-break: break-all"
           >
-            {{ data.user.email | truncateText : 60 }}
+            {{ profileData!.user.email | truncateText : 60 }}
           </h3>
           <p>
             <span class="fw-bold"> Email verified: </span>
-            {{ data.user.emailVerified }}
+            {{ profileData!.user.emailVerified }}
           </p>
         </div>
         <p class="fw-bold">
-          {{ data.user.displayName }}
+          {{ profileData!.user.displayName }}
         </p>
         <hr />
         <p>
           <span class="fw-bold"> Auth time: </span>
-          {{ data.user.authTime | date : "medium" }}
+          {{ profileData!.user.authTime | date : "medium" }}
         </p>
         <p>
           <span class="fw-bold"> Auth expiration time: </span>
-          {{ data.user.authExpirationTime | date : "medium" }}
+          {{ profileData!.user.authExpirationTime | date : "medium" }}
         </p>
         <p>
           <span class="fw-bold"> Sign in provider: </span>
-          {{ data.user.provider }}
+          {{ profileData!.user.provider }}
         </p>
         <div>
           <p>
             <span class="fw-bold">Auth time:</span>
-            {{ data.user.authTime | date : "medium" }}
+            {{ profileData!.user.authTime | date : "medium" }}
           </p>
           <p>
             <span class="fw-bold">Number of purchases:</span>
-            {{ data.transactions.transactionsCount }}
+            {{ profileData!.transactions.transactionsCount }}
           </p>
           <p>
             <span class="fw-bold">Total price of purchases:</span>
-            {{ data.transactions.transactionsPrice }} zł
+            {{ profileData!.transactions.transactionsPrice }} zł
           </p>
           <p>
             <span class="fw-bold">Number of favourites:</span>
-            {{ data.favoritesCount }}
+            {{ profileData!.favoritesCount }}
           </p>
         </div>
       </div>
@@ -76,4 +81,3 @@
     </button>
   </div>
 </div>
-}
