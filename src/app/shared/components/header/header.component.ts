@@ -122,10 +122,8 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   private cleanupNavbarBehavior(): void {
     this.navbarList.nativeElement.removeEventListener(
       'click',
-      this.handleListClick
-    );
-  }
-
+      this.handleListClick)
+}
   private handleListClick = () => {
     this.navbarToggler.nativeElement.click();
   };

@@ -1,4 +1,3 @@
-// angular stuff
 import {
   AfterViewInit,
   Component,
