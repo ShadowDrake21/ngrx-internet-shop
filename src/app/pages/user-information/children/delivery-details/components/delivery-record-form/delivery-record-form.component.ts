@@ -53,6 +53,8 @@ export class DeliveryRecordFormComponent
   }> = new EventEmitter<{ record: IShipping; mode: 'edit' | 'add' }>();
   @Output() formReset: EventEmitter<void> = new EventEmitter<void>();
 
+  isSubmitted: boolean = false;
+
   private readonly databaseService = inject(DatabaseService);
   private readonly unsplashService = inject(UnsplashService);
   private readonly deliveryRecordFormService = inject(
@@ -104,8 +106,6 @@ export class DeliveryRecordFormComponent
   }
 
   onSubmit() {
-    console.log('Submitting with customerId:', this.customerId);
-
     if (!this.customerId || !this.shippingForm.valid) return;
 
     const country = this.shippingForm.value.address?.country;
@@ -119,10 +119,9 @@ export class DeliveryRecordFormComponent
             background
           )
         ),
-        switchMap((newDeliveryRecord) => {
-          console.log('New Delivery Record:', newDeliveryRecord);
-          return this.handleDeliveryRecordSubmission(newDeliveryRecord);
-        })
+        switchMap((newDeliveryRecord) =>
+          this.handleDeliveryRecordSubmission(newDeliveryRecord)
+        )
       )
       .subscribe();
 
@@ -131,12 +130,6 @@ export class DeliveryRecordFormComponent
 
   private handleDeliveryRecordSubmission(record: IShipping): Observable<void> {
     try {
-      console.log(
-        'Handling delivery record submission:',
-        record,
-        this.customerId,
-        record.id
-      );
       return this.databaseService
         .setDeliveryRecord(record, this.customerId, record.id!)
         .pipe(
@@ -153,7 +146,6 @@ export class DeliveryRecordFormComponent
           })
         );
     } catch (error) {
-      console.error('Error in handleDeliveryRecordSubmission:', error);
       return of(undefined);
     }
   }

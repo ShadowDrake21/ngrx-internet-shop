@@ -27,7 +27,7 @@ export class DeliveryRecordFormService {
         nonNullable: true,
       }),
       address: new FormGroup({
-        country: new FormControl<string>('0', {
+        country: new FormControl<'PL' | 'UA'>('PL', {
           validators: [Validators.required],
           nonNullable: true,
         }),
@@ -55,14 +55,13 @@ export class DeliveryRecordFormService {
     form: IShippingForm,
     backgroundObj: IReducedUnsplashImage
   ): Observable<IShipping> {
-    console.log('formDeliveryRecord', form, backgroundObj);
     return of({
       background: backgroundObj,
       id: form.value.id ?? '',
       name: form.value.name ?? '',
       phone: form.value.phone ?? '',
       address: {
-        country: form.value.address?.country ?? '',
+        country: form.value.address?.country ?? 'PL',
         city: form.value.address?.city ?? '',
         line1: form.value.address?.line1 ?? '',
         line2: form.value.address?.line2 ?? '',

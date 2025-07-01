@@ -26,7 +26,7 @@ export interface IShipping {
 }
 
 export interface IAddress {
-  country: string;
+  country: 'PL' | 'UA';
   city: string;
   line1: string;
   line2: string;

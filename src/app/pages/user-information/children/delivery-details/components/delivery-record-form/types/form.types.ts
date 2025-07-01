@@ -5,7 +5,7 @@ export type IShippingForm = FormGroup<{
   name: FormControl<string>;
   phone: FormControl<string>;
   address: FormGroup<{
-    country: FormControl<string>;
+    country: FormControl<'PL' | 'UA'>;
     city: FormControl<string>;
     line1: FormControl<string>;
     line2: FormControl<string>;

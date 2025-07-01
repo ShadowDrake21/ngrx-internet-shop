@@ -91,7 +91,12 @@ export class CardFormComponent
         this.cardForEditing!
       );
       this.patchDataToCardMiniature(this.cardForEditing!);
-      this.formEnableValue === 'disable' && this.cardForm.enable();
+
+      if (this.formEnableValue === 'disable') {
+        this.cardForm.disable();
+      } else {
+        this.cardForm.enable();
+      }
     }
 
     if (changes['formEnableValue']) {
@@ -99,9 +104,12 @@ export class CardFormComponent
         this.cardForm,
         this.formEnableValue === 'enable'
       );
-      this.formEnableValue === 'enable'
-        ? this.cardForm.enable()
-        : this.cardForm.disable();
+
+      if (this.formEnableValue === 'enable') {
+        this.cardForm.enable();
+      } else {
+        this.cardForm.disable();
+      }
     }
   }
 
@@ -196,6 +204,7 @@ export class CardFormComponent
     const submitSubscription = of(
       formCardObject(this.cardForm.value)
     ).subscribe((newCard) => {
+      console.log('New card data:', newCard);
       this.databaseService.setCard(newCard, this.customerId, newCard.id!);
 
       if (this.isEditMode) {

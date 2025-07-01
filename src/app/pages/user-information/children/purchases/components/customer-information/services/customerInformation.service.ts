@@ -49,7 +49,7 @@ export class CustomerInformationService {
         Validators.maxLength(100),
       ]),
       billing: new FormGroup({
-        country: new FormControl('0'),
+        country: new FormControl<'PL' | 'UA'>('PL', { nonNullable: true }),
         city: new FormControl(''),
         line1: new FormControl(''),
         line2: new FormControl(''),
@@ -63,7 +63,7 @@ export class CustomerInformationService {
           ]),
           phone: new FormControl('', Validators.pattern(phonePattern)),
           address: new FormGroup({
-            country: new FormControl('0'),
+            country: new FormControl<'PL' | 'UA'>('PL', { nonNullable: true }),
             city: new FormControl(''),
             line1: new FormControl(''),
             line2: new FormControl(''),
@@ -134,7 +134,7 @@ export class CustomerInformationService {
       name: customer.name,
       description: customer.description,
       billing: {
-        country: customer.address?.country || '0',
+        country: customer.address?.country,
         city: customer.address?.city,
         line1: customer.address?.line1,
         line2: customer.address?.line2,
@@ -144,7 +144,7 @@ export class CustomerInformationService {
         name: customer.shipping?.name,
         phone: customer.shipping?.phone,
         address: {
-          country: customer.shipping?.address!.country || '0',
+          country: customer.shipping?.address!.country,
           city: customer.shipping?.address!.city,
           line1: customer.shipping?.address!.line1,
           line2: customer.shipping?.address!.line2,
@@ -188,7 +188,7 @@ export class CustomerInformationService {
       name: '',
       description: '',
       billing: {
-        country: '0',
+        country: 'PL',
         city: '',
         line1: '',
         line2: '',
@@ -198,7 +198,7 @@ export class CustomerInformationService {
         name: '',
         phone: '',
         address: {
-          country: '0',
+          country: 'PL',
           city: '',
           line1: '',
           line2: '',

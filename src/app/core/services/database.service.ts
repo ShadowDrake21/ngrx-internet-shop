@@ -6,12 +6,13 @@ import {
   get,
   ref,
   remove,
+  query,
+  set,
   update,
 } from '@angular/fire/database';
 import { ICard } from '@app/shared/models/card.model';
 import { IProduct } from '@app/shared/models/product.model';
 import { IShipping } from '@app/shared/models/purchase.model';
-import { query, set } from 'firebase/database';
 import { from, map, Observable, throwError } from 'rxjs';
 
 @Injectable({

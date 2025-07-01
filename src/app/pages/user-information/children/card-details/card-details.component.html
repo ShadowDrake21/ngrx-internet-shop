@@ -4,7 +4,7 @@
   <div>
     <app-card-form
       [customerId]="customerId"
-      [formEnableValue]="formEnableValue"
+      [formEnableValue]="formEnableValue()"
       [cardForEditing]="cardForEditing"
       (sendNewCard)="handleNewCard($event)"
       (formReset)="handleFormReset()"

@@ -68,12 +68,6 @@ export class CustomerInformationComponent implements OnInit, OnDestroy {
 
   onUpdateSubmit() {
     const formValues = this.customerUpdateForm.value;
-    if (formValues.billing?.country === '0') {
-      formValues.billing.country = undefined;
-    }
-    if (formValues.shipping?.address?.country === '0') {
-      formValues.shipping.address.country = undefined;
-    }
 
     const updateObject = this.customerService.createUpdateObject(formValues);
 

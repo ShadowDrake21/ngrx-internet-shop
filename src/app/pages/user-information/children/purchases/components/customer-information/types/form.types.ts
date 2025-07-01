@@ -4,7 +4,7 @@ export type ICustomerUpdateForm = FormGroup<{
   name: FormControl<string | null>;
   description: FormControl<string | null>;
   billing: FormGroup<{
-    country: FormControl<string | null>;
+    country: FormControl<'PL' | 'UA'>;
     city: FormControl<string | null>;
     line1: FormControl<string | null>;
     line2: FormControl<string | null>;
@@ -14,7 +14,7 @@ export type ICustomerUpdateForm = FormGroup<{
     name: FormControl<string | null>;
     phone: FormControl<string | null>;
     address: FormGroup<{
-      country: FormControl<string | null>;
+      country: FormControl<'PL' | 'UA'>;
       city: FormControl<string | null>;
       line1: FormControl<string | null>;
       line2: FormControl<string | null>;
@@ -27,7 +27,7 @@ export type ICustomerUpdateFormValue = Partial<{
   name: string | null;
   description: string | null;
   billing: Partial<{
-    country: string | null;
+    country: 'PL' | 'UA';
     city: string | null;
     line1: string | null;
     line2: string | null;
@@ -37,7 +37,7 @@ export type ICustomerUpdateFormValue = Partial<{
     name: string | null;
     phone: string | null;
     address: Partial<{
-      country: string | null;
+      country: 'PL' | 'UA';
       city: string | null;
       line1: string | null;
       line2: string | null;
@@ -47,7 +47,7 @@ export type ICustomerUpdateFormValue = Partial<{
 }>;
 
 export type AddressGroup = FormGroup<{
-  country: FormControl<string | null>;
+  country: FormControl<'PL' | 'UA'>;
   city: FormControl<string | null>;
   line1: FormControl<string | null>;
   line2: FormControl<string | null>;
