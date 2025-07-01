@@ -1,4 +1,5 @@
-<div *ngFor="let alert of alerts" class="alert position-fixed">
+@for( alert of alerts; track $index ) {
+<div class="alert position-fixed">
   <alert
     [type]="alert.type"
     [dismissOnTimeout]="alert.timeout"
@@ -6,3 +7,4 @@
     >{{ alert.msg }}</alert
   >
 </div>
+}

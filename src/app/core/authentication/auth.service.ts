@@ -48,6 +48,7 @@ import { IUserSignUpData, IUserUpdate } from '@models/user.model';
 
 // constants
 import { SIGN_IN_PHOTO_URL } from '../constants/auth.constants';
+import { IAuthCredentials } from '@app/shared/models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -159,20 +160,20 @@ export class AuthService {
     return from(sendEmailVerification(this.auth.currentUser!));
   }
 
-  reauthenticateUser(
-    email: string,
-    password: string
-  ): Observable<UserCredential> {
+  reauthenticateUser({
+    email,
+    password,
+  }: IAuthCredentials): Observable<UserCredential> {
     const credential = EmailAuthProvider.credential(email, password);
     return from(
       reauthenticateWithCredential(this.auth.currentUser!, credential)
     );
   }
 
-  reauthenticateUserObservable(
-    email: string,
-    password: string
-  ): Observable<UserCredential> {
+  reauthenticateUserObservable({
+    email,
+    password,
+  }: IAuthCredentials): Observable<UserCredential> {
     const credential = EmailAuthProvider.credential(email, password);
     return from(
       reauthenticateWithCredential(this.auth.currentUser!, credential)

@@ -3,12 +3,12 @@
   style="width: 18rem; height: 100%"
   [class.position-relative]="innerTitle"
 >
-  <h5
-    class="p-2 text-center position-absolute card-inner__title"
-    *ngIf="innerTitle"
-  >
+  @if(innerTitle) {
+  <h5 class="p-2 text-center position-absolute card-inner__title">
     {{ innerTitle | titlecase }}
   </h5>
+  }
+
   <img
     [src]="product.images[0] | clearURL | safeHTML"
     class="card-img-top"

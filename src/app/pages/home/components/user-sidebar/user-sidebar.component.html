@@ -1,12 +1,33 @@
 <div
   class="user-sidebar border-secondary border p-3 d-flex align-items-center d-xxl-block"
 >
+  @if(onlineStatus$ | async) {
   <div
-    *ngIf="onlineStatus; else unauthorizedUser"
     class="d-flex d-xxl-block flex-column flex-lg-row w-100 justify-content-center justify-content-xxl-between align-items-center align-items-xxl-start user-sidebar__inner"
   >
-    <ng-container *ngIf="user$ | async as user">
-      <div class="pb-3 d-none d-xxl-block">
+    @if(user$ | async; as user) {
+    <div class="pb-3 d-none d-xxl-block">
+      <h5 class="fw-light fst-italic">
+        {{ user.userCredential!.providerData[0].email | truncateText : 24 }}
+      </h5>
+      <h3>
+        {{ user.userCredential!.providerData[0].displayName }}
+      </h3>
+    </div>
+
+    @if(user.userCredential!.providerData[0].photoURL; as photoURL) {
+    <div class="w-100 pb-0 pb-xxl-3 user-sidebar__img">
+      <img
+        class="w-100 h-100"
+        [src]="photoURL"
+        alt="user-sidebar-img"
+        style="object-fit: cover"
+      />
+    </div>
+    }
+
+    <div class="text-center text-lg-start">
+      <div class="pb-3 d-flex flex-column d-xxl-none">
         <h5 class="fw-light fst-italic">
           {{ user.userCredential!.providerData[0].email | truncateText : 24 }}
         </h5>
@@ -14,66 +35,49 @@
           {{ user.userCredential!.providerData[0].displayName }}
         </h3>
       </div>
-      <div class="w-100 pb-0 pb-xxl-3 user-sidebar__img">
-        <img
-          class="w-100 h-100"
-          [src]="user.userCredential!.providerData[0].photoURL"
-          alt="user-sidebar-img"
-          style="object-fit: cover"
-        />
-      </div>
-      <div class="text-center text-lg-start">
-        <div class="pb-3 d-flex flex-column d-xxl-none">
-          <h5 class="fw-light fst-italic">
-            {{ user.userCredential!.providerData[0].email | truncateText : 24 }}
-          </h5>
-          <h3>
-            {{ user.userCredential!.providerData[0].displayName }}
-          </h3>
-        </div>
-        <p>
-          <span class="fw-bold">Auth time:</span>
-          {{ user.userCredential?.tokenResult?.authTime | date : "medium" }}
-        </p>
-        <p>
-          <span class="fw-bold">Number of purchases:</span>
-          {{ (transactionsData$ | async)?.count ?? 0 }}
-        </p>
-        <p>
-          <span class="fw-bold">Total price of purchases:</span>
-          {{ (transactionsData$ | async)?.price ?? 0 }} zł
-        </p>
-        <p>
-          <span class="fw-bold">Number of favourites:</span>
-          {{ (favorites$ | async)?.length }}
-        </p>
-        <p>
-          <span class="fw-bold">Last viewed product: </span>
-          {{ (lastViewedProduct$ | async) || "none" }}
-        </p>
-      </div>
-    </ng-container>
+      <p>
+        <span class="fw-bold">Auth time:</span>
+        {{ user.userCredential?.tokenResult?.authTime | date : "medium" }}
+      </p>
+      <p>
+        <span class="fw-bold">Number of purchases:</span>
+        {{ (transactionsData$ | async)?.count ?? 0 }}
+      </p>
+      <p>
+        <span class="fw-bold">Total price of purchases:</span>
+        {{ (transactionsData$ | async)?.price ?? 0 }} zł
+      </p>
+      <p>
+        <span class="fw-bold">Number of favourites:</span>
+        {{ (favorites$ | async)?.length }}
+      </p>
+      <p>
+        <span class="fw-bold">Last viewed product: </span>
+        {{ (lastViewedProduct$ | async) || "none" }}
+      </p>
+    </div>
+    }
   </div>
-  <ng-template #unauthorizedUser>
-    <div
-      class="d-flex w-100 justify-content-center align-items-center text-center"
-      style="height: 630px"
-    >
+  }@else {
+  <div
+    class="d-flex w-100 justify-content-center align-items-center text-center"
+    style="height: 630px"
+  >
+    <div>
+      <p>You didn't sign in nor sign up.</p>
+      <div class="pb-3">
+        <p>To sign in, click:</p>
+        <a class="btn btn-primary" [routerLink]="['/sign-in']">
+          Go to sign in page
+        </a>
+      </div>
       <div>
-        <p>You didn't sign in nor sign up.</p>
-        <div class="pb-3">
-          <p>To sign in, click:</p>
-          <a class="btn btn-primary" [routerLink]="['/sign-in']">
-            Go to sign in page
-          </a>
-        </div>
-        <div>
-          <p>To sign up, click:</p>
-          <a class="btn btn-success" [routerLink]="['/sign-up']">
-            Go to sign up page
-          </a>
-        </div>
+        <p>To sign up, click:</p>
+        <a class="btn btn-success" [routerLink]="['/sign-up']">
+          Go to sign up page
+        </a>
       </div>
     </div>
-  </ng-template>
+  </div>
+  }
 </div>

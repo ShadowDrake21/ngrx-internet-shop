@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -34,14 +34,14 @@ import { ProductsItemComponent } from '../products-item/products-item.component'
 import { calcPageNum } from '@shared/utils/pagination.utils';
 
 @Component({
-    selector: 'app-products-list',
-    imports: [CommonModule, PaginationModule, ProductsItemComponent, FormsModule],
-    templateUrl: './products-list.component.html',
-    styleUrl: './products-list.component.scss'
+  selector: 'app-products-list',
+  imports: [AsyncPipe, PaginationModule, ProductsItemComponent, FormsModule],
+  templateUrl: './products-list.component.html',
+  styleUrl: './products-list.component.scss',
 })
 export class ProductsListComponent implements OnInit, OnChanges {
-  private store = inject(Store<AppState>);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly store = inject(Store<AppState>);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   @Input({ required: true, alias: 'items' }) listProducts$!: Observable<
     IProduct[] | null
@@ -53,31 +53,36 @@ export class ProductsListComponent implements OnInit, OnChanges {
   @ViewChild('paginationComponent')
   paginationComponent!: PaginationComponent;
 
+  cartProducts$: Observable<IProduct[]> = this.store.select(
+    CartSelectors.selectCartProducts
+  );
+  productError$: Observable<string | null> = this.store.select(
+    ProductSelectors.selectErrorMessage
+  );
   visibleProducts$!: Observable<IProduct[]>;
-  productError$!: Observable<string | null>;
-
-  cartProducts$!: Observable<IProduct[]>;
   cartProductsIdxs$!: Observable<number[]>;
-
   currentPage: number = 1;
-  calcPageNum = calcPageNum;
-  maxSize = 5;
+
+  readonly calcPageNum = calcPageNum;
+  readonly maxSize = 5;
 
   ngOnInit(): void {
-    this.cartProducts$ = this.store.select(CartSelectors.selectCartProducts);
-    this.cartProductsIdxs$ = this.getCartIndicesArray();
+    this.cartProductsIdxs$ = this.cartProducts$.pipe(
+      map((products) => products.map((product) => product.id))
+    );
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['listProducts$']) {
-      this.currentPage = 1;
-      this.visibleProducts$ = this.listProducts$.pipe(
-        filter((products) => !!products),
-        map((products) => products!.slice(0, this.itemsPerPage))
-      );
-      this.productError$ = this.store.select(
-        ProductSelectors.selectErrorMessage
-      );
+      this.resetPagination();
+      this.updateVisibleProducts(0, this.itemsPerPage);
+    }
+  }
+
+  private resetPagination(): void {
+    this.currentPage = 1;
+    if (this.paginationComponent) {
+      this.paginationComponent.page = 1;
     }
   }
 
@@ -88,22 +93,14 @@ export class ProductsListComponent implements OnInit, OnChanges {
   }
 
   private updateVisibleProducts(start: number, end: number): void {
-    setTimeout(() => {
-      this.visibleProducts$ = this.listProducts$.pipe(
-        filter((products) => !!products),
-        map((products) => products!.slice(start, end))
-      );
-      this.cdr.detectChanges();
-    });
+    this.visibleProducts$ = this.listProducts$.pipe(
+      filter((products): products is IProduct[] => !!products),
+      map((products) => products!.slice(start, end))
+    );
+    this.cdr.detectChanges();
   }
 
   handleAddToCart(product: IProduct) {
     this.store.dispatch(CartActions.addToCart({ product }));
-  }
-
-  getCartIndicesArray(): Observable<number[]> {
-    return this.cartProducts$.pipe(
-      map((products) => products.map((product) => product.id))
-    );
   }
 }

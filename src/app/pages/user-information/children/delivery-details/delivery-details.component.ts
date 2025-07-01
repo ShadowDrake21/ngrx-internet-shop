@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -33,139 +33,132 @@ import { BasicCardComponent } from '../../components/basic-card/basic-card.compo
 import { DeliveryRecordFormComponent } from './components/delivery-record-form/delivery-record-form.component';
 import { DeliveryRecordListComponent } from './components/delivery-record-item/delivery-record-item.component';
 
+const MAX_DELIVERY_RECORDS = 6;
 @Component({
-    selector: 'app-delivery-details',
-    imports: [
-        CommonModule,
-        BasicCardComponent,
-        ReactiveFormsModule,
-        FontAwesomeModule,
-        DeliveryRecordFormComponent,
-        DeliveryRecordListComponent,
-    ],
-    templateUrl: './delivery-details.component.html',
-    styleUrl: './delivery-details.component.scss'
+  selector: 'app-delivery-details',
+  imports: [
+    AsyncPipe,
+    BasicCardComponent,
+    ReactiveFormsModule,
+    FontAwesomeModule,
+    DeliveryRecordFormComponent,
+    DeliveryRecordListComponent,
+  ],
+  templateUrl: './delivery-details.component.html',
+  styleUrl: './delivery-details.component.scss',
 })
 export class DeliveryDetailsComponent implements OnInit, OnDestroy {
-  userInformationItem = userInformationContent[3];
+  readonly userInformationItem = userInformationContent[3];
+  readonly MAX_RECORDS = MAX_DELIVERY_RECORDS;
 
-  private store = inject(Store<PurchaseState>);
-  private databaseService = inject(DatabaseService);
+  private readonly store = inject(Store<PurchaseState>);
+  private readonly databaseService = inject(DatabaseService);
 
   customerId: string = '';
   deliveryRecords$!: Observable<IShipping[]>;
-  sizeRestriction: number = 6;
-
   formEnableValue: 'enable' | 'disable' = 'enable';
   recordForEditing: IShipping | null = null;
-
-  deliveryDetailsLoading: boolean = false;
+  isLoading: boolean = false;
 
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
-    this.deliveryDetailsLoading = true;
-    const customerSubscription = this.store
+    this.loadDeliveryDetails();
+  }
+
+  private loadDeliveryDetails(): void {
+    this.isLoading = true;
+
+    const sub = this.store
       .select(PurchaseSelectors.selectCustomer)
       .pipe(
         debounceTime(2000),
-        tap(() => (this.deliveryDetailsLoading = false))
+        tap(() => (this.isLoading = false))
       )
       .subscribe((customer) => {
         if (customer) {
           this.customerId = customer.id;
-          this.deliveryRecords$ = this.databaseService.getAllDeliveryRecords(
-            this.customerId
-          );
-          const deliveryRecordsSubscription = this.deliveryRecords$.subscribe(
-            (records) => {
-              if (records.length >= 6) {
-                this.formEnableValue = 'disable';
-              }
-            }
-          );
-
-          this.subscriptions.push(deliveryRecordsSubscription);
+          this.initializeDeliveryRecords();
         }
       });
 
-    this.subscriptions.push(customerSubscription);
+    this.subscriptions.push(sub);
   }
 
-  removeDeliveryRecord(id: string) {
-    const removeSubscription = this.databaseService
-      .deleteDeliveryRecord(this.customerId, id)
+  private initializeDeliveryRecords(): void {
+    this.deliveryRecords$ = this.databaseService.getAllDeliveryRecords(
+      this.customerId
+    );
+
+    const sub = this.deliveryRecords$.subscribe((records) =>
+      this.updateFormState(records.length)
+    );
+
+    this.subscriptions.push(sub);
+  }
+
+  private updateFormState(recordsCount: number): void {
+    this.formEnableValue =
+      recordsCount >= this.MAX_RECORDS ? 'disable' : 'enable';
+  }
+
+  handleNewDeliveryRecord({
+    mode,
+    record,
+  }: {
+    record: IShipping;
+    mode: 'add' | 'edit';
+  }) {
+    mode === 'add' ? this.addRecord(record) : this.editRecord(record);
+  }
+
+  private addRecord(record: IShipping): void {
+    this.deliveryRecords$ = this.deliveryRecords$.pipe(
+      map((records) => [...records, record]),
+      tap((records) => this.updateFormState(records.length))
+    );
+  }
+
+  private editRecord(record: IShipping): void {
+    this.deliveryRecords$ = this.deliveryRecords$.pipe(
+      switchMap((records) => {
+        const index = records.findIndex((r) => r.id === record.id);
+        if (index === -1) {
+          return throwError(() => new Error(`Record ${record.id} not found`));
+        }
+        const updatedRecords = [...records];
+        updatedRecords[index] = record;
+        return of(updatedRecords);
+      })
+    );
+  }
+
+  handleEditRecordRequest(recordId: string) {
+    const sub: Subscription = this.deliveryRecords$
+      .pipe(map((records) => records.find((record) => record.id === recordId)))
+      .subscribe((record) => {
+        this.recordForEditing = record ?? null;
+      });
+
+    this.subscriptions.push(sub);
+  }
+
+  handleRemoveRecordRequest(recordId: string) {
+    const sub = this.databaseService
+      .deleteDeliveryRecord(this.customerId, recordId)
       .subscribe(() => {
         this.deliveryRecords$ = this.deliveryRecords$.pipe(
           map((records) => {
-            if (records.length === 6) {
-              this.formEnableValue = 'enable';
-            }
-            return records.filter((record) => record.id !== id);
+            const updatedRecords = records.filter(
+              (record) => record.id !== recordId
+            );
+            this.updateFormState(updatedRecords.length);
+            return updatedRecords;
           })
         );
       });
 
-    this.subscriptions.push(removeSubscription);
-  }
-
-  addNewRecord(newRecord: IShipping) {
-    this.deliveryRecords$ = this.deliveryRecords$.pipe(
-      map((existingRecords) => {
-        return [...existingRecords, newRecord];
-      }),
-      tap((newRecordsArray) => {
-        if (newRecordsArray.length === 6) {
-          this.formEnableValue = 'disable';
-        }
-      })
-    );
-  }
-
-  editExistingRecord(editRecord: IShipping) {
-    this.deliveryRecords$ = this.deliveryRecords$.pipe(
-      switchMap((records) => {
-        const recordIndex = records.findIndex(
-          (record) => record.id === editRecord.id
-        );
-        if (recordIndex !== -1) {
-          const updatedRecords = [...records];
-          updatedRecords[recordIndex] = editRecord;
-          return of(updatedRecords);
-        } else {
-          return throwError(
-            () => new Error(`Record with id ${editRecord.id} not found.`)
-          );
-        }
-      })
-    );
-  }
-
-  handleNewDeliveryRecord(object: { record: IShipping; mode: 'add' | 'edit' }) {
-    const { record, mode } = object;
-
-    if (mode === 'add') {
-      this.addNewRecord(record);
-    } else {
-      this.editExistingRecord(record);
-    }
-  }
-
-  handleEditRecordRequest(recordId: string) {
-    const handleEditRecordRequestSubscription: Subscription =
-      this.deliveryRecords$
-        .pipe(
-          map((records) => records.find((record) => record.id === recordId))
-        )
-        .subscribe((record) => {
-          this.recordForEditing = record!;
-        });
-
-    this.subscriptions.push(handleEditRecordRequestSubscription);
-  }
-
-  handleRemoveRecordRequest(recordId: string) {
-    this.removeDeliveryRecord(recordId);
+    this.subscriptions.push(sub);
   }
 
   handleFormReset() {
@@ -173,6 +166,7 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+    this.subscriptions = [];
   }
 }

@@ -9,10 +9,8 @@ export class ProductManipulationsService {
   private sanitizer = inject(DomSanitizer);
 
   normalizeImage(imageUrl: string) {
-    return (
-      this.sanitizer.bypassSecurityTrustUrl(
-        imageUrl.replace(/^["\[]+|["\]]+$/g, '')
-      ) as any
-    ).changingThisBreaksApplicationSecurity;
+    const cleanedUrl = imageUrl.replace(/^["\[]+|["\]]+$/g, '');
+    const sanitizedUrl = this.sanitizer.bypassSecurityTrustUrl(cleanedUrl);
+    return (sanitizedUrl as any).changingThisBreaksApplicationSecurity;
   }
 }

@@ -1,9 +1,9 @@
 // angular stuff
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { Store } from '@ngrx/store';
 import { debounceTime, map, Observable, Subscription, tap } from 'rxjs';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
 import { PageChangedEvent, PaginationModule } from 'ngx-bootstrap/pagination';
 
 // created ngrx stuff
@@ -17,11 +17,14 @@ import { IProduct } from '@models/product.model';
 import { BasicCardComponent } from '../../components/basic-card/basic-card.component';
 import { userInformationContent } from '../../content/user-information.content';
 import { FavoriteProductsItemComponent } from './components/favorite-products-item/favorite-products-item.component';
+import { FavoriteProductsService } from './services/favoriteProducts.service';
+import { IFavoriteCategory } from './types/favorite-products.types';
 
 @Component({
   selector: 'app-favorite-products',
   imports: [
-    CommonModule,
+    AsyncPipe,
+    KeyValuePipe,
     BasicCardComponent,
     CarouselModule,
     PaginationModule,
@@ -30,112 +33,76 @@ import { FavoriteProductsItemComponent } from './components/favorite-products-it
   templateUrl: './favorite-products.component.html',
   styleUrl: './favorite-products.component.scss',
 })
-export class FavoriteProductsComponent implements OnInit, OnDestroy {
-  userInformationItem = userInformationContent[5];
+export class FavoriteProductsComponent implements OnDestroy {
+  readonly userInformationItem = userInformationContent[5];
+  readonly itemsPerPage: number = 3;
+  readonly itemsPerSlide: number = 3;
 
-  private store = inject(Store<AppState>);
+  private readonly store = inject(Store<AppState>);
+  private readonly favoritesService = inject(FavoriteProductsService);
 
   favorites$!: Observable<IProduct[]>;
-
-  private COMMON_CATEGORY = 'Common Category';
-  itemsPerPage: number = 3;
-  categories: { [categoryName: string]: IProduct[] } = {};
-  visibleCategories: { [categoryName: string]: IProduct[] } = {};
-
-  isUserAuthenticate: boolean = false;
-  favoritesLoading: boolean = false;
-
-  itemsPerSlide: number = 3;
-
-  private innerWidth!: number;
-  private mobileBreakpoint: number = 600;
-  private desktopBreakpoint: number = 1400;
+  categories: IFavoriteCategory = {};
+  visibleCategories: IFavoriteCategory = {};
+  favoritesLoading = false;
 
   private subscriptions: Subscription[] = [];
 
-  ngOnInit(): void {
+  constructor() {
+    this.loadFavorites();
+  }
+
+  private loadFavorites() {
     this.favoritesLoading = true;
 
     this.favorites$ = this.store.select(FavoritesSelectors.selectFavorites);
 
-    const favoritesSubscription = this.favorites$
+    const sub = this.favorites$
       .pipe(
         debounceTime(2000),
         tap(() => (this.favoritesLoading = false)),
-        map((favorites) => {
-          this.categories = {};
-          favorites.map((favorite) =>
-            this.setFavoriteProductInCategory(favorite)
-          );
-          this.reorganizeCategories();
-          this.setVisibleCategories(0, this.itemsPerPage);
-        })
+        map((favorites) => this.processFavorites(favorites))
       )
       .subscribe();
 
-    this.adjustItemsPerSlide();
-    this.subscriptions.push(favoritesSubscription);
+    this.subscriptions.push(sub);
   }
 
-  setFavoriteProductInCategory(favoriteProduct: IProduct) {
-    const categoryName = favoriteProduct.category.name;
+  private processFavorites(favorites: IProduct[]): void {
+    {
+      this.categories = favorites.reduce(
+        (acc, favorite) =>
+          this.favoritesService.setFavoriteProductInCategory(acc, favorite),
+        {} as IFavoriteCategory
+      );
 
-    if (!this.categories[categoryName]) {
-      this.categories[categoryName] = [];
+      this.categories = this.favoritesService.reorganizeCategories(
+        this.categories
+      );
+      this.updateVisibleCategories(0, this.itemsPerPage);
     }
-
-    this.categories[categoryName].push(favoriteProduct);
   }
 
-  reorganizeCategories() {
-    const newCategories: { [categoryName: string]: IProduct[] } = {};
-
-    for (const [categoryName, products] of Object.entries(this.categories)) {
-      if (products.length === 1) {
-        if (!newCategories[this.COMMON_CATEGORY]) {
-          newCategories[this.COMMON_CATEGORY] = [];
-        }
-        newCategories[this.COMMON_CATEGORY].push(...products);
-      } else {
-        newCategories[categoryName] = products;
-      }
-    }
-
-    this.categories = newCategories;
+  private updateVisibleCategories(startItem: number, endItem: number): void {
+    this.visibleCategories = this.favoritesService.setVisibleCategories(
+      this.categories,
+      startItem,
+      endItem
+    );
   }
 
   pageChanged(event: PageChangedEvent): void {
-    const startItem = (event.page - 1) * event.itemsPerPage;
-    const endItem = event.page * event.itemsPerPage;
-    this.setVisibleCategories(startItem, endItem);
-  }
+    const startIndex = (event.page - 1) * event.itemsPerPage;
+    const endIndex = event.page * event.itemsPerPage;
 
-  setVisibleCategories(startItem: number, endItem: number) {
-    if (Object.entries(this.visibleCategories).length) {
-      this.visibleCategories = {};
-    }
-    for (const [categoryName, products] of Object.entries(
-      this.categories
-    ).slice(startItem, endItem)) {
-      this.visibleCategories[categoryName] = products;
-    }
-  }
-
-  private adjustItemsPerSlide() {
-    this.innerWidth = window.innerWidth;
-    if (this.innerWidth < this.mobileBreakpoint) {
-      this.itemsPerSlide = 1;
-    } else if (
-      this.innerWidth >= this.mobileBreakpoint &&
-      this.innerWidth < this.desktopBreakpoint
-    ) {
-      this.itemsPerSlide = 2;
-    } else {
-      this.itemsPerSlide = 3;
-    }
+    this.visibleCategories = this.favoritesService.setVisibleCategories(
+      this.categories,
+      startIndex,
+      endIndex
+    );
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 }

@@ -1,0 +1,17 @@
+<div class="pb-2">
+  <h6 class="fw-bold fs-5 pb-1 text-center text-sm-start">
+    Email verification
+  </h6>
+  <div class="d-flex personal-info__email-verification flex-column flex-sm-row">
+    <p class="form-control m-0">
+      {{ emailVerified }}
+    </p>
+    <button
+      class="btn btn-primary w-100"
+      (click)="verifyEmail.emit()"
+      [disabled]="wasEmailVerificationSent || emailVerified"
+    >
+      Verify email
+    </button>
+  </div>
+</div>

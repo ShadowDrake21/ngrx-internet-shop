@@ -6,32 +6,23 @@
     <span>Number of last purchases: {{ (transactions$ | async)?.length }}</span>
   </div>
   <div class="card-body">
-    <div *ngIf="(transactions$ | async)?.length; else noTransactions">
-      <ng-container *ngIf="transactions$ | async as transactions">
-        <div
-          class="d-flex flex-wrap justify-content-center pb-4"
-          style="gap: 25px"
-        >
-          <app-purchase-thumbnail
-            *ngFor="let transaction of transactions"
-            [transaction]="transaction"
-          ></app-purchase-thumbnail>
-        </div>
-      </ng-container>
+    @if((transactions$ | async)?.length) { @if (transactions$ | async; as
+    transactions) {
+    <div class="d-flex flex-wrap justify-content-center pb-4" style="gap: 25px">
+      @for ( transaction of transactions; track $index) {
+      <app-purchase-thumbnail
+        [transaction]="transaction"
+      ></app-purchase-thumbnail
+      >}
     </div>
-    <ng-template #noTransactions>
-      <ng-container
-        *ngIf="transactionsError$ | async as error; else noPurchases"
-      >
-        <div class="pt-3 pb-3">
-          <h4 class="text-center">{{ error }}</h4>
-        </div>
-      </ng-container>
-      <ng-template #noPurchases>
-        <div class="pt-3 pb-3">
-          <h4 class="text-center">You have not made any purchase yet...</h4>
-        </div>
-      </ng-template>
-    </ng-template>
+    } } @else { @if(transactionsError$ | async; as error) {
+    <div class="pt-3 pb-3">
+      <h4 class="text-center">{{ error }}</h4>
+    </div>
+    } @else {
+    <div class="pt-3 pb-3">
+      <h4 class="text-center">You have not made any purchase yet...</h4>
+    </div>
+    } }
   </div>
 </div>

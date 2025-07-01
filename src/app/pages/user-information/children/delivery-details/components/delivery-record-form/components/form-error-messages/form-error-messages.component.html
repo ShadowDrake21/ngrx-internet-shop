@@ -1,0 +1,35 @@
+@if(form.invalid){
+<ul
+  class="text-danger d-flex flex-column justify-content-between w-25 align-items-center align-items-md-start flex-shrink-1 delivery-details__form-errors"
+>
+  @if(form.controls.name.errors?.['required'] && form.controls.name.touched) {
+  <li>{{ errorMessages.name.required }}</li>
+  } @if(form.controls.name.errors?.['minlength'] ) {
+  <li>{{ errorMessages.name.length }}</li>
+  } @if(form.controls.phone.errors?.['required'] && form.controls.phone.touched)
+  {
+  <li>{{ errorMessages.phone.required }}</li>
+  } @if(form.controls.phone.errors?.['pattern']) {
+  <li>{{ errorMessages.phone.pattern }}</li>
+  } @if(form.controls.address.controls.country.errors?.['required'] &&
+  form.controls.address.controls.country.touched) {
+  <li>{{ errorMessages.address.country.required }}</li>
+  } @if (form.controls.address.controls.country.errors?.['pattern']) {
+  <li>{{ errorMessages.address.code.pattern }}</li>
+  } @if(form.controls.address.controls.city.errors?.['required'] &&
+  form.controls.address.controls.city.touched) {
+  {{
+    errorMessages.address.city.required
+  }}
+  } @if(form.controls.address.controls.line1.errors?.['required'] &&
+  form.controls.address.controls.line1.touched) {
+  <li>{{ errorMessages.address.line1.required }}</li>
+  } @if(form.controls.address.controls.line2.errors?.['required'] &&
+  form.controls.address.controls.line2.touched){
+  <li>{{ errorMessages.address.line2.required }}</li>
+  } @if(form.controls.address.controls.postalCode.errors?.['required'] &&
+  form.controls.address.controls.postalCode.touched ){
+  <li>{{ errorMessages.address.postalCode.required }}</li>
+  }
+</ul>
+}

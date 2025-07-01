@@ -1,0 +1,27 @@
+<div class="text-danger">
+  @if(form.controls.email.errors?.['required'] && form.controls.email.touched) {
+  <p>The email field is mandatory</p>
+  } @if(form.controls.email.errors?.['email']) {
+  <p>
+    {{ form.value.email + " is not an email" }}
+  </p>
+  } @if(form.controls.email.errors?.['minlength']) {
+  <p>
+    Email should be at least 6 characters long. Now it is
+    {{ form.value.email?.length }}
+  </p>
+  } @if(form.controls.password.errors?.['required'] &&
+  form.controls.password.touched) {
+  <p>The password field is mandatory</p>
+  } @if(form.controls.password.errors?.['minlength']) {
+  <p>
+    Password should be at least 6 characters long. Now it is
+    {{ form.value.password?.length }}
+  </p>
+  } @if(form.controls.password.errors?.['maxlength']) {
+  <p>
+    Maximum length of a password is 20 characters. Your has
+    {{ form.value.password?.length }} characters.
+  </p>
+  }
+</div>

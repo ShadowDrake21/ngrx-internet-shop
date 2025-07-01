@@ -1,5 +1,5 @@
 // angular stuff
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   combineLatest,
@@ -9,7 +9,6 @@ import {
   Subscription,
 } from 'rxjs';
 import Stripe from 'stripe';
-import { CommonModule } from '@angular/common';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { TooltipDirective, TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -30,47 +29,45 @@ import { ISupplementedCharge } from '@models/purchase.model';
 import { userInformationContent } from '../../content/user-information.content';
 
 @Component({
-    selector: 'app-purcheses',
-    imports: [
-        CommonModule,
-        BasicCardComponent,
-        TabsModule,
-        TooltipModule,
-        ReactiveFormsModule,
-        CustomerInformationComponent,
-        PurchasesListComponent,
-    ],
-    templateUrl: './purchases.component.html',
-    styleUrl: './purchases.component.scss',
-    providers: [TooltipDirective]
+  selector: 'app-purcheses',
+  imports: [
+    BasicCardComponent,
+    TabsModule,
+    TooltipModule,
+    ReactiveFormsModule,
+    CustomerInformationComponent,
+    PurchasesListComponent,
+  ],
+  templateUrl: './purchases.component.html',
+  styleUrl: './purchases.component.scss',
+  providers: [TooltipDirective],
 })
 export class PurchasesComponent implements OnInit, OnDestroy {
-  userInformationItem = userInformationContent[2];
+  readonly userInformationItem = userInformationContent[2];
+  private readonly store = inject(Store<AppState>);
 
-  private store = inject(Store<AppState>);
+  customer$: Observable<Stripe.Customer | null> = this.store.select(
+    PurchaseSelectors.selectCustomer
+  );
+  transactions$: Observable<ISupplementedCharge[]> = this.store.select(
+    PurchaseSelectors.selectTransactions
+  );
 
-  customer$!: Observable<Stripe.Customer | null>;
-  transactions$!: Observable<ISupplementedCharge[]>;
-
-  purchasesLoading: boolean = false;
-
-  private subscriptions: Subscription[] = [];
+  isLoading = signal(true);
+  private subscriptions = new Subscription();
 
   ngOnInit() {
-    this.purchasesLoading = true;
-    combineLatest([
-      this.store.select(PurchaseSelectors.selectCustomer),
-      this.store.select(PurchaseSelectors.selectTransactions),
-    ])
-      .pipe(debounceTime(2000))
-      .subscribe(([customer, transactions]) => {
-        this.customer$ = of(customer);
-        this.transactions$ = of(transactions);
-        this.purchasesLoading = false;
-      });
+    this.subscriptions.add(
+      combineLatest([this.customer$, this.transactions$])
+        .pipe(debounceTime(2000))
+        .subscribe({
+          next: () => this.isLoading.set(false),
+          error: () => this.isLoading.set(false),
+        })
+    );
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.subscriptions.unsubscribe();
   }
 }

@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
 // interfaces
@@ -11,10 +11,10 @@ import { SafeHTMLPipe } from '@shared/pipes/safe-html.pipe';
 import { TruncateTextPipe } from '@shared/pipes/truncate-text.pipe';
 
 @Component({
-    selector: 'app-readonly-cart-item',
-    imports: [CommonModule, TruncateTextPipe, ClearURLPipe, SafeHTMLPipe],
-    templateUrl: './readonly-cart-item.component.html',
-    styleUrl: './readonly-cart-item.component.scss'
+  selector: 'app-readonly-cart-item',
+  imports: [CurrencyPipe, TruncateTextPipe, ClearURLPipe, SafeHTMLPipe],
+  templateUrl: './readonly-cart-item.component.html',
+  styleUrl: './readonly-cart-item.component.scss',
 })
 export class ReadonlyCartItemComponent {
   @Input({ required: true }) product!: IProduct;

@@ -1,6 +1,7 @@
 <div class="pt-3 pb-3">
-  <app-basic-card [item]="userInformationItem"></app-basic-card>
-  <div *ngIf="!purchasesLoading; else loading">
+  <app-basic-card [data]="userInformationItem"></app-basic-card>
+  @if(!isLoading()) {
+  <div>
     <div class="pb-4">
       <app-customer-information
         [customer]="customer$"
@@ -8,9 +9,9 @@
     </div>
     <app-purchases-list [transactions]="transactions$"></app-purchases-list>
   </div>
-  <ng-template #loading>
-    <div class="d-flex justify-content-center align-items-center pt-5 pb-5">
-      <div class="user-information-loading"></div>
-    </div>
-  </ng-template>
+  } @else {
+  <div class="d-flex justify-content-center align-items-center pt-5 pb-5">
+    <div class="user-information-loading"></div>
+  </div>
+  }
 </div>

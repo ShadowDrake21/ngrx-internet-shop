@@ -10,33 +10,31 @@ import * as UserActions from '@store/user/user.actions';
 import * as UserSelectors from '@store/user/user.selectors';
 
 @Component({
-    selector: 'app-email-verification-modal',
-    imports: [],
-    templateUrl: './email-verification-modal.component.html',
-    styleUrl: './email-verification-modal.component.scss'
+  selector: 'app-email-verification-modal',
+  imports: [],
+  templateUrl: './email-verification-modal.component.html',
+  styleUrl: './email-verification-modal.component.scss',
 })
 export class EmailVerificationModalComponent implements OnInit, OnDestroy {
   private store = inject(Store<UserState>);
   public bsModalRef = inject(BsModalRef);
 
-  email$!: Observable<string | null>;
+  email$: Observable<string | null> = this.store.select(
+    UserSelectors.selectEmail
+  );
 
-  private emailSubscription!: Subscription;
+  private subscription = new Subscription();
 
   ngOnInit(): void {
-    this.sendVefirication();
-    this.emailSubscription = this.store
-      .select(UserSelectors.selectEmail)
-      .subscribe((email) => {
-        this.email$ = of(email);
-      });
+    this.sendVerification();
+    this.subscription.add(this.email$.subscribe());
   }
 
-  sendVefirication() {
+  private sendVerification() {
     this.store.dispatch(UserActions.sendEmailVerification());
   }
 
   ngOnDestroy(): void {
-    this.emailSubscription.unsubscribe();
+    this.subscription.unsubscribe();
   }
 }

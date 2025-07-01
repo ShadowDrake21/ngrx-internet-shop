@@ -9,8 +9,8 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -33,130 +33,121 @@ import { BasicCardComponent } from '../../components/basic-card/basic-card.compo
 import { CardItemComponent } from './components/card-item/card-item.component';
 import { CardFormComponent } from './components/card-form/card-form.component';
 
+const MAX_CARDS_ALLOWED = 6;
+
 @Component({
-    selector: 'app-card-details',
-    imports: [
-        CommonModule,
-        BasicCardComponent,
-        FontAwesomeModule,
-        ReactiveFormsModule,
-        CardFormComponent,
-        CardItemComponent,
-    ],
-    templateUrl: './card-details.component.html',
-    styleUrl: './card-details.component.scss'
+  selector: 'app-card-details',
+  imports: [
+    AsyncPipe,
+    BasicCardComponent,
+    FontAwesomeModule,
+    ReactiveFormsModule,
+    CardFormComponent,
+    CardItemComponent,
+  ],
+  templateUrl: './card-details.component.html',
+  styleUrl: './card-details.component.scss',
 })
 export class CardDetailsComponent implements OnInit, OnDestroy {
-  userInformationItem = userInformationContent[4];
+  readonly userInformationItem = userInformationContent[4];
+  readonly SIZE_RESTRICTION: number = MAX_CARDS_ALLOWED;
 
-  private store = inject(Store<AppState>);
-  private databaseService = inject(DatabaseService);
+  private readonly store = inject(Store<AppState>);
+  private readonly databaseService = inject(DatabaseService);
 
   cardForEditing: ICard | null = null;
   customerId: string = '';
-  sizeRestriction: number = 6;
-
-  formEnableValue: 'enable' | 'disable' = 'enable';
-
   cards$!: Observable<ICard[]>;
-
-  cardDetailsLoading: boolean = false;
-
+  loadingState = signal({
+    isLoading: true,
+    showCards: false,
+  });
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
-    this.cardDetailsLoading = true;
-    const customerSubscription = this.store
+    this.initCustomerSubscription();
+  }
+
+  private initCustomerSubscription(): void {
+    const sub = this.store
       .select(PurchaseSelectors.selectCustomer)
       .pipe(
         debounceTime(2000),
-        tap(() => (this.cardDetailsLoading = false))
+        tap((customer) => {
+          if (customer) {
+            this.customerId = customer.id;
+            this.loadCards();
+            this.loadingState.set({
+              isLoading: false,
+              showCards: true,
+            });
+          }
+        })
       )
-      .subscribe((customer) => {
-        if (customer) {
-          this.customerId = customer.id;
-          this.cards$ = this.databaseService.getAllCards(this.customerId);
+      .subscribe();
 
-          const cardsSubscription = this.cards$.subscribe((records) => {
-            if (records.length >= 6) {
-              this.formEnableValue = 'disable';
-            }
-          });
-
-          this.subscriptions.push(cardsSubscription);
-        }
-      });
-
-    this.subscriptions.push(customerSubscription);
+    this.subscriptions.push(sub);
   }
 
-  addNewCard(newCard: ICard) {
+  private loadCards(): void {
+    this.cards$ = this.databaseService.getAllCards(this.customerId);
+
+    const cardsSub = this.cards$.subscribe();
+    this.subscriptions.push(cardsSub);
+  }
+
+  private addNewCard(newCard: ICard): void {
     this.cards$ = this.cards$.pipe(
-      map((existingCards) => {
-        return [...existingCards, newCard];
-      }),
-      tap((newCardsArray) => {
-        if (newCardsArray.length === 6) {
-          this.formEnableValue = 'disable';
-        }
-      })
+      map((existingCards) => [...existingCards, newCard])
     );
   }
 
-  removeCard(cardId: string) {
-    const removeSubscription = this.databaseService
+  private removeCard(cardId: string): void {
+    const sub = this.databaseService
       .deleteCard(this.customerId, cardId)
       .subscribe(() => {
         this.cards$ = this.cards$.pipe(
-          map((cards) => {
-            if (cards.length === 6) {
-              this.formEnableValue = 'enable';
-            }
-            return cards.filter((card) => card.id !== cardId);
-          })
+          map((cards) => cards.filter((card) => card.id !== cardId))
         );
       });
 
-    this.subscriptions.push(removeSubscription);
+    this.subscriptions.push(sub);
   }
 
   editExistingCard(editCard: ICard) {
     this.cards$ = this.cards$.pipe(
       switchMap((cards) => {
         const cardIndex = cards.findIndex((card) => card.id === editCard.id);
-        if (cardIndex !== -1) {
-          const updatedCards = [...cards];
-          updatedCards[cardIndex] = editCard;
-          return of(updatedCards);
-        } else {
+        if (cardIndex === -1) {
           return throwError(
             () => new Error(`Card with id ${editCard.id} not found`)
           );
         }
+
+        const updatedCards = [...cards];
+        updatedCards[cardIndex] = editCard;
+        return of(updatedCards);
       })
     );
   }
 
-  handleNewCard(object: { card: ICard; mode: 'add' | 'edit' }) {
-    const { card, mode } = object;
-    if (mode === 'add') {
-      this.addNewCard(card);
-    } else {
-      this.editExistingCard(card);
-    }
+  handleNewCard(event: { card: ICard; mode: 'add' | 'edit' }): void {
+    event.mode === 'add'
+      ? this.addNewCard(event.card)
+      : this.editExistingCard(event.card);
   }
 
   handleEditCardRequest(cardId: string) {
-    const handleEditCardRequestSubscription: Subscription = this.cards$
+    const sub = this.cards$
       .pipe(map((cards) => cards.find((card) => card.id === cardId)))
       .subscribe((card) => {
-        this.cardForEditing = card!;
+        this.cardForEditing = card ?? null;
       });
 
-    this.subscriptions.push(handleEditCardRequestSubscription);
+    this.subscriptions.push(sub);
   }
 
-  handleRemoveCardRequest(cardId: string) {
+  handleRemoveCardRequest(cardId: string): void {
     this.removeCard(cardId);
   }
 
@@ -164,7 +155,16 @@ export class CardDetailsComponent implements OnInit, OnDestroy {
     this.cardForEditing = null;
   }
 
+  get formEnableValue(): 'enable' | 'disable' {
+    return this.loadingState().showCards &&
+      this.cards$ &&
+      this.cards$.pipe(map((cards) => cards.length >= MAX_CARDS_ALLOWED))
+      ? 'disable'
+      : 'enable';
+  }
+
   ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+    this.subscriptions = [];
   }
 }

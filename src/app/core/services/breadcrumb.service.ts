@@ -1,79 +1,89 @@
 // angular stuff
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { IBreadcrumb } from '@app/shared/models/breadcrump.model';
 import { BehaviorSubject, filter } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BreadcrumbService {
-  private router = inject(Router);
-  private activatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
-  private breadcrumbs$$ = new BehaviorSubject<
-    Array<{ label: string; url: string }>
-  >([]);
-  breadcrumbs$ = this.breadcrumbs$$.asObservable();
+  private readonly breadcrumbs$$ = new BehaviorSubject<IBreadcrumb[]>([]);
+  public readonly breadcrumbs$ = this.breadcrumbs$$.asObservable();
 
   constructor() {
+    this.initializeBreadcrumbTracking();
+  }
+
+  private initializeBreadcrumbTracking(): void {
     this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
+      .pipe(
+        filter(
+          (event): event is NavigationEnd => event instanceof NavigationEnd
+        )
+      )
       .subscribe(() => {
-        const breadcrumbs = this.createBreadcrumbs(this.activatedRoute.root);
+        const breadcrumbs = this.buildBreadcrumbHierarchy(
+          this.activatedRoute.root
+        );
         this.breadcrumbs$$.next(breadcrumbs);
       });
   }
 
-  private createBreadcrumbs(
+  private buildBreadcrumbHierarchy(
     route: ActivatedRoute,
-    url: string = '',
-    breadcrumbs: Array<{ label: string; url: string }> = []
-  ): Array<{ label: string; url: string }> {
-    const children: ActivatedRoute[] = route.children;
+    currentUrl: string = '',
+    breadcrumbs: IBreadcrumb[] = []
+  ): IBreadcrumb[] {
+    const childRoutes: ActivatedRoute[] = route.children;
 
-    if (children.length === 0) {
+    if (childRoutes.length === 0) {
       return breadcrumbs;
     }
 
-    for (const child of children) {
-      const routeURL: string = child.snapshot.url
-        .map((segment) => segment.path)
-        .join('/');
+    for (const childRoute of childRoutes) {
+      const routePath: string = this.getRoutePath(childRoute);
+      const newUrl = routePath ? `${currentUrl}/${routePath}` : currentUrl;
 
-      if (routeURL !== '') {
-        url += `/${routeURL}`;
-      }
-
-      const breadcrumb = this.getBreadcrumb(child);
-
-      if (breadcrumb) {
+      const breadcrumbLabel = this.resolveBreadcrumbLabel(childRoute);
+      if (breadcrumbLabel) {
         breadcrumbs.push({
-          label: breadcrumb,
-          url: url,
+          label: breadcrumbLabel,
+          url: newUrl,
         });
       }
 
-      return this.createBreadcrumbs(child, url, breadcrumbs);
+      return this.buildBreadcrumbHierarchy(childRoute, newUrl, breadcrumbs);
     }
 
     return breadcrumbs;
   }
 
-  private getBreadcrumb(route: ActivatedRoute): string {
-    const breadcrumb = route.snapshot.data['breadcrumb'];
-    if (!breadcrumb) {
+  private getRoutePath(route: ActivatedRoute): string {
+    return route.snapshot.url.map((segment) => segment.path).join('/');
+  }
+
+  private resolveBreadcrumbLabel(route: ActivatedRoute): string {
+    const breadcrumbTemplate = route.snapshot.data['breadcrumb'];
+    if (!breadcrumbTemplate) {
       return '';
     }
 
-    const paramKeys = Object.keys(route.snapshot.params);
-    let dynamicBreadcrumb = breadcrumb;
-    paramKeys.forEach((key) => {
-      dynamicBreadcrumb = dynamicBreadcrumb.replace(
-        `:${key}`,
-        route.snapshot.params[key]
-      );
-    });
+    return this.substituteRouteParams(
+      breadcrumbTemplate,
+      route.snapshot.params
+    );
+  }
 
-    return dynamicBreadcrumb;
+  private substituteRouteParams(
+    template: string,
+    params: Record<string, string>
+  ): string {
+    return Object.keys(params).reduce((result, key) => {
+      return result.replace(`:${key}`, params[key]);
+    }, template);
   }
 }

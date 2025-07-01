@@ -10,76 +10,75 @@
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
-  @if ((user$|async)?.online) {
-  <div class="modal-body" *ngIf="products$ | async as products">
-    <ng-container *ngIf="products.length; else emptyCart">
-      <div
-        class="d-flex modal-product mb-2 position-relative flex-column flex-lg-row justify-content-center justify-content-lg-start align-items-center align-items-lg-start"
-        *ngFor="let product of products"
-      >
-        <div>
-          <img
-            [src]="product.images[0] | clearURL | safeHTML"
-            class="modal-product-img"
-          />
-        </div>
-        <div class="text-center text-lg-start">
-          <h4>{{ product.title | truncateText : 40 }}</h4>
-          <div class="fs-5 mb-1">
-            Category:
-            <span class="fw-bolder">{{ product.category.name }}</span>
-          </div>
-          <div
-            class="d-flex align-items-center modal-quantity__btns mt-2 mb-3 justify-content-center justify-content-lg-start"
-          >
-            <button
-              type="button"
-              class="btn btn-danger"
-              (click)="onDecreaseQuantity(product.id)"
-            >
-              -
-            </button>
-            <div class="fs-5">
-              Quantity:
-              <span class="fw-bolder">{{ product.quantity }}</span>
-            </div>
-            <button
-              type="button"
-              class="btn btn-primary"
-              (click)="onIncreaseQuantity(product.id)"
-            >
-              +
-            </button>
-          </div>
-          <div
-            class="d-flex modal-product__prices fs-5 flex-column flex-md-row"
-          >
-            <div>
-              Price for 1 item:
-              <span class="fw-bolder">{{
-                product.price | currency : "PLN"
-              }}</span>
-            </div>
-            <div>
-              Total price:
-              <span class="fw-bolder">{{
-                product.price * product.quantity | currency : "PLN"
-              }}</span>
-            </div>
-          </div>
-        </div>
-        <button
-          type="button"
-          class="modal-product__remove btn-close close position-absolute"
-          aria-label="Close"
-          (click)="onRemoveProduct(product.id)"
-        >
-          <span aria-hidden="true" class="visually-hidden">&times;</span>
-        </button>
+  @if ((user$|async)?.online) { @if (products$ | async; as products) { @if
+  (products.length) {
+  <div class="modal-body">
+    @for (product of products; track product.id ) {
+    <div
+      class="d-flex modal-product mb-2 position-relative flex-column flex-lg-row justify-content-center justify-content-lg-start align-items-center align-items-lg-start"
+    >
+      <div>
+        <img
+          [src]="product.images[0] | clearURL | safeHTML"
+          class="modal-product-img"
+        />
       </div>
-    </ng-container>
+      <div class="text-center text-lg-start">
+        <h4>{{ product.title | truncateText : 40 }}</h4>
+        <div class="fs-5 mb-1">
+          Category:
+          <span class="fw-bolder">{{ product.category.name }}</span>
+        </div>
+        <div
+          class="d-flex align-items-center modal-quantity__btns mt-2 mb-3 justify-content-center justify-content-lg-start"
+        >
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="updateProductQuantity(product.id, 'decrease')"
+          >
+            -
+          </button>
+          <div class="fs-5">
+            Quantity:
+            <span class="fw-bolder">{{ product.quantity }}</span>
+          </div>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="updateProductQuantity(product.id, 'increase')"
+          >
+            +
+          </button>
+        </div>
+        <div class="d-flex modal-product__prices fs-5 flex-column flex-md-row">
+          <div>
+            Price for 1 item:
+            <span class="fw-bolder">{{
+              product.price | currency : "PLN"
+            }}</span>
+          </div>
+          <div>
+            Total price:
+            <span class="fw-bolder">{{
+              product.price * product.quantity | currency : "PLN"
+            }}</span>
+          </div>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="modal-product__remove btn-close close position-absolute"
+        aria-label="Close"
+        (click)="onRemoveProduct(product.id)"
+      >
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    }
   </div>
 
+  } }
   <ng-template #emptyCart>
     <div class="modal-body">
       <h5 class="text-center text-sm-left">
@@ -95,9 +94,9 @@
   </div>
   }
   <div class="modal-footer d-flex flex-column align-items-end">
+    @if ((products$ | async)?.length) {
     <div
       class="d-flex justify-content-between w-100 align-items-center align-items-md-start flex-column flex-md-row"
-      *ngIf="(products$ | async)?.length"
     >
       <h4 class="me-4">
         Total price: {{ totalPrice$ | async | currency : "PLN" }}
@@ -106,7 +105,7 @@
         <button
           type="button"
           class="btn btn-link"
-          (click)="onOpenSelectModal(selectModal)"
+          (click)="openSelectionModal(selectModal)"
           [class.d-none]="!isShippingDataExist"
         >
           Select checkout data
@@ -120,6 +119,7 @@
         </button>
       </div>
     </div>
+    }
     <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">
       {{ closeBtnName }}
     </button>
@@ -136,7 +136,7 @@
           type="button"
           class="btn-close close pull-right"
           aria-label="Close"
-          (click)="onHideSelectModal()"
+          (click)="closeSelectionModal()"
         >
           <span aria-hidden="true" class="visually-hidden">&times;</span>
         </button>
@@ -150,22 +150,19 @@
           [formGroup]="selectShippingDataForm"
           (ngSubmit)="onSelectFormSubmit()"
         >
-          <div
-            class="form-group"
-            *ngIf="(userDeliveryAddresses$ | async)?.length"
-          >
+          @if ((userDeliveryAddresses$ | async)?.length) {
+          <div class="form-group">
             <label for="deliveryAddress" class="pb-2">Delivery Address</label>
+            @if (userDeliveryAddresses$ | async; as deliveryAddresses) {
             <select
               class="form-select"
               id="deliveryAddress"
               formControlName="deliveryAddressId"
-              *ngIf="userDeliveryAddresses$ | async as deliveryAddresses"
             >
               <option selected disabled value="0">Delivery Address</option>
-              <option
-                *ngFor="let deliveryAddress of deliveryAddresses"
-                [value]="deliveryAddress.id"
-              >
+              @for (deliveryAddress of deliveryAddresses; track
+              deliveryAddress.id) {
+              <option [value]="deliveryAddress.id">
                 {{
                   deliveryAddress.name +
                     ", " +
@@ -182,18 +179,17 @@
                     deliveryAddress.address.postal_code
                 }}
               </option>
-            </select>
+              }</select
+            >}
           </div>
-          <div class="form-group" *ngIf="(userCreditCards$ | async)?.length">
+          } @if ((userCreditCards$ | async)?.length) {
+          <div class="form-group">
             <label for="deliveryAddress" class="pb-2">Card</label>
-            <select
-              class="form-select"
-              id="card"
-              formControlName="cardId"
-              *ngIf="userCreditCards$ | async as cards"
-            >
+            @if (userCreditCards$ | async; as cards) {
+            <select class="form-select" id="card" formControlName="cardId">
               <option selected disabled value="0">Card</option>
-              <option *ngFor="let card of cards" [value]="card.id">
+              @for (card of cards; track card.id) {
+              <option [value]="card.id">
                 {{
                   "····" +
                     card.cardNumber.slice(
@@ -211,14 +207,16 @@
                     card.cvc.slice(card.cvc.length - 1, card.cvc.length)
                 }}
               </option>
-            </select>
+              }</select
+            >}
           </div>
+          }
           <div class="d-flex pt-3 w-100" style="gap: 25px">
             <button type="submit" class="btn btn-primary w-100">Select</button>
             <button
               type="button"
               class="btn btn-danger w-100"
-              (click)="onResetSelectForm()"
+              (click)="resetSelectForm()"
             >
               Reset
             </button>

@@ -1,43 +1,47 @@
 <div class="pt-3 pb-3">
-  <app-basic-card [item]="userInformationItem"></app-basic-card>
+  <app-basic-card [data]="userInformationItem"></app-basic-card>
 
-  <div class="pt-4 pb-4" *ngIf="!favoritesLoading; else loading">
+  @if(!favoritesLoading){
+  <div class="pt-4 pb-4">
     <h3 class="text-center pb-2">Favorite products</h3>
-    <div *ngIf="(favorites$ | async)?.length; else noFavorite">
-      <ng-container *ngFor="let category of visibleCategories | keyvalue">
-        <h4 class="text-center pb-2">{{ category.key }}</h4>
-        <carousel
-          [itemsPerSlide]="itemsPerSlide"
-          [singleSlideOffset]="true"
-          [startFromIndex]="0"
-          [interval]="0"
-          data-slider="favorites-slider"
-        >
-          <slide *ngFor="let product of category.value" class="w-100">
-            <app-favorite-products-item
-              [product]="product"
-              [inCenter]="!!category.value.length"
-            ></app-favorite-products-item>
-          </slide>
-        </carousel>
-      </ng-container>
+    @if((favorites$ | async)?.length) {
+    <div>
+      @for(category of visibleCategories | keyvalue; track category.key) {
+      <h4 class="text-center pb-2">{{ category.key }}</h4>
+      <carousel
+        [itemsPerSlide]="itemsPerSlide"
+        [singleSlideOffset]="true"
+        [startFromIndex]="0"
+        [interval]="0"
+        data-slider="favorites-slider"
+      >
+        @for (product of category.value; track $index) {
+        <slide class="w-100">
+          <app-favorite-products-item
+            [product]="product"
+            [inCenter]="!!category.value.length"
+          ></app-favorite-products-item>
+        </slide>
+        }
+      </carousel>
+      } @if ((categories | keyvalue).length > itemsPerPage) {
       <pagination
         class="d-flex justify-content-center"
-        *ngIf="(categories | keyvalue).length > itemsPerPage"
         [itemsPerPage]="itemsPerPage"
         [totalItems]="(categories | keyvalue).length"
         (pageChanged)="pageChanged($event)"
       ></pagination>
+      }
     </div>
-    <ng-template #noFavorite>
-      <div class="pt-3 pb-3 text-center">
-        <h4>You have not marked any product as favorite yet...</h4>
-      </div>
-    </ng-template>
+    } @else {
+    <div class="pt-3 pb-3 text-center">
+      <h4>You have not marked any product as favorite yet...</h4>
+    </div>
+    }
   </div>
-  <ng-template #loading>
-    <div class="d-flex justify-content-center pt-5 pb-5">
-      <div class="user-information-loading"></div>
-    </div>
-  </ng-template>
+  } @else {
+  <div class="d-flex justify-content-center pt-5 pb-5">
+    <div class="user-information-loading"></div>
+  </div>
+  }
 </div>

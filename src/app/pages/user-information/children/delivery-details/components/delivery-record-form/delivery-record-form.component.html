@@ -226,59 +226,7 @@
         </div>
       </div>
     </div>
-    <div
-      class="d-flex flex-column justify-content-between w-25 align-items-center align-items-md-start flex-shrink-1 delivery-details__form-errors"
-    >
-      <ul *ngIf="shippingForm.invalid" style="color: red">
-        <li
-          *ngIf="shippingForm.controls.name.errors?.['required'] && shippingForm.controls.name.touched"
-        >
-          Name field is mandatory
-        </li>
-        <li
-          *ngIf="shippingForm.controls.name.errors?.['minlength'] || shippingForm.controls.name.errors?.['maxlength']"
-        >
-          Name must be at least 3 and maximum 40 characters long
-        </li>
-        <li
-          *ngIf="shippingForm.controls.phone.errors?.['required'] && shippingForm.controls.phone.touched"
-        >
-          Phone field is mandatory
-        </li>
-        <li *ngIf="shippingForm.controls.phone.errors?.['pattern']">
-          Incorrect phone format.
-        </li>
-        <li
-          *ngIf="shippingForm.controls.address.controls.country.errors?.['required'] && shippingForm.controls.address.controls.country.touched"
-        >
-          Country field is mandatory
-        </li>
-        <li
-          *ngIf="shippingForm.controls.address.controls.country.errors?.['pattern'] "
-        >
-          Incorrect country code
-        </li>
-        <li
-          *ngIf="shippingForm.controls.address.controls.city.errors?.['required'] && shippingForm.controls.address.controls.city.touched"
-        >
-          City field is mandatory
-        </li>
-        <li
-          *ngIf="shippingForm.controls.address.controls.line1.errors?.['required'] && shippingForm.controls.address.controls.line1.touched"
-        >
-          Line1 field is mandatory
-        </li>
-        <li
-          *ngIf="shippingForm.controls.address.controls.line2.errors?.['required'] && shippingForm.controls.address.controls.line2.touched"
-        >
-          Line2 field is mandatory
-        </li>
-        <li
-          *ngIf="shippingForm.controls.address.controls.postalCode.errors?.['required'] && shippingForm.controls.address.controls.postalCode.touched"
-        >
-          Postal code field is mandatory
-        </li>
-      </ul>
-    </div>
+
+    <delivery-record-form-error-messages [form]="shippingForm" />
   </form>
 </div>

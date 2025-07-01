@@ -10,9 +10,8 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { filter, map, Observable, tap } from 'rxjs';
+import { filter, Observable, tap } from 'rxjs';
 
 // interfaces
 import { IFilterFormObj } from '@models/forms.model';
@@ -21,15 +20,15 @@ import { IFilterFormObj } from '@models/forms.model';
 import { filterCategories } from './content/filter-categories.content';
 
 @Component({
-    selector: 'app-filter-sidebar',
-    imports: [CommonModule, ReactiveFormsModule],
-    templateUrl: './filter-sidebar.component.html',
-    styleUrl: './filter-sidebar.component.scss'
+  selector: 'app-filter-sidebar',
+  imports: [ReactiveFormsModule],
+  templateUrl: './filter-sidebar.component.html',
+  styleUrl: './filter-sidebar.component.scss',
 })
 export class FilterSidebarComponent implements OnInit, OnChanges {
-  filterCategories = filterCategories;
+  readonly filterCategories = filterCategories;
 
-  private cdr = inject(ChangeDetectorRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   @Input({ required: true, alias: 'categoryId' }) categoryId$!: Observable<
     number | null
@@ -39,54 +38,67 @@ export class FilterSidebarComponent implements OnInit, OnChanges {
     new EventEmitter<IFilterFormObj>();
 
   @Output() restoreSignal: EventEmitter<void> = new EventEmitter<void>();
+
   restoreBtn: boolean = false;
 
   filterForm = new FormGroup({
-    category: new FormControl(),
-    maxPriceLimit: new FormControl(0),
+    category: new FormControl<number | null>(null),
+    maxPriceLimit: new FormControl<number>(0, { nonNullable: true }),
   });
 
   ngOnInit(): void {
+    this.initializeCatetoryFilter();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isFilterRestore']) {
+      this.resetForm();
+    }
+  }
+
+  private initializeCatetoryFilter(): void {
     this.categoryId$
       .pipe(
-        filter((id) => !!id),
-        map((id) => this.filterForm.patchValue({ category: id })),
-        tap(() => {
-          this.onFilter();
-          this.cdr.detectChanges();
+        filter((id): id is number => id !== null),
+        tap((id) => {
+          this.filterForm.patchValue({ category: id });
         })
       )
       .subscribe();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['isFilterRestore']) {
-      this.onResetForm();
-    }
+  applyFilter(): void {
+    this.setRestoreButtonState(true);
+    this.emitFilterData();
+    this.markForCheck();
   }
 
-  onFilter() {
-    this.setRestoreBtn(true);
+  private emitFilterData(): void {
     this.filterData.emit({
-      categoryId: this.filterForm.value.category || null,
-      maxPriceLimit: this.filterForm.value.maxPriceLimit || null,
+      categoryId: this.filterForm.value.category ?? null,
+      maxPriceLimit: this.filterForm.value.maxPriceLimit ?? null,
     });
-    this.cdr.detectChanges();
   }
 
-  onResetForm() {
-    this.filterForm.reset();
-    this.filterForm.controls.maxPriceLimit.setValue(0);
+  resetForm() {
+    this.filterForm.reset({
+      category: null,
+      maxPriceLimit: 0,
+    });
   }
 
-  setRestoreBtn(value: boolean) {
-    this.restoreBtn = value;
+  private setRestoreButtonState(state: boolean): void {
+    this.restoreBtn = state;
   }
 
-  onRestoreProducts() {
-    this.setRestoreBtn(false);
-    this.onResetForm();
+  restoreProducts() {
+    this.setRestoreButtonState(false);
+    this.resetForm();
     this.restoreSignal.emit();
     this.cdr.detectChanges();
+  }
+
+  private markForCheck(): void {
+    this.cdr.markForCheck();
   }
 }

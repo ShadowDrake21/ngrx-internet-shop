@@ -1,16 +1,19 @@
-<div class="container" *ngIf="product$ | async as product">
+@if(product$ | async; as product) {
+<div class="container">
   <div
     class="d-flex product pb-5 flex-column flex-lg-row align-items-center align-items-lg-start"
   >
     <div class="product-image__slider-wrapper">
       <carousel [noPause]="false">
-        <slide *ngFor="let image of product.images">
+        @for(image of product.images; track image;) {
+        <slide>
           <img
             [src]="image"
             alt="product-image"
             class="card-img-top product-image__slider-item"
           />
         </slide>
+        }
       </carousel>
     </div>
     <div class="text-center text-md-start">
@@ -32,8 +35,8 @@
       <div
         class="d-flex justify-content-center justify-content-md-start product-btns"
       >
+        @if((source$ | async) === 'api'){
         <button
-          *ngIf="(source$ | async) === 'api'"
           class="btn btn-primary"
           (click)="onAddToCart(product)"
           [disabled]="isInCart || !isAuthorizedGuest"
@@ -41,6 +44,7 @@
           {{ isInCart ? "Added to cart" : "Add to cart" }}
           <fa-icon [icon]="cartAdd"></fa-icon>
         </button>
+        }
         <button
           class="btn btn-danger text-light"
           (click)="onToggleToFavourites(product.id)"
@@ -61,8 +65,8 @@
       </div>
     </div>
   </div>
+  @if(product.category; as category){
   <div
-    *ngIf="product.category as category"
     class="category-group d-flex align-items-center flex-column flex-xxl-row"
   >
     <div style="max-width: 590px">
@@ -99,18 +103,22 @@
     </div>
     <div>
       <h4 class="text-center">Similar products</h4>
+      @if(similarProducts$ | async; as similarProducts){
       <carousel
         [itemsPerSlide]="itemsPerSlide"
         [singleSlideOffset]="true"
         [startFromIndex]="0"
         [interval]="0"
-        *ngIf="similarProducts$ | async as similarProducts"
         data-slider="similar-products-slider"
       >
-        <slide *ngFor="let item of similarProducts">
-          <app-similar-product [item]="item"></app-similar-product>
-        </slide>
+        @for(item of similarProducts; track item.id;) {
+        <slide>
+          <app-similar-product [item]="item"></app-similar-product> </slide
+        >}
       </carousel>
+      }
     </div>
   </div>
+  }
 </div>
+}

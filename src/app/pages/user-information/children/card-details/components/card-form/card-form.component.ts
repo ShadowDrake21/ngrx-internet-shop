@@ -1,5 +1,4 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -14,12 +13,7 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { of, Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -43,17 +37,18 @@ import {
 // utils
 import { cardDetailsIcons } from '@shared/utils/icons.utils';
 import { formCardObject } from '../../utils/card-details.utils';
+import { CardFormService } from './services/cardForm.service';
 
 @Component({
-    selector: 'app-card-form',
-    imports: [CommonModule, ReactiveFormsModule, FontAwesomeModule],
-    templateUrl: './card-form.component.html',
-    styleUrl: './card-form.component.scss'
+  selector: 'app-card-form',
+  imports: [ReactiveFormsModule, FontAwesomeModule],
+  templateUrl: './card-form.component.html',
+  styleUrl: './card-form.component.scss',
 })
 export class CardFormComponent
   implements OnInit, AfterViewInit, OnChanges, OnDestroy
 {
-  icons = cardDetailsIcons;
+  readonly icons = cardDetailsIcons;
 
   @Input({ required: true }) customerId: string = '';
   @Input({ required: true }) formEnableValue: 'enable' | 'disable' = 'enable';
@@ -67,7 +62,8 @@ export class CardFormComponent
 
   @ViewChild('card') card!: ElementRef;
 
-  private databaseService = inject(DatabaseService);
+  private readonly databaseService = inject(DatabaseService);
+  private readonly cardFormService = inject(CardFormService);
 
   cardMonthsAndYears: { months: string[]; years: string[] } =
     cardMonthsAndYears;
@@ -75,24 +71,11 @@ export class CardFormComponent
 
   isEditMode: boolean = false;
 
-  cardForm = new FormGroup({
-    id: new FormControl(''),
-    cardNumber: new FormGroup({
-      firstPart: new FormControl('', Validators.required),
-      secondPart: new FormControl('', Validators.required),
-      thirdPart: new FormControl('', Validators.required),
-      fourthPart: new FormControl('', Validators.required),
-    }),
-    cardHolder: new FormControl('', Validators.required),
-    expirationMonth: new FormControl('01', Validators.required),
-    expirationYear: new FormControl('24', Validators.required),
-    cvc: new FormControl('', Validators.required),
-  });
+  cardForm = this.cardFormService.getCardDataForm();
 
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
-    this.cardForm.controls.id.patchValue(`card_${new Date().getTime()}`);
     this.handleCardNumberInput();
   }
 
@@ -101,98 +84,73 @@ export class CardFormComponent
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['cardForEditing']) {
-      if (this.cardForEditing) {
-        this.isEditMode = true;
-        this.patchEditCardToForm(this.cardForEditing);
-        this.patchDataToCardMiniature(this.cardForEditing);
-        this.formEnableValue === 'disable' && this.cardForm.enable();
-      }
+    if (changes['cardForEditing']?.currentValue) {
+      this.isEditMode = true;
+      this.cardFormService.patchEditCardToForm(
+        this.cardForm,
+        this.cardForEditing!
+      );
+      this.patchDataToCardMiniature(this.cardForEditing!);
+      this.formEnableValue === 'disable' && this.cardForm.enable();
     }
 
     if (changes['formEnableValue']) {
-      if (this.formEnableValue === 'enable') {
-        this.cardForm.patchValue({
-          expirationMonth: '01',
-          expirationYear: '24',
-        });
-        this.cardForm.enable();
-      } else {
-        this.cardForm.patchValue({ expirationMonth: '', expirationYear: '' });
-        this.cardForm.disable();
-      }
+      this.cardFormService.resetForm(
+        this.cardForm,
+        this.formEnableValue === 'enable'
+      );
+      this.formEnableValue === 'enable'
+        ? this.cardForm.enable()
+        : this.cardForm.disable();
     }
   }
 
   handleCardNumberInput() {
     const form = document.querySelector('.form');
-    if (form) {
-      form.addEventListener('input', (event) => {
-        const target = event.target as HTMLInputElement;
 
-        if (!(target.id === 'cd-holder-input')) {
-          const inputValue = target.value;
-          const sanitizedValue = inputValue.replace(/\D/g, '');
+    form?.addEventListener('input', (event) => {
+      const target = event.target as HTMLInputElement;
 
-          target.value = sanitizedValue;
+      if (target.id !== 'cd-holder-input') {
+        target.value = this.cardFormService.sanitizeCardNumberInput(
+          target.value
+        );
 
-          const charLength = sanitizedValue.length;
-          if (charLength === 4) {
-            const nextInput = target.nextElementSibling as HTMLInputElement;
-            if (nextInput) {
-              nextInput.focus();
-            }
-          }
+        this.handleCardNumberNavigation(target);
+        this.updateCardNumberDisplay(target);
+      }
+    });
+  }
 
-          if (target.classList.contains('1')) {
-            if (target.value.length !== 0) {
-              this.card.nativeElement.querySelector(
-                cardNumberSelectors[0]
-              ).textContent = sanitizedValue;
-            }
-          }
+  private handleCardNumberNavigation(target: HTMLInputElement): void {
+    if (target.value.length === 4) {
+      (target.nextElementSibling as HTMLInputElement)?.focus();
+    }
+  }
+  private updateCardNumberDisplay(target: HTMLInputElement): void {
+    const partIndex = Array.from(target.classList).find((cls) =>
+      cls.match(/[1-4]/)
+    )?.[0];
 
-          if (target.classList.contains('2')) {
-            if (target.value.length !== 0) {
-              this.card.nativeElement.querySelector(
-                cardNumberSelectors[1]
-              ).textContent = sanitizedValue;
-            }
-          }
-
-          if (target.classList.contains('3')) {
-            if (target.value.length !== 0) {
-              this.card.nativeElement.querySelector(
-                cardNumberSelectors[2]
-              ).textContent = sanitizedValue;
-            }
-          }
-
-          if (target.classList.contains('4')) {
-            if (target.value.length !== 0) {
-              this.card.nativeElement.querySelector(
-                cardNumberSelectors[3]
-              ).textContent = sanitizedValue;
-            }
-          }
-        }
-      });
+    if (partIndex && target.value.length > 0) {
+      this.updateCardMiniatureText(
+        cardNumberSelectors[parseInt(partIndex) - 1],
+        target.value
+      );
     }
   }
 
   handleCdHolderInput(event: any) {
-    const target = event.target;
-    const inputValue = target.value;
+    const target = event.target as HTMLInputElement;
+    target.value = this.cardFormService.sanitizeCardHolderInput(target.value);
+    this.updateCardMiniatureText(cardHolderSelector, target.value);
+  }
 
-    const sanitizedValue = inputValue.replace(
-      /[^a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\s\-]/g,
-      ''
-    );
-
-    target.value = sanitizedValue;
-
-    this.card.nativeElement.querySelector(cardHolderSelector).textContent =
-      sanitizedValue;
+  updateCardMiniatureText(selector: string, value: string): void {
+    const element = this.card.nativeElement.querySelector(selector);
+    if (element) {
+      element.textContent = value;
+    }
   }
 
   updateExpirationMonth() {
@@ -254,17 +212,12 @@ export class CardFormComponent
   }
 
   onFormReset() {
-    if (this.isEditMode) {
-      this.isEditMode = false;
-    }
-    this.cardForm.reset();
-    this.cardForm.patchValue({
-      id: `card_${new Date().getTime()}`,
-      expirationMonth: this.formEnableValue === 'enable' ? '01' : '',
-      expirationYear: this.formEnableValue === 'enable' ? '24' : '',
-    });
+    this.isEditMode = false;
+    this.cardFormService.resetForm(
+      this.cardForm,
+      this.formEnableValue === 'enable'
+    );
     this.patchDataToCardMiniature(initialCardData);
-
     this.formEnableValue === 'disable' && this.cardForm.disable();
     this.formReset.emit();
   }

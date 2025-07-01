@@ -11,25 +11,26 @@ import { BASE_URL_API } from '../constants/api.constants';
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${BASE_URL_API}/categories`;
 
   getAllCategories(): Observable<ICategory[]> {
-    return this.http.get<ICategory[]>(`${BASE_URL_API}/categories`);
+    return this.http.get<ICategory[]>(this.baseUrl);
   }
 
   getCategoryById(categoryId: number): Observable<ICategory> {
-    return this.http.get<ICategory>(`${BASE_URL_API}/categories/${categoryId}`);
+    return this.http.get<ICategory>(`${this.baseUrl}/${categoryId}`);
   }
 
   getCategoryByName(categoryName: string): Observable<ICategory | null> {
-    const allCategories$ = this.getAllCategories();
-    return allCategories$.pipe(
+    return this.getAllCategories().pipe(
       map(
         (categories) =>
           categories.find(
             (category) =>
-              category.name.toLowerCase() === categoryName.toLowerCase()
-          ) as ICategory | null
+              category.name.toLowerCase().trim() ===
+              categoryName.toLowerCase().trim()
+          ) || null
       )
     );
   }

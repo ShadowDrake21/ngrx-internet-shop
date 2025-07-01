@@ -99,7 +99,8 @@
               </li>
             </ul>
             <hr />
-            <div class="dropdown" *ngIf="user$ | async as user">
+            @if (user$ | async; as user) {
+            <div class="dropdown">
               <a
                 class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
                 id="dropdownUser2"
@@ -139,12 +140,14 @@
                 </li>
               </ul>
             </div>
+            }
           </div>
           <div class="user-information__bottom">
             <div class="text-dark">
               <a
                 class="footer-link text-dark text-decoration-none copyright"
                 target="_blank"
+                ref="noopener noreferrer"
                 href="https://github.com/ShadowDrake21"
               >
                 © 2024 Dmytro (Dmitrii) Krapyvianskiy a.k.a Drake21 | All rights

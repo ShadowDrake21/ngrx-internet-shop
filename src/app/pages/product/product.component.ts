@@ -1,8 +1,9 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
+  combineLatest,
   filter,
   map,
   Observable,
@@ -54,7 +55,9 @@ import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
 @Component({
   selector: 'app-product',
   imports: [
-    CommonModule,
+    AsyncPipe,
+    DatePipe,
+    CurrencyPipe,
     CarouselModule,
     TruncateTextPipe,
     FontAwesomeModule,
@@ -65,39 +68,43 @@ import * as FavoritesSelectors from '@store/favorites/favorites.selectors';
   styleUrl: './product.component.scss',
 })
 export class ProductComponent implements OnInit, OnDestroy {
-  cartAdd = faCartPlus;
+  readonly cartAdd = faCartPlus;
+  readonly favoriteAdd = faHeartCirclePlus;
+  readonly favoriteRemove = faHeartCircleMinus;
 
-  favoriteAdd = faHeartCirclePlus;
-  favoriteRemove = faHeartCircleMinus;
-
-  private store = inject(Store<AppState>);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private productService = inject(ProductService);
-  private productManipulationsService = inject(ProductManipulationsService);
-  private databaseService = inject(DatabaseService);
+  private readonly store = inject(Store<AppState>);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly productService = inject(ProductService);
+  private readonly productManipulationsService = inject(
+    ProductManipulationsService
+  );
+  private readonly databaseService = inject(DatabaseService);
 
   source$!: Observable<'database' | 'api'>;
-  productId$!: Observable<number | string>;
+  productId$!: Observable<string>;
   product$!: Observable<IProduct | null>;
   similarProducts$!: Observable<IProduct[]>;
 
-  isInCart: boolean = false;
-  isInFavorites: boolean = false;
-  isAuthorizedGuest: boolean = true;
-  isProductOfTheDay: boolean = false;
+  isInCart = false;
+  isInFavorites = false;
+  isAuthorizedGuest = true;
+  isProductOfTheDay = false;
 
   itemsPerSlide: number = 2;
-  private innerWidth!: number;
   private mobileBreakpoint: number = 600;
+  private subscriptions: Subscription[] = [];
 
-  subscriptions: Subscription[] = [];
+  ngOnInit(): void {
+    this.initializeUrlParts();
+    this.setupProductLoading();
+    this.checkInCart();
+    this.adjustItemsPerSlide();
+  }
 
-  getUrlParts() {
+  private initializeUrlParts() {
     this.source$ = this.route.queryParams.pipe(
-      map((queries: Params) => {
-        return queries['source'];
-      })
+      map((queries: Params) => queries['source'])
     );
 
     this.productId$ = this.route.paramMap.pipe(
@@ -105,48 +112,66 @@ export class ProductComponent implements OnInit, OnDestroy {
     );
   }
 
-  loadAPIProductById() {
-    const productSubscription: Subscription = this.productId$.subscribe(
-      (productId) => {
-        const productOfTheDay: IProduct | null = this.loadProductOfTheDay();
-        if (Number(productId) !== this.loadProductOfTheDay()?.id) {
-          this.isProductOfTheDay = false;
-          this.store.dispatch(
-            ProductActions.loadSingleProductById({
-              productId: productId as number,
-            })
-          );
-        } else {
-          if (productOfTheDay) {
-            this.isProductOfTheDay = true;
-            this.store.dispatch(
-              ProductActions.setSingleProduct({ product: productOfTheDay })
-            );
-          }
-        }
+  private setupProductLoading() {
+    const sourceSubscription = this.source$.subscribe((source) => {
+      if (source === 'api') {
+        this.loadAPIProduct();
+      } else if (source === 'database') {
+        this.loadDatabaseProduct();
       }
-    );
+    });
+
+    const productInitSubscription = combineLatest([
+      this.productId$,
+      this.store
+        .select(ProductSelectors.selectProducts)
+        .pipe(map((products) => products.length)),
+    ])
+      .pipe(
+        filter(
+          ([productId, productsCount]) => !!productId && productsCount === 1
+        )
+      )
+      .subscribe(([productId]) => {
+        this.initializeProduct(productId);
+      });
+    this.subscriptions.push(sourceSubscription, productInitSubscription);
+  }
+
+  private loadAPIProduct(): void {
+    const productSubscription = this.productId$.subscribe((productId) => {
+      const productOfTheDay = this.getProductOfTheDay();
+
+      if (Number(productId) !== productOfTheDay?.id) {
+        this.isProductOfTheDay = false;
+        this.store.dispatch(
+          ProductActions.loadSingleProductById({
+            productId: +productId,
+          })
+        );
+      } else if (productOfTheDay) {
+        this.isProductOfTheDay = true;
+        this.store.dispatch(
+          ProductActions.setSingleProduct({ product: productOfTheDay })
+        );
+      }
+    });
     this.subscriptions.push(productSubscription);
   }
 
-  loadProductOfTheDay(): IProduct | null {
+  private getProductOfTheDay(): IProduct | null {
     const productStr = localStorage.getItem('productOfTheDay');
-    const product: IProduct | null = productStr
-      ? (JSON.parse(productStr) as IProduct)
-      : null;
-
-    return product;
+    return productStr ? (JSON.parse(productStr) as IProduct) : null;
   }
 
-  loadDatabaseProductById() {
-    const databaseSubscription = this.store
-      .select(UserSelectors.selectEmail)
+  private loadDatabaseProduct(): void {
+    const databaseSubscription = combineLatest([
+      this.store.select(UserSelectors.selectEmail),
+      this.productId$,
+    ])
       .pipe(
-        switchMap((email) =>
-          this.productId$.pipe(map((id) => ({ email, id })))
-        ),
-        switchMap(({ email, id }) =>
-          this.databaseService.searchFavoriteProduct(email!, id as string)
+        switchMap(([email, id]) =>
+          this.databaseService.searchFavoriteProduct(email!, id)
         )
       )
       .subscribe((product) => {
@@ -156,142 +181,99 @@ export class ProductComponent implements OnInit, OnDestroy {
           );
         }
       });
+
     this.subscriptions.push(databaseSubscription);
   }
 
-  ngOnInit(): void {
-    this.getUrlParts();
+  private initializeProduct(productId: string): void {
+    const selectProductSubscription = combineLatest([
+      this.store.select(ProductSelectors.selectProducts).pipe(
+        map((products) => products[0]),
+        filter(Boolean),
+        map((product) => ({
+          ...product,
+          images: product.images.map((image) =>
+            this.productManipulationsService.normalizeImage(image)
+          ),
+        }))
+      ),
+      this.store.select(UserSelectors.selectEmail),
+    ]).subscribe(([product, email]) => {
+      this.product$ = of(product);
+      this.isAuthorizedGuest = !!email;
 
-    const sourceSubscription = this.source$.subscribe((source) => {
-      if (source) {
-        if (source === 'api') {
-          this.loadAPIProductById();
-        } else if (source === 'database') {
-          this.loadDatabaseProductById();
-        }
+      if (email) {
+        this.checkIfInFavorites();
+        this.databaseService.setLastViewedProduct(email!, product.title);
       }
     });
 
-    const productInitializationSubscription = this.productId$
-      .pipe(
-        switchMap((productId) => {
-          return this.store
-            .select(ProductSelectors.selectProducts)
-            .pipe(
-              map((products) => ({ productId, productsCount: products.length }))
-            );
-        })
-      )
-      .subscribe(({ productId, productsCount }) => {
-        if (productId && productsCount === 1) {
-          this.productInitialization(productId);
-        }
-      });
-
-    this.checkInCart();
-    this.adjustItemsPerSlide();
-
-    this.subscriptions.push(
-      sourceSubscription,
-      productInitializationSubscription
-    );
-  }
-
-  productInitialization(productId: string | number) {
-    const selectProductSubscription = this.store
-      .select(ProductSelectors.selectProducts)
-      .pipe(
-        map((products) => products[0]),
-        filter((product) => !!product),
-        map((product) => {
-          const updatedProduct = { ...product };
-          updatedProduct.images = updatedProduct.images.map((image) =>
-            this.productManipulationsService.normalizeImage(image)
-          );
-          return updatedProduct;
-        }),
-        switchMap((product) =>
-          this.store
-            .select(UserSelectors.selectEmail)
-            .pipe(map((email) => ({ product, email })))
-        )
-      )
-      .subscribe(({ product, email }) => {
-        this.product$ = of(product);
-        this.isAuthorizedGuest = !!email;
-        if (email) {
-          this.checkIfInFavorites();
-          this.databaseService.setLastViewedProduct(email!, product.title);
-        }
-      });
-
     this.subscriptions.push(selectProductSubscription);
 
-    this.similarProducts$ = this.productService.getAllProducts().pipe(
-      map((products) => {
-        const remainingProducts = products.filter(
-          (product) => product.id !== productId
-        );
-
-        const similarProducts = remainingProducts.slice(0, 7);
-        return similarProducts;
-      })
-    );
+    this.similarProducts$ = this.productService
+      .getAllProducts()
+      .pipe(
+        map((products) =>
+          products.filter((product) => product.id !== +productId).slice(0, 7)
+        )
+      );
   }
 
   checkIfInFavorites() {
-    const favoritesSubscription = this.store
-      .select(FavoritesSelectors.selectFavorites)
+    const favoritesSubscription = combineLatest([
+      this.store.select(FavoritesSelectors.selectFavorites),
+      this.product$,
+    ])
       .pipe(
-        switchMap((favorites: IProduct[]) =>
-          this.product$.pipe(
-            map((product) => ({ favorites, product })),
-            map(({ favorites, product }) => {
-              let findFavorite: IProduct | undefined = favorites.find(
-                (favorite) => favorite.id === product!.id
-              );
-
-              return {
-                id: findFavorite?.favoriteId,
-                isInFavorites: !!findFavorite,
-              };
-            })
-          )
-        )
+        map(([favorites, product]) => {
+          const favorite = favorites.find((f) => f.id === product?.id);
+          return {
+            id: favorite?.favoriteId,
+            isInFavorites: !!favorite,
+          };
+        })
       )
       .subscribe(({ id, isInFavorites }) => {
-        if (isInFavorites) {
-          const productSubscription = this.product$
-            .pipe(
-              take(1),
-              map((product) => {
-                if (product) {
-                  const updateProduct = { ...product, favoriteId: id };
-                  this.product$ = of(updateProduct);
-                }
-              })
-            )
-            .subscribe();
-
-          this.isInFavorites = true;
-
-          this.subscriptions.push(productSubscription);
-        } else {
-          const sourceSubscription = this.source$.subscribe((source) => {
-            if (source === 'database') {
-              if (!this.isInFavorites) {
-                this.product$ = of(null);
-                this.router.navigate(['/user-information/favorite-products']);
-              }
-            }
-            this.isInFavorites = false;
-          });
-
-          this.subscriptions.push(sourceSubscription);
-        }
+        this.handleFavoriteStatus(id, isInFavorites);
       });
 
     this.subscriptions.push(favoritesSubscription);
+  }
+
+  private handleFavoriteStatus(
+    id: string | undefined,
+    isInFavorites: boolean
+  ): void {
+    if (isInFavorites) {
+      this.updateProductWithFavoriteId(id);
+      this.isInFavorites = true;
+    } else {
+      this.handleNotInFavorites();
+    }
+  }
+
+  private updateProductWithFavoriteId(id: string | undefined): void {
+    const productSubscription = this.product$
+      .pipe(
+        take(1),
+        filter(Boolean),
+        map((product) => ({ ...product, favoriteId: id }))
+      )
+      .subscribe((updatedProduct) => {
+        this.product$ = of(updatedProduct);
+      });
+    this.subscriptions.push(productSubscription);
+  }
+
+  private handleNotInFavorites(): void {
+    const sourceSubscription = this.source$.subscribe((source) => {
+      if (source === 'database' && !this.isInFavorites) {
+        this.product$ = of(null);
+        this.router.navigate(['/user-information/favorite-products']);
+      }
+      this.isInFavorites = false;
+    });
+    this.subscriptions.push(sourceSubscription);
   }
 
   onAddToCart(product: IProduct) {
@@ -303,67 +285,69 @@ export class ProductComponent implements OnInit, OnDestroy {
     this.isInCart = true;
   }
 
-  onToggleToFavourites(productId: number) {
+  onToggleToFavourites(productId: number): void {
     if (!this.isInFavorites) {
-      const favoriteId = `favorite-product_${new Date().getTime()}`;
-      this.store.dispatch(
-        FavoritesActions.addToFavorites({
-          productId,
-          recordName: favoriteId,
-        })
-      );
-
-      const errorMessageSubscription = this.store
-        .select(FavoritesSelectors.selectErrorMessage)
-        .pipe(
-          filter((errorMessage) => !errorMessage),
-          switchMap(() => this.product$),
-          tap((product) => {
-            const extendedProduct: IProduct = { ...product!, favoriteId };
-            product = extendedProduct;
-          })
-        )
-        .subscribe();
-
-      this.subscriptions.push(errorMessageSubscription);
+      this.addToFavorites(productId);
     } else {
-      const productSubscription = this.product$
-        .pipe(
-          take(1),
-          switchMap((product) => {
-            if (product) {
-              const favoriteId = product!.favoriteId!;
-              this.store.dispatch(
-                FavoritesActions.removeFromFavorites({ favoriteId })
-              );
-
-              const updatedProduct: IProduct = { ...product, favoriteId: '' };
-              return of(updatedProduct);
-            }
-            return of(null);
-          }),
-          tap((product) => {
-            if (product) {
-              this.product$ = of(product);
-            }
-          })
-        )
-        .subscribe();
-      this.isInFavorites = !this.isInFavorites;
-
-      this.subscriptions.push(productSubscription);
+      this.removeFromFavorites();
     }
   }
-  checkInCart() {
-    const cartSubscription = this.productId$
+
+  private addToFavorites(productId: number): void {
+    const favoriteId = `favorite-product_${new Date().getTime()}`;
+    this.store.dispatch(
+      FavoritesActions.addToFavorites({
+        productId,
+        recordName: favoriteId,
+      })
+    );
+
+    const errorMessageSubscription = this.store
+      .select(FavoritesSelectors.selectErrorMessage)
       .pipe(
-        switchMap((productId) =>
-          this.store.select(CartSelectors.selectCartProducts).pipe(
-            map((products) => products.map((product) => product.id)),
-            map((cartProductsIds) =>
-              cartProductsIds.includes(Number(productId))
-            )
-          )
+        filter((error) => !error),
+        switchMap(() => this.product$),
+        filter(Boolean),
+        tap((product) => {
+          this.product$ = of({ ...product!, favoriteId });
+        })
+      )
+      .subscribe();
+
+    this.subscriptions.push(errorMessageSubscription);
+  }
+
+  private removeFromFavorites(): void {
+    const productSubscription = this.product$
+      .pipe(
+        take(1),
+        filter(Boolean),
+        tap((product) => {
+          if (product.favoriteId) {
+            this.store.dispatch(
+              FavoritesActions.removeFromFavorites({
+                favoriteId: product.favoriteId,
+              })
+            );
+            this.product$ = of({ ...product, favoriteId: '' });
+          }
+        })
+      )
+      .subscribe();
+    this.isInFavorites = !this.isInFavorites;
+    this.subscriptions.push(productSubscription);
+  }
+
+  checkInCart() {
+    const cartSubscription = combineLatest([
+      this.productId$,
+      this.store
+        .select(CartSelectors.selectCartProducts)
+        .pipe(map((products) => products.map((p) => p.id))),
+    ])
+      .pipe(
+        map(([productId, cartProductsIds]) =>
+          cartProductsIds.includes(Number(productId))
         )
       )
       .subscribe((isInCart) => {
@@ -373,15 +357,12 @@ export class ProductComponent implements OnInit, OnDestroy {
     this.subscriptions.push(cartSubscription);
   }
 
-  private adjustItemsPerSlide() {
-    this.innerWidth = window.innerWidth;
-    if (this.innerWidth < this.mobileBreakpoint) {
-      this.itemsPerSlide = 1;
-    }
+  private adjustItemsPerSlide(): void {
+    this.itemsPerSlide = window.innerWidth < this.mobileBreakpoint ? 1 : 2;
   }
 
   ngOnDestroy(): void {
     this.store.dispatch(ProductActions.clearProductState());
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 }

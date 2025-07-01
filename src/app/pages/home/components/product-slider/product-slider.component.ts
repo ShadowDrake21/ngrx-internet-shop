@@ -7,34 +7,46 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 
 // content
-import {
-  IProductSliderImage,
-  productSliderImages,
-} from './content/product-slider.content';
+import { productSliderImages } from './content/product-slider.content';
 
 @Component({
-    selector: 'app-product-slider',
-    imports: [CommonModule, CarouselModule, NgOptimizedImage],
-    templateUrl: './product-slider.component.html',
-    styleUrl: './product-slider.component.scss'
+  selector: 'app-product-slider',
+  imports: [CarouselModule, NgOptimizedImage],
+  templateUrl: './product-slider.component.html',
+  styleUrl: './product-slider.component.scss',
 })
 export class ProductSliderComponent implements AfterViewInit {
-  sliderItems: IProductSliderImage[] = productSliderImages;
+  readonly sliderItems = productSliderImages;
 
   @ViewChildren('slideContentRef', { read: ElementRef })
-  slideContentRefs!: QueryList<ElementRef>;
+  private slideContentRefs!: QueryList<ElementRef<HTMLElement>>;
 
   ngAfterViewInit(): void {
     this.setSlideContent();
   }
 
   setSlideContent() {
-    this.sliderItems.forEach((item, idx) => {
-      const slideContentRef = this.slideContentRefs.toArray()[idx];
-      slideContentRef.nativeElement.innerHTML = item.author;
-    });
+    this.slideContentRefs.forEach(
+      (sliderContentRef: ElementRef<HTMLElement>, index: number) => {
+        if (index < this.sliderItems.length) {
+          this.setSliderContent(
+            sliderContentRef,
+            this.sliderItems[index].author
+          );
+        }
+      }
+    );
+  }
+
+  private setSliderContent(
+    elementRef: ElementRef<HTMLElement>,
+    content: string
+  ) {
+    if (elementRef?.nativeElement) {
+      elementRef.nativeElement.innerHTML = content;
+    }
   }
 }

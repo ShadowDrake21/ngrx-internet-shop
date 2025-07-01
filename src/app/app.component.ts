@@ -1,6 +1,6 @@
 // angular stuff
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { Store } from '@ngrx/store';
@@ -22,27 +22,25 @@ import * as UserActions from '@store/user/user.actions';
 import * as UserSelectors from '@store/user/user.selectors';
 import * as FavoritesActions from '@store/favorites/favorites.actions';
 import * as PurchaseActions from '@store/purchase/purchase.actions';
-
 import * as PurchaseSelectors from '@store/purchase/purchase.selectors';
 
 // constants
 import { LS_AUTH_ITEM_NAME } from '@core/constants/auth.constants';
-import { LoaderComponent } from './shared/components/loader/loader.component';
 import { CheckoutLoadingComponent } from './shared/components/checkout-loading/checkout-loading.component';
 
 @Component({
-    selector: 'app-root',
-    imports: [
-        CommonModule,
-        RouterOutlet,
-        HeaderComponent,
-        FooterComponent,
-        BreadcrumbsComponent,
-        CheckoutLoadingComponent,
-    ],
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.scss',
-    providers: [BsModalService]
+  selector: 'app-root',
+  imports: [
+    AsyncPipe,
+    RouterOutlet,
+    HeaderComponent,
+    FooterComponent,
+    BreadcrumbsComponent,
+    CheckoutLoadingComponent,
+  ],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss',
+  providers: [BsModalService],
 })
 export class AppComponent implements OnInit, OnDestroy {
   private store = inject(Store<AppState>);

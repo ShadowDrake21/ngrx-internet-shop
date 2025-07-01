@@ -5,16 +5,21 @@
     background-repeat: no-repeat;
     background-position: center center;
   "
-  [style.background-image]="'url(' + record.background?.url + ')'"
+  [style.background-image]="formattedBgUrl"
 >
   <div class="delivery-details__list-item__dimming"></div>
-  <div
-    class="delivery-details__list-item__author text-white"
-    *ngIf="record.background?.user as user"
-  >
+  @if(record.background?.user; as user) {
+  <div class="delivery-details__list-item__author text-white">
     Photo by
-    <a [href]="user.link" target="_blank" class="text-white">{{ user.name }}</a>
+    <a
+      [href]="user.link"
+      target="_blank"
+      ref="noopener noreferrer"
+      class="text-white"
+      >{{ user.name }}</a
+    >
   </div>
+  }
   <div class="delivery-details__list-item__btns">
     <button
       type="button"
@@ -40,7 +45,8 @@
       <li>Name: {{ record.name }}</li>
       <li>Phone: {{ record.phone }}</li>
     </ul>
-    <ul *ngIf="record.address as address">
+    @if (record.address; as address) {
+    <ul>
       <h6>Address:</h6>
       <li>Coutry: {{ address.country }}</li>
       <li>City: {{ address.city }}</li>
@@ -48,5 +54,6 @@
       <li>Address line 2: {{ address.line2 }}</li>
       <li>Postal code: {{ address.postal_code }}</li>
     </ul>
+    }
   </div>
 </div>

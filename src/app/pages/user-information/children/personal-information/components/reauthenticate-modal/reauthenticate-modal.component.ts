@@ -1,5 +1,4 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -25,11 +24,11 @@ import { SignInService } from '@core/services/signIn.service';
 import { minimalizeUserCredential } from '@shared/utils/store.utils';
 
 @Component({
-    selector: 'app-reauthenticate-modal',
-    imports: [CommonModule, ReactiveFormsModule],
-    templateUrl: './reauthenticate-modal.component.html',
-    styleUrl: './reauthenticate-modal.component.scss',
-    providers: [SignInService]
+  selector: 'app-reauthenticate-modal',
+  imports: [ReactiveFormsModule],
+  templateUrl: './reauthenticate-modal.component.html',
+  styleUrl: './reauthenticate-modal.component.scss',
+  providers: [SignInService],
 })
 export class ReauthenticateModalComponent implements OnDestroy {
   private authService = inject(AuthService);
@@ -58,10 +57,10 @@ export class ReauthenticateModalComponent implements OnDestroy {
 
   onReauthenticationSubmit() {
     this.reauthenticationSubscription = this.authService
-      .reauthenticateUser(
-        this.email!,
-        this.reauthenticationForm.value.password!
-      )
+      .reauthenticateUser({
+        email: this.email!,
+        password: this.reauthenticationForm.value.password!,
+      })
       .pipe(
         concatMap((credential: UserCredential) =>
           this.authService.getProfileImage().pipe(
@@ -108,5 +107,13 @@ export class ReauthenticateModalComponent implements OnDestroy {
   ngOnDestroy(): void {
     if (this.reauthenticationSubscription)
       this.reauthenticationSubscription.unsubscribe();
+  }
+
+  shouldShowPasswordError(): boolean {
+    const passwordControl = this.reauthenticationForm.controls.password;
+    return (
+      (passwordControl.touched || passwordControl.dirty) &&
+      passwordControl.invalid
+    );
   }
 }

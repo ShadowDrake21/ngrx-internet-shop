@@ -16,10 +16,11 @@
     </button>
   </div>
   <div class="modal-body">
-    <div *ngIf="transaction?.products as products">
+    @if (transaction?.products; as products) {
+    <div>
       <div class="d-flex flex-column flex-xxl-row">
+        @if (transaction?.charge; as charge) {
         <div
-          *ngIf="transaction?.charge as charge"
           class="flex-shrink-0 border p-3 purchase-product__modal-slider__info"
         >
           <h5 class="pb-2">Purchase info</h5>
@@ -43,7 +44,8 @@
           </p>
           <div>
             <h6>Builing details</h6>
-            <ul *ngIf="charge.billing_details as billing_details">
+            @if (charge.billing_details; as billing_details) {
+            <ul>
               <li>
                 <span class="fw-bold">Country:</span>
                 {{ billing_details.address?.country }}
@@ -65,10 +67,12 @@
                 {{ billing_details.address?.postal_code }}
               </li>
             </ul>
+            }
           </div>
           <div>
             <h6>Shipping details</h6>
-            <ul *ngIf="charge.shipping as shipping">
+            @if (charge.shipping; as shipping) {
+            <ul>
               <li>
                 <span class="fw-bold">Receiver name:</span> {{ shipping.name }}
               </li>
@@ -96,6 +100,7 @@
                 {{ shipping.address?.postal_code }}
               </li>
             </ul>
+            }
           </div>
 
           <p class="fw-bold">
@@ -103,13 +108,15 @@
             {{ charge.calculated_statement_descriptor }}
           </p>
         </div>
+        }
         <carousel
           [interval]="0"
           [showIndicators]="false"
           data-slider="purchase-slider"
           class="d-block w-100 pt-4 pt-xxl-0"
         >
-          <slide *ngFor="let product of products; let i = index">
+          @for (product of products; track $index; let i = $index) {
+          <slide>
             <div class="d-flex flex-column" style="padding: 0 10%">
               <div
                 class="d-flex w-100 justify-content-between fw-light flex-column flex-md-row align-items-center align-items-md-start text-center text-md-start purchase-product__modal-slider__top"
@@ -126,13 +133,14 @@
                   <h5 class="text-center pb-2">{{ product.product.name }}</h5>
                   <div class="purchase-product__modal-slider__wrapper">
                     <carousel data-slider="purchase-product-slider">
-                      <slide *ngFor="let image of product.product.images">
+                      @for (image of product.product.images; track $index) {
+                      <slide>
                         <img
                           [src]="image"
                           alt="product image"
                           class="purchase-product__modal-slider__img"
-                        />
-                      </slide>
+                        /> </slide
+                      >}
                     </carousel>
                   </div>
                 </div>
@@ -158,11 +166,12 @@
                   </p>
                 </div>
               </div>
-            </div>
-          </slide>
+            </div> </slide
+          >}
         </carousel>
       </div>
     </div>
+    }
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">

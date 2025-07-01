@@ -1,5 +1,4 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { AlertModule } from 'ngx-bootstrap/alert';
 
@@ -7,10 +6,10 @@ import { AlertModule } from 'ngx-bootstrap/alert';
 import { AlertType } from '@models/alerts.model';
 
 @Component({
-    selector: 'app-alert',
-    imports: [CommonModule, AlertModule],
-    templateUrl: './alert.component.html',
-    styleUrl: './alert.component.scss'
+  selector: 'app-alert',
+  imports: [AlertModule],
+  templateUrl: './alert.component.html',
+  styleUrl: './alert.component.scss',
 })
 export class AlertComponent {
   @Input({ required: true }) alerts: AlertType[] = [];

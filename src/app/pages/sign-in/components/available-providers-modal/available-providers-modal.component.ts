@@ -1,10 +1,9 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, OnDestroy } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BsModalRef } from 'ngx-bootstrap/modal';
-import { debounceTime, Observable, Subscription, take } from 'rxjs';
+import { debounceTime, Subscription, take } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
 
@@ -24,122 +23,117 @@ import { LoaderComponent } from '@shared/components/loader/loader.component';
 // utils
 import { createAuthInLS } from '@core/utils/auth.utils';
 import { signInModalIcons } from '@shared/utils/icons.utils';
+import { SocialProvider } from '@app/shared/models/auth.model';
+import { FormErrorMessagesComponent } from './components/form-error-messages/form-error-messages.component';
 
 @Component({
   selector: 'app-available-providers-modal',
   imports: [
-    CommonModule,
     FontAwesomeModule,
     ReactiveFormsModule,
     LoaderComponent,
+    FormErrorMessagesComponent,
   ],
   templateUrl: './available-providers-modal.component.html',
   styleUrl: './available-providers-modal.component.scss',
   providers: [SignInService],
 })
-export class AvailableProvidersModalComponent implements OnInit, OnDestroy {
-  icons = signInModalIcons;
+export class AvailableProvidersModalComponent implements OnDestroy {
+  readonly icons = signInModalIcons;
 
-  private store = inject(Store<UserState>);
-  private signInService = inject(SignInService);
-  private router = inject(Router);
-  public bsModalRef = inject(BsModalRef);
+  private readonly store = inject(Store<UserState>);
+  private readonly signInService = inject(SignInService);
+  private readonly router = inject(Router);
+  private readonly _bsModalRef = inject(BsModalRef);
+
+  get bsModalRef(): BsModalRef {
+    return this.bsModalRef;
+  }
 
   availableProviders: string[] = [];
-  previousRoute!: string;
   closeBtnName?: string;
-
-  errorMessage!: string;
-  user$!: Observable<IUser | null>;
-
-  private userSubscription: Subscription[] = [];
-
-  signInForm!: FormGroup<{
-    email: FormControl<string | null>;
-    password: FormControl<string | null>;
-    rememberMe: FormControl<boolean | null>;
-  }>;
+  errorMessage = '';
   isLogging: boolean = false;
 
-  ngOnInit(): void {
-    this.signInForm = this.signInService.getSignInForm();
-  }
+  signInForm = this.signInService.getSignInForm();
+
+  private subscriptions: Subscription[] = [];
 
   onFormSubmit() {
     this.isLogging = true;
-
     this.signInService.signInManuallyDispatch();
 
-    const signInManuallySubscription: Subscription = this.store
+    const sub = this.store
       .select(UserSelectors.selectUser)
       .pipe(debounceTime(5000), take(1))
-      .subscribe((user) => {
-        if (user?.userCredential && this.isLogging) {
-          this.signInService.signInManuallyFormReducedUserCredential(
-            user.userCredential,
-            this.signInForm.value.rememberMe!
-          );
+      .subscribe((user) => this.handleManualSignInResponse(user));
 
-          this.router.navigate(['/']);
-          this.bsModalRef.hide();
-        } else {
-          this.errorMessage = 'Incorrect user credential!';
-          setTimeout(() => {
-            this.errorMessage = '';
-          }, 5000);
-          this.signInForm.reset();
-          this.signInForm.controls.rememberMe.setValue(true);
-          // this.bsModalRef.hide();
-        }
-
-        this.isLogging = false;
-      });
-    this.addSubscription(signInManuallySubscription);
+    this.subscriptions.push(sub);
   }
 
-  signInWithFacebook() {
+  private handleManualSignInResponse(user: IUser | null): void {
+    if (user?.userCredential && this.isLogging) {
+      this.signInService.signInManuallyFormReducedUserCredential(
+        user.userCredential,
+        this.signInForm.value.rememberMe!
+      );
+      this.navigateAndClose();
+    } else {
+      this.showError('Incorrect user credential!');
+    }
+    this.isLogging = false;
+  }
+
+  private navigateAndClose(): void {
+    this.router.navigate(['/']);
+    this._bsModalRef.hide();
+  }
+
+  private showError(message: string) {
+    this.errorMessage = message;
+    setTimeout(() => {
+      this.errorMessage = '';
+    }, 5000);
+    this.resetForm();
+  }
+
+  private resetForm() {
+    this.signInForm.reset();
+    this.signInForm.controls.rememberMe.setValue(true);
+  }
+
+  signInWith(provider: SocialProvider): void {
     this.isLogging = true;
-    this.signInService.signInWithFacebookDispatch();
 
-    const signInWithFacebookSubscription: Subscription =
-      this.handleDataManupulationsInSignInWithSocials();
-    this.addSubscription(signInWithFacebookSubscription);
+    switch (provider) {
+      case 'facebook':
+        this.signInService.signInWithTwitterDispatch();
+        break;
+      case 'twitter':
+        this.signInService.signInWithTwitterDispatch();
+        break;
+      case 'google':
+        this.signInService.signInWithGoogleDispatch();
+        break;
+      default:
+        this.showError('Unsupported provider');
+    }
+
+    const sub = this.handleSocialSignIn();
+    this.subscriptions.push(sub);
   }
 
-  signInWithTwitter() {
-    this.isLogging = true;
-    this.signInService.signInWithTwitterDispatch();
-
-    const signInWithTwitterSubscription: Subscription =
-      this.handleDataManupulationsInSignInWithSocials();
-    this.addSubscription(signInWithTwitterSubscription);
-  }
-
-  signInWithGoogle() {
-    this.isLogging = true;
-    this.signInService.signInWithGoogleDispatch();
-
-    const signInWithGoogleSubscription: Subscription =
-      this.handleDataManupulationsInSignInWithSocials();
-    this.addSubscription(signInWithGoogleSubscription);
-  }
-
-  private handleDataManupulationsInSignInWithSocials(): Subscription {
+  private handleSocialSignIn(): Subscription {
     return this.store.select(UserSelectors.selectUser).subscribe((user) => {
-      if (user !== null && user.userCredential) {
+      if (user?.userCredential) {
         createAuthInLS(user?.userCredential!);
-
-        this.router.navigate(['/']);
-        this.bsModalRef.hide();
+        this.navigateAndClose();
         this.isLogging = false;
       }
     });
   }
-  addSubscription(subscription: Subscription) {
-    this.userSubscription.push(subscription);
-  }
 
   ngOnDestroy(): void {
-    this.userSubscription.forEach((subscription) => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }

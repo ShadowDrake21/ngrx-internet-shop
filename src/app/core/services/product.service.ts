@@ -18,52 +18,34 @@ import { mapQuantity } from '../utils/services.utils';
 })
 export class ProductService {
   private http = inject(HttpClient);
+  private readonly baseUrl = `${BASE_URL_API}/products`;
 
   getAllProducts(): Observable<IProduct[]> {
-    return this.http
-      .get<IProduct[]>(`${BASE_URL_API}/products`)
-      .pipe(map(mapQuantity));
+    return this.http.get<IProduct[]>(this.baseUrl).pipe(map(mapQuantity));
   }
 
   getFilteredProducts(filteredData: IFilterFormObj): Observable<IProduct[]> {
-    let requestParams = new HttpParams();
-
-    if (filteredData.categoryId && filteredData.maxPriceLimit) {
-      requestParams = requestParams
-        .append('price_min', 1)
-        .append('price_max', filteredData.maxPriceLimit)
-        .append('categoryId', filteredData.categoryId);
-    }
-    if (filteredData.categoryId && !filteredData.maxPriceLimit) {
-      requestParams = requestParams.append(
-        'categoryId',
-        filteredData.categoryId
-      );
-    }
-    if (!filteredData.categoryId && filteredData.maxPriceLimit) {
-      requestParams = requestParams
-        .append('price_min', 1)
-        .append('price_max', filteredData.maxPriceLimit as number);
-    }
+    const params = this.buildFilterParams(filteredData);
 
     return this.http
-      .get<IProduct[]>(`${BASE_URL_API}/products/`, {
-        params: requestParams,
+      .get<IProduct[]>(this.baseUrl, {
+        params,
       })
       .pipe(map(mapQuantity));
   }
 
   getProductsByTitle(title: string): Observable<IProduct[]> {
+    const params = new HttpParams().set('title', title);
     return this.http
-      .get<IProduct[]>(`${BASE_URL_API}/products/`, {
-        params: new HttpParams().set('title', title),
+      .get<IProduct[]>(this.baseUrl, {
+        params,
       })
       .pipe(map(mapQuantity));
   }
 
   getSingleProductById(id: number): Observable<IProduct> {
     return this.http
-      .get<IProduct>(`${BASE_URL_API}/products/${id}`)
+      .get<IProduct>(`${this.baseUrl}/${id}`)
       .pipe(map((product) => ({ ...product, quantity: 1 })));
   }
 
@@ -83,5 +65,22 @@ export class ProductService {
         params,
       })
       .pipe(map(mapQuantity));
+  }
+
+  // ----------- Helpers ------------
+  private buildFilterParams(filteredData: IFilterFormObj): HttpParams {
+    let params = new HttpParams();
+
+    if (filteredData.categoryId) {
+      params = params.set('categoryId', filteredData.categoryId);
+    }
+
+    if (filteredData.maxPriceLimit) {
+      params = params
+        .set('price_min', '1')
+        .set('price_max', filteredData.maxPriceLimit.toString());
+    }
+
+    return params;
   }
 }

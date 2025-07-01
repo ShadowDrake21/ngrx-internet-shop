@@ -3,6 +3,7 @@ import { createAction, props } from '@ngrx/store';
 
 // interfaces
 import { IStoreUserCredential, IUserSignUpData } from '@models/user.model';
+import { IAuthCredentials } from '@app/shared/models/auth.model';
 
 export const signUp = createAction(
   '[User Component] SignUp',
@@ -98,7 +99,7 @@ export const getUserFailure = createAction(
 
 export const reauthenticateUser = createAction(
   '[User Component] ReauthenticateUser',
-  props<{ email: string; password: string }>()
+  props<IAuthCredentials>()
 );
 export const reauthenticateUserSuccess = createAction(
   '[User Component] ReauthenticateUserSuccess',

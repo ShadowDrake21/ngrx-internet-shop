@@ -1,5 +1,4 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { map, Observable, of, switchMap } from 'rxjs';
@@ -28,7 +27,6 @@ import { CategoryService } from '@core/services/category.service';
 @Component({
   selector: 'app-products',
   imports: [
-    CommonModule,
     FormsModule,
     PaginationModule,
     FilterSidebarComponent,
@@ -38,47 +36,50 @@ import { CategoryService } from '@core/services/category.service';
   styleUrl: './products.component.scss',
 })
 export class ProductsComponent implements OnInit {
-  private store = inject(Store<AppState>);
-  private activatedRoute = inject(ActivatedRoute);
-  private router = inject(Router);
-  private categoryService = inject(CategoryService);
+  private readonly store = inject(Store<AppState>);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly categoryService = inject(CategoryService);
 
   categoryId$!: Observable<number | null>;
   products$!: Observable<IProduct[]>;
 
-  filteredProducts$!: Observable<IProduct[]>;
-  filteredProductsError$!: Observable<string>;
+  constructor() {
+    this.categoryId$ = this.initCategoryId();
+    this.products$ = this.store.select(ProductSelectors.selectProducts);
+  }
 
   ngOnInit(): void {
-    this.categoryId$ = this.activatedRoute.queryParams.pipe(
-      map((categoryRoute) => categoryRoute['category'] as string),
-      switchMap((categoryStr) => {
-        if (categoryStr) {
-          return this.categoryService
-            .getCategoryByName(categoryStr)
-            .pipe(map((categoryObj) => categoryObj?.id!));
-        } else {
-          return of(null);
-        }
-      })
-    );
-
     this.store.dispatch(ProductActions.loadProducts());
-    this.products$ = this.store.select(ProductSelectors.selectProducts);
+  }
+
+  private initCategoryId(): Observable<number | null> {
+    return this.activatedRoute.queryParams.pipe(
+      map((params) => params['category'] as string | undefined),
+      switchMap((categoryName) =>
+        categoryName ? this.getCategoryIdByName(categoryName) : of(null)
+      )
+    );
+  }
+
+  private getCategoryIdByName(name: string): Observable<number | null> {
+    return this.categoryService
+      .getCategoryByName(name)
+      .pipe(map((category) => category?.id ?? null));
   }
 
   handleFilterData(filterData: IFilterFormObj) {
     this.store.dispatch(ProductActions.filterProducts({ filterData }));
-    this.products$ = this.store.select(ProductSelectors.selectProducts);
   }
 
   onRestoreProducts() {
     this.store.dispatch(ProductActions.loadProducts());
-    this.products$ = this.store.select(ProductSelectors.selectProducts);
+    this.updateQueryParams({ category: null });
+  }
+
+  private updateQueryParams(params: { [key: string]: any }): void {
     this.router.navigate([], {
-      queryParams: {
-        category: null,
-      },
+      queryParams: params,
       queryParamsHandling: 'merge',
     });
   }

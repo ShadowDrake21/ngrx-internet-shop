@@ -1,5 +1,5 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { CurrencyPipe, TitleCasePipe, UpperCasePipe } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -9,6 +9,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  signal,
   SimpleChanges,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -31,38 +32,38 @@ import { UserState } from '@app/store/user/user.reducer';
 import * as UserSelectors from '@store/user/user.selectors';
 
 @Component({
-    selector: 'app-single-product',
-    imports: [
-        CommonModule,
-        RouterLink,
-        SafeHTMLPipe,
-        ClearURLPipe,
-        TruncateTextPipe,
-    ],
-    templateUrl: './products-item.component.html',
-    styleUrl: './products-item.component.scss'
+  selector: 'app-single-product',
+  imports: [
+    TitleCasePipe,
+    CurrencyPipe,
+    UpperCasePipe,
+    RouterLink,
+    SafeHTMLPipe,
+    ClearURLPipe,
+    TruncateTextPipe,
+  ],
+  templateUrl: './products-item.component.html',
+  styleUrl: './products-item.component.scss',
 })
 export class ProductsItemComponent implements OnInit, OnChanges, OnDestroy {
-  private store = inject(Store<UserState>);
-  private productManipulationsService = inject(ProductManipulationsService);
+  private readonly store = inject(Store<UserState>);
+  private readonly productsService = inject(ProductManipulationsService);
+  private subscription = new Subscription();
 
   @Input({ required: true, alias: 'item' }) product!: IProduct;
   @Input({ alias: 'isInCart' }) isAlreadyInCart: boolean = false;
   @Input() showAddBtn: boolean = true;
-  @Input() innerTitle!: string;
+  @Input() innerTitle: string = '';
 
-  @Output('onAddToCart') onAdd: EventEmitter<IProduct> =
-    new EventEmitter<IProduct>();
+  @Output() productAdded = new EventEmitter<IProduct>();
 
-  private userSubscription!: Subscription;
+  protected readonly normalizeProduct = signal<IProduct | null>(null);
 
   ngOnInit(): void {
-    this.userSubscription = this.store
+    this.subscription = this.store
       .select(UserSelectors.selectUser)
       .subscribe((user) => {
-        if (!user?.userCredential) {
-          this.showAddBtn = false;
-        }
+        this.showAddBtn = !!user?.userCredential;
       });
   }
 
@@ -73,19 +74,21 @@ export class ProductsItemComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   normalizeImages() {
-    const updatedProduct = { ...this.product };
-    updatedProduct.images = updatedProduct.images.map((image) =>
-      this.productManipulationsService.normalizeImage(image)
+    const normalizeImages = this.product.images.map((image) =>
+      this.productsService.normalizeImage(image)
     );
 
-    this.product = updatedProduct;
+    this.normalizeProduct.set({
+      ...this.product,
+      images: normalizeImages,
+    });
   }
 
   onAddToCart() {
-    this.onAdd.emit(this.product);
+    this.productAdded.emit(this.normalizeProduct() || this.product);
   }
 
   ngOnDestroy(): void {
-    this.userSubscription.unsubscribe();
+    this.subscription.unsubscribe();
   }
 }

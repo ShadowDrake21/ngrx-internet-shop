@@ -56,38 +56,6 @@ textarea.form-control {
   background: #e8edf0;
 }
 
-.dbox {
-  width: 100%;
-  margin-bottom: 25px;
-  padding: 0 20px;
-
-  p {
-    margin-bottom: 0;
-    span {
-      font-weight: 500;
-      color: #000;
-    }
-    a {
-      color: $primary;
-    }
-  }
-  .icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: $primary;
-    margin: 0 auto;
-    margin-bottom: 20px;
-    span {
-      font-size: 20px;
-      color: #fff;
-    }
-  }
-  .text {
-    width: 100%;
-  }
-}
-
 .btn {
   padding: 12px 16px;
   cursor: pointer;

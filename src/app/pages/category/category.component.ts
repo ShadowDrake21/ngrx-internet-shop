@@ -1,8 +1,8 @@
 // angular stuff
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, RouterLink } from '@angular/router';
-import { map, Observable, Subscription } from 'rxjs';
+import { filter, map, Observable, Subscription, tap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -25,7 +25,7 @@ import { ProductsListComponent } from '@shared/components/products-list/products
 @Component({
   selector: 'app-category',
   imports: [
-    CommonModule,
+    AsyncPipe,
     PaginationModule,
     ProductsListComponent,
     RouterLink,
@@ -35,44 +35,47 @@ import { ProductsListComponent } from '@shared/components/products-list/products
   styleUrl: './category.component.scss',
 })
 export class CategoryComponent implements OnInit, OnDestroy {
-  private store = inject(Store<AppState>);
-  private route = inject(ActivatedRoute);
+  private readonly store = inject(Store<AppState>);
+  private readonly route = inject(ActivatedRoute);
 
-  arrowLeft = faArrowLeft;
+  readonly category$!: Observable<ICategory>;
+  readonly categoryProducts$!: Observable<IProduct[]>;
+  readonly categoryError$!: Observable<string | null>;
+  readonly arrowLeft = faArrowLeft;
 
-  categoryId$!: Observable<number>;
-  category$!: Observable<ICategory>;
+  private subscriptions = new Subscription();
 
-  categoryProducts$!: Observable<IProduct[]>;
+  constructor() {
+    this.category$ = this.store
+      .select(CategorySelectors.selectCategories)
+      .pipe(map((categories) => categories[0]));
 
-  categoryError$!: Observable<string | null>;
-
-  private categoryIdSubscription!: Subscription;
+    this.categoryProducts$ = this.store.select(ProductSelectors.selectProducts);
+    this.categoryError$ = this.store.select(
+      CategorySelectors.selectErrorMessage
+    );
+  }
 
   ngOnInit(): void {
-    this.categoryId$ = this.route.queryParamMap.pipe(
-      map((params: ParamMap) => +params.get('id')!)
+    this.subscriptions.add(
+      this.route.queryParamMap
+        .pipe(
+          map((params: ParamMap) => +params.get('id')!),
+          filter((categoryId) => !isNaN(categoryId)),
+          tap((categoryId) => {
+            this.loadCategoryData(categoryId);
+          })
+        )
+        .subscribe()
     );
+  }
 
-    this.categoryIdSubscription = this.categoryId$.subscribe((categoryId) => {
-      this.store.dispatch(CategoryActions.loadCategoryById({ categoryId }));
-      this.category$ = this.store
-        .select(CategorySelectors.selectCategories)
-        .pipe(map((categories) => categories[0]));
-      this.categoryError$ = this.store.select(
-        CategorySelectors.selectErrorMessage
-      );
-
-      this.store.dispatch(
-        ProductActions.loadProductsByCategory({ categoryId })
-      );
-      this.categoryProducts$ = this.store.select(
-        ProductSelectors.selectProducts
-      );
-    });
+  private loadCategoryData(categoryId: number): void {
+    this.store.dispatch(CategoryActions.loadCategoryById({ categoryId }));
+    this.store.dispatch(ProductActions.loadProductsByCategory({ categoryId }));
   }
 
   ngOnDestroy(): void {
-    this.categoryIdSubscription.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 }

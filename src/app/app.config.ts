@@ -35,7 +35,7 @@ import { FavoritesEffects } from '@store/favorites/favorites.effects';
 import { PurchaseEffects } from '@store/purchase/purchase.effects';
 
 // environment
-import { environment } from '../environments/environment.development';
+import { environment } from 'environments/environment.development';
 
 export const appConfig: ApplicationConfig = {
   providers: [
