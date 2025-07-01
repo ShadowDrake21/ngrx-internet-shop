@@ -47,7 +47,7 @@ export class AvailableProvidersModalComponent implements OnDestroy {
   private readonly _bsModalRef = inject(BsModalRef);
 
   get bsModalRef(): BsModalRef {
-    return this.bsModalRef;
+    return this._bsModalRef;
   }
 
   availableProviders: string[] = [];

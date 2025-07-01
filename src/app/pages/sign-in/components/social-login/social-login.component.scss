@@ -1,0 +1,33 @@
+.social-login {
+  button {
+    display: block;
+    text-decoration: none;
+    display: block;
+    position: relative;
+    text-align: center;
+    color: #fff;
+    margin-bottom: 10px;
+    width: 100%;
+    &:hover {
+      color: #fff;
+    }
+  }
+  button.facebook {
+    background: #3b5998;
+    &:hover {
+      background: #344e86;
+    }
+  }
+  button.twitter {
+    background: #1da1f2;
+    &:hover {
+      background: #0d95e8;
+    }
+  }
+  button.google {
+    background: #ea4335;
+    &:hover {
+      background: #e82e1e;
+    }
+  }
+}

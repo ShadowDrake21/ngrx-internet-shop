@@ -311,6 +311,7 @@ export class PersonalInformationComponent implements OnInit, OnDestroy {
 
   onCancelPasswordChangeForm() {
     this.isPasswordChangeMode = false;
+    console.log('Cancel password change form', this.isPasswordChangeMode);
     this.changePasswordForm.reset();
   }
 

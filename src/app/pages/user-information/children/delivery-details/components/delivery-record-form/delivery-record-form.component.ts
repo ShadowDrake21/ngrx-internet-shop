@@ -11,7 +11,15 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { map, Observable, of, Subscription, switchMap } from 'rxjs';
+import {
+  catchError,
+  map,
+  Observable,
+  of,
+  Subscription,
+  switchMap,
+  tap,
+} from 'rxjs';
 
 // services
 import { DatabaseService } from '@core/services/database.service';
@@ -56,6 +64,8 @@ export class DeliveryRecordFormComponent
   private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
+    console.log('Init - customerId:', this.customerId);
+
     this.initializeForm();
   }
 
@@ -94,6 +104,10 @@ export class DeliveryRecordFormComponent
   }
 
   onSubmit() {
+    console.log('Submitting with customerId:', this.customerId);
+
+    if (!this.customerId || !this.shippingForm.valid) return;
+
     const country = this.shippingForm.value.address?.country;
     if (!country) return;
 
@@ -105,9 +119,10 @@ export class DeliveryRecordFormComponent
             background
           )
         ),
-        switchMap((newDeliveryRecord) =>
-          this.handleDeliveryRecordSubmission(newDeliveryRecord)
-        )
+        switchMap((newDeliveryRecord) => {
+          console.log('New Delivery Record:', newDeliveryRecord);
+          return this.handleDeliveryRecordSubmission(newDeliveryRecord);
+        })
       )
       .subscribe();
 
@@ -115,15 +130,32 @@ export class DeliveryRecordFormComponent
   }
 
   private handleDeliveryRecordSubmission(record: IShipping): Observable<void> {
-    this.databaseService.setDeliveryRecord(record, this.customerId, record.id!);
-
-    this.sendNewDeliveryRecord.emit({
-      record: record,
-      mode: this.isEditMode ? 'edit' : 'add',
-    });
-
-    this.resetFormState();
-    return of(undefined);
+    try {
+      console.log(
+        'Handling delivery record submission:',
+        record,
+        this.customerId,
+        record.id
+      );
+      return this.databaseService
+        .setDeliveryRecord(record, this.customerId, record.id!)
+        .pipe(
+          tap(() => {
+            this.sendNewDeliveryRecord.emit({
+              record: record,
+              mode: this.isEditMode ? 'edit' : 'add',
+            });
+            this.resetFormState();
+          }),
+          catchError((error) => {
+            console.error('Error saving delivery record:', error);
+            return of(undefined);
+          })
+        );
+    } catch (error) {
+      console.error('Error in handleDeliveryRecordSubmission:', error);
+      return of(undefined);
+    }
   }
 
   private getDeliveryRecordBackground(

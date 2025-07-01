@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { AddressGroup, ICustomerUpdateForm } from '../../types/form.types';
+import { ReactiveFormsModule } from '@angular/forms';
+import { AddressGroup } from '../../types/form.types';
 
 @Component({
   selector: 'app-address-form',
@@ -9,7 +9,6 @@ import { AddressGroup, ICustomerUpdateForm } from '../../types/form.types';
   styleUrl: './address-form.component.scss',
 })
 export class AddressFormComponent {
-  @Input({ required: true }) formGroup!: ICustomerUpdateForm;
+  @Input({ required: true }) formGroup!: AddressGroup;
   @Input() groupName = '';
-  @Input() showTitle = true;
 }

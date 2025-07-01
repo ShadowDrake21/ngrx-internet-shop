@@ -32,7 +32,6 @@ export class SocialLoginComponent {
   private readonly authService = inject(AuthService);
   private readonly utilsService = inject(SignInUtilsService);
 
-  private userStateSubscription!: Subscription;
   private readonly subscriptions = new Subscription();
 
   readonly icons = signInModalIcons;
@@ -58,9 +57,11 @@ export class SocialLoginComponent {
 
   private handleSocialLoginResponse() {
     this.clearAlerts();
-    this.userStateSubscription = this.store
-      .select(UserSelectors.selectUserState)
-      .subscribe((userState) => this.processSocialLoginState(userState));
+    this.subscriptions.add(
+      this.store
+        .select(UserSelectors.selectUserState)
+        .subscribe((userState) => this.processSocialLoginState(userState))
+    );
   }
 
   private clearAlerts(): void {
@@ -82,14 +83,12 @@ export class SocialLoginComponent {
   private completeSocialLogin(credential: IStoreUserCredential): void {
     createAuthInLS(credential);
     this.router.navigate(['/']);
-    this.unsubscribeUserState();
   }
 
   private handleAlternativeProviders(email: string): void {
     this.subscriptions.add(
       this.authService.signInWithAnotherMethods(email).subscribe({
         next: (providers) => this.showProvidersModal(providers),
-        complete: () => this.unsubscribeUserState(),
       })
     );
   }
@@ -102,12 +101,7 @@ export class SocialLoginComponent {
     });
   }
 
-  private unsubscribeUserState(): void {
-    this.userStateSubscription.unsubscribe();
-  }
-
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-    this.unsubscribeUserState();
   }
 }

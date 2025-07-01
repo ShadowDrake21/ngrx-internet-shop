@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { Subscription, tap } from 'rxjs';
+import { map, Observable, Subscription, tap } from 'rxjs';
 
 // services
 import { ProductService } from '@core/services/product.service';
@@ -9,16 +9,25 @@ import { IProduct } from '@models/product.model';
 
 // components
 import { ProductsItemComponent } from '@shared/components/products-item/products-item.component';
+import { Store } from '@ngrx/store';
+import { AppState } from '@app/store/app.state';
+
+import * as CartActions from '@store/cart/cart.actions';
+import * as CartSelectors from '@store/cart/cart.selectors';
+import { AsyncPipe } from '@angular/common';
+import { ProductInCartService } from '@app/core/services/product-in-cart.service';
+import { ProductInCartPipe } from '@app/shared/pipes/product-in-cart.pipe';
 
 const PRODUCT_OF_THE_DAY_KEY = 'productOfTheDay';
 
 @Component({
   selector: 'app-products-promotions',
-  imports: [ProductsItemComponent],
+  imports: [AsyncPipe, ProductsItemComponent, ProductInCartPipe],
   templateUrl: './products-promotions.component.html',
   styleUrl: './products-promotions.component.scss',
 })
 export class ProductsPromotionsComponent implements OnInit, OnDestroy {
+  private readonly store = inject(Store<AppState>);
   private readonly productService = inject(ProductService);
   private allProductsSubscription = new Subscription();
 
@@ -90,6 +99,10 @@ export class ProductsPromotionsComponent implements OnInit, OnDestroy {
 
   getTheMostExpesiveProduct(products: IProduct[]): IProduct {
     return [...products].sort((a, b) => b.price - a.price)[0];
+  }
+
+  handleAddToCart(product: IProduct) {
+    this.store.dispatch(CartActions.addToCart({ product }));
   }
 
   ngOnDestroy(): void {

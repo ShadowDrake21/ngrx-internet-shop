@@ -55,6 +55,7 @@ export class DeliveryRecordFormService {
     form: IShippingForm,
     backgroundObj: IReducedUnsplashImage
   ): Observable<IShipping> {
+    console.log('formDeliveryRecord', form, backgroundObj);
     return of({
       background: backgroundObj,
       id: form.value.id ?? '',

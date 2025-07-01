@@ -5,105 +5,108 @@
   <div
     class="border w-100 h-100 p-5 position-relative"
     [class.border]="!personalInformationLoading"
-  ></div>
-  @if(personalInformationLoading) {
-  <div class="personal-info__loading">
-    <div class="d-flex justify-content-center">
-      <div class="user-information-loading"></div>
-    </div>
-  </div>
-  } @if(user.userCredential; as userCredential) {
-  <div>
-    @if(isUserSignInManually) {
-    <div class="d-flex personal-info__wrapper">
-      <personal-information-user-image
-        [imageUrl]="userPhotoURL"
-        (imageChanged)="onImageChanged($event)"
-      />
-      <div class="d-flex w-100 flex-column flex-lg-row">
-        <div class="personal-info__settings-left">
-          <div class="personal-info__settings-username">
-            <div class="w-100 pb-2">
-              <div class="pb-2">
-                <h6 class="fw-bold fs-5 pb-2 text-center text-sm-start">
-                  Change actions
-                </h6>
-                <div
-                  class="d-flex justify-content-between pb-4 pb-sm-2 flex-column flex-sm-row personal-info__image-btns"
-                >
-                  <button
-                    class="btn btn-primary w-100"
-                    (click)="onSaveChanges()"
-                    [disabled]="!saveButtonActive && !controlButtonsActive"
-                  >
-                    Update data
-                  </button>
-                  <button
-                    class="btn btn-danger w-100"
-                    (click)="onCancel()"
-                    [disabled]="!controlButtonsActive"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-              <personal-information-email-verification
-                [emailVerified]="userCredential.emailVerified"
-                [wasEmailVerificationSent]="wasEmailVerificationSent"
-                (verifyEmail)="onSendEmailVerification()"
-              />
-              <button
-                class="btn btn-success w-100"
-                style="text-wrap: nowrap"
-                (click)="onReauthenticateUser()"
-                [disabled]="wasUserReauthenticated"
-              >
-                Reauthenticate a user
-                <fa-icon
-                  [icon]="icons.reauthenticateIcon"
-                  class="ms-1"
-                ></fa-icon>
-              </button>
-            </div>
-          </div>
-
-          <personal-information-password-form
-            [passwordForm]="changePasswordForm"
-            [isPasswordChangeMode]="isPasswordChangeMode"
-            [passwordIcon]="icons.passwordIcon"
-            (savePassword)="onSaveNewPassword()"
-            (cancelPasswordChange)="onCancelPasswordChangeForm()"
-            (togglePasswordChange)="onTogglePasswordChange()"
-          />
-        </div>
-        <div class="personal-info__settings-right pt-4 pt-lg-0">
-          @if (hasErrorChangePasswordForm()) {
-          <ul class="text-danger">
-            <li class="fs-5 fw-bold pb-2" style="list-style-type: none">
-              {{ "password errors" | titlecase }}
-            </li>
-            @for (error of getErrorMessageChangePasswordForm(); track $index) {
-            <li>
-              {{ error }}
-            </li>
-            }
-          </ul>
-          }
-        </div>
+  >
+    @if(personalInformationLoading) {
+    <div class="personal-info__loading">
+      <div class="d-flex justify-content-center">
+        <div class="user-information-loading"></div>
       </div>
     </div>
-    }@else {
-    <div
-      class="d-flex align-items-center justify-content-center"
-      style="height: 400px"
-    >
-      <h3 class="text-center">
-        Since you have signed in by
-        {{ userCredential.tokenResult.signInProvider }}, you cannot change any
-        automatically provided data
-      </h3>
+    } @if(user.userCredential; as userCredential) {
+    <div>
+      @if(isUserSignInManually) {
+      <div class="d-flex personal-info__wrapper">
+        <personal-information-user-image
+          [imageUrl]="userPhotoURL"
+          (imageChanged)="onImageChanged($event)"
+        />
+        <div class="d-flex w-100 flex-column flex-lg-row">
+          <div class="personal-info__settings-left">
+            <div class="personal-info__settings-username">
+              <div class="w-100 pb-2">
+                <div class="pb-2">
+                  <h6 class="fw-bold fs-5 pb-2 text-center text-sm-start">
+                    Change actions
+                  </h6>
+                  <div
+                    class="d-flex justify-content-between pb-4 pb-sm-2 flex-column flex-sm-row personal-info__image-btns"
+                  >
+                    <button
+                      class="btn btn-primary w-100"
+                      (click)="onSaveChanges()"
+                      [disabled]="!saveButtonActive && !controlButtonsActive"
+                    >
+                      Update data
+                    </button>
+                    <button
+                      class="btn btn-danger w-100"
+                      (click)="onCancel()"
+                      [disabled]="!controlButtonsActive"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+                <personal-information-email-verification
+                  [emailVerified]="userCredential.emailVerified"
+                  [wasEmailVerificationSent]="wasEmailVerificationSent"
+                  (verifyEmail)="onSendEmailVerification()"
+                />
+                <button
+                  class="btn btn-success w-100"
+                  style="text-wrap: nowrap"
+                  (click)="onReauthenticateUser()"
+                  [disabled]="wasUserReauthenticated"
+                >
+                  Reauthenticate a user
+                  <fa-icon
+                    [icon]="icons.reauthenticateIcon"
+                    class="ms-1"
+                  ></fa-icon>
+                </button>
+              </div>
+            </div>
+
+            <personal-information-password-form
+              [passwordForm]="changePasswordForm"
+              [isPasswordChangeMode]="isPasswordChangeMode"
+              [passwordIcon]="icons.passwordIcon"
+              (savePassword)="onSaveNewPassword()"
+              (cancelPasswordChange)="onCancelPasswordChangeForm()"
+              (togglePasswordChange)="onTogglePasswordChange()"
+            />
+          </div>
+          <div class="personal-info__settings-right pt-4 pt-lg-0">
+            @if (hasErrorChangePasswordForm()) {
+            <ul class="text-danger">
+              <li class="fs-5 fw-bold pb-2" style="list-style-type: none">
+                {{ "password errors" | titlecase }}
+              </li>
+              @for (error of getErrorMessageChangePasswordForm(); track $index)
+              {
+              <li>
+                {{ error }}
+              </li>
+              }
+            </ul>
+            }
+          </div>
+        </div>
+      </div>
+      }@else {
+      <div
+        class="d-flex align-items-center justify-content-center"
+        style="height: 400px"
+      >
+        <h3 class="text-center">
+          Since you have signed in by
+          {{ userCredential.tokenResult.signInProvider }}, you cannot change any
+          automatically provided data
+        </h3>
+      </div>
+      }
     </div>
     }
   </div>
-  } }
+  }
 </div>

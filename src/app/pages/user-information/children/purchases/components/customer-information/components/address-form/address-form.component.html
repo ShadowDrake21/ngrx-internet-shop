@@ -1,58 +1,58 @@
-<div [formGroup]="formGroup" class="purchases-customer__edit-addresses">
-  @if(showTitle) {
+<div [formGroup]="formGroup">
   <h6 class="pb-1">Address info</h6>
-  }
 
-  <div class="form-group">
-    <label for="country">Country (PL/UA)</label>
-    <select class="form-select" id="country" formControlName="country">
-      <option selected disabled value="0">Country</option>
-      <option [ngValue]="'PL'">Poland</option>
-      <option [ngValue]="'UA'">Ukraine</option>
-    </select>
-  </div>
+  <div class="purchases-customer__edit-addresses">
+    <div class="form-group">
+      <label for="country">Country (PL/UA)</label>
+      <select class="form-select" id="country" formControlName="country">
+        <option selected disabled value="0">Country</option>
+        <option [ngValue]="'PL'">Poland</option>
+        <option [ngValue]="'UA'">Ukraine</option>
+      </select>
+    </div>
 
-  <div class="form-group">
-    <label for="city">City</label>
-    <input
-      type="text"
-      class="form-control"
-      id="city"
-      placeholder="City"
-      formControlName="city"
-    />
-  </div>
+    <div class="form-group">
+      <label for="city">City</label>
+      <input
+        type="text"
+        class="form-control"
+        id="city"
+        placeholder="City"
+        formControlName="city"
+      />
+    </div>
 
-  <div class="form-group">
-    <label for="line1">Address line 1</label>
-    <input
-      type="text"
-      class="form-control"
-      id="line1"
-      placeholder="Street, PO Box, or company name"
-      formControlName="line1"
-    />
-  </div>
+    <div class="form-group">
+      <label for="line1">Address line 1</label>
+      <input
+        type="text"
+        class="form-control"
+        id="line1"
+        placeholder="Street, PO Box, or company name"
+        formControlName="line1"
+      />
+    </div>
 
-  <div class="form-group">
-    <label for="line2">Address line 2</label>
-    <input
-      type="text"
-      class="form-control"
-      id="line2"
-      placeholder="Apartment, suite, unit, or building"
-      formControlName="line2"
-    />
-  </div>
+    <div class="form-group">
+      <label for="line2">Address line 2</label>
+      <input
+        type="text"
+        class="form-control"
+        id="line2"
+        placeholder="Apartment, suite, unit, or building"
+        formControlName="line2"
+      />
+    </div>
 
-  <div class="form-group">
-    <label for="postalCode">Postal code</label>
-    <input
-      type="text"
-      class="form-control"
-      id="postalCode"
-      placeholder="Postal code"
-      formControlName="postalCode"
-    />
+    <div class="form-group">
+      <label for="postalCode">Postal code</label>
+      <input
+        type="text"
+        class="form-control"
+        id="postalCode"
+        placeholder="Postal code"
+        formControlName="postalCode"
+      />
+    </div>
   </div>
 </div>

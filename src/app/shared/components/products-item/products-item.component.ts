@@ -52,7 +52,7 @@ export class ProductsItemComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input({ required: true, alias: 'item' }) product!: IProduct;
   @Input({ alias: 'isInCart' }) isAlreadyInCart: boolean = false;
-  @Input() showAddBtn: boolean = true;
+  @Input() showAddBtn: boolean = false;
   @Input() innerTitle: string = '';
 
   @Output() productAdded = new EventEmitter<IProduct>();

@@ -1,30 +1,26 @@
-import { TitleCasePipe, AsyncPipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { BasicCardComponent } from '@app/pages/user-information/components/basic-card/basic-card.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { AlertComponent } from 'ngx-bootstrap/alert';
 
 @Component({
   selector: 'personal-information-password-form',
-  imports: [
-    BasicCardComponent,
-    ReactiveFormsModule,
-    FormsModule,
-    FontAwesomeModule,
-    AlertComponent,
-    TitleCasePipe,
-    AsyncPipe,
-  ],
+  imports: [ReactiveFormsModule, FormsModule, FontAwesomeModule],
   templateUrl: './password-form.component.html',
   styleUrl: './password-form.component.scss',
 })
-export class PasswordFormComponent {
+export class PasswordFormComponent implements OnChanges {
   @Input() passwordForm!: FormGroup;
   @Input() isPasswordChangeMode = false;
   @Input() passwordIcon: any;
@@ -33,6 +29,11 @@ export class PasswordFormComponent {
   @Output() cancelPasswordChange = new EventEmitter<void>();
   @Output() togglePasswordChange = new EventEmitter<void>();
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isPasswordChangeMode']) {
+      console.log('Password change mode changed:', this.isPasswordChangeMode);
+    }
+  }
   get passwordControl() {
     return this.passwordForm.get('password') as FormControl;
   }

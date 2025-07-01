@@ -46,10 +46,10 @@ export type ICustomerUpdateFormValue = Partial<{
   }>;
 }>;
 
-export interface AddressGroup {
+export type AddressGroup = FormGroup<{
   country: FormControl<string | null>;
   city: FormControl<string | null>;
   line1: FormControl<string | null>;
   line2: FormControl<string | null>;
   postalCode: FormControl<string | null>;
-}
+}>;

@@ -135,7 +135,7 @@
         triggers=""
         #shippingTooltip="bs-tooltip"
       >
-        <div class="row flex-column flex-sm-row">
+        <div class="row flex-column flex-sm-row pb-4">
           <div class="form-group col pb-3 pb-sm-0">
             <label
               for="customerShippingName"
@@ -174,7 +174,7 @@
           </div>
         </div>
         <app-address-form
-          [formGroup]="form"
+          [formGroup]="form.controls.shipping.controls.address"
           groupName="address"
         ></app-address-form>
         <div

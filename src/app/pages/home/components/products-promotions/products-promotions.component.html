@@ -3,19 +3,25 @@
   <app-single-product
     [item]="canBeInterestingProduct"
     [showAddBtn]="false"
+    [isInCart]="(canBeInterestingProduct.id | productInCart | async) ?? false"
     innerTitle="Could be interesting for you"
+    (productAdded)="handleAddToCart($event)"
   ></app-single-product>
   } @if(productOfTheDay) {
   <app-single-product
     [item]="productOfTheDay"
     [showAddBtn]="false"
+    [isInCart]="(productOfTheDay.id | productInCart | async) ?? false"
     innerTitle="Product of the day"
+    (productAdded)="handleAddToCart($event)"
   ></app-single-product>
   } @if(theMostExpensiveProduct) {
   <app-single-product
     [item]="theMostExpensiveProduct"
     [showAddBtn]="false"
+    [isInCart]="(theMostExpensiveProduct.id | productInCart | async) ?? false"
     innerTitle="The most elite product"
+    (productAdded)="handleAddToCart($event)"
   ></app-single-product>
   }
 </div>

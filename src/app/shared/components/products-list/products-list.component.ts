@@ -5,7 +5,6 @@ import {
   inject,
   Input,
   OnChanges,
-  OnInit,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -32,14 +31,22 @@ import { ProductsItemComponent } from '../products-item/products-item.component'
 
 // utils
 import { calcPageNum } from '@shared/utils/pagination.utils';
+import { ProductInCartService } from '@app/core/services/product-in-cart.service';
+import { ProductInCartPipe } from '@app/shared/pipes/product-in-cart.pipe';
 
 @Component({
   selector: 'app-products-list',
-  imports: [AsyncPipe, PaginationModule, ProductsItemComponent, FormsModule],
+  imports: [
+    AsyncPipe,
+    PaginationModule,
+    ProductsItemComponent,
+    FormsModule,
+    ProductInCartPipe,
+  ],
   templateUrl: './products-list.component.html',
   styleUrl: './products-list.component.scss',
 })
-export class ProductsListComponent implements OnInit, OnChanges {
+export class ProductsListComponent implements OnChanges {
   private readonly store = inject(Store<AppState>);
   private readonly cdr = inject(ChangeDetectorRef);
 
@@ -53,24 +60,15 @@ export class ProductsListComponent implements OnInit, OnChanges {
   @ViewChild('paginationComponent')
   paginationComponent!: PaginationComponent;
 
-  cartProducts$: Observable<IProduct[]> = this.store.select(
-    CartSelectors.selectCartProducts
-  );
   productError$: Observable<string | null> = this.store.select(
     ProductSelectors.selectErrorMessage
   );
+
   visibleProducts$!: Observable<IProduct[]>;
-  cartProductsIdxs$!: Observable<number[]>;
   currentPage: number = 1;
 
   readonly calcPageNum = calcPageNum;
   readonly maxSize = 5;
-
-  ngOnInit(): void {
-    this.cartProductsIdxs$ = this.cartProducts$.pipe(
-      map((products) => products.map((product) => product.id))
-    );
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['listProducts$']) {

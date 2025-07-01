@@ -1,0 +1,14 @@
+.personal-info {
+  &__email-verification {
+    gap: 25px;
+  }
+}
+
+@media (max-width: 575px) {
+  .personal-info__email-verification {
+    gap: 10px;
+  }
+  .personal-info__email-verification {
+    margin-bottom: 15px;
+  }
+}

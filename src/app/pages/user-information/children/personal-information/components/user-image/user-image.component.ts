@@ -23,15 +23,25 @@ export class UserImageComponent implements AfterViewInit {
   @Output() imageChanged = new EventEmitter<File>();
 
   ngAfterViewInit(): void {
-    this.changeImageEl.nativeElement.addEventListener('click', () => {
-      this.changeImageInput.nativeElement.click();
-    });
+    this.changeImageEl.nativeElement.addEventListener('click', () =>
+      this.changeImageInput.nativeElement.click()
+    );
   }
 
   onImageChange(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    console.log('File selected:', file);
     if (file) {
       this.imageChanged.emit(file);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imageUrl = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+
+      input.value = '';
     }
   }
 }
