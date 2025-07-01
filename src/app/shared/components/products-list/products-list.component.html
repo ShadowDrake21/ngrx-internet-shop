@@ -16,7 +16,7 @@
           [isInCart]="
             (cartProductsIdxs$ | async)?.includes(product.id) ?? false
           "
-          (onAddToCart)="handleAddToCart($event)"
+          (productAdded)="handleAddToCart($event)"
         ></app-single-product>
       </div>
       }} @else{ @if (productError$ | async) {
