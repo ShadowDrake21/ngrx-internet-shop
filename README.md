@@ -1,41 +1,168 @@
-# InternetShop
+🛍️ InternetShop
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.1.
+An advanced e-commerce web application built with Angular, NgRX, RxJS, Firebase, and integrated with the Fake Store API (https://fakeapi.platzi.com/
+) and Stripe for payments.
 
-The largest and in my opinion the best application what I've created so far with NgRX, RxJS, Firebase and Fake store api (https://fakeapi.platzi.com/)
+This is one of my largest and most complete Angular projects, featuring full authentication, state management, cart and order handling, and real-time data synchronization.
 
-## Quick tutorial
+🎯 Overview
 
-![Quick tutorial](https://github.com/ShadowDrake21/ngrx-internet-shop/raw/main/src/assets/readme-gif.gif)
+InternetShop provides a seamless shopping experience with both guest and authenticated user modes.
 
-## How to work with the app?
+👤 Guests can:
 
-There are two modes: authorized and as a guest. Guest can only watch products, search them, work with categories. Purchases, favourites and another user functionality are not available for unauthorized guest. On the other hand, the one who signed in or signed up can do everything they want: make puchases, work with cart, work with user section, add and remove products from favourites and so on.
+Browse and search products
 
-## Technology stack
+Filter by categories
 
-Angular, NgRX, RxJS, Firebase, Stripe (https://github.com/ShadowDrake21/ngrx-internet-shop-stripe-backend)
+View product details
 
-## Development server
+🔒 Authorized users can:
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Register and log in (via Firebase Authentication)
 
-## Code scaffolding
+Add/remove items from cart
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Make purchases (Stripe integration)
 
-## Build
+Add/remove favourites
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Manage user profile and order history
 
-## Running unit tests
+⚙️ Technology Stack
+Category	Technology
+Frontend Framework	Angular 17
+State Management	NgRX
+Reactive Programming	RxJS
+Backend / Auth	Firebase
+API Source	Fake Store API (platzi.com
+)
+Payments	Stripe (Stripe Backend Repo
+)
+Deployment	Firebase Hosting / Netlify (optional)
+🧠 Key Features
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+🔐 Authentication (Sign up / Sign in / Google Login)
 
-## Running end-to-end tests
+🛒 Shopping Cart with NgRX state management
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+❤️ Favourites System
 
-## Further help
+💳 Checkout with Stripe integration
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+🔍 Search & Filter by category or name
+
+📦 Product Management (CRUD for admin users)
+
+📊 Reactive Store — powered by RxJS & NgRX
+
+☁️ Firebase Sync — persistent user data and cart
+
+💬 Toast notifications & error handling
+
+🧩 Project Structure
+internet-shop/
+├── src/
+│   ├── app/
+│   │   ├── core/            # shared services, guards, interceptors
+│   │   ├── features/        # modules: products, cart, auth, user
+│   │   ├── shared/          # shared components, pipes, directives
+│   │   └── store/           # NgRX actions, reducers, effects, selectors
+│   ├── assets/
+│   ├── environments/
+│   └── index.html
+├── angular.json
+├── package.json
+└── README.md
+
+🧰 Development Setup
+Prerequisites
+
+Node.js (v18+)
+
+Angular CLI (npm install -g @angular/cli)
+
+Firebase account (for auth & hosting)
+
+Stripe account (for payment testing)
+
+🔧 Local Development
+
+Clone the repository
+
+git clone https://github.com/ShadowDrake21/ngrx-internet-shop.git
+cd ngrx-internet-shop
+
+
+Install dependencies
+
+npm install
+
+
+Run the development server
+
+ng serve
+
+
+Navigate to http://localhost:4200/
+.
+The app automatically reloads on file changes.
+
+Build the project
+
+ng build
+
+
+The build artifacts are stored in the dist/ directory.
+
+🧪 Testing
+Unit Tests
+
+Run tests with Karma:
+
+ng test
+
+End-to-End Tests
+
+If you have Cypress or another E2E tool configured:
+
+ng e2e
+
+🧭 Quick Start Tutorial
+
+Launch the app (ng serve)
+
+Register or log in (or continue as guest)
+
+Browse products by category or search
+
+Add products to the cart
+
+Proceed to checkout with Stripe
+
+Manage your favourites and profile from the user section
+
+💡 Future Improvements
+
+👑 Admin dashboard for product and order management
+
+🌙 Dark/light theme toggle
+
+🗣️ Multi-language support (i18n)
+
+📱 Progressive Web App (PWA) support
+
+📈 Enhanced analytics and reporting
+
+👨‍💻 Author
+
+Dmytro Krapyvianskyi
+📍 Full-stack developer specializing in Angular & Java
+🌐 GitHub Profile
+
+📧 Contact: your_email@example.com
+
+🪪 License
+
+This project is licensed for educational and portfolio demonstration purposes.
+© 2025 Dmytro Krapyvianskyi. All rights reserved.
